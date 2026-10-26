@@ -13,6 +13,7 @@
 | [docs/03-故事纲要.md](docs/03-故事纲要.md) | 断语者反转、五岛弧、结局 |
 | [docs/04-壁画视觉词典-皮拉罕.md](docs/04-壁画视觉词典-皮拉罕.md) | 第一岛壁画教学机制 |
 | [docs/05-主线剧本与世界观.md](docs/05-主线剧本与世界观.md) | 群岛历史、向导身份、15 枚证物、Boss 对峙与结局 |
+| [docs/06-开发文档.md](docs/06-开发文档.md) | 技术选型、架构、数据模型、内容核对流程、测试与里程碑 |
 | [docs/islands/01-皮拉罕岛.md](docs/islands/01-皮拉罕岛.md) | 岛 1 完整设计 |
 | [docs/islands/02-塔阿岛.md](docs/islands/02-塔阿岛.md) | 岛 2 完整设计 |
 | [docs/islands/03-阿姆哈拉岛.md](docs/islands/03-阿姆哈拉岛.md) | 岛 3 完整设计 |
