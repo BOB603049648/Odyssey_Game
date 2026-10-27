@@ -87,3 +87,9 @@ Fog-match（降对比/饱和、2–3px 柔边、高光压、暖/冷 fringe）**�
 3. 已烘接触影 props 勿叠硬影；落位台面/地面 Band（粮袋/筐禁贴墙立面）。
 
 合同 `1.3-pr12-sticker` · 报告 `_pr12-sticker-report.json` · zip `art-pr12-sticker-pack.zip`。
+
+---
+
+## PR14 plate note
+
+合同 `1.3-pr14-plate`。美工辅包去掉旅人浅色脚补丁、猫描边/平底、鱼架与 act-* 矩形底板；接触影贴在不透明靴底上。工程用精灵自身 alpha 做场景光 wrap（`color` + `soft-light`），接触椭圆中心落在靴底。勿对精灵 uniform fog α 乘算，勿在已烘影道具上再叠硬影。报告 `docs/_pr14-plate-report.json`。

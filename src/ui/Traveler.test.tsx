@@ -12,6 +12,7 @@ import {
   WALK_STRIDE,
   blendDuration,
   clipFrames,
+  contactShadowWidth,
   facingFromMove,
   frameIndex,
   nextLocomotion,
@@ -60,6 +61,9 @@ describe('traveler art', () => {
     const wider = view.container.querySelector('[data-testid="contact-shadow"]') as HTMLElement;
     expect(currentMirror()).toBe('no');
     expect(parseFloat(wider.style.width)).toBeGreaterThan(parseFloat(narrow));
+    expect(contactShadowWidth(0.95)).toBeLessThan(0.7);
+    expect(contactShadowWidth(0.95)).toBeGreaterThan(contactShadowWidth(0.3));
+    expect(view.container.querySelector('.figure-grade')).toBeTruthy();
     expect(mark.style.transform).toContain('translate(-50%');
     expect(mark.style.transform).not.toContain('-50%, -50%');
   });

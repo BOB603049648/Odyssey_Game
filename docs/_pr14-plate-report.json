@@ -1,0 +1,1962 @@
+{
+  "version": "1.3-pr14-plate",
+  "updated": "2026-10-28T05:20:48+08:00",
+  "role": "auxiliary",
+  "timezone": "Asia/Shanghai",
+  "priority_note": "编导加严 FIX2+restick：角色剪贴主修。旅人影贴靴底+侧缘雾光；雾岸/前坪/棚火大猫去描边+底脚软切溶雾；building底边软切；铃架/act-*去矩形底板。门帘/粮袋/标石青缝未回退。",
+  "files": {
+    "traveler-mythic/cloud-inspired/v3/anim/idle-front-01.png": {
+      "before": {
+        "opaque_bbox": [
+          153,
+          36,
+          710,
+          1151
+        ],
+        "subjH_pct": 96.9,
+        "foot_pad_px": 0,
+        "opaque_wh": [
+          558,
+          1116
+        ],
+        "solid_bbox": [
+          207,
+          38,
+          656,
+          1134
+        ],
+        "solidH_pct": 95.2,
+        "solid_foot_pad_px": 17,
+        "solid_wh": [
+          450,
+          1097
+        ],
+        "soft_shadow_px": 28667,
+        "pale_rect_px": 0,
+        "bright_rim_px": 102,
+        "knife_edges": 5,
+        "core_mean_alpha": 254.9,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          188,
+          25,
+          674,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 21881,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-front-02.png": {
+      "before": {
+        "opaque_bbox": [
+          153,
+          34,
+          710,
+          1151
+        ],
+        "subjH_pct": 97.0,
+        "foot_pad_px": 0,
+        "opaque_wh": [
+          558,
+          1118
+        ],
+        "solid_bbox": [
+          207,
+          36,
+          656,
+          1134
+        ],
+        "solidH_pct": 95.4,
+        "solid_foot_pad_px": 17,
+        "solid_wh": [
+          450,
+          1099
+        ],
+        "soft_shadow_px": 28664,
+        "pale_rect_px": 0,
+        "bright_rim_px": 89,
+        "knife_edges": 8,
+        "core_mean_alpha": 254.9,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          188,
+          24,
+          674,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 21895,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-side-01.png": {
+      "before": {
+        "opaque_bbox": [
+          215,
+          75,
+          647,
+          1151
+        ],
+        "subjH_pct": 93.5,
+        "foot_pad_px": 0,
+        "opaque_wh": [
+          433,
+          1077
+        ],
+        "solid_bbox": [
+          258,
+          78,
+          605,
+          1134
+        ],
+        "solidH_pct": 91.8,
+        "solid_foot_pad_px": 17,
+        "solid_wh": [
+          348,
+          1057
+        ],
+        "soft_shadow_px": 19785,
+        "pale_rect_px": 0,
+        "bright_rim_px": 75,
+        "knife_edges": 2,
+        "core_mean_alpha": 254.9,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          243,
+          66,
+          619,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 14676,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-side-02.png": {
+      "before": {
+        "opaque_bbox": [
+          184,
+          58,
+          677,
+          1150
+        ],
+        "subjH_pct": 94.9,
+        "foot_pad_px": 1,
+        "opaque_wh": [
+          494,
+          1093
+        ],
+        "solid_bbox": [
+          232,
+          61,
+          631,
+          1135
+        ],
+        "solidH_pct": 93.3,
+        "solid_foot_pad_px": 16,
+        "solid_wh": [
+          400,
+          1075
+        ],
+        "soft_shadow_px": 23435,
+        "pale_rect_px": 0,
+        "bright_rim_px": 64,
+        "knife_edges": 85,
+        "core_mean_alpha": 254.8,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 1,
+        "cyanish_px": 1
+      },
+      "after": {
+        "opaque_bbox": [
+          215,
+          47,
+          647,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 17269,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-back-01.png": {
+      "before": {
+        "opaque_bbox": [
+          102,
+          88,
+          760,
+          1151
+        ],
+        "subjH_pct": 92.4,
+        "foot_pad_px": 0,
+        "opaque_wh": [
+          659,
+          1064
+        ],
+        "solid_bbox": [
+          153,
+          89,
+          709,
+          1132
+        ],
+        "solidH_pct": 90.6,
+        "solid_foot_pad_px": 19,
+        "solid_wh": [
+          557,
+          1044
+        ],
+        "soft_shadow_px": 22553,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 10179,
+        "core_mean_alpha": 254.9,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          135,
+          93,
+          726,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 23422,
+        "pale_rect_px": 0,
+        "bright_rim_px": 1,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-back-02.png": {
+      "before": {
+        "opaque_bbox": [
+          77,
+          92,
+          785,
+          1151
+        ],
+        "subjH_pct": 92.0,
+        "foot_pad_px": 0,
+        "opaque_wh": [
+          709,
+          1060
+        ],
+        "solid_bbox": [
+          132,
+          92,
+          730,
+          1132
+        ],
+        "solidH_pct": 90.4,
+        "solid_foot_pad_px": 19,
+        "solid_wh": [
+          599,
+          1041
+        ],
+        "soft_shadow_px": 27038,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 9654,
+        "core_mean_alpha": 254.9,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          131,
+          96,
+          731,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 24575,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-01.png": {
+      "before": {
+        "opaque_bbox": [
+          160,
+          94,
+          701,
+          1151
+        ],
+        "subjH_pct": 91.8,
+        "foot_pad_px": 0,
+        "opaque_wh": [
+          542,
+          1058
+        ],
+        "solid_bbox": [
+          213,
+          97,
+          649,
+          1135
+        ],
+        "solidH_pct": 90.2,
+        "solid_foot_pad_px": 16,
+        "solid_wh": [
+          437,
+          1039
+        ],
+        "soft_shadow_px": 26885,
+        "pale_rect_px": 0,
+        "bright_rim_px": 96,
+        "knife_edges": 3,
+        "core_mean_alpha": 254.9,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          195,
+          85,
+          667,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 20268,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-02.png": {
+      "before": {
+        "opaque_bbox": [
+          170,
+          84,
+          691,
+          1151
+        ],
+        "subjH_pct": 92.7,
+        "foot_pad_px": 0,
+        "opaque_wh": [
+          522,
+          1068
+        ],
+        "solid_bbox": [
+          221,
+          87,
+          641,
+          1134
+        ],
+        "solidH_pct": 91.0,
+        "solid_foot_pad_px": 17,
+        "solid_wh": [
+          421,
+          1048
+        ],
+        "soft_shadow_px": 26536,
+        "pale_rect_px": 0,
+        "bright_rim_px": 79,
+        "knife_edges": 4,
+        "core_mean_alpha": 254.9,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          203,
+          75,
+          658,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 20198,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-03.png": {
+      "before": {
+        "opaque_bbox": [
+          114,
+          74,
+          749,
+          1150
+        ],
+        "subjH_pct": 93.5,
+        "foot_pad_px": 1,
+        "opaque_wh": [
+          636,
+          1077
+        ],
+        "solid_bbox": [
+          174,
+          76,
+          688,
+          1134
+        ],
+        "solidH_pct": 91.9,
+        "solid_foot_pad_px": 17,
+        "solid_wh": [
+          515,
+          1059
+        ],
+        "soft_shadow_px": 32856,
+        "pale_rect_px": 0,
+        "bright_rim_px": 107,
+        "knife_edges": 167,
+        "core_mean_alpha": 254.8,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 24,
+        "cyanish_px": 12
+      },
+      "after": {
+        "opaque_bbox": [
+          152,
+          62,
+          709,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 24781,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-04.png": {
+      "before": {
+        "opaque_bbox": [
+          164,
+          90,
+          699,
+          1150
+        ],
+        "subjH_pct": 92.1,
+        "foot_pad_px": 1,
+        "opaque_wh": [
+          536,
+          1061
+        ],
+        "solid_bbox": [
+          215,
+          93,
+          648,
+          1134
+        ],
+        "solidH_pct": 90.5,
+        "solid_foot_pad_px": 17,
+        "solid_wh": [
+          434,
+          1042
+        ],
+        "soft_shadow_px": 27425,
+        "pale_rect_px": 0,
+        "bright_rim_px": 156,
+        "knife_edges": 127,
+        "core_mean_alpha": 254.8,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 7,
+        "cyanish_px": 5
+      },
+      "after": {
+        "opaque_bbox": [
+          196,
+          79,
+          666,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 20654,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-01.png": {
+      "before": {
+        "opaque_bbox": [
+          89,
+          109,
+          773,
+          1151
+        ],
+        "subjH_pct": 90.5,
+        "foot_pad_px": 0,
+        "opaque_wh": [
+          685,
+          1043
+        ],
+        "solid_bbox": [
+          154,
+          112,
+          708,
+          1134
+        ],
+        "solidH_pct": 88.8,
+        "solid_foot_pad_px": 17,
+        "solid_wh": [
+          555,
+          1023
+        ],
+        "soft_shadow_px": 33222,
+        "pale_rect_px": 0,
+        "bright_rim_px": 25,
+        "knife_edges": 5,
+        "core_mean_alpha": 254.9,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          150,
+          96,
+          714,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 22444,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-02.png": {
+      "before": {
+        "opaque_bbox": [
+          88,
+          119,
+          776,
+          1151
+        ],
+        "subjH_pct": 89.7,
+        "foot_pad_px": 0,
+        "opaque_wh": [
+          689,
+          1033
+        ],
+        "solid_bbox": [
+          152,
+          123,
+          710,
+          1133
+        ],
+        "solidH_pct": 87.8,
+        "solid_foot_pad_px": 18,
+        "solid_wh": [
+          559,
+          1011
+        ],
+        "soft_shadow_px": 33988,
+        "pale_rect_px": 0,
+        "bright_rim_px": 34,
+        "knife_edges": 1,
+        "core_mean_alpha": 254.9,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          148,
+          108,
+          715,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 22531,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-03.png": {
+      "before": {
+        "opaque_bbox": [
+          10,
+          119,
+          852,
+          1151
+        ],
+        "subjH_pct": 89.7,
+        "foot_pad_px": 0,
+        "opaque_wh": [
+          843,
+          1033
+        ],
+        "solid_bbox": [
+          89,
+          122,
+          773,
+          1134
+        ],
+        "solidH_pct": 87.9,
+        "solid_foot_pad_px": 17,
+        "solid_wh": [
+          685,
+          1013
+        ],
+        "soft_shadow_px": 42268,
+        "pale_rect_px": 0,
+        "bright_rim_px": 61,
+        "knife_edges": 2,
+        "core_mean_alpha": 254.9,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          85,
+          108,
+          779,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 23187,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-04.png": {
+      "before": {
+        "opaque_bbox": [
+          51,
+          122,
+          811,
+          1150
+        ],
+        "subjH_pct": 89.3,
+        "foot_pad_px": 1,
+        "opaque_wh": [
+          761,
+          1029
+        ],
+        "solid_bbox": [
+          123,
+          123,
+          740,
+          1133
+        ],
+        "solidH_pct": 87.8,
+        "solid_foot_pad_px": 18,
+        "solid_wh": [
+          618,
+          1011
+        ],
+        "soft_shadow_px": 38512,
+        "pale_rect_px": 0,
+        "bright_rim_px": 19,
+        "knife_edges": 84,
+        "core_mean_alpha": 254.7,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 3,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          118,
+          109,
+          746,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 22872,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-01.png": {
+      "before": {
+        "opaque_bbox": [
+          90,
+          79,
+          772,
+          1151
+        ],
+        "subjH_pct": 93.1,
+        "foot_pad_px": 0,
+        "opaque_wh": [
+          683,
+          1073
+        ],
+        "solid_bbox": [
+          143,
+          80,
+          719,
+          1131
+        ],
+        "solidH_pct": 91.3,
+        "solid_foot_pad_px": 20,
+        "solid_wh": [
+          577,
+          1052
+        ],
+        "soft_shadow_px": 26694,
+        "pale_rect_px": 0,
+        "bright_rim_px": 114,
+        "knife_edges": 2580,
+        "core_mean_alpha": 254.9,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          143,
+          85,
+          721,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 25824,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-02.png": {
+      "before": {
+        "opaque_bbox": [
+          134,
+          65,
+          728,
+          1151
+        ],
+        "subjH_pct": 94.4,
+        "foot_pad_px": 0,
+        "opaque_wh": [
+          595,
+          1087
+        ],
+        "solid_bbox": [
+          181,
+          67,
+          682,
+          1131
+        ],
+        "solidH_pct": 92.4,
+        "solid_foot_pad_px": 20,
+        "solid_wh": [
+          502,
+          1065
+        ],
+        "soft_shadow_px": 22915,
+        "pale_rect_px": 0,
+        "bright_rim_px": 139,
+        "knife_edges": 2744,
+        "core_mean_alpha": 254.9,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          163,
+          70,
+          699,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 24192,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-03.png": {
+      "before": {
+        "opaque_bbox": [
+          57,
+          91,
+          806,
+          1151
+        ],
+        "subjH_pct": 92.1,
+        "foot_pad_px": 0,
+        "opaque_wh": [
+          750,
+          1061
+        ],
+        "solid_bbox": [
+          116,
+          93,
+          748,
+          1131
+        ],
+        "solidH_pct": 90.2,
+        "solid_foot_pad_px": 20,
+        "solid_wh": [
+          633,
+          1039
+        ],
+        "soft_shadow_px": 29786,
+        "pale_rect_px": 0,
+        "bright_rim_px": 195,
+        "knife_edges": 2603,
+        "core_mean_alpha": 254.9,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          112,
+          95,
+          750,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 25647,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-04.png": {
+      "before": {
+        "opaque_bbox": [
+          82,
+          72,
+          780,
+          1151
+        ],
+        "subjH_pct": 93.8,
+        "foot_pad_px": 0,
+        "opaque_wh": [
+          699,
+          1080
+        ],
+        "solid_bbox": [
+          136,
+          74,
+          725,
+          1132
+        ],
+        "solidH_pct": 91.9,
+        "solid_foot_pad_px": 19,
+        "solid_wh": [
+          590,
+          1059
+        ],
+        "soft_shadow_px": 27293,
+        "pale_rect_px": 0,
+        "bright_rim_px": 222,
+        "knife_edges": 2761,
+        "core_mean_alpha": 254.9,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          136,
+          77,
+          727,
+          1151
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 25841,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "traveler_p0",
+      "note": "opaque soles; stuck sand-tan AO (stick0.88); side fog-wrap; no pale gap",
+      "restick": true
+    },
+    "shore/art.shore.prop.nanaicha.png": {
+      "before": {
+        "opaque_bbox": [
+          384,
+          256,
+          894,
+          719
+        ],
+        "subjH_pct": 64.4,
+        "foot_pad_px": 0,
+        "opaque_wh": [
+          511,
+          464
+        ],
+        "solid_bbox": [
+          461,
+          260,
+          817,
+          698
+        ],
+        "solidH_pct": 61.0,
+        "solid_foot_pad_px": 21,
+        "solid_wh": [
+          357,
+          439
+        ],
+        "soft_shadow_px": 26514,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 10,
+        "core_mean_alpha": 252.4,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          459,
+          260,
+          820,
+          719
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 12410,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "shore_cat",
+      "note": "no pale outline; flat bottom melted; soles opaque; stuck contact; fog wrap sides",
+      "restick": true
+    },
+    "yard/art.yard.prop.nanaicha.png": {
+      "before": {
+        "opaque_bbox": [
+          397,
+          270,
+          881,
+          719
+        ],
+        "subjH_pct": 62.5,
+        "foot_pad_px": 0,
+        "opaque_wh": [
+          485,
+          450
+        ],
+        "solid_bbox": [
+          473,
+          274,
+          805,
+          700
+        ],
+        "solidH_pct": 59.3,
+        "solid_foot_pad_px": 19,
+        "solid_wh": [
+          333,
+          427
+        ],
+        "soft_shadow_px": 24898,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 7,
+        "core_mean_alpha": 252.3,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          477,
+          289,
+          802,
+          719
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 11484,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "yard_cat",
+      "note": "no pale outline; flat bottom melted; soles opaque; stuck contact; fog wrap sides",
+      "restick": true
+    },
+    "camp/art.camp.prop.nanaicha.png": {
+      "before": {
+        "opaque_bbox": [
+          314,
+          328,
+          964,
+          719
+        ],
+        "subjH_pct": 54.4,
+        "foot_pad_px": 0,
+        "opaque_wh": [
+          651,
+          392
+        ],
+        "solid_bbox": [
+          408,
+          332,
+          871,
+          700
+        ],
+        "solidH_pct": 51.2,
+        "solid_foot_pad_px": 19,
+        "solid_wh": [
+          464,
+          369
+        ],
+        "soft_shadow_px": 29541,
+        "pale_rect_px": 0,
+        "bright_rim_px": 1,
+        "knife_edges": 1,
+        "core_mean_alpha": 253.5,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          416,
+          346,
+          863,
+          719
+        ],
+        "foot_pad_px": 0,
+        "soft_shadow_px": 10337,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "camp_cat",
+      "note": "no pale outline; flat bottom melted; soles opaque; stuck contact; fog wrap sides",
+      "restick": true
+    },
+    "camp/art.camp.building.png": {
+      "before": {
+        "opaque_bbox": [
+          222,
+          186,
+          1056,
+          711
+        ],
+        "subjH_pct": 73.1,
+        "foot_pad_px": 8,
+        "opaque_wh": [
+          835,
+          526
+        ],
+        "solid_bbox": [
+          229,
+          186,
+          1051,
+          702
+        ],
+        "solidH_pct": 71.8,
+        "solid_foot_pad_px": 17,
+        "solid_wh": [
+          823,
+          517
+        ],
+        "soft_shadow_px": 25161,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 970,
+        "core_mean_alpha": 254.8,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          222,
+          186,
+          1056,
+          712
+        ],
+        "foot_pad_px": 7,
+        "soft_shadow_px": 24577,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "camp_building_p1",
+      "note": "building feet soft fringe + stuck AO; soles kept opaque",
+      "restick": true
+    },
+    "yard/art.yard.prop.dried-fish.png": {
+      "before": {
+        "opaque_bbox": [
+          349,
+          395,
+          929,
+          718
+        ],
+        "subjH_pct": 45.0,
+        "foot_pad_px": 1,
+        "opaque_wh": [
+          581,
+          324
+        ],
+        "solid_bbox": [
+          460,
+          395,
+          818,
+          705
+        ],
+        "solidH_pct": 43.2,
+        "solid_foot_pad_px": 14,
+        "solid_wh": [
+          359,
+          311
+        ],
+        "soft_shadow_px": 30616,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 1825,
+        "core_mean_alpha": 253.4,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          458,
+          389,
+          821,
+          711
+        ],
+        "foot_pad_px": 8,
+        "soft_shadow_px": 7354,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "yard_rack",
+      "pale_rect_removed": true,
+      "note": "dual-foot stuck AO only; opaque feet; no connector plate",
+      "restick": true
+    },
+    "camp/art.camp.prop.act-eat.png": {
+      "before": {
+        "opaque_bbox": [
+          436,
+          517,
+          842,
+          718
+        ],
+        "subjH_pct": 28.1,
+        "foot_pad_px": 1,
+        "opaque_wh": [
+          407,
+          202
+        ],
+        "solid_bbox": [
+          503,
+          518,
+          775,
+          705
+        ],
+        "solidH_pct": 26.1,
+        "solid_foot_pad_px": 14,
+        "solid_wh": [
+          273,
+          188
+        ],
+        "soft_shadow_px": 16505,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 96,
+        "core_mean_alpha": 254.8,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          500,
+          510,
+          778,
+          710
+        ],
+        "foot_pad_px": 9,
+        "soft_shadow_px": 1152,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "camp_prop",
+      "pale_rect_removed": true,
+      "note": "opaque stuck to deck; no rect plate; stuck AO",
+      "restick": true
+    },
+    "camp/art.camp.prop.act-drink.png": {
+      "before": {
+        "opaque_bbox": [
+          559,
+          510,
+          720,
+          718
+        ],
+        "subjH_pct": 29.0,
+        "foot_pad_px": 1,
+        "opaque_wh": [
+          162,
+          209
+        ],
+        "solid_bbox": [
+          583,
+          511,
+          696,
+          705
+        ],
+        "solidH_pct": 27.1,
+        "solid_foot_pad_px": 14,
+        "solid_wh": [
+          114,
+          195
+        ],
+        "soft_shadow_px": 5930,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 390,
+        "core_mean_alpha": 254.7,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          580,
+          503,
+          699,
+          705
+        ],
+        "foot_pad_px": 14,
+        "soft_shadow_px": 1088,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "camp_prop",
+      "pale_rect_removed": true,
+      "note": "opaque stuck to deck; no rect plate; stuck AO",
+      "restick": true
+    },
+    "camp/art.camp.prop.act-take.png": {
+      "before": {
+        "opaque_bbox": [
+          411,
+          479,
+          868,
+          718
+        ],
+        "subjH_pct": 33.3,
+        "foot_pad_px": 1,
+        "opaque_wh": [
+          458,
+          240
+        ],
+        "solid_bbox": [
+          485,
+          479,
+          794,
+          705
+        ],
+        "solidH_pct": 31.5,
+        "solid_foot_pad_px": 14,
+        "solid_wh": [
+          310,
+          227
+        ],
+        "soft_shadow_px": 22805,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 528,
+        "core_mean_alpha": 254.6,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          482,
+          474,
+          795,
+          710
+        ],
+        "foot_pad_px": 9,
+        "soft_shadow_px": 3282,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "camp_prop",
+      "pale_rect_removed": true,
+      "note": "opaque stuck to deck; no rect plate; stuck AO",
+      "restick": true
+    },
+    "camp/art.camp.prop.act-home.png": {
+      "before": {
+        "opaque_bbox": [
+          519,
+          446,
+          759,
+          718
+        ],
+        "subjH_pct": 37.9,
+        "foot_pad_px": 1,
+        "opaque_wh": [
+          241,
+          273
+        ],
+        "solid_bbox": [
+          556,
+          446,
+          723,
+          705
+        ],
+        "solidH_pct": 36.1,
+        "solid_foot_pad_px": 14,
+        "solid_wh": [
+          168,
+          260
+        ],
+        "soft_shadow_px": 6502,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 335,
+        "core_mean_alpha": 254.8,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          553,
+          438,
+          726,
+          710
+        ],
+        "foot_pad_px": 9,
+        "soft_shadow_px": 1026,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "camp_prop",
+      "pale_rect_removed": true,
+      "note": "opaque stuck to deck; no rect plate; stuck AO",
+      "restick": true
+    },
+    "camp/art.camp.prop.act-me.png": {
+      "before": {
+        "opaque_bbox": [
+          494,
+          446,
+          785,
+          718
+        ],
+        "subjH_pct": 37.9,
+        "foot_pad_px": 1,
+        "opaque_wh": [
+          292,
+          273
+        ],
+        "solid_bbox": [
+          538,
+          447,
+          741,
+          705
+        ],
+        "solidH_pct": 36.0,
+        "solid_foot_pad_px": 14,
+        "solid_wh": [
+          204,
+          259
+        ],
+        "soft_shadow_px": 7832,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 357,
+        "core_mean_alpha": 254.9,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          535,
+          438,
+          744,
+          710
+        ],
+        "foot_pad_px": 9,
+        "soft_shadow_px": 1101,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "camp_prop",
+      "pale_rect_removed": true,
+      "note": "opaque stuck to deck; no rect plate; stuck AO",
+      "restick": true
+    },
+    "camp/art.camp.prop.act-you.png": {
+      "before": {
+        "opaque_bbox": [
+          494,
+          446,
+          785,
+          718
+        ],
+        "subjH_pct": 37.9,
+        "foot_pad_px": 1,
+        "opaque_wh": [
+          292,
+          273
+        ],
+        "solid_bbox": [
+          538,
+          447,
+          741,
+          705
+        ],
+        "solidH_pct": 36.0,
+        "solid_foot_pad_px": 14,
+        "solid_wh": [
+          204,
+          259
+        ],
+        "soft_shadow_px": 7879,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 341,
+        "core_mean_alpha": 254.9,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          535,
+          438,
+          744,
+          710
+        ],
+        "foot_pad_px": 9,
+        "soft_shadow_px": 1106,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "camp_prop",
+      "pale_rect_removed": true,
+      "note": "opaque stuck to deck; no rect plate; stuck AO",
+      "restick": true
+    },
+    "camp/art.camp.prop.act-walk.png": {
+      "before": {
+        "opaque_bbox": [
+          521,
+          446,
+          757,
+          718
+        ],
+        "subjH_pct": 37.9,
+        "foot_pad_px": 1,
+        "opaque_wh": [
+          237,
+          273
+        ],
+        "solid_bbox": [
+          557,
+          447,
+          721,
+          705
+        ],
+        "solidH_pct": 36.0,
+        "solid_foot_pad_px": 14,
+        "solid_wh": [
+          165,
+          259
+        ],
+        "soft_shadow_px": 6403,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 313,
+        "core_mean_alpha": 254.9,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          554,
+          438,
+          724,
+          710
+        ],
+        "foot_pad_px": 9,
+        "soft_shadow_px": 1020,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "camp_prop",
+      "pale_rect_removed": true,
+      "note": "opaque stuck to deck; no rect plate; stuck AO",
+      "restick": true
+    },
+    "camp/art.camp.prop.paper-bundles.png": {
+      "before": {
+        "opaque_bbox": [
+          332,
+          541,
+          946,
+          718
+        ],
+        "subjH_pct": 24.7,
+        "foot_pad_px": 1,
+        "opaque_wh": [
+          615,
+          178
+        ],
+        "solid_bbox": [
+          453,
+          541,
+          825,
+          705
+        ],
+        "solidH_pct": 22.9,
+        "solid_foot_pad_px": 14,
+        "solid_wh": [
+          373,
+          165
+        ],
+        "soft_shadow_px": 24321,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 483,
+        "core_mean_alpha": 254.6,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          429,
+          532,
+          849,
+          706
+        ],
+        "foot_pad_px": 13,
+        "soft_shadow_px": 2137,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "camp_prop",
+      "pale_rect_removed": true,
+      "note": "opaque stuck to deck; no rect plate; stuck AO",
+      "restick": true
+    },
+    "camp/art.camp.prop.fire.png": {
+      "before": {
+        "opaque_bbox": [
+          420,
+          539,
+          857,
+          718
+        ],
+        "subjH_pct": 25.0,
+        "foot_pad_px": 1,
+        "opaque_wh": [
+          438,
+          180
+        ],
+        "solid_bbox": [
+          512,
+          539,
+          766,
+          705
+        ],
+        "solidH_pct": 23.2,
+        "solid_foot_pad_px": 14,
+        "solid_wh": [
+          255,
+          167
+        ],
+        "soft_shadow_px": 21402,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 1548,
+        "core_mean_alpha": 253.5,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          464,
+          532,
+          814,
+          706
+        ],
+        "foot_pad_px": 13,
+        "soft_shadow_px": 4176,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "camp_prop",
+      "pale_rect_removed": true,
+      "note": "opaque stuck to deck; no rect plate; stuck AO",
+      "restick": true
+    },
+    "camp/art.camp.prop.sleep-mat.png": {
+      "before": {
+        "opaque_bbox": [
+          354,
+          552,
+          925,
+          718
+        ],
+        "subjH_pct": 23.2,
+        "foot_pad_px": 1,
+        "opaque_wh": [
+          572,
+          167
+        ],
+        "solid_bbox": [
+          461,
+          552,
+          818,
+          705
+        ],
+        "solidH_pct": 21.4,
+        "solid_foot_pad_px": 14,
+        "solid_wh": [
+          358,
+          154
+        ],
+        "soft_shadow_px": 29412,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 1462,
+        "core_mean_alpha": 253.0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          459,
+          546,
+          821,
+          702
+        ],
+        "foot_pad_px": 17,
+        "soft_shadow_px": 3735,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "camp_prop",
+      "pale_rect_removed": true,
+      "note": "opaque stuck to deck; no rect plate; stuck AO",
+      "restick": true
+    },
+    "camp/art.camp.prop.sleep-mat.interact.png": {
+      "before": {
+        "opaque_bbox": [
+          372,
+          546,
+          907,
+          718
+        ],
+        "subjH_pct": 24.0,
+        "foot_pad_px": 1,
+        "opaque_wh": [
+          536,
+          173
+        ],
+        "solid_bbox": [
+          472,
+          552,
+          807,
+          697
+        ],
+        "solidH_pct": 20.3,
+        "solid_foot_pad_px": 22,
+        "solid_wh": [
+          336,
+          146
+        ],
+        "soft_shadow_px": 28058,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 0,
+        "core_mean_alpha": 251.4,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          461,
+          546,
+          817,
+          705
+        ],
+        "foot_pad_px": 14,
+        "soft_shadow_px": 3192,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "camp_prop",
+      "pale_rect_removed": true,
+      "note": "opaque stuck to deck; no rect plate; stuck AO",
+      "restick": true
+    },
+    "shore/art.shore.prop.east-gap.png": {
+      "before": {
+        "opaque_bbox": [
+          333,
+          140,
+          781,
+          755
+        ],
+        "subjH_pct": 71.3,
+        "foot_pad_px": 108,
+        "opaque_wh": [
+          449,
+          616
+        ],
+        "solid_bbox": [
+          340,
+          148,
+          775,
+          709
+        ],
+        "solidH_pct": 65.0,
+        "solid_foot_pad_px": 154,
+        "solid_wh": [
+          436,
+          562
+        ],
+        "soft_shadow_px": 18043,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "knife_edges": 315,
+        "core_mean_alpha": 255.0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0,
+        "cyanish_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          333,
+          140,
+          781,
+          755
+        ],
+        "foot_pad_px": 108,
+        "soft_shadow_px": 18043,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "shore_marker_verify",
+      "note": "kept; cyan~0",
+      "restick": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/reach-front-01.png": {
+      "before": {},
+      "after": {
+        "opaque_bbox": [
+          169,
+          26,
+          690,
+          1133
+        ],
+        "foot_pad_px": 18,
+        "soft_shadow_px": 324,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "restick"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/reach-front-02.png": {
+      "before": {},
+      "after": {
+        "opaque_bbox": [
+          160,
+          26,
+          710,
+          1137
+        ],
+        "foot_pad_px": 14,
+        "soft_shadow_px": 312,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "restick"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/reach-side-01.png": {
+      "before": {},
+      "after": {
+        "opaque_bbox": [
+          129,
+          43,
+          799,
+          1083
+        ],
+        "foot_pad_px": 68,
+        "soft_shadow_px": 566,
+        "pale_rect_px": 0,
+        "bright_rim_px": 0,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "group": "restick"
+    }
+  },
+  "eng_bullets": [
+    "共雾/底板：工程清共雾叠层与底板 catcher；美工已去精灵内矩形底板，接触影贴住不透明靴底/爪底。",
+    "勿对精灵 uniform fog α；勿叠硬影；脚锚 Y 归 eng（opaque bottom-center）。",
+    "旅人 Cloud v3：沙色暖灰褐接触影贴靴底（禁影靴浅缝/浅色矩形补丁）；侧缘雾光软边受光。",
+    "雾岸大猫：浅描边已去；硬水平底边溶沙雾；雾光裹身。",
+    "前坪大猫：亮度压到经堂雾档；底脚软切贴台阶。",
+    "棚火暗兽感：camp nanaicha + building 底边矩形感已软切。",
+    "铃架 dried-fish / act-*：矩形底板已去；椭圆接触贴脚；opaque 贴廊板/地面。",
+    "门帘暖黄缝 / 粮袋落地 / 标石青白竖缝：未回退（cyan~0）。",
+    "合同 1.3-pr14-plate；辅包 art-pr14-plate-pack.zip 同批直合。"
+  ],
+  "east_gap_cyan_verify": {
+    "hard_cyan_px": 0,
+    "hi_sat_cyan_px": 0,
+    "pale_rect_px": 0,
+    "pass": true
+  },
+  "curtain_cyan_verify": {
+    "hard_cyan_px": 0,
+    "hi_sat_cyan_px": 0,
+    "pass": true
+  },
+  "traveler_pale_verify": {
+    "all_pale_zero": true,
+    "n_frames": 21
+  },
+  "confirms": {
+    "no_pale_rect_under_traveler_shore_frames": true,
+    "dried_fish_and_act_rect_plates_gone": true,
+    "east_gap_cyan_still_zero": true,
+    "curtain_cyan_still_zero": true
+  }
+}

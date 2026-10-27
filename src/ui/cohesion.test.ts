@@ -10,7 +10,7 @@ describe('cohesion shadows and grades', () => {
       pr11_ground: { do_not_stack_hard_shadow_on_baked_props: boolean; fog_rule: string };
       pr12_sticker: { eng_must_not: string; fog_match_baked: boolean };
     };
-    expect(contract.version).toBe('1.3-pr13-sticker');
+    expect(contract.version).toBe('1.3-pr14-plate');
     expect(contract.pr12_sticker.fog_match_baked).toBe(true);
     expect(contract.pr12_sticker.eng_must_not).toMatch(/uniform fog alpha/);
     expect(contract.pr11_ground.do_not_stack_hard_shadow_on_baked_props).toBe(true);
@@ -46,5 +46,15 @@ describe('cohesion shadows and grades', () => {
     expect(sceneGrade('dba.scene.shore')).toMatch(/grade\.shore/);
     expect(sceneGrade('dba.scene.camp')).toMatch(/grade\.camp/);
     expect(sceneGrade('dba.scene.night')).toMatch(/grade\.night/);
+  });
+
+  it('grades sprites by their own alpha and keeps the foot ellipse off the rectangular mask', () => {
+    const css = readFileSync('src/styles.css', 'utf8');
+    expect(css).toContain('.figure-grade');
+    expect(css).toMatch(/\.figure-grade\.grade-color\s*\{[^}]*mix-blend-mode:\s*color/);
+    expect(css).not.toMatch(/\.figure-grade\s*\{[^}]*mix-blend-mode:\s*multiply/);
+    expect(css).not.toContain('mask-image: var(--ellipse)');
+    expect(css).not.toContain('translate(-50%, 46%)');
+    expect(css).not.toContain('translate(-50%, 42%)');
   });
 });
