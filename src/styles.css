@@ -9,6 +9,10 @@
   --glass-strong: rgba(6, 8, 10, 0.68);
   --deep: #070c0e;
   --line: #241910;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
   font-family: "Iowan Old Style", Palatino, "Palatino Linotype", "Songti SC", "STSong", serif;
   background: var(--deep);
   color: var(--bone);
@@ -16,10 +20,15 @@
 
 * { box-sizing: border-box; }
 
+html { height: 100%; }
+
 body {
   margin: 0;
   min-height: 100dvh;
+  height: 100%;
   background: #05080a;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 button, input { font: inherit; color: inherit; }
@@ -352,8 +361,8 @@ h1 {
 .hud-actions {
   position: absolute;
   z-index: 4;
-  top: 70px;
-  left: 16px;
+  top: calc(70px + var(--safe-top));
+  left: calc(16px + var(--safe-left));
   flex-direction: column;
   align-items: flex-start;
 }
@@ -378,8 +387,8 @@ h1 {
 .hud-place {
   position: absolute;
   z-index: 3;
-  right: 28px;
-  bottom: 86px;
+  right: calc(28px + var(--safe-right));
+  bottom: calc(86px + var(--safe-bottom));
   text-align: right;
   pointer-events: none;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.85);
@@ -438,13 +447,13 @@ h1 {
 }
 
 .world-layer .hotspot {
-  z-index: 2;
+  z-index: 6;
   transform: translate(-8px, -50%);
 }
 
 .path-exit {
   position: absolute;
-  z-index: 2;
+  z-index: 6;
   width: 44px;
   height: 44px;
   padding: 0;
@@ -771,10 +780,10 @@ h1 {
 .chart-corner {
   position: absolute;
   z-index: 3;
-  right: 18px;
-  top: 72px;
-  width: 36px;
-  height: 36px;
+  right: calc(18px + var(--safe-right));
+  top: calc(72px + var(--safe-top));
+  width: 44px;
+  height: 44px;
   padding: 0;
   border: 1px solid var(--gold);
   background: linear-gradient(135deg, transparent 46%, rgba(230, 211, 164, 0.9) 48% 52%, transparent 54%);
@@ -783,8 +792,8 @@ h1 {
 .hud-compass {
   position: absolute;
   z-index: 3;
-  right: 22px;
-  bottom: 16px;
+  right: calc(22px + var(--safe-right));
+  bottom: calc(16px + var(--safe-bottom));
   width: 132px;
   height: 62px;
   pointer-events: none;
@@ -900,8 +909,8 @@ h1 {
 
 .debug-dock {
   position: fixed;
-  left: 12px;
-  bottom: 12px;
+  left: calc(12px + var(--safe-left));
+  bottom: calc(12px + var(--safe-bottom));
   z-index: 6;
   display: grid;
   gap: 8px;
@@ -948,16 +957,16 @@ h1 {
 .casefile figcaption { margin-top: 6px; }
 
 .mural-screen {
-  padding: 78px 4vw 28px;
+  padding: calc(78px + var(--safe-top)) calc(4vw + var(--safe-right)) calc(28px + var(--safe-bottom)) calc(4vw + var(--safe-left));
   background: #14110e;
 }
 
 .mural-screen .bar {
   position: absolute;
   z-index: 3;
-  top: 16px;
-  left: 20px;
-  right: 20px;
+  top: calc(16px + var(--safe-top));
+  left: calc(20px + var(--safe-left));
+  right: calc(20px + var(--safe-right));
   display: flex;
   justify-content: space-between;
   gap: 12px;
@@ -1056,11 +1065,12 @@ h1 {
   position: absolute;
   z-index: 5;
   left: 50%;
-  bottom: 24px;
+  bottom: calc(16px + var(--safe-bottom));
   transform: translateX(-50%);
-  width: min(760px, calc(100% - 32px));
-  max-height: min(62dvh, 560px);
+  width: min(760px, calc(100% - 24px - var(--safe-left) - var(--safe-right)));
+  max-height: min(62dvh, calc(100dvh - 32px - var(--safe-top) - var(--safe-bottom)));
   overflow: auto;
+  overscroll-behavior: contain;
 }
 
 .sheet {
@@ -1098,8 +1108,8 @@ h1 {
 
 .mural-screen .companion {
   position: absolute;
-  right: 4vw;
-  bottom: 18px;
+  right: calc(4vw + var(--safe-right));
+  bottom: calc(18px + var(--safe-bottom));
   z-index: 3;
 }
 
@@ -1116,20 +1126,16 @@ h1 {
   50% { transform: translateY(-3px) rotate(-1deg); }
 }
 
-.rotate-hint { display: none; }
+.title-screen,
+.prologue {
+  padding-left: calc(6vw + var(--safe-left));
+  padding-right: calc(6vw + var(--safe-right));
+  padding-bottom: calc(7vh + var(--safe-bottom));
+}
 
-@media (orientation: portrait) and (max-width: 720px) {
-  .rotate-hint {
-    display: grid;
-    place-items: center;
-    position: fixed;
-    inset: 0;
-    z-index: 5;
-    padding: 24px;
-    text-align: center;
-    background: rgba(8, 14, 16, 0.92);
-    font-size: 1.4rem;
-  }
+.title-screen .eyebrow,
+.prologue .eyebrow {
+  top: calc(22px + var(--safe-top));
 }
 
 .plate-stack,
@@ -1316,4 +1322,138 @@ h1 {
     transition: none;
   }
   .enter-veil { opacity: 0; }
+}
+
+/* Phones in either orientation: 390×844 and landscape heights around 390–430. */
+@media (max-width: 960px), (max-height: 540px) {
+  .btn,
+  .setting button,
+  .sheet .btn,
+  .mural-screen .bar .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .hud-actions {
+    top: calc(8px + var(--safe-top));
+    left: calc(8px + var(--safe-left));
+    right: calc(60px + var(--safe-right));
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hud-actions .btn {
+    flex: 0 0 auto;
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0 12px;
+    opacity: 0.94;
+    border-color: var(--gold-line);
+    background: var(--glass);
+    letter-spacing: 0.08em;
+    font-size: 0.95rem;
+  }
+
+  .chart-corner {
+    top: calc(8px + var(--safe-top));
+    right: calc(8px + var(--safe-right));
+  }
+
+  .hud-place {
+    right: calc(12px + var(--safe-right));
+    bottom: calc(76px + var(--safe-bottom));
+    font-size: 0.92rem;
+  }
+
+  .hud-compass {
+    right: calc(8px + var(--safe-right));
+    bottom: calc(6px + var(--safe-bottom));
+    transform: scale(0.82);
+    transform-origin: bottom right;
+  }
+
+  .companion-anchor {
+    width: clamp(88px, 24vmin, 140px);
+    transform: translate(-72%, -108%);
+  }
+
+  .shore-wrap .companion {
+    pointer-events: none;
+  }
+
+  .shore-wrap .companion::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 8%;
+    width: 48px;
+    height: 48px;
+    transform: translateX(-50%);
+    pointer-events: auto;
+  }
+
+  .traveler {
+    width: clamp(36px, 8vmin, 48px);
+    height: clamp(60px, 13vmin, 80px);
+  }
+
+  .world-layer .hotspot,
+  .path-exit {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .world-layer .hotspot {
+    font-size: 0.95rem;
+  }
+
+  .island .sheet {
+    max-height: min(68dvh, calc(100dvh - 20px - var(--safe-top) - var(--safe-bottom)));
+  }
+
+  .mural-screen .companion {
+    width: clamp(96px, 28vmin, 160px);
+  }
+
+  .band {
+    min-height: 44px;
+    height: 44px;
+    background: transparent;
+    border-bottom: 0;
+    display: grid;
+    align-items: end;
+  }
+
+  .band .moss {
+    display: block;
+    height: 8px;
+    background: rgba(8, 8, 8, 0.35);
+    border-bottom: 1px solid var(--gold-line);
+  }
+
+  .band.on {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .band.on .moss {
+    background: rgba(230, 211, 164, 0.72);
+    box-shadow: 0 0 12px rgba(230, 211, 164, 0.35);
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 11vw, 4.2rem);
+  }
+}
+
+@media (max-height: 540px) {
+  h1 { font-size: clamp(1.8rem, 9vh, 3rem); }
+  .tagline { font-size: 0.95rem; }
+  .caption { font-size: 1rem; padding: 8px 10px; }
+  .title-screen,
+  .prologue { padding-bottom: calc(12px + var(--safe-bottom)); }
+  .prologue > .nanaicha-look { width: min(34vh, 180px); }
+  .hud-caption { gap: 8px; }
 }
