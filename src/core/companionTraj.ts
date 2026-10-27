@@ -1,7 +1,7 @@
 import type { CatBeat } from './companionPost';
 
 /** Landing frames hold the opaque foot 18px above the 1152 canvas bottom. */
-export const TRAJ_FOOT = { x: 0.5, y: 1134 / 1152 } as const;
+export const TRAJ_FOOT = { x: 0.5, y: 1144 / 1152 } as const;
 
 export const LEAP_01_MS = 240;
 export const LEAP_02_MS = 240;

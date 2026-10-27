@@ -72,7 +72,8 @@ export const WALK_STRIDE = WALK_SPEED / WALK_CYCLE_HZ;
  */
 export const TRAVELER_HEIGHT = 0.118;
 /** Opaque sole on the 864×1152 sheet (about 20px of clear pad under the feet). */
-export const TRAVELER_FOOT = { x: 0.5, y: 1132 / 1152 } as const;
+/** Opaque sole on the 864×1152 sheet. Bottom of the solid contact, not the canvas. */
+export const TRAVELER_FOOT = { x: 0.5, y: 1138 / 1152 } as const;
 /** Overlap between frames inside one clip, and a slightly longer blend on a turn. */
 export const FRAME_BLEND_MS = 140;
 export const TURN_BLEND_MS = 220;
@@ -237,9 +238,6 @@ function FramePicture({ blend, layer }: { blend: FrameBlend; layer: 'out' | 'cur
       data-mirror={blend.facing === 'left' ? 'yes' : 'no'}
       style={{ ['--figure' as string]: `url("${src}")` }}
     >
-      <span className="fog-fringe" aria-hidden="true">
-        <span className="fog-fringe-mask" />
-      </span>
       <img
         className={layer === 'current' ? 'traveler-figure traveler-frame' : 'traveler-frame'}
         data-layer={layer}
@@ -250,7 +248,6 @@ function FramePicture({ blend, layer }: { blend: FrameBlend; layer: 'out' | 'cur
       />
       <span className="figure-grade grade-color" />
       <span className="figure-grade grade-soft" />
-      <span className="sole-ao" aria-hidden="true" />
     </span>
   );
 }

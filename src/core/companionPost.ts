@@ -3,8 +3,8 @@ import type { IslandScene } from './island';
 import { BANDS, GATES, SPOTS, YARD_FACADE } from './stage';
 import { clampToBand, type Point } from './walk';
 
-/** Opaque-bbox foot of the 864×1152 landing frames (18px pad on a 1152 canvas). */
-export const NANAICHA_FOOT = { x: 0.5, y: 1134 / 1152 } as const;
+/** Opaque-bounds bottom center of the 864×1152 landing frames. */
+export const NANAICHA_FOOT = { x: 0.5, y: 1144 / 1152 } as const;
 /** Canvas height as a fraction of the world layer. Subject reads a little taller than the traveler. */
 export const NANAICHA_HEIGHT = 0.22;
 
@@ -95,8 +95,8 @@ export function companionPost(
 
   if (scene === 'dba.scene.yard') {
     if (beats['dba.beat.food'] !== true) {
-      /* Step groove. The grain pile at x≈0.80 is 0.30 wide, so x 0.75 plants the legs in the bags. */
-      const feet = clampToBand({ x: 0.52, y: YARD_FACADE.groundY }, BANDS[scene]);
+      /* Step groove, clear of the left sacks (x≈0.24) and the right pile (x≈0.80, half-width 0.15). */
+      const feet = clampToBand({ x: 0.56, y: YARD_FACADE.groundY }, BANDS[scene]);
       const tilt = flags['dba.flag.wrong-share'] === true;
       return {
         ...feet,

@@ -80,7 +80,7 @@ describe('companion feet and gaze', () => {
     const grab = SPOTS[yard].find((spot) => spot.id === 'yard-grab')!;
     expect(give.targetId).toBe('yard-give');
     expect(give.look).toBe('give');
-    expect(give.x).toBeCloseTo(0.52);
+    expect(give.x).toBeCloseTo(0.56);
     expect(give.y).toBeCloseTo(YARD_FACADE.groundY);
     expect(pile.x - give.x).toBeGreaterThan(0.2);
     expect(give.y).toBeGreaterThan(pile.y);
