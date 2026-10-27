@@ -129,6 +129,12 @@ export function checkContent(): string[] {
     'art.path.fg',
     'art.path.prop.danger-board',
     'art.path.prop.step-stones',
+    'art.night.far',
+    'art.night.ground',
+    'art.night.building',
+    'art.night.fg',
+    'art.night.prop.old-layer',
+    'art.night.prop.embers',
   ]);
   for (const sceneId of ISLAND_SCENES) {
     const kit = byId.get(sceneId);
@@ -148,7 +154,7 @@ export function checkContent(): string[] {
       if (slot.slot === 'props' && slot.parallax !== 1) errors.push(`${slot.id} prop must stay on its hotspot`);
       if (slot.asset && !(slot.asset in SLOT_ASSETS)) errors.push(`${slot.id} asset ${slot.asset} is not in the slot manifest`);
       if (delivered.has(slot.id) && slot.asset !== slot.id) errors.push(`${slot.id} is missing its delivered file`);
-      if (slot.asset && !['dba.scene.shore', 'dba.scene.camp', 'dba.scene.yard', 'dba.scene.hall', 'dba.scene.path'].includes(sceneId)) {
+      if (slot.asset && !['dba.scene.shore', 'dba.scene.camp', 'dba.scene.yard', 'dba.scene.hall', 'dba.scene.path', 'dba.scene.night'].includes(sceneId)) {
         errors.push(`${sceneId} should stay on placeholders until art arrives`);
       }
     }
@@ -161,7 +167,7 @@ export function checkContent(): string[] {
       errors.push(`${sceneId} uses a question-mark sticker as a prop`);
     }
     for (const spot of SPOTS[sceneId]) {
-      const anchors = kit.slots.filter((slot) => slot.slot === 'props' && slot.spot === spot.id);
+      const anchors = kit.slots.filter((slot) => slot.slot === 'props' && anchorsSpot(slot.spot, spot.id));
       if (anchors.length === 0) errors.push(`${sceneId} spot ${spot.id} is not anchored to a prop`);
     }
     if (sceneId === 'dba.scene.shore') {
@@ -198,6 +204,12 @@ export function checkContent(): string[] {
       const curtain = kit.slots.find((slot) => slot.id === 'art.camp.prop.north-curtain');
       if (!curtain || curtain.slot !== 'props' || curtain.kind === 'lock') errors.push('north curtain must stay an open props slit');
     }
+    if (sceneId === 'dba.scene.night') {
+      const layer = kit.slots.find((slot) => slot.id === 'art.night.prop.old-layer');
+      const embers = kit.slots.find((slot) => slot.id === 'art.night.prop.embers');
+      if (layer?.spot !== 'night-layer') errors.push('old-layer provisional hotspot is night-layer');
+      if (embers?.spot !== 'night-ember') errors.push('embers provisional hotspot is night-ember');
+    }
     if (sceneId === 'dba.scene.yard') {
       for (const id of ['art.yard.prop.grain-bags', 'art.yard.prop.dried-fish', 'art.yard.prop.more-less-boards']) {
         if (!slotIds.some((slotId) => slotId === id || slotId.startsWith(`${id}.`))) {
@@ -207,4 +219,11 @@ export function checkContent(): string[] {
     }
   }
   return errors;
+}
+
+/** night-layer is the provisional picture id; the read action is still night-read until the writer locks it. */
+function anchorsSpot(slotSpot: string | undefined, spotId: string): boolean {
+  if (!slotSpot) return false;
+  if (slotSpot === spotId) return true;
+  return spotId === 'night-read' && slotSpot === 'night-layer';
 }

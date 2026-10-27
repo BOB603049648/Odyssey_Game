@@ -551,49 +551,46 @@
         "id": "art.night.far",
         "slot": "far",
         "kind": "night-fog",
-        "asset": null,
+        "asset": "art.night.far",
         "parallax": 0.4
       },
       {
         "id": "art.night.ground",
         "slot": "ground",
         "kind": "night-hearth",
-        "asset": null,
+        "asset": "art.night.ground",
         "parallax": 1
       },
       {
         "id": "art.night.building",
         "slot": "building",
         "kind": "shed-night",
-        "asset": null,
-        "parallax": 0.72,
-        "x": 0.4,
-        "y": 0.32,
-        "w": 0.36,
-        "h": 0.24
+        "asset": "art.night.building",
+        "parallax": 0.72
       },
       {
         "id": "art.night.prop.old-layer",
         "slot": "props",
         "kind": "old-layer",
-        "asset": null,
+        "asset": "art.night.prop.old-layer",
         "parallax": 1,
-        "spot": "night-read",
+        "spot": "night-layer",
         "x": 0.36,
         "y": 0.58,
-        "w": 0.18,
-        "h": 0.14
+        "w": 0.42,
+        "h": 0.36
       },
       {
         "id": "art.night.prop.embers",
         "slot": "props",
         "kind": "embers",
-        "asset": null,
+        "asset": "art.night.prop.embers",
         "parallax": 1,
+        "spot": "night-ember",
         "x": 0.58,
         "y": 0.72,
-        "w": 0.1,
-        "h": 0.06
+        "w": 0.32,
+        "h": 0.24
       },
       {
         "id": "art.night.prop.memory-scrap",
@@ -611,7 +608,7 @@
         "id": "art.night.fg",
         "slot": "fg",
         "kind": "curtain",
-        "asset": null,
+        "asset": "art.night.fg",
         "parallax": 1.18
       }
     ]

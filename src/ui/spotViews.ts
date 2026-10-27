@@ -41,6 +41,7 @@ const VIEWS: Record<string, ViewSpec> = {
   'path-stop': { className: 'hotspot stop', testId: 'path-stop', label: 'path.stop', hintAnchor: 'path-stop' },
   'path-step': { className: 'hotspot step', testId: 'path-step', label: 'path.step' },
   'night-read': { className: 'hotspot read', testId: 'night-read', label: 'night.read', hintAnchor: 'old-layer' },
+  'night-ember': { className: 'hotspot ember', testId: 'night-ember', label: 'night.ember' },
   'night-memory': { className: 'hotspot memory', testId: 'night-memory', label: 'menu.memory' },
   'act:dba.word.eat': { className: 'hotspot act', testId: 'act-dba.word.eat', label: 'act.mark', aria: 'act.mark', glyph: 'dba.word.eat' },
   'act:dba.word.drink': { className: 'hotspot act', testId: 'act-dba.word.drink', label: 'act.mark', aria: 'act.mark', glyph: 'dba.word.drink' },

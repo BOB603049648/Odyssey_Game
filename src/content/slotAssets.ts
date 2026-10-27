@@ -46,6 +46,12 @@ import pathBuilding from '../assets/art/slots/art.path.building.png';
 import pathFg from '../assets/art/slots/art.path.fg.png';
 import pathBoard from '../assets/art/slots/art.path.prop.danger-board.png';
 import pathSteps from '../assets/art/slots/art.path.prop.step-stones.png';
+import nightFar from '../assets/art/slots/art.night.far.jpg';
+import nightGround from '../assets/art/slots/art.night.ground.jpg';
+import nightBuilding from '../assets/art/slots/art.night.building.png';
+import nightFg from '../assets/art/slots/art.night.fg.png';
+import nightLayer from '../assets/art/slots/art.night.prop.old-layer.png';
+import nightEmbers from '../assets/art/slots/art.night.prop.embers.png';
 
 /** Delivered slot files. Missing ids stay null in scene JSON and render as blocks. */
 export const SLOT_ASSETS: Record<string, string> = {
@@ -97,6 +103,12 @@ export const SLOT_ASSETS: Record<string, string> = {
   'art.path.fg': pathFg,
   'art.path.prop.danger-board': pathBoard,
   'art.path.prop.step-stones': pathSteps,
+  'art.night.far': nightFar,
+  'art.night.ground': nightGround,
+  'art.night.building': nightBuilding,
+  'art.night.fg': nightFg,
+  'art.night.prop.old-layer': nightLayer,
+  'art.night.prop.embers': nightEmbers,
 };
 
 export function resolveSlotAsset(asset: string | null): string | null {

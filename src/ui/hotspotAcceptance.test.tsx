@@ -159,4 +159,26 @@ describe('hotspot acceptance', () => {
     }
     expect(view.container.querySelector('.plate-photo')).toBeNull();
   });
+
+  it('mounts the night layers on the provisional old-layer and ember hotspots', () => {
+    // camp：火旁过夜铺可读 + 北缝始终可进 night。夜营分槽先挂，热区 id 暂定，北缝仍无锁。
+    const view = render(<PlateStack plate="dba.scene.night" previous={null} />);
+    expect(screen.getByTestId('prop-art.night.prop.old-layer').getAttribute('data-spot')).toBe('night-layer');
+    expect(screen.getByTestId('prop-art.night.prop.embers').getAttribute('data-spot')).toBe('night-ember');
+    expect(screen.getByTestId('prop-art.night.prop.memory-scrap').getAttribute('data-spot')).toBe('night-memory');
+    for (const id of [
+      'prop-art.night.prop.old-layer',
+      'prop-art.night.prop.embers',
+      'slot-far',
+      'slot-ground',
+      'slot-building',
+      'slot-fg',
+    ]) {
+      expect(screen.getByTestId(id).getAttribute('data-placeholder')).toBe('art');
+      expect(screen.getByTestId(id).querySelector('img')).toBeTruthy();
+    }
+    expect(view.container.querySelector('.plate-photo')).toBeNull();
+    const night = GATES.find((gate) => gate.from === 'dba.scene.camp' && gate.to === 'dba.scene.night');
+    expect(night).toMatchObject({ x: 0.5, y: 0.42, r: 0.04, edge: 'north' });
+  });
 });
