@@ -1,6 +1,6 @@
 {
-  "version": "1.3-pr11-ground",
-  "updated": "2026-10-28T02:14:07+08:00",
+  "version": "1.3-pr12-sticker",
+  "updated": "2026-10-28T04:24:57+08:00",
   "unit": "meters",
   "traveler": {
     "height_m": 1.75,
@@ -656,5 +656,37 @@
       "cohesion/README.md",
       "_pr11-ground-report.json"
     ]
+  },
+  "pr12_sticker": {
+    "updated": "2026-10-28T04:24:57+08:00",
+    "role": "auxiliary",
+    "summary": "PR12 sticker FAIL辅包：更强接触AO + 雾感共光烘进道具；门帘软竖缝；break-shard底锚；粮袋/筐禁贴墙立面",
+    "fog_match_baked": true,
+    "eng_must_not": "uniform fog alpha multiply on sprites (会使半透抠图)",
+    "priority_props": [
+      "yard/art.yard.prop.grain-bags.png",
+      "camp/art.camp.prop.act-eat.png",
+      "camp/art.camp.prop.act-take.png",
+      "camp/art.camp.prop.fire.png",
+      "camp/art.camp.prop.act-home.png",
+      "camp/art.camp.prop.act-me.png",
+      "camp/art.camp.prop.act-you.png",
+      "camp/art.camp.prop.act-walk.png",
+      "shore/art.shore.prop.nanaicha.png",
+      "shore/art.shore.prop.driftwood.png",
+      "shore/art.shore.prop.break-shard.png",
+      "camp/art.camp.prop.north-curtain.png"
+    ],
+    "placement": {
+      "grain-bags": "terrace floor / platform deck Band — NOT wall-stick / pillar",
+      "camp_fire_plaques": "deck / ground Band coplanar with traveler",
+      "break-shard": "shoreline ground; bottom-anchored (was mid-canvas pad≈268)",
+      "east-gap": "doorway portal plate — soft edges only",
+      "dried-fish": "PASS lightly touched; terrace/under-eave Band, NOT roof-ridge",
+      "nanaicha_eaves": "eng Y owns离檐; scene prop + traj land-* ground-anchored in pack"
+    },
+    "report": "_pr12-sticker-report.json",
+    "zip": "art-pr12-sticker-pack.zip",
+    "backup": "*/raw/pre-pr12-sticker/"
   }
 }

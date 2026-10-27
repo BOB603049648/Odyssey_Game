@@ -19,8 +19,14 @@ function isCurtain(slot: SceneSlot): boolean {
   return slot.kind === 'curtain' || slot.kind === 'north-curtain';
 }
 
+/** East doorway plate. Not a footed prop, so it must not plant on the sand. */
+function isPortal(slot: SceneSlot): boolean {
+  return slot.kind === 'light-slit';
+}
+
 /** Closer than the traveler's feet: paint after the figure. Curtain hem is the cloth's foot. */
 export function drawsInFront(slot: SceneSlot, feetY: number): boolean {
+  if (isPortal(slot)) return false;
   if (slot.slot !== 'props' && !isCurtain(slot)) return false;
   return slot.y !== undefined && slot.y > feetY;
 }
@@ -217,7 +223,7 @@ function SlotPiece({
   const testId = slot.slot === 'props' ? `prop-${slot.id}` : `slot-${slot.slot}`;
   const src = resolveSlotAsset(slot.asset);
   const interactable = Boolean(slot.spot);
-  const footed = slot.slot === 'props' || slot.slot === 'building';
+  const footed = (slot.slot === 'props' || slot.slot === 'building') && !isPortal(slot);
   return (
     <div
       className={lit ? `scene-slot ${placed ? 'placed' : 'full'} lit` : `scene-slot ${placed ? 'placed' : 'full'}`}
@@ -229,7 +235,7 @@ function SlotPiece({
       data-interactable={interactable ? 'yes' : 'no'}
       data-cue={interactable ? (lit ? 'near' : 'far') : undefined}
       data-placeholder={src ? 'art' : 'block'}
-      data-anchor={footed ? 'foot' : undefined}
+      data-anchor={footed ? 'foot' : isPortal(slot) ? 'portal' : undefined}
       data-coplanar={scenic ? 'yes' : undefined}
       data-shadow={slot.slot === 'props' ? (hasPngContact(slot.asset ?? slot.id) ? 'png' : 'none') : undefined}
       data-testid={testId}
@@ -292,7 +298,7 @@ function slotStyle(slot: SceneSlot, cam: Point): CSSProperties {
     return { transform: shift, inset: bleed === 0 ? '0px' : `${-bleed * 100}%` };
   }
   const foot = slot.slot === 'building' ? buildingFoot({ x: slot.x, y: slot.y, h: slot.h }) : { x: slot.x, y: slot.y };
-  const pivot = slot.slot === 'props' || slot.slot === 'building' ? FOOT_PIVOT : { x: 0.5, y: 0.5 };
+  const pivot = isPortal(slot) ? { x: 0.5, y: 0.5 } : slot.slot === 'props' || slot.slot === 'building' ? FOOT_PIVOT : { x: 0.5, y: 0.5 };
   return {
     ...worldToScreen(foot, pivot, shift),
     width: `${(slot.w ?? 0.12) * 100}%`,

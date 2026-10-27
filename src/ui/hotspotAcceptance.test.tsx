@@ -101,6 +101,10 @@ describe('hotspot acceptance', () => {
     const gap = screen.getByTestId('prop-art.shore.prop.east-gap');
     expect(gap.getAttribute('data-slot')).toBe('props');
     expect(gap.getAttribute('data-spot')).toBe('shore-depart');
+    expect(gap.getAttribute('data-anchor')).toBe('portal');
+    expect(gap.style.transform).toContain('translate(-50%, -50%)');
+    expect(prop('art.camp.prop.fire', 'dba.scene.camp')?.y).toBeGreaterThanOrEqual(0.8);
+    expect(prop('art.yard.prop.grain-bags', 'dba.scene.yard')?.y).toBeGreaterThanOrEqual(0.88);
     expect(gap.getAttribute('data-placeholder')).toBe('art');
     expect(gap.querySelector('img')).toBeTruthy();
     expect(container.textContent).not.toContain('?');

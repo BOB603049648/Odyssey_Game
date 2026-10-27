@@ -186,3 +186,36 @@ Eng 共享椭圆（`cohesion/shadows/shadow.ellipse.*`）**可选**仅挂旅人�
 **Report:** `/workspace/odyssey-art/_pr11-ground-report.json`  
 **Zip:** `/workspace/odyssey-art/art-pr11-ground-pack.zip`  
 **Backup:** `<scene>/raw/pre-pr11-ground/` · traveler `.../anim/raw/pre-pr11-ground/`
+
+
+---
+
+## PR12 sticker addendum (2026-10-28T04:24:57+08:00 Asia/Shanghai) — 道具贴纸 FAIL 辅包
+
+**Role:** auxiliary (`1.3-pr12-sticker`). Eng still owns placement/walkable bands + world ambient. Art makes sprites **coplanar-looking + fog-matched** even when eng placement improves.
+
+### 编导细测收窄（本包优先）
+1. **粮袋/筐浮立面** → 共雾贴地：`yard/...grain-bags(+interact)`、camp `act-eat`/`act-take`/`act-drink`；强接触影 α峰~220–230 + 同雾（−18–25% contrast/sat、2–3px 柔边、高光压）。**Eng：落台面/地面 Band，禁贴墙立面/柱面。**
+2. **棚火火盆+木牌**：`fire.png` + `act-home/me/you/walk`；贴地/台面接触影+同雾去硬边。
+3. **雾岸猫+漂木**：`nanaicha`、`driftwood(+interact)`、`gourd`；接触影加强+冷雾柔边；body opaque。
+4. **大猫离檐**偏工程 Y — 场景 `prop.nanaicha` + `traj/land-*` 贴地版已进包；勿新画飞檐纠偏。
+
+### 仍保留
+- **门帘** `camp/art.camp.prop.north-curtain.png`：竖缝硬蓝光→软边+bloom+去饱和；外轮廓 2–3px 柔边；下三分之一暖雾 wash；**缝仍保留**。若棚火仍见硬蓝切，查 eng 内部光透过硬 α（非第二张帘资产）。
+- **break-shard**：mid-canvas `foot_pad≈268` → **底锚 `solid_foot_pad≈19`**，solidH~32%，强接触影。
+- **east-gap**：门洞 portal — 仅软雾边；eng 当东门热点，勿当地面道具。
+- **dried-fish**：编导已过；本包**轻触**；仍禁茅顶落脚。
+
+### Layer / fog
+`ground` < `baked warm-dark contact AO (RGB≈22,14,8)` < `subject`  
+雾感**已烘进** props。Eng **勿**对精灵 uniform fog α 乘算；合成后 grade/ambient。
+
+### Eng checklist
+1. grain-bags / 筐 / 火盆 / 木牌：opaque foot → **台面或地面 Band**，与旅人共面；**禁墙立面/柱面**。
+2. 已烘影 props：**禁止**再叠硬 drop-shadow。
+3. break-shard 现底锚；pivot = opaque bottom-center（solid thr~128）。
+4. east-gap = portal；大猫离檐 = 调 Y/可走带。
+5. 合同 `1.3-pr12-sticker`；zip `art-pr12-sticker-pack.zip`。
+
+**Report:** `/workspace/odyssey-art/_pr12-sticker-report.json`  
+**Backup:** `<scene>/raw/pre-pr12-sticker/` · `nanaicha/traj/raw/pre-pr12-sticker/`
