@@ -485,56 +485,52 @@
         "id": "art.path.far",
         "slot": "far",
         "kind": "far-fog",
-        "asset": null,
+        "asset": "art.path.far",
         "parallax": 0.4
       },
       {
         "id": "art.path.ground",
         "slot": "ground",
         "kind": "fog-path",
-        "asset": null,
+        "asset": "art.path.ground",
         "parallax": 1
       },
       {
         "id": "art.path.building",
         "slot": "building",
         "kind": "cliff",
-        "asset": null,
-        "parallax": 0.72,
-        "x": 0.72,
-        "y": 0.34,
-        "w": 0.24,
-        "h": 0.22
+        "asset": "art.path.building",
+        "parallax": 0.72
       },
       {
         "id": "art.path.prop.danger-board",
         "slot": "props",
         "kind": "danger-board",
-        "asset": null,
+        "asset": "art.path.prop.danger-board",
         "parallax": 1,
         "spot": "path-stop",
         "x": 0.3,
         "y": 0.66,
-        "w": 0.08,
-        "h": 0.14
+        "w": 0.22,
+        "h": 0.32
       },
       {
-        "id": "art.path.prop.step-in",
+        "id": "art.path.prop.step-stones",
         "slot": "props",
-        "kind": "dark-gap",
-        "asset": null,
+        "kind": "step-stones",
+        "asset": "art.path.prop.step-stones",
         "parallax": 1,
         "spot": "path-step",
         "x": 0.66,
         "y": 0.66,
-        "w": 0.12,
-        "h": 0.1
+        "w": 0.32,
+        "h": 0.24
       },
       {
         "id": "art.path.fg",
         "slot": "fg",
         "kind": "branches",
-        "asset": null,
+        "asset": "art.path.fg",
         "parallax": 1.18
       }
     ]

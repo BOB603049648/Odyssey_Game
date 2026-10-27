@@ -40,6 +40,12 @@ import hallFg from '../assets/art/slots/art.hall.fg.png';
 import hallScroll from '../assets/art/slots/art.hall.prop.scroll-wall.png';
 import hallStamps from '../assets/art/slots/art.hall.prop.stamp-rail.png';
 import hallKnot from '../assets/art/slots/art.hall.prop.wrist-knot.png';
+import pathFar from '../assets/art/slots/art.path.far.jpg';
+import pathGround from '../assets/art/slots/art.path.ground.jpg';
+import pathBuilding from '../assets/art/slots/art.path.building.png';
+import pathFg from '../assets/art/slots/art.path.fg.png';
+import pathBoard from '../assets/art/slots/art.path.prop.danger-board.png';
+import pathSteps from '../assets/art/slots/art.path.prop.step-stones.png';
 
 /** Delivered slot files. Missing ids stay null in scene JSON and render as blocks. */
 export const SLOT_ASSETS: Record<string, string> = {
@@ -85,6 +91,12 @@ export const SLOT_ASSETS: Record<string, string> = {
   'art.hall.prop.scroll-wall': hallScroll,
   'art.hall.prop.stamp-rail': hallStamps,
   'art.hall.prop.wrist-knot': hallKnot,
+  'art.path.far': pathFar,
+  'art.path.ground': pathGround,
+  'art.path.building': pathBuilding,
+  'art.path.fg': pathFg,
+  'art.path.prop.danger-board': pathBoard,
+  'art.path.prop.step-stones': pathSteps,
 };
 
 export function resolveSlotAsset(asset: string | null): string | null {

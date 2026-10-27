@@ -148,4 +148,15 @@ describe('hotspot acceptance', () => {
     }
     expect(view.container.querySelector('.plate-photo')).toBeNull();
   });
+
+  it('anchors the path danger board and step stones on their hotspots', () => {
+    const view = render(<PlateStack plate="dba.scene.path" previous={null} />);
+    expect(screen.getByTestId('prop-art.path.prop.danger-board').getAttribute('data-spot')).toBe('path-stop');
+    expect(screen.getByTestId('prop-art.path.prop.step-stones').getAttribute('data-spot')).toBe('path-step');
+    for (const id of ['prop-art.path.prop.danger-board', 'prop-art.path.prop.step-stones', 'slot-far', 'slot-ground']) {
+      expect(screen.getByTestId(id).getAttribute('data-placeholder')).toBe('art');
+      expect(screen.getByTestId(id).querySelector('img')).toBeTruthy();
+    }
+    expect(view.container.querySelector('.plate-photo')).toBeNull();
+  });
 });
