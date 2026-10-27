@@ -71,6 +71,14 @@ export function inRadius(pos: Point, spot: Point, radius: number): boolean {
   return distance(pos, spot) <= radius;
 }
 
+export function followCamera(current: Point, goal: Point, blend: number): Point {
+  const t = Math.min(1, Math.max(0, blend));
+  return {
+    x: current.x + (goal.x - current.x) * t,
+    y: current.y + (goal.y - current.y) * t,
+  };
+}
+
 export function cameraOffset(focus: Point, viewW: number, viewH: number, scale = WORLD_SCALE): Point {
   const worldW = viewW * scale;
   const worldH = viewH * scale;

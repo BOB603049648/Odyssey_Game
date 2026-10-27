@@ -83,9 +83,13 @@ export function collectTattoo(state: SaveData): SaveData {
   return addEvidence(state, 'myp.ev.b');
 }
 
+export function canReadOldLayer(state: SaveData): boolean {
+  return learned(state, HUNGER) && learned(state, PROMISE) && learned(state, DANGER);
+}
+
 export function readOldLayer(state: SaveData): SaveData {
   if (state.currentScene !== 'myp.scene.night') return deny(state);
-  if (!learned(state, HUNGER) || !learned(state, PROMISE) || !learned(state, DANGER)) return deny(state);
+  if (!canReadOldLayer(state)) return deny(state);
   const gained = addEvidence(state, 'myp.ev.main');
   return withBoneCell({
     ...gained,

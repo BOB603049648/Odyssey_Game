@@ -104,8 +104,13 @@ describe('island 1 scenes', () => {
     state = learn(learn(state, 'myp.word.hunger'), 'myp.word.promise');
     state = reduce(state, { type: 'goto-scene', scene: 'myp.scene.night' });
     expect(reduce(ashore(), { type: 'read-old-layer' }).evidence).not.toContain('myp.ev.main');
+    const early = reduce(reduce(ashore(), { type: 'goto-scene', scene: 'myp.scene.night' }), { type: 'read-old-layer' });
+    expect(early.screen).toBe('mural');
+    expect(early.currentScene).toBe('myp.scene.night');
+    expect(early.evidence).not.toContain('myp.ev.main');
     state = reduce(state, { type: 'read-old-layer' });
     expect(state.evidence).toContain('myp.ev.main');
+    expect(state.overlay).toBe('casefile');
     expect(state.beats['myp.beat.old-layer']).toBe(true);
 
     state = reduce(state, { type: 'goto-scene', scene: 'myp.scene.shore' });

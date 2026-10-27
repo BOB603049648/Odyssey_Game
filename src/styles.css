@@ -468,8 +468,8 @@ h1 {
   height: 8px;
   margin: 18px auto 0;
   border-radius: 50%;
-  border: 1px solid rgba(230, 211, 164, 0.85);
-  box-shadow: 0 0 10px rgba(230, 211, 164, 0.5);
+  border: 1px solid rgba(230, 211, 164, 0.45);
+  opacity: 0.16;
 }
 
 .path-exit span {
@@ -486,37 +486,48 @@ h1 {
   pointer-events: none;
 }
 
-.path-exit.near span,
-.path-exit:hover span,
-.path-exit:focus-visible span {
+.path-exit.near i {
+  opacity: 1;
+  box-shadow: 0 0 10px rgba(230, 211, 164, 0.5);
+}
+
+.path-exit.near span {
   opacity: 1;
 }
 
 .traveler {
   position: absolute;
   z-index: 5;
-  width: 58px;
-  height: 96px;
-  transform: translate(-50%, -92%);
+  width: 64px;
+  height: 156px;
+  transform: translate(-50%, -96%);
   pointer-events: none;
-  filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5));
 }
 
-.traveler[data-facing="left"] { transform: translate(-50%, -92%) scaleX(-1); }
+.traveler[data-facing="right"] { transform: translate(-50%, -96%) scaleX(-1); }
 
-.traveler svg {
+.traveler-bob { position: relative; height: 100%; }
+
+.traveler img {
   display: block;
   width: 100%;
   height: 100%;
-  fill: none;
-  stroke: #e6d3b4;
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  object-fit: cover;
+  object-position: center bottom;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
-.traveler-fill { fill: #140e0c; }
-.traveler-shadow { fill: rgba(0, 0, 0, 0.42); stroke: none; }
+.traveler-shade {
+  position: absolute;
+  left: 0;
+  top: 7%;
+  opacity: 0.38;
+  filter: blur(1.5px);
+}
+
+.traveler-figure { position: relative; }
 
 .traveler[data-moving="yes"] .traveler-bob { animation: traveler-bob 0.42s ease-in-out infinite; }
 
@@ -611,6 +622,54 @@ h1 {
 .shore-wrap[data-water-beat="done"] .hotspot.gourd:focus-visible,
 .shore-wrap[data-hotspots="on"] .hotspot.gourd { opacity: 1; }
 
+.world-layer .hotspot,
+.world-layer .hotspot:hover,
+.world-layer .hotspot:focus-visible {
+  color: transparent;
+  background: transparent;
+  border-color: transparent;
+}
+
+.world-layer .hotspot::before {
+  opacity: 0.16;
+  box-shadow: none;
+}
+
+.world-layer .hotspot.near,
+.world-layer .hotspot.hint-near,
+.world-layer .hotspot.near:hover,
+.world-layer .hotspot.near:focus-visible,
+.world-layer .hotspot.hint-near:hover,
+.shore-wrap[data-hotspots="on"] .world-layer .hotspot {
+  color: var(--bone);
+  background: rgba(6, 8, 10, 0.42);
+  border-color: rgba(230, 211, 164, 0.55);
+  opacity: 1;
+}
+
+.world-layer .hotspot.near::before,
+.world-layer .hotspot.hint-near::before,
+.shore-wrap[data-hotspots="on"] .world-layer .hotspot::before {
+  opacity: 1;
+  box-shadow: 0 0 14px rgba(230, 211, 164, 0.75);
+}
+
+.world-layer .hotspot.gourd,
+.world-layer .hotspot.gourd:hover,
+.world-layer .hotspot.pile,
+.world-layer .hotspot.pile:hover {
+  opacity: 0.18;
+  background: transparent;
+}
+
+.world-layer .hotspot.gourd.near,
+.world-layer .hotspot.gourd.hint-near,
+.world-layer .hotspot.pile.near,
+.shore-wrap[data-hotspots="on"] .world-layer .hotspot.gourd,
+.shore-wrap[data-hotspots="on"] .world-layer .hotspot.pile {
+  opacity: 1;
+}
+
 .companion-anchor {
   position: absolute;
   z-index: 4;
@@ -632,80 +691,6 @@ h1 {
   display: grid;
   gap: 10px;
 }
-
-.scene-nav {
-  position: absolute;
-  z-index: 4;
-  top: 18px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 18px;
-  max-width: calc(100% - 28px);
-  padding: 8px 18px 22px;
-  border: 0;
-  background: transparent;
-}
-
-.scene-nav::before {
-  content: "";
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  top: 14px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(230, 211, 164, 0.7), transparent);
-  pointer-events: none;
-}
-
-.scene-nav .btn {
-  position: relative;
-  width: 22px;
-  min-height: 22px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  backdrop-filter: none;
-}
-
-.scene-nav .btn.on { background: transparent; border-color: transparent; color: inherit; }
-
-.nav-mark {
-  display: block;
-  width: 6px;
-  height: 6px;
-  margin: 3px auto 0;
-  border: 1px solid rgba(230, 211, 164, 0.75);
-  transform: rotate(45deg);
-  box-shadow: 0 0 6px rgba(230, 211, 164, 0.2);
-}
-
-.scene-nav .btn.on .nav-mark {
-  background: rgba(230, 211, 164, 0.92);
-  box-shadow: 0 0 10px rgba(230, 211, 164, 0.7);
-}
-
-.nav-name {
-  position: absolute;
-  left: 50%;
-  top: 16px;
-  transform: translateX(-50%);
-  opacity: 0;
-  font-size: 0.72rem;
-  letter-spacing: 0.16em;
-  white-space: nowrap;
-  color: #f4efe6;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
-  transition: opacity 240ms ease;
-  pointer-events: none;
-}
-
-.scene-nav .btn.on .nav-name,
-.scene-nav .btn:hover .nav-name,
-.scene-nav .btn:focus-visible .nav-name { opacity: 1; }
 
 .hotspot.drift { left: 6%; bottom: 16%; }
 .hotspot.stone { left: 8%; top: 46%; }
@@ -1150,6 +1135,35 @@ h1 {
 .plate-fade.in { z-index: 1; animation: dissolve-in 520ms ease; }
 .plate-fade.out { z-index: 2; animation: dissolve-out 520ms ease forwards; }
 
+.walk-viewport .plate-fade.in,
+.walk-viewport .plate-fade.out { animation-duration: 980ms; }
+
+.walk-viewport[data-arrive="from-left"] .traveler-bob { animation: arrive-left 880ms ease; }
+.walk-viewport[data-arrive="from-right"] .traveler-bob { animation: arrive-right 880ms ease; }
+.walk-viewport[data-arrive="from-up"] .traveler-bob { animation: arrive-up 880ms ease; }
+.walk-viewport[data-arrive="from-down"] .traveler-bob { animation: arrive-down 880ms ease; }
+
+@keyframes arrive-left {
+  from { opacity: 0; transform: translateX(-42px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes arrive-right {
+  from { opacity: 0; transform: translateX(42px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes arrive-up {
+  from { opacity: 0; transform: translateY(-28px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes arrive-down {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: none; }
+}
+
+.walk-stick {
+  display: none;
+}
+
 .plate-photo {
   position: absolute;
   inset: -6%;
@@ -1316,7 +1330,7 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
   .shake, .purr, .nanaicha-look, .nanaicha-state, .collar-knot,
   .plate-photo, .plate-fade, .ambient, .ambient-water::after,
-  .companion-sway, .hud-caption, .sheet, .enter-veil, .nav-name, .hotspot, .act-tray button, .hud-actions .btn,
+  .companion-sway, .hud-caption, .sheet, .enter-veil, .hotspot, .act-tray button, .hud-actions .btn,
   .traveler-bob {
     animation: none;
     transition: none;
@@ -1395,8 +1409,32 @@ h1 {
   }
 
   .traveler {
-    width: clamp(36px, 8vmin, 48px);
-    height: clamp(60px, 13vmin, 80px);
+    width: 46px;
+    height: 112px;
+  }
+
+  .walk-stick {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    z-index: 7;
+    left: calc(14px + var(--safe-left));
+    bottom: calc(16px + var(--safe-bottom));
+    width: 112px;
+    height: 112px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(230, 211, 164, 0.38);
+    background: rgba(6, 8, 10, 0.32);
+    touch-action: none;
+  }
+
+  .walk-stick i {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(230, 211, 164, 0.62);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
   }
 
   .world-layer .hotspot,

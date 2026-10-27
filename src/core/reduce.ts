@@ -11,6 +11,7 @@ import {
   gotoScene,
   openMemory,
   grabFish,
+  canReadOldLayer,
   readOldLayer,
   reviewTap,
   sceneAct,
@@ -100,6 +101,7 @@ export function reduce(state: SaveData, action: Action): SaveData {
     case 'collect-tattoo':
       return touch(collectTattoo(state));
     case 'read-old-layer':
+      if (state.currentScene === 'myp.scene.night' && !canReadOldLayer(state)) return openMural(state);
       return touch(readOldLayer(state));
     case 'depart':
       return touch(departEast(state));
