@@ -38,6 +38,66 @@ function readyToLeave(state = ashore()): SaveData {
 }
 
 describe('island 1 reachability', () => {
+  it('learns and masters every island 1 lexicon word from the mural', () => {
+    let state = ashore();
+    for (const layer of ['concrete', 'action', 'relation', 'abstract'] as const) {
+      state = learnLayer(state, layer);
+    }
+    const lexicon = LEXEMES.filter((lexeme) => lexeme.inLexicon);
+    expect(lexicon).toHaveLength(28);
+    expect(lexicon.every((lexeme) => state.words[lexeme.id]?.state === 'learned')).toBe(true);
+    for (let step = 0; step < lexicon.length; step += 1) {
+      const target = lexicon.find((lexeme) => state.words[lexeme.id]?.state === 'learned');
+      if (!target) break;
+      state = reduce(state, { type: 'select-review' });
+      state = reduce(state, { type: 'review-tap', wordId: target.id });
+    }
+    expect(lexicon.every((lexeme) => state.words[lexeme.id]?.state === 'mastered')).toBe(true);
+  });
+
+  it('uses the camp gestures, the fishery contrast, and the shore stone', () => {
+    let state = learn(learnLayer(ashore(), 'concrete'), 'myp.word.eat');
+    expect(reduce(state, { type: 'scene-act', wordId: 'myp.word.eat' }).beats['myp.beat.eat']).toBeUndefined();
+    state = reduce(state, { type: 'goto-scene', scene: 'myp.scene.camp' });
+    state = reduce(state, { type: 'scene-act', wordId: 'myp.word.eat' });
+    expect(state.beats['myp.beat.eat']).toBe(true);
+
+    state = reduce(state, { type: 'goto-scene', scene: 'myp.scene.fishery' });
+    state = reduce(state, { type: 'grab-fish' });
+    expect(state.flags['myp.flag.wrong-share']).toBe(true);
+    expect(state.feedback.kind).toBe('no');
+
+    state = learnLayer(state, 'action');
+    state = learnLayer(state, 'relation');
+    state = learn(state, 'myp.word.amount');
+    state = reduce(state, { type: 'goto-scene', scene: 'myp.scene.fishery' });
+    expect(reduce(state, { type: 'scene-act', wordId: 'myp.word.amount', part: 'less' }).beats['myp.beat.amount']).toBeUndefined();
+    state = reduce(state, { type: 'scene-act', wordId: 'myp.word.amount', part: 'more' });
+    expect(state.beats['myp.beat.amount']).toBe(true);
+    state = reduce(state, { type: 'scene-act', wordId: 'myp.word.size', part: 'a' });
+    expect(state.beats['myp.beat.size']).toBeUndefined();
+    state = reduce(state, { type: 'scene-act', wordId: 'myp.word.size', part: 'b' });
+    expect(state.beats['myp.beat.size']).toBe(true);
+
+    const stone = reduce(ashore(), { type: 'shore-stone' });
+    expect(stone.overlay).toBe('casefile');
+    expect(stone.evidence).toContain('myp.ev.a');
+    expect(stone.beats['myp.beat.stone']).toBe(true);
+  });
+
+  it('adds the counted bone to the old layer without making it evidence', () => {
+    let state = learnLayer(learnLayer(learnLayer(ashore(), 'concrete'), 'action'), 'relation');
+    state = learn(learn(learn(state, 'myp.word.hunger'), 'myp.word.promise'), 'myp.word.wait');
+    state = reduce(state, { type: 'goto-scene', scene: 'myp.scene.rock' });
+    state = reduce(state, { type: 'scene-act', wordId: 'myp.word.wait' });
+    expect(state.inventory).toEqual(['myp.item.bone']);
+    expect(state.evidence).not.toContain('myp.item.bone');
+    state = reduce(state, { type: 'goto-scene', scene: 'myp.scene.night' });
+    state = reduce(state, { type: 'read-old-layer' });
+    expect(state.evidence).toContain('myp.ev.main');
+    expect(state.flags['myp.flag.bone-cell']).toBe(true);
+  });
+
   it('still leaves when the skippable evidence was never picked up', () => {
     const state = reduce(readyToLeave(), { type: 'depart' });
     expect(state.beats['myp.beat.depart']).toBe(true);

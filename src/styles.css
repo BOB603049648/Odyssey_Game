@@ -243,6 +243,36 @@ h1 {
 }
 
 .hotspot.drift { left: 6%; bottom: 16%; }
+.hotspot.stone { left: 8%; top: 46%; }
+.hotspot.grab { left: 18%; bottom: 22%; }
+.hotspot.pile { top: 28%; min-width: 48px; background: var(--sand); }
+.hotspot.pile.more { left: 42%; width: 72px; height: 64px; }
+.hotspot.pile.less { left: 56%; width: 36px; height: 36px; }
+.hotspot.fish-a { left: 8%; top: 18%; width: 64px; background: var(--sand); color: var(--line); }
+.hotspot.fish-b { left: 18%; top: 28%; width: 40px; background: var(--sand); color: var(--line); }
+.hotspot.fish-a .glyph, .hotspot.fish-b .glyph { width: 36px; height: 36px; }
+.hotspot.stamps { right: 16%; top: 18%; }
+
+.act-tray {
+  position: absolute;
+  left: 46%;
+  bottom: 14px;
+  display: flex;
+  gap: 6px;
+  z-index: 1;
+}
+
+.act-tray button {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--sand);
+  color: var(--line);
+  display: grid;
+  place-items: center;
+}
+
+.act-tray .glyph { width: 36px; height: 36px; }
 .hotspot.depart { right: 6%; top: 14%; }
 .hotspot.sleep { left: 22%; bottom: 18%; }
 .hotspot.give { right: 16%; bottom: 22%; }

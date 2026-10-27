@@ -33,6 +33,21 @@ export function checkContent(): string[] {
   };
   for (const lexeme of LEXEMES) visit(lexeme.id);
 
+  const inLexicon = LEXEMES.filter((lexeme) => lexeme.inLexicon);
+  if (inLexicon.length !== 28) errors.push(`expected 28 lexicon words, saw ${inLexicon.length}`);
+  const layerRank: Record<string, number> = { concrete: 0, action: 1, relation: 2, abstract: 3 };
+  for (const lexeme of inLexicon) {
+    for (const requirement of lexeme.requires) {
+      const needed = LEXEMES.find((item) => item.id === requirement);
+      if (!needed) continue;
+      if ((layerRank[needed.layer] ?? 9) > (layerRank[lexeme.layer] ?? 9)) {
+        errors.push(`${lexeme.id} depends on a later layer`);
+      }
+    }
+  }
+  const abstractRelated = inLexicon.filter((lexeme) => lexeme.layer === 'abstract' || lexeme.id === 'myp.word.danger');
+  if (abstractRelated.length < 12) errors.push('fewer than 12 abstract-related cells');
+
   if (MEMORIES.length !== 1 || MEMORIES[0]?.id !== 'myp.mem.rain-night') {
     errors.push('first memory must be myp.mem.rain-night');
   }

@@ -96,6 +96,7 @@ export function IslandScreen({
         data-danger-beat={save.beats['myp.beat.danger'] ? 'done' : 'open'}
         data-old-layer={save.beats['myp.beat.old-layer'] ? 'done' : 'open'}
         data-depart={save.beats['myp.beat.depart'] ? 'done' : 'open'}
+        data-bone-cell={save.flags['myp.flag.bone-cell'] === true ? 'yes' : 'no'}
         data-hotspots={save.flags['dev.hotspots'] === true ? 'on' : 'off'}
       >
         <SceneArt scene={scene} drank={drank} />
@@ -145,16 +146,35 @@ function SceneHotspots({
 }) {
   if (scene === 'myp.scene.camp') {
     return (
-      <button type="button" className={`hotspot sleep ${hintMark(hint, 'sleep')}`} data-testid="camp-sleep" onClick={() => dispatch({ type: 'sleep-at-camp' })}>
-        {t('camp.sleep')}
-      </button>
+      <>
+        <button type="button" className={`hotspot sleep ${hintMark(hint, 'sleep')}`} data-testid="camp-sleep" onClick={() => dispatch({ type: 'sleep-at-camp' })}>
+          {t('camp.sleep')}
+        </button>
+        <ActTray
+          ids={['myp.word.eat', 'myp.word.drink', 'myp.word.walk', 'myp.word.take', 'myp.word.me', 'myp.word.you', 'myp.word.home']}
+          dispatch={dispatch}
+        />
+      </>
     );
   }
   if (scene === 'myp.scene.fishery') {
     return (
-      <button type="button" className={`hotspot give ${hintMark(hint, 'give')}`} data-testid="fishery-give" onClick={() => dispatch({ type: 'give-fish' })}>
-        {t('fishery.give')}
-      </button>
+      <>
+        <button type="button" className={`hotspot give ${hintMark(hint, 'give')}`} data-testid="fishery-give" onClick={() => dispatch({ type: 'give-fish' })}>
+          {t('fishery.give')}
+        </button>
+        <button type="button" className="hotspot grab" data-testid="fishery-grab" onClick={() => dispatch({ type: 'grab-fish' })}>
+          {t('fishery.grab')}
+        </button>
+        <button type="button" className="hotspot pile more" data-testid="amount-more" aria-label={t('act.mark')} onClick={() => dispatch({ type: 'scene-act', wordId: 'myp.word.amount', part: 'more' })} />
+        <button type="button" className="hotspot pile less" data-testid="amount-less" aria-label={t('act.mark')} onClick={() => dispatch({ type: 'scene-act', wordId: 'myp.word.amount', part: 'less' })} />
+        <button type="button" className="hotspot fish-a" data-testid="size-a" aria-label={t('act.mark')} onClick={() => dispatch({ type: 'scene-act', wordId: 'myp.word.size', part: 'a' })}>
+          <Glyph id="myp.word.fish" />
+        </button>
+        <button type="button" className="hotspot fish-b" data-testid="size-b" aria-label={t('act.mark')} onClick={() => dispatch({ type: 'scene-act', wordId: 'myp.word.size', part: 'b' })}>
+          <Glyph id="myp.word.fish" />
+        </button>
+      </>
     );
   }
   if (scene === 'myp.scene.rock') {
@@ -162,6 +182,9 @@ function SceneHotspots({
       <>
         <button type="button" className="hotspot mural" data-testid="rock-mural" onClick={() => dispatch({ type: 'open-mural' })}>
           {t('island.mural')}
+        </button>
+        <button type="button" className="hotspot stamps" data-testid="rock-stamps" onClick={() => dispatch({ type: 'scene-act', wordId: 'myp.word.wait' })}>
+          {t('rock.stamps')}
         </button>
         {isLearnedState(save.words[BETRAY]?.state) ? (
           <button type="button" className="hotspot tattoo" data-testid="rock-tattoo" onClick={() => dispatch({ type: 'collect-tattoo' })}>
@@ -217,6 +240,9 @@ function SceneHotspots({
         <svg className="glyph pouch" viewBox="0 0 64 64" aria-hidden="true">
           <path d="M24 18h16c2 8 10 10 10 18 0 12-8 16-18 16S14 48 14 36c0-8 8-10 10-18z" />
         </svg>
+      </button>
+      <button type="button" className="hotspot stone" data-testid="shore-stone" onClick={() => dispatch({ type: 'shore-stone' })}>
+        {t('shore.stone')}
       </button>
       <button type="button" className={`hotspot drift ${hintMark(hint, 'driftwood')}`} data-testid="shore-driftwood" onClick={() => dispatch({ type: 'sit-driftwood' })}>
         {t('shore.driftwood')}
@@ -338,6 +364,30 @@ function EmptyMark() {
     <svg className="glyph break" viewBox="0 0 64 64" aria-hidden="true">
       <rect x="16" y="16" width="32" height="32" />
     </svg>
+  );
+}
+
+function ActTray({
+  ids,
+  dispatch,
+}: {
+  ids: string[];
+  dispatch: (action: Action) => void;
+}) {
+  return (
+    <div className="act-tray">
+      {ids.map((id) => (
+        <button
+          key={id}
+          type="button"
+          data-testid={`act-${id}`}
+          aria-label={t('act.mark')}
+          onClick={() => dispatch({ type: 'scene-act', wordId: id })}
+        >
+          <Glyph id={id} />
+        </button>
+      ))}
+    </div>
   );
 }
 

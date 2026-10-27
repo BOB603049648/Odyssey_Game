@@ -86,9 +86,56 @@ export function collectTattoo(state: SaveData): SaveData {
 export function readOldLayer(state: SaveData): SaveData {
   if (state.currentScene !== 'myp.scene.night') return deny(state);
   if (!learned(state, HUNGER) || !learned(state, PROMISE) || !learned(state, DANGER)) return deny(state);
+  const gained = addEvidence(state, 'myp.ev.main');
+  return withBoneCell({
+    ...gained,
+    beats: { ...gained.beats, 'myp.beat.old-layer': true },
+  });
+}
+
+const SCENE_ACTS: Record<string, { scene: IslandScene; beat: string }> = {
+  'myp.word.eat': { scene: 'myp.scene.camp', beat: 'myp.beat.eat' },
+  'myp.word.drink': { scene: 'myp.scene.camp', beat: 'myp.beat.drink' },
+  'myp.word.walk': { scene: 'myp.scene.camp', beat: 'myp.beat.walk' },
+  'myp.word.take': { scene: 'myp.scene.camp', beat: 'myp.beat.take' },
+  'myp.word.me': { scene: 'myp.scene.camp', beat: 'myp.beat.me' },
+  'myp.word.you': { scene: 'myp.scene.camp', beat: 'myp.beat.you' },
+  'myp.word.home': { scene: 'myp.scene.camp', beat: 'myp.beat.home' },
+  'myp.word.wait': { scene: 'myp.scene.rock', beat: 'myp.beat.wait' },
+};
+
+export function sceneAct(state: SaveData, wordId: string, part?: 'a' | 'b' | 'more' | 'less'): SaveData {
+  if (wordId === 'myp.word.size') return sizeAct(state, part);
+  if (wordId === 'myp.word.amount') {
+    if (state.currentScene !== 'myp.scene.fishery' || part !== 'more') return deny(state);
+  }
+  const spec = SCENE_ACTS[wordId] ?? (wordId === 'myp.word.amount'
+    ? { scene: 'myp.scene.fishery' as const, beat: 'myp.beat.amount' }
+    : undefined);
+  if (!spec || state.currentScene !== spec.scene) return deny(state);
+  if (!learned(state, wordId)) return deny(state);
+  const marked = markBeat(state, spec.beat);
+  return wordId === 'myp.word.wait' ? giveBone(marked) : marked;
+}
+
+export function grabFish(state: SaveData): SaveData {
+  if (state.currentScene !== 'myp.scene.fishery') return deny(state);
   return {
-    ...addEvidence(state, 'myp.ev.main'),
-    beats: { ...state.beats, 'myp.beat.old-layer': true },
+    ...state,
+    flags: { ...state.flags, 'myp.flag.wrong-share': true },
+    feedback: { seq: state.feedback.seq + 1, kind: 'no' },
+  };
+}
+
+export function shoreStone(state: SaveData): SaveData {
+  if (state.currentScene !== 'myp.scene.shore') return deny(state);
+  const evidence = state.evidence.includes('myp.ev.a') ? state.evidence : [...state.evidence, 'myp.ev.a'];
+  return {
+    ...state,
+    evidence,
+    beats: { ...state.beats, 'myp.beat.stone': true },
+    overlay: 'casefile',
+    feedback: { seq: state.feedback.seq + 1, kind: 'ok' },
   };
 }
 
@@ -166,6 +213,38 @@ export function reviewTap(state: SaveData, wordId: string): SaveData {
 
 function learned(state: SaveData, id: string): boolean {
   return isLearnedState(state.words[id]?.state);
+}
+
+function markBeat(state: SaveData, beat: string): SaveData {
+  return {
+    ...state,
+    beats: { ...state.beats, [beat]: true },
+    feedback: { seq: state.feedback.seq + 1, kind: 'ok' },
+  };
+}
+
+function sizeAct(state: SaveData, part?: 'a' | 'b' | 'more' | 'less'): SaveData {
+  if (state.currentScene !== 'myp.scene.fishery' || (part !== 'a' && part !== 'b')) return deny(state);
+  if (!learned(state, 'myp.word.size')) return deny(state);
+  const flags = { ...state.flags, [`myp.flag.size-${part}`]: true };
+  const both = flags['myp.flag.size-a'] === true && flags['myp.flag.size-b'] === true;
+  return {
+    ...state,
+    flags,
+    beats: both ? { ...state.beats, 'myp.beat.size': true } : state.beats,
+    feedback: { seq: state.feedback.seq + 1, kind: 'ok' },
+  };
+}
+
+function giveBone(state: SaveData): SaveData {
+  const inventory = state.inventory.includes('myp.item.bone') ? state.inventory : [...state.inventory, 'myp.item.bone'];
+  return withBoneCell({ ...state, inventory });
+}
+
+function withBoneCell(state: SaveData): SaveData {
+  if (!state.inventory.includes('myp.item.bone') || !state.evidence.includes('myp.ev.main')) return state;
+  if (state.flags['myp.flag.bone-cell'] === true) return state;
+  return { ...state, flags: { ...state.flags, 'myp.flag.bone-cell': true } };
 }
 
 function deny(state: SaveData): SaveData {

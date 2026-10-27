@@ -10,8 +10,11 @@ import {
   giveSharedFish,
   gotoScene,
   openMemory,
+  grabFish,
   readOldLayer,
   reviewTap,
+  sceneAct,
+  shoreStone,
   sitDriftwood,
   sleepAtCamp,
 } from './island';
@@ -49,7 +52,10 @@ export type Action =
   | { type: 'debug-learn-next' }
   | { type: 'debug-evidence'; id: string }
   | { type: 'debug-hotspots'; value: boolean }
-  | { type: 'debug-ending'; id: EndingContent['id'] };
+  | { type: 'debug-ending'; id: EndingContent['id'] }
+  | { type: 'scene-act'; wordId: string; part?: 'a' | 'b' | 'more' | 'less' }
+  | { type: 'grab-fish' }
+  | { type: 'shore-stone' };
 
 const WATER = 'myp.word.water';
 
@@ -115,6 +121,12 @@ export function reduce(state: SaveData, action: Action): SaveData {
       return touch(debugHotspots(state, action.value));
     case 'debug-ending':
       return touch(debugForceEnding(state, action.id));
+    case 'scene-act':
+      return touch(sceneAct(state, action.wordId, action.part));
+    case 'grab-fish':
+      return touch(grabFish(state));
+    case 'shore-stone':
+      return touch(shoreStone(state));
     default:
       return state;
   }
