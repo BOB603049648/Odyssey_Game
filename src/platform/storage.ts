@@ -41,7 +41,18 @@ export function createWebStorage(storage: KeyValue): StorageAdapter {
       }
     },
     save(data) {
-      storage.setItem(SAVE_KEY, JSON.stringify(data));
+      let raw: string;
+      try {
+        raw = JSON.stringify(data);
+        if (!parseSave(JSON.parse(raw))) return;
+      } catch {
+        return;
+      }
+      try {
+        storage.setItem(SAVE_KEY, raw);
+      } catch {
+        // Keep the last payload that actually landed.
+      }
     },
     clear() {
       storage.removeItem(SAVE_KEY);

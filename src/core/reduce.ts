@@ -21,6 +21,7 @@ import {
 } from './island';
 import { newGameState } from './save';
 import type { EndingContent, HintLevel, MuralLayer, SaveData, WordProgress } from './schema';
+import { chooseEnding, resolveEnding, type EndingChoice } from './endings';
 import { isLearnedState, transitionWord } from './words';
 
 export type Action =
@@ -56,7 +57,9 @@ export type Action =
   | { type: 'debug-ending'; id: EndingContent['id'] }
   | { type: 'scene-act'; wordId: string; part?: 'a' | 'b' | 'more' | 'less' }
   | { type: 'grab-fish' }
-  | { type: 'shore-stone' };
+  | { type: 'shore-stone' }
+  | { type: 'open-finale' }
+  | { type: 'choose-ending'; choice: EndingChoice };
 
 const WATER = 'myp.word.water';
 
@@ -129,6 +132,12 @@ export function reduce(state: SaveData, action: Action): SaveData {
       return touch(grabFish(state));
     case 'shore-stone':
       return touch(shoreStone(state));
+    case 'open-finale':
+      if (state.beats['myp.beat.depart'] !== true) return state;
+      return touch({ ...state, overlay: 'finale' });
+    case 'choose-ending':
+      if (state.beats['myp.beat.depart'] !== true) return state;
+      return touch(commitEnding(state, action.choice));
     default:
       return state;
   }
@@ -338,6 +347,16 @@ function bumpHint(state: SaveData, level: HintLevel, targetId: string | null): S
   return {
     ...state.hintStats,
     [targetId]: { ...prev, [key]: prev[key] + 1 },
+  };
+}
+
+function commitEnding(state: SaveData, choice: EndingChoice): SaveData {
+  const chosen = chooseEnding(state, choice);
+  const ending = resolveEnding(chosen) ?? 'false-home';
+  return {
+    ...chosen,
+    overlay: 'finale',
+    flags: { ...chosen.flags, 'fin.flag.ending': ending },
   };
 }
 

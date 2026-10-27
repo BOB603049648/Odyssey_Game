@@ -2,6 +2,7 @@ import { lazy, Suspense, useState } from 'react';
 import { primeAudio } from './audio/placeholder';
 import { useGame } from './stores/gameStore';
 import { Cutscenes } from './ui/Cutscenes';
+import { Finale } from './ui/Finale';
 import { IslandScreen } from './ui/IslandScreen';
 import { MuralScreen } from './ui/MuralScreen';
 import { PrologueScreen } from './ui/PrologueScreen';
@@ -43,6 +44,7 @@ export function App() {
           <IslandScreen save={save} dispatch={dispatch} onTitle={() => setAtTitle(true)} />
         )}
         {atTitle ? null : <Cutscenes save={save} dispatch={dispatch} />}
+        {atTitle ? null : <Finale save={save} dispatch={dispatch} />}
       </main>
       {DevTools ? (
         <Suspense fallback={null}>

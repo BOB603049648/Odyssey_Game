@@ -23,13 +23,17 @@ export function chooseEnding(state: SaveData, choice: EndingChoice): SaveData {
     ...state.flags,
     'fin.flag.confronted': true,
   };
-  if (choice === 'deny') {
+  if (!caseIsFull(state) || choice === 'deny') {
     flags['fin.flag.admit'] = false;
+    delete flags['fin.flag.choice'];
+    delete flags['fin.flag.name-recalled'];
+    delete flags['fin.flag.recognition-lost'];
     return { ...state, flags };
   }
   flags['fin.flag.admit'] = true;
   flags['fin.flag.name-recalled'] = true;
   flags['fin.flag.choice'] = choice;
   if (choice === 'restart') flags['fin.flag.recognition-lost'] = true;
+  else delete flags['fin.flag.recognition-lost'];
   return { ...state, flags };
 }
