@@ -1,3 +1,4 @@
+import { NANAICHA_FOOT } from '../core/companionPost';
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { HintLevel } from '../core/schema';
 import { CatMark, nanaichaState, type KnotMark } from './companion/CatMark';
@@ -38,10 +39,21 @@ export function Companion({
       onClick={onAsk}
       aria-label={t('companion.ask')}
     >
+      {figure ? (
+        <span
+          className="contact-shadow foot-ellipse"
+          data-testid="companion-contact"
+          style={{ width: '42%', top: `${NANAICHA_FOOT.y * 100}%`, bottom: 'auto' }}
+        />
+      ) : null}
       <span className="companion-mirror">
         <span className="companion-sway">
           {figure ? (
-            <img className="nanaicha-ground" data-look={anchor} data-frame={frame} src={figure} alt="" draggable={false} />
+            <span className="nanaicha-figure" style={{ ['--figure' as string]: `url("${figure}")` }}>
+              <img className="nanaicha-ground" data-look={anchor} data-frame={frame} src={figure} alt="" draggable={false} />
+              <span className="figure-grade grade-color" />
+              <span className="figure-grade grade-soft" />
+            </span>
           ) : (
             <CatMark look={anchor} state={nanaichaState(level, pose)} knot={knot} />
           )}

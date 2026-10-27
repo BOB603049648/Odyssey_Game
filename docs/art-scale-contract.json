@@ -1,6 +1,6 @@
 {
-  "version": "1.3-pr13-sticker",
-  "updated": "2026-10-28T04:48:25+08:00",
+  "version": "1.3-pr14-plate",
+  "updated": "2026-10-28T05:20:48+08:00",
   "unit": "meters",
   "traveler": {
     "height_m": 1.75,
@@ -13,7 +13,7 @@
       "px_per_m": 605.7,
       "note": "idle-front-01 opaque ~95.7% H; contract uses 0.92 design target → ~1060px / 1.75m ≈ 605.7 px/m on traveler sheet"
     },
-    "foot_anchor": "bottom-center of opaque bounds. foot_pad_below_opaque_max_px=24: traveler soles MAY have 16–24px clear transparent below soles (AA)."
+    "foot_anchor": "bottom-center opaque. pad≤24. PR14: sand-tan AO STUCK to opaque soles (no pale gap); side fog-wrap."
   },
   "prop_subject_height_pct_of_plate_h": {
     "hand_accessory": {

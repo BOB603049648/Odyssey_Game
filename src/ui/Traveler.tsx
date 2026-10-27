@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { WALK_SPEED } from '../core/walk';
 import { worldToScreen } from '../core/world';
-import { FOOT_ELLIPSE } from './cohesion';
 import reachFront01 from '../assets/traveler/reach-front-01.png';
 import reachFront02 from '../assets/traveler/reach-front-02.png';
 import reachSide01 from '../assets/traveler/reach-side-01.png';
@@ -131,10 +130,10 @@ export function blendDuration(prev: FrameBlend, next: FrameBlend): number {
   return 0;
 }
 
-/** Contact ellipse width as a fraction of the figure box. Wider when the figure is lower in the scene. */
+/** Boot-width contact ellipse. Wider when the figure is lower, never a full-body slab. */
 export function contactShadowWidth(y: number): number {
   const depth = Math.min(1, Math.max(0, y));
-  return 0.82 + depth * 0.28;
+  return 0.36 + depth * 0.12;
 }
 
 export function nextLocomotion(current: TravelerLocomotion, gait: number): TravelerLocomotion {
@@ -231,19 +230,23 @@ function sameBlend(a: FrameBlend, b: FrameBlend): boolean {
 function FramePicture({ blend, layer }: { blend: FrameBlend; layer: 'out' | 'current' }) {
   const frames = clipFrames(blend.pose, blend.sheet);
   const index = Math.min(frames.length - 1, Math.max(0, blend.frame));
+  const src = frames[index] ?? frames[0];
   return (
     <span
       className={layer === 'out' ? 'traveler-frame-wrap out' : 'traveler-frame-wrap'}
       data-mirror={blend.facing === 'left' ? 'yes' : 'no'}
+      style={{ ['--figure' as string]: `url("${src}")` }}
     >
       <img
         className={layer === 'current' ? 'traveler-figure traveler-frame' : 'traveler-frame'}
         data-layer={layer}
         data-frame={index}
-        src={frames[index] ?? frames[0]}
+        src={src}
         alt=""
         draggable={false}
       />
+      <span className="figure-grade grade-color" />
+      <span className="figure-grade grade-soft" />
     </span>
   );
 }
@@ -320,7 +323,8 @@ export function TravelerMark({
           data-testid="contact-shadow"
           style={{
             width: `${contactShadowWidth(y) * 100}%`,
-            ['--ellipse' as string]: `url("${FOOT_ELLIPSE.l}")`,
+            top: `${TRAVELER_FOOT.y * 100}%`,
+            bottom: 'auto',
           }}
         />
         <span className="traveler-frames" style={{ ['--frame-blend' as string]: `${blendMs}ms` }}>
