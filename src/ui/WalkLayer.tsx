@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import type { CatPost } from '../core/companionPost';
+import { NANAICHA_FOOT, NANAICHA_HEIGHT } from '../core/companionPost';
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
 import type { HintLevel } from '../core/schema';
@@ -7,11 +9,11 @@ import {
   WALK_SPEED,
   WORLD_SCALE,
   cameraOffset,
-  companionSpot,
+  coastStep,
+  desiredVelocity,
   distance,
   followCamera,
   inRadius,
-  integrate,
   pointerToWorld,
   stepKey,
   type Point,
@@ -23,7 +25,13 @@ import type { KnotMark } from './companion/CatMark';
 import { Glyph } from './glyphs';
 import { t } from './i18n';
 import { PlateStack } from './Plate';
-import { gateLabel, hintSpotId, type SpotView } from './spotViews';
+import { gateLabel, type SpotView } from './spotViews';
+import shoreCat from '../assets/art/slots/art.shore.prop.nanaicha.png';
+import campCat from '../assets/art/slots/art.camp.prop.nanaicha.png';
+import yardCat from '../assets/art/slots/art.yard.prop.nanaicha.png';
+import driftFlash from '../assets/art/slots/art.shore.prop.driftwood.interact.png';
+import sleepFlash from '../assets/art/slots/art.camp.prop.sleep-mat.interact.png';
+import grainFlash from '../assets/art/slots/art.yard.prop.grain-bags.interact.png';
 import { facingFromMove, REACH_HOLD_MS, TravelerMark, type TravelerFacing } from './Traveler';
 import { WalkStick } from './WalkStick';
 import { useCrossfade } from './useCrossfade';
@@ -58,12 +66,6 @@ function entrySide(edge: GateEdge | undefined): string | null {
   return null;
 }
 
-function hintPoint(scene: IslandScene, hint: Hint, spots: readonly SpotView[]): Point | null {
-  if (hint.level < 2) return null;
-  const id = hintSpotId(scene, hint.anchor);
-  return spots.find((spot) => spot.id === id) ?? null;
-}
-
 export function WalkLayer({
   scene,
   drank,
@@ -81,6 +83,10 @@ export function WalkLayer({
   taught = false,
   onTeach,
   showWalkMask = false,
+  catPost,
+  onFar,
+  resting = false,
+  flash = null,
 }: {
   scene: IslandScene;
   drank: boolean;
@@ -98,6 +104,10 @@ export function WalkLayer({
   taught?: boolean;
   onTeach?: () => void;
   showWalkMask?: boolean;
+  catPost: CatPost;
+  onFar?: (id: string) => void;
+  resting?: boolean;
+  flash?: { kind: 'driftwood' | 'sleep' | 'give'; seq: number; x: number; y: number } | null;
 }) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
@@ -116,13 +126,16 @@ export function WalkLayer({
   const entryRef = useRef<string | null>(null);
   const held = useRef(new Set<WalkKey>());
   const movingRef = useRef(false);
+  const velocityRef = useRef<Point>({ x: 0, y: 0 });
   const posRef = useRef<Point>(remembered ?? SPAWNS[scene]);
   const [pos, setPos] = useState<Point>(posRef.current);
   const [facing, setFacing] = useState<TravelerFacing>('front');
   const [moving, setMoving] = useState(false);
   const [stride, setStride] = useState(0);
   const [blocked, setBlocked] = useState(false);
-  const [cat, setCat] = useState<Point>(() => companionSpot(posRef.current, hint.level, null, BANDS[scene], 0));
+  const [cat, setCat] = useState<Point>(posRef.current);
+  const postRef = useRef(catPost);
+  postRef.current = catPost;
   const [view, setView] = useState({ w: 1280, h: 720 });
   const [arrive, setArrive] = useState<string | null>(null);
   const [cam, setCam] = useState<Point>({ x: 0, y: 0 });
@@ -150,6 +163,7 @@ export function WalkLayer({
     targetRef.current = null;
     stickRef.current = null;
     smoothRef.current = null;
+    velocityRef.current = { x: 0, y: 0 };
     held.current.clear();
     setArrive(entryRef.current);
     entryRef.current = null;
@@ -157,7 +171,7 @@ export function WalkLayer({
     setMoving(false);
     setStride(0);
     setBlocked(false);
-    setCat(companionSpot(next, hint.level, hintPoint(scene, hint, spots), BANDS[scene], 0));
+    setCat(next);
   }
 
   useEffect(() => {
@@ -204,6 +218,7 @@ export function WalkLayer({
   function apply(next: Point, isMoving: boolean, isBlocked: boolean, dx: number, dy: number, power = 1) {
     const gate = gateAt(sceneRef.current, next);
     if (gate) {
+      velocityRef.current = { x: 0, y: 0 };
       pending.current = gate.arrival;
       entryRef.current = entrySide(gate.edge);
       targetRef.current = null;
@@ -221,15 +236,11 @@ export function WalkLayer({
     setBlocked(isBlocked);
     movingRef.current = isMoving;
     if (import.meta.env.MODE === 'test') {
-      setCat(
-        companionSpot(
-          next,
-          hintRef.current.level,
-          hintPoint(sceneRef.current, hintRef.current, spotsRef.current),
-          BANDS[sceneRef.current],
-          0,
-        ),
-      );
+      const post = postRef.current;
+      setCat((prev) => ({
+        x: prev.x + (post.x - prev.x) * 0.35,
+        y: prev.y + (post.y - prev.y) * 0.35,
+      }));
     }
   }
 
@@ -278,7 +289,7 @@ export function WalkLayer({
       event.preventDefault();
       held.current.add(key);
       targetRef.current = null;
-      if (!event.repeat) {
+      if (!event.repeat && import.meta.env.MODE === 'test') {
         const from = posRef.current;
         const step = stepKey(from, key, BANDS[sceneRef.current]);
         const dx = key === 'a' ? -1 : key === 'd' ? 1 : 0;
@@ -310,35 +321,26 @@ export function WalkLayer({
         const dir = heldDirection();
         const goal = targetRef.current;
         const from = posRef.current;
-        if (dir) {
-          const power = Math.hypot(dir.x, dir.y);
-          const step = integrate(
-            from,
-            { x: from.x + dir.x, y: from.y + dir.y },
-            BANDS[sceneRef.current],
-            WALK_SPEED * dt * power,
-          );
-          apply(step.pos, step.moving, step.blocked, dir.x, dir.y, power);
-        } else if (goal) {
-          const step = integrate(from, goal, BANDS[sceneRef.current], WALK_SPEED * dt);
-          if (distance(step.pos, goal) < 0.012 || (!step.moving && step.blocked)) targetRef.current = null;
-          apply(step.pos, step.moving, step.blocked, goal.x - from.x, goal.y - from.y);
+        const wish = desiredVelocity(dir, dir ? null : goal, from);
+        const step = coastStep(from, velocityRef.current, wish, BANDS[sceneRef.current], dt);
+        velocityRef.current = step.velocity;
+        if (goal && (distance(step.pos, goal) < 0.01 || (!step.moving && step.blocked))) {
+          targetRef.current = null;
+          velocityRef.current = { x: 0, y: 0 };
+        }
+        const speed = Math.hypot(step.velocity.x, step.velocity.y);
+        if (step.moving) {
+          apply(step.pos, true, step.blocked, step.velocity.x, step.velocity.y, Math.min(1, speed / WALK_SPEED));
         } else if (movingRef.current) {
           movingRef.current = false;
           setMoving(false);
           setStride(0);
           setBlocked(false);
         }
-        const desired = companionSpot(
-          posRef.current,
-          hintRef.current.level,
-          hintPoint(sceneRef.current, hintRef.current, spotsRef.current),
-          BANDS[sceneRef.current],
-          now / 1000,
-        );
+        const desired = postRef.current;
         setCat((prev) => ({
-          x: prev.x + (desired.x - prev.x) * 0.14,
-          y: prev.y + (desired.y - prev.y) * 0.14,
+          x: prev.x + (desired.x - prev.x) * 0.07,
+          y: prev.y + (desired.y - prev.y) * 0.07,
         }));
         const frameView = viewRef.current;
         const goalCam = cameraOffset(posRef.current, frameView.w, frameView.h);
@@ -414,6 +416,7 @@ export function WalkLayer({
               key={gate.to}
               type="button"
               className={inRadius(pos, gate, gate.r) ? 'path-exit near' : 'path-exit'}
+              data-hearth={gate.to === 'dba.scene.camp' ? 'yes' : 'no'}
               data-testid={`exit-${gate.to.split('.').at(-1)}`}
               style={{ left: pct(gate.x), top: pct(gate.y) }}
               aria-label={gateLabel(gate.to)}
@@ -441,6 +444,7 @@ export function WalkLayer({
                   if (pausedRef.current) return;
                   if (!inRadius(posRef.current, spot, spot.r)) {
                     seek(spot);
+                    onFar?.(spot.id);
                     return;
                   }
                   beginReach();
@@ -451,11 +455,50 @@ export function WalkLayer({
               </button>
             );
           })}
-          <div className="companion-anchor" style={{ left: pct(cat.x), top: pct(cat.y) }} data-testid="companion-anchor">
+          <div
+            className="companion-anchor"
+            data-testid="companion-anchor"
+            data-beat={catPost.beat}
+            data-look={catPost.look}
+            data-traveling={Math.hypot(catPost.x - cat.x, catPost.y - cat.y) > 0.025 ? 'yes' : 'no'}
+            data-face={catPost.x >= cat.x ? 'right' : 'left'}
+            style={{
+              left: pct(cat.x),
+              top: pct(cat.y - (Math.hypot(catPost.x - cat.x, catPost.y - cat.y) > 0.025 ? 0.012 : 0)),
+              height: `${NANAICHA_HEIGHT * 100}%`,
+              transform: `translate(${-NANAICHA_FOOT.x * 100}%, ${-NANAICHA_FOOT.y * 100}%)`,
+            }}
+          >
             <span className="contact-shadow" data-testid="contact-shadow" />
-            <Companion level={hint.level} anchor={hint.anchor} pose={hint.pose} purr={purr} knot={knot} onAsk={onAsk} />
+            <Companion
+              figure={scene === 'dba.scene.camp' ? campCat : scene === 'dba.scene.yard' || scene === 'dba.scene.path' ? yardCat : shoreCat}
+              level={hint.level}
+              anchor={hint.pose === 'fetch' ? hint.anchor : catPost.look}
+              pose={
+                hint.pose === 'fetch' || hint.pose === 'look-at'
+                  ? hint.pose
+                  : scene === 'dba.scene.yard' && spots.some((spot) => spot.id === 'yard-grab' && inRadius(pos, spot, spot.r)) && catPost.beat === 'Y0'
+                    ? 'look-at'
+                    : Math.hypot(catPost.x - cat.x, catPost.y - cat.y) > 0.025
+                      ? 'lead'
+                      : catPost.pose
+              }
+              purr={purr}
+              knot={knot}
+              onAsk={onAsk}
+            />
           </div>
-          <TravelerMark x={pos.x} y={pos.y} facing={facing} moving={moving} stride={stride} pose={reaching ? 'reach' : 'auto'} />
+          {flash ? (
+            <img
+              key={flash.seq}
+              className="interact-flash"
+              data-testid="interact-flash"
+              src={flash.kind === 'driftwood' ? driftFlash : flash.kind === 'sleep' ? sleepFlash : grainFlash}
+              alt=""
+              style={{ left: pct(flash.x), top: pct(flash.y) }}
+            />
+          ) : null}
+          <TravelerMark x={pos.x} y={pos.y} facing={facing} moving={moving} stride={stride} pose={resting ? 'lie' : reaching ? 'reach' : 'auto'} />
           <PlateStack
             plate={plates.current}
             previous={plates.previous}
@@ -466,7 +509,7 @@ export function WalkLayer({
           />
         </div>
       </div>
-      <div className="grade-veil" data-grade={sceneAssembly(scene)?.grade ?? 'mist-dawn'} data-testid="grade-veil" />
+      <div className="grade-veil" data-grade={sceneAssembly(plates.previous ?? scene)?.grade ?? 'mist-dawn'} data-testid="grade-veil" />
       {teachLine ? (
         <p className="approach-hint" data-testid="approach-hint">
           {t('hint.approach')}

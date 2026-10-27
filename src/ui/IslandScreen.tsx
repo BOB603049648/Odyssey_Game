@@ -1,5 +1,6 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { EVIDENCE, LEXEMES } from '../content/catalog';
+import { companionPost } from '../core/companionPost';
 import { hintPresentation } from '../core/hints';
 import { isIslandScene, type IslandScene } from '../core/island';
 import type { Action } from '../core/reduce';
@@ -13,6 +14,7 @@ import { t, type MessageKey } from './i18n';
 import closeup from '../assets/art/slots/art.ev.main.closeup.jpg';
 import { EnterVeil } from './Plate';
 import { MemoryRain } from './scenes';
+import { SPOTS } from '../core/stage';
 import { visibleSpots } from './spotViews';
 import { useGame } from '../stores/gameStore';
 import { useFadePresence } from './useCrossfade';
@@ -50,6 +52,26 @@ export function IslandScreen({
   const drank = save.beats['dba.beat.water'] === true;
   const remembered = place?.scene === scene ? { x: place.x, y: place.y } : null;
   const paused = save.overlay !== 'none';
+  const [skipWelcome, setSkipWelcome] = useState(false);
+  useEffect(() => {
+    if (save.flags['dba.flag.driftwood'] === true) return undefined;
+    const id = window.setTimeout(() => setSkipWelcome(true), 12000);
+    return () => window.clearTimeout(id);
+  }, [save.flags['dba.flag.driftwood']]);
+  const catPost = companionPost(scene, save.beats, save.flags, { skipWelcome });
+  const line = save.feedback.line;
+  const spoken = line?.startsWith('spot.') ? t(line as MessageKey) : null;
+  const flashKind = line === 'spot.driftwood.ok' || line === 'spot.driftwood.again'
+    ? 'driftwood'
+    : line === 'spot.sleep.ok'
+      ? 'sleep'
+      : line === 'spot.give.ok'
+        ? 'give'
+        : null;
+  const flashScene = flashKind === 'driftwood' ? 'dba.scene.shore' : flashKind === 'sleep' ? 'dba.scene.camp' : flashKind === 'give' ? 'dba.scene.yard' : null;
+  const flashSpot = flashScene && flashScene === scene
+    ? SPOTS[flashScene].find((spot) => spot.id === (flashKind === 'driftwood' ? 'shore-driftwood' : flashKind === 'sleep' ? 'camp-sleep' : 'yard-give'))
+    : null;
 
   return (
     <section className={shake ? 'island shake' : 'island'}>
@@ -97,6 +119,10 @@ export function IslandScreen({
           taught={save.flags['dba.flag.taught-approach'] === true}
           onTeach={() => dispatch({ type: 'teach-approach' })}
           showWalkMask={import.meta.env.DEV && save.flags['dev.walkable'] === true}
+          catPost={catPost}
+          resting={line === 'spot.sleep.ok'}
+          onFar={(id) => dispatch({ type: 'spot-far', id })}
+          flash={flashSpot && flashKind ? { kind: flashKind, seq: save.feedback.seq, x: flashSpot.x, y: flashSpot.y } : null}
           onEscape={() => {
             if (save.overlay === 'depart' || save.overlay === 'memory') return;
             if (save.overlay !== 'none') dispatch({ type: 'close-overlay' });
@@ -113,6 +139,11 @@ export function IslandScreen({
           />
         ) : null}
         {save.memories.includes('dba.mem.rain-night') ? <MemoryRain /> : null}
+        {spoken ? (
+          <p className="diegetic-line" data-testid="spot-line" data-line={line}>
+            {spoken}
+          </p>
+        ) : null}
         <div className="hud-place">
           <p className="eyebrow">{t(SCENE_TITLE[scene])}</p>
           <p className="count" aria-label={`${learned.length}`}>

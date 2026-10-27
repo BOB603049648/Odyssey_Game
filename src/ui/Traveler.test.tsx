@@ -1,8 +1,16 @@
 import { fireEvent, render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+import { companionPost } from '../core/companionPost';
 import { SPAWNS } from '../core/stage';
+import { WALK_SPEED } from '../core/walk';
 import {
+  FRAME_BLEND_MS,
   TRAVELER_FRAME_COUNTS,
+  TRAVELER_HEIGHT,
+  TURN_BLEND_MS,
+  WALK_CYCLE_HZ,
+  WALK_STRIDE,
+  blendDuration,
   clipFrames,
   facingFromMove,
   frameIndex,
@@ -10,35 +18,60 @@ import {
   poseForSheet,
   sheetOf,
   stepCycle,
+  stepCycleByDistance,
   stepGait,
   TravelerMark,
+  type TravelerFacing,
 } from './Traveler';
 import { WalkLayer } from './WalkLayer';
 import type { SpotView } from './spotViews';
 
 describe('traveler art', () => {
-  it('uses the front sprite by default and the front silhouette only then', () => {
+  it('uses the front idle frame and the same contact shadow on every facing', () => {
     const view = render(<TravelerMark x={0.4} y={0.6} facing="front" moving={false} />);
-    const mark = view.container.querySelector('[data-testid="traveler"]');
-    const srcs = () =>
-      [...view.container.querySelectorAll<HTMLImageElement>('.traveler img')].map((img) => img.getAttribute('src') ?? '');
+    const mark = view.container.querySelector('[data-testid="traveler"]') as HTMLElement;
+    const current = () => view.container.querySelector('[data-layer="current"]')?.getAttribute('src') ?? '';
     expect(mark?.getAttribute('data-figure')).toBe('traveler');
     expect(mark?.getAttribute('data-facing')).toBe('front');
-    expect(srcs()).toEqual([expect.stringMatching(/05-silhouette/), expect.stringMatching(/idle-front-01/)]);
+    expect(current()).toMatch(/idle-front-01/);
+    expect(view.container.querySelector('.traveler-shade')).toBeNull();
+    expect(view.container.querySelector('[data-testid="contact-shadow"]')).toBeTruthy();
+    for (const facing of ['back', 'left', 'right'] as const) {
+      view.rerender(<TravelerMark x={0.4} y={0.6} facing={facing} moving={false} />);
+      expect(view.container.querySelector('.traveler-shade')).toBeNull();
+      expect(view.container.querySelector('[data-testid="contact-shadow"]')).toBeTruthy();
+    }
   });
 
-  it('uses the side walk sheet for both directions and holds walk-back-01 while idle facing away', () => {
+  it('sizes the figure as a fraction of the world and mirrors only the right-facing sheet', () => {
+    const view = render(<TravelerMark x={0.4} y={0.6} facing="left" moving={false} />);
+    const mark = view.container.querySelector('[data-testid="traveler"]') as HTMLElement;
+    expect(TRAVELER_HEIGHT).toBeGreaterThan(0.12);
+    expect(TRAVELER_HEIGHT).toBeLessThan(0.22);
+    expect(mark.style.height).toBe(`${TRAVELER_HEIGHT * 100}%`);
+    expect(mark.style.aspectRatio.replace(/\s/g, '')).toBe('3/4');
+    expect(view.container.querySelector('[data-mirror="yes"]')).toBeNull();
+    const shadow = view.container.querySelector('[data-testid="contact-shadow"]') as HTMLElement;
+    expect(shadow.style.width.endsWith('%')).toBe(true);
+    const narrow = shadow.style.width;
+    view.rerender(<TravelerMark x={0.4} y={0.9} facing="right" moving />);
+    const wider = view.container.querySelector('[data-testid="contact-shadow"]') as HTMLElement;
+    expect(view.container.querySelector('[data-mirror="yes"]')).toBeTruthy();
+    expect(parseFloat(wider.style.width)).toBeGreaterThan(parseFloat(narrow));
+  });
+
+  it('uses the side walk sheet for both directions and a real back idle', () => {
     const view = render(<TravelerMark x={0.4} y={0.6} facing="left" moving />);
-    const read = () =>
-      [...view.container.querySelectorAll<HTMLImageElement>('.traveler img')].map((img) => img.getAttribute('src') ?? '');
+    const current = () => view.container.querySelector('[data-layer="current"]')?.getAttribute('src') ?? '';
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-facing')).toBe('left');
-    expect(read()).toEqual([expect.stringMatching(/walk-side-01/)]);
+    expect(current()).toMatch(/walk-side-01/);
 
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="right" moving />);
-    expect(read()).toEqual([expect.stringMatching(/walk-side-01/)]);
+    expect(current()).toMatch(/walk-side-01/);
 
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="back" moving={false} />);
-    expect(read()).toEqual([expect.stringMatching(/walk-back-01/)]);
+    expect(current()).toMatch(/idle-back-01/);
+    expect(current()).not.toMatch(/walk-back/);
   });
 
   it('picks front, back, or the mirrored side from the move', () => {
@@ -59,6 +92,7 @@ describe('traveler art', () => {
     const falling = stepGait(1, 0, 0.05);
     expect(falling).toBeGreaterThan(0.7);
     expect(falling).toBeLessThan(1);
+    expect(stepGait(1, 0, 0.2)).toBeGreaterThan(0.7);
     expect(stepCycle(0.4, 0, 1)).toBeCloseTo(0.4);
     expect(stepCycle(0, 1, 0.2)).toBeGreaterThan(stepCycle(0, 0.25, 0.2));
     expect(nextLocomotion('idle', 0.1)).toBe('idle');
@@ -83,8 +117,12 @@ describe('traveler art', () => {
     expect(new Set(idleSide).size).toBe(2);
     const walkBack = clipFrames('walk', 'back');
     expect(walkBack[0]).toMatch(/walk-back-01/);
-    expect(clipFrames('idle', 'back')).toEqual([walkBack[0], walkBack[0]]);
-    expect(clipFrames('interact', 'back')).toEqual([walkBack[0]]);
+    const idleBack = clipFrames('idle', 'back');
+    expect(idleBack).toHaveLength(2);
+    expect(new Set(idleBack).size).toBe(2);
+    expect(idleBack.map((src) => src.match(/idle-back-0[12]/)?.[0])).toEqual(['idle-back-01', 'idle-back-02']);
+    expect(idleBack.join(' ')).not.toMatch(/walk-back/);
+    expect(clipFrames('interact', 'back')).toEqual([idleBack[0]]);
     const reachFront = clipFrames('reach', 'front');
     expect(reachFront.map((src) => src.match(/reach-front-0[12]/)?.[0])).toEqual(['reach-front-01', 'reach-front-02']);
     expect(new Set(reachFront).size).toBe(2);
@@ -109,7 +147,7 @@ describe('traveler art', () => {
     expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/reach-side-01/);
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="back" moving={false} pose="reach" />);
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).toBe('idle');
-    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/walk-back-01/);
+    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/idle-back-01/);
   });
 
   it('plays reach only when an interaction happens inside a hotspot', () => {
@@ -139,6 +177,7 @@ describe('traveler art', () => {
         onInteract={() => undefined}
         onAsk={() => undefined}
         onEscape={() => undefined}
+        catPost={companionPost('dba.scene.shore', {}, {})}
       />
     );
     const near = render(layer([here], null));
@@ -163,5 +202,29 @@ describe('traveler art', () => {
     expect(mark?.getAttribute('data-pose')).toBe('walk');
     expect(mark?.getAttribute('data-clip-frames')).toBe('4');
     expect(mark?.getAttribute('data-gait')).toBe('1.00');
+  });
+
+  it('keeps the same contact shadow while facing changes and blends the turn', () => {
+    const view = render(<TravelerMark x={0.4} y={0.6} facing="front" moving={false} />);
+    expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-crossfade')).toBe('no');
+    view.rerender(<TravelerMark x={0.4} y={0.6} facing="left" moving />);
+    expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-crossfade')).toBe('yes');
+    expect(view.container.querySelector('[data-layer="out"]')).toBeTruthy();
+    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/walk-side-01/);
+    expect(view.container.querySelector('.traveler-shade')).toBeNull();
+  });
+
+  it('advances the walk cycle from distance and blends frames inside a clip', () => {
+    expect(WALK_CYCLE_HZ).toBeLessThan(1.8);
+    expect(WALK_SPEED / WALK_STRIDE).toBeCloseTo(WALK_CYCLE_HZ, 5);
+    expect(stepCycleByDistance(0.25, 0)).toBeCloseTo(0.25);
+    const half = stepCycleByDistance(0, WALK_STRIDE / 2);
+    expect(half).toBeCloseTo(0.5);
+    expect(stepCycleByDistance(half, WALK_STRIDE / 2)).toBeCloseTo(0);
+    const posed = { sheet: 'front' as const, pose: 'walk' as const, frame: 0, facing: 'front' as TravelerFacing };
+    expect(blendDuration(posed, posed)).toBe(0);
+    expect(blendDuration(posed, { ...posed, frame: 1 })).toBe(FRAME_BLEND_MS);
+    expect(blendDuration(posed, { ...posed, sheet: 'side', facing: 'right' })).toBe(TURN_BLEND_MS);
+    expect(TURN_BLEND_MS).toBeGreaterThan(FRAME_BLEND_MS);
   });
 });

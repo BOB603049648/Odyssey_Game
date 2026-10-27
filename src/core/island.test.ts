@@ -57,27 +57,48 @@ describe('island 1 scenes', () => {
   });
 
   it('treats driftwood as a place to sit, not another piece of evidence', () => {
-    const state = reduce(ashore(), { type: 'sit-driftwood' });
+    const before = ashore();
+    const state = reduce(before, { type: 'sit-driftwood' });
     expect(state.flags['dba.flag.driftwood']).toBe(true);
     expect(state.evidence).toEqual(['dba.ev.a']);
+    expect(state.feedback.line).toBe('spot.driftwood.ok');
+    expect(state.words).toEqual(before.words);
+    const again = reduce(state, { type: 'sit-driftwood' });
+    expect(again.feedback.line).toBe('spot.driftwood.again');
+    const far = reduce(before, { type: 'spot-far', id: 'shore-driftwood' });
+    expect(far.feedback.line).toBe('spot.driftwood.far');
+    expect(far.flags['dba.flag.driftwood']).toBeUndefined();
+    expect(far.flags['dba.flag.taught-approach']).toBeUndefined();
   });
 
   it('lets sleep and shared food land only after the matching words', () => {
     let state = reduce(ashore(), { type: 'goto-scene', scene: 'dba.scene.camp' });
-    expect(reduce(state, { type: 'sleep-at-camp' }).beats['dba.beat.sleep']).toBeUndefined();
+    const denied = reduce(state, { type: 'sleep-at-camp' });
+    expect(denied.beats['dba.beat.sleep']).toBeUndefined();
+    expect(denied.feedback.line).toBe('spot.sleep.no');
+    expect(denied.flags['dba.flag.taught-approach']).toBeUndefined();
     state = learn(learnLayer(ashore(), 'concrete'), 'dba.word.sleep');
     state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.camp' });
     state = reduce(state, { type: 'sleep-at-camp' });
     expect(state.beats['dba.beat.sleep']).toBe(true);
+    expect(state.feedback.line).toBe('spot.sleep.ok');
 
     state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.yard' });
-    expect(reduce(state, { type: 'give-fish' }).beats['dba.beat.food']).toBeUndefined();
+    const refused = reduce(state, { type: 'give-fish' });
+    expect(refused.beats['dba.beat.food']).toBeUndefined();
+    expect(refused.feedback.line).toBe('spot.give.no');
     state = learnLayer(state, 'action');
     state = learnLayer(state, 'relation');
     state = learn(state, 'dba.word.share');
     state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.yard' });
     state = reduce(state, { type: 'give-fish' });
     expect(state.beats['dba.beat.food']).toBe(true);
+    expect(state.feedback.line).toBe('spot.give.ok');
+    const wrong = reduce(state, { type: 'grab-fish' });
+    expect(wrong.feedback.line).toBe('spot.give.wrong');
+    expect(wrong.flags['dba.flag.wrong-share']).toBe(true);
+    expect(wrong.beats['dba.beat.food']).toBe(true);
+    expect(reduce(state, { type: 'spot-far', id: 'yard-give' }).feedback.line).toBe('spot.give.far');
   });
 
   it('opens the forest only when the player stops after learning danger', () => {

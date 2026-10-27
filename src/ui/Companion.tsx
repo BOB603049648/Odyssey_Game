@@ -10,6 +10,7 @@ export function Companion({
   purr,
   knot = 'rest',
   onAsk,
+  figure,
 }: {
   level: HintLevel;
   anchor: HintAnchor;
@@ -17,6 +18,8 @@ export function Companion({
   purr: boolean;
   knot?: KnotMark;
   onAsk: () => void;
+  /** Grounded scene plate. The anchor still moves; this is the body, not a pinned sticker. */
+  figure?: string;
 }) {
   return (
     <button
@@ -33,7 +36,11 @@ export function Companion({
       aria-label={t('companion.ask')}
     >
       <span className="companion-sway">
-        <CatMark look={anchor} state={nanaichaState(level, pose)} knot={knot} />
+        {figure ? (
+          <img className="nanaicha-ground" data-look={anchor} src={figure} alt="" draggable={false} />
+        ) : (
+          <CatMark look={anchor} state={nanaichaState(level, pose)} knot={knot} />
+        )}
       </span>
     </button>
   );

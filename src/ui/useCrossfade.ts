@@ -1,21 +1,20 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const FADE_MS = 520;
 
 export function useCrossfade(key: string, ms = FADE_MS) {
-  const seen = useRef(key);
   const [current, setCurrent] = useState(key);
   const [previous, setPrevious] = useState<string | null>(null);
+  if (key !== current) {
+    setPrevious(current);
+    setCurrent(key);
+  }
 
   useEffect(() => {
-    if (key === seen.current) return;
-    const outgoing = seen.current;
-    seen.current = key;
-    setPrevious(outgoing);
-    setCurrent(key);
+    if (!previous) return undefined;
     const id = window.setTimeout(() => setPrevious(null), ms);
     return () => window.clearTimeout(id);
-  }, [key, ms]);
+  }, [current, previous, ms]);
 
   return { current, previous };
 }

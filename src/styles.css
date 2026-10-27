@@ -486,6 +486,13 @@ h1 {
   pointer-events: none;
 }
 
+.path-exit[data-hearth="yes"] i {
+  opacity: 0.9;
+  border-color: rgba(255, 170, 70, 0.9);
+  background: radial-gradient(circle, rgba(255, 176, 80, 0.95), rgba(140, 50, 10, 0.15) 72%);
+  box-shadow: 0 0 16px rgba(255, 140, 40, 0.8);
+}
+
 .path-exit.near i {
   opacity: 1;
   box-shadow: 0 0 10px rgba(230, 211, 164, 0.5);
@@ -498,15 +505,14 @@ h1 {
 .traveler {
   position: absolute;
   z-index: 5;
-  width: 117px;
-  height: 156px;
+  width: auto;
+  aspect-ratio: 3 / 4;
   transform: translate(-50%, -96%);
   pointer-events: none;
 }
 
-.traveler[data-facing="right"] { transform: translate(-50%, -96%) scaleX(-1); }
-
 .traveler-bob { position: relative; height: 100%; }
+.traveler[data-pose="lie"] { transform: translate(-50%, -96%) rotate(-72deg); transform-origin: 50% 96%; }
 
 .traveler img {
   display: block;
@@ -519,24 +525,18 @@ h1 {
   -webkit-user-drag: none;
 }
 
-.traveler-shade {
-  position: absolute;
-  left: 0;
-  top: 7%;
-  opacity: 0.38;
-  filter: blur(1.5px);
-}
-
 .traveler-frames { position: relative; height: 100%; }
+.traveler-frame-wrap { display: block; height: 100%; }
+.traveler-frame-wrap[data-mirror="yes"] { transform: scaleX(-1); }
 .traveler-frame {
   display: block;
   width: 100%;
   height: 100%;
 }
-.traveler-frame[data-layer="out"] {
+.traveler-frame-wrap.out {
   position: absolute;
   inset: 0;
-  animation: traveler-fade-out 200ms ease forwards;
+  animation: traveler-fade-out var(--frame-blend, 140ms) linear forwards;
 }
 .traveler[data-pose="idle"] .traveler-bob {
   transform-origin: 50% 100%;
@@ -691,9 +691,30 @@ h1 {
 .companion-anchor {
   position: absolute;
   z-index: 4;
-  width: 188px;
-  transform: translate(-50%, -100%);
+  width: auto;
+  aspect-ratio: 16 / 9;
   pointer-events: none;
+}
+
+.nanaicha-ground {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  transform-origin: 50% 93%;
+  pointer-events: none;
+}
+
+.companion-anchor[data-face="left"] .nanaicha-ground { transform: scaleX(-1); }
+.companion-anchor[data-traveling="yes"] .nanaicha-ground { animation: nanaicha-hop 0.55s ease-in-out infinite; }
+.companion-anchor[data-look="gourd"] .nanaicha-ground,
+.companion-anchor[data-look="give"] .nanaicha-ground,
+.companion-anchor[data-look="sleep"] .nanaicha-ground,
+.companion-anchor[data-look="depart"] .nanaicha-ground,
+.companion-anchor[data-look="path-stop"] .nanaicha-ground,
+.companion-anchor[data-look="driftwood"] .nanaicha-ground {
+  transform-origin: 50% 93%;
 }
 
 .shore-wrap .companion {
@@ -1161,8 +1182,10 @@ h1 {
 .plate-fade.in { z-index: 1; animation: dissolve-in 520ms ease; }
 .plate-fade.out { z-index: 2; animation: dissolve-out 520ms ease forwards; }
 
-.walk-viewport .plate-fade.in,
-.walk-viewport .plate-fade.out { animation-duration: 980ms; }
+.walk-viewport .plate-fade.out { z-index: 1; animation: none; opacity: 1; }
+.walk-viewport .plate-fade.in { z-index: 2; animation-duration: 980ms; }
+.prologue .plate-fade.in { z-index: 2; animation: none; opacity: 1; }
+.prologue .plate-fade.out { z-index: 1; animation: none; opacity: 0; }
 
 .walk-viewport[data-arrive="from-left"] .traveler-bob { animation: arrive-left 880ms ease; }
 .walk-viewport[data-arrive="from-right"] .traveler-bob { animation: arrive-right 880ms ease; }
@@ -1260,6 +1283,7 @@ h1 {
   z-index: 6;
   pointer-events: none;
   background: #070c0e;
+  opacity: 0;
   animation: veil-out 520ms ease forwards;
 }
 
@@ -1344,7 +1368,7 @@ h1 {
   .plate-photo, .plate-fade, .ambient, .ambient-water::after,
   .companion-sway, .hud-caption, .sheet, .enter-veil, .hotspot, .act-tray button, .hud-actions .btn,
   .traveler-bob,
-  .traveler-frame[data-layer="out"] {
+  .traveler-frame-wrap.out {
     animation: none;
     transition: none;
   }
@@ -1402,8 +1426,7 @@ h1 {
   }
 
   .companion-anchor {
-    width: clamp(88px, 24vmin, 140px);
-    transform: translate(-72%, -108%);
+    width: auto;
   }
 
   .shore-wrap .companion {
@@ -1419,11 +1442,6 @@ h1 {
     height: 48px;
     transform: translateX(-50%);
     pointer-events: auto;
-  }
-
-  .traveler {
-    width: 46px;
-    height: 112px;
   }
 
   .walk-stick {
@@ -1808,6 +1826,7 @@ h1 {
   z-index: 0;
 }
 
+.diegetic-line,
 .approach-hint {
   position: absolute;
   left: 50%;
@@ -1817,9 +1836,31 @@ h1 {
   margin: 0;
   padding: 8px 14px;
   color: var(--bone);
-  letter-spacing: 0.12em;
-  background: rgba(8, 10, 12, 0.55);
+  letter-spacing: 0.06em;
+  background: none;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
   pointer-events: none;
+}
+
+.interact-flash {
+  position: absolute;
+  z-index: 6;
+  width: 18%;
+  height: auto;
+  transform: translate(-50%, -94%);
+  pointer-events: none;
+  animation: interact-flash 900ms ease forwards;
+}
+
+@keyframes interact-flash {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes nanaicha-hop {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7%); }
 }
 
 .chart-sealed {

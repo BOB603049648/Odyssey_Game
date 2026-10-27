@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
+import { WALK_SPEED } from '../core/walk';
 import reachFront01 from '../assets/traveler/reach-front-01.png';
 import reachFront02 from '../assets/traveler/reach-front-02.png';
 import reachSide01 from '../assets/traveler/reach-side-01.png';
+import idleBack01 from '../assets/traveler/idle-back-01.png';
+import idleBack02 from '../assets/traveler/idle-back-02.png';
 import idleFront01 from '../assets/traveler/idle-front-01.png';
 import idleFront02 from '../assets/traveler/idle-front-02.png';
 import idleSide01 from '../assets/traveler/idle-side-01.png';
 import idleSide02 from '../assets/traveler/idle-side-02.png';
-import silhouette from '../assets/traveler/05-silhouette.png';
 import walkBack01 from '../assets/traveler/walk-back-01.png';
 import walkBack02 from '../assets/traveler/walk-back-02.png';
 import walkBack03 from '../assets/traveler/walk-back-03.png';
@@ -22,7 +24,7 @@ import walkSide04 from '../assets/traveler/walk-side-04.png';
 
 export type TravelerFacing = 'front' | 'back' | 'left' | 'right';
 export type TravelerSheet = 'front' | 'side' | 'back';
-export type TravelerPose = 'idle' | 'walk' | 'interact' | 'reach';
+export type TravelerPose = 'idle' | 'walk' | 'interact' | 'reach' | 'lie';
 export type TravelerLocomotion = 'idle' | 'walk';
 
 /** v3 P0: walk is 4 × front/side/back; idle is 2 for front and side. Reach front is 2, side is 1. */
@@ -43,11 +45,10 @@ const WALK: Record<TravelerSheet, readonly string[]> = {
   back: [walkBack01, walkBack02, walkBack03, walkBack04],
 };
 
-/** Back idle was not in the P0 set. Both slots hold walk-back-01 until that sheet arrives. */
 const IDLE: Record<TravelerSheet, readonly string[]> = {
   front: [idleFront01, idleFront02],
   side: [idleSide01, idleSide02],
-  back: [walkBack01, walkBack01],
+  back: [idleBack01, idleBack02],
 };
 
 /** Back reach was not delivered. Missing sheets fall back to idle. */
@@ -56,11 +57,21 @@ const REACH: Partial<Record<TravelerSheet, readonly string[]>> = {
   side: [reachSide01],
 };
 
-/** Full-speed walk cycles per second. Frame rate scales with gait, which eases toward stride. */
-export const WALK_CYCLE_HZ = 2.4;
+/**
+ * Full-speed walk cycles per second while covering WALK_SPEED.
+ * Playback follows distance (`WALK_STRIDE`), so a slower stick does not skate.
+ * The old 2.4 Hz read as a scramble at full speed.
+ */
+export const WALK_CYCLE_HZ = 1.15;
+export const WALK_STRIDE = WALK_SPEED / WALK_CYCLE_HZ;
+/** Figure box height as a fraction of the world layer — same space as prop slots. */
+export const TRAVELER_HEIGHT = 0.15;
+/** Overlap between frames inside one clip, and a slightly longer blend on a turn. */
+export const FRAME_BLEND_MS = 140;
+export const TURN_BLEND_MS = 220;
 export const IDLE_CYCLE_HZ = 0.35;
 export const GAIT_RISE = 3.4;
-export const GAIT_FALL = 2.2;
+export const GAIT_FALL = 1.65;
 const WALK_ON = 0.2;
 const WALK_OFF = 0.07;
 
@@ -92,6 +103,32 @@ export function stepCycle(phase: number, gait: number, dt: number, hz = WALK_CYC
   return next - Math.floor(next);
 }
 
+/** One walk cycle per `stride` world-units, so feet stay with the distance actually moved. */
+export function stepCycleByDistance(phase: number, distance: number, stride = WALK_STRIDE): number {
+  if (!(stride > 0)) return phase;
+  const next = phase + Math.max(0, distance) / stride;
+  return next - Math.floor(next);
+}
+
+export type FrameBlend = {
+  sheet: TravelerSheet;
+  pose: TravelerPose;
+  frame: number;
+  facing: TravelerFacing;
+};
+
+export function blendDuration(prev: FrameBlend, next: FrameBlend): number {
+  if (prev.facing !== next.facing || prev.sheet !== next.sheet) return TURN_BLEND_MS;
+  if (prev.pose !== next.pose || prev.frame !== next.frame) return FRAME_BLEND_MS;
+  return 0;
+}
+
+/** Contact shadow width as a fraction of the figure box. Wider when the figure is lower in the scene. */
+export function contactShadowWidth(y: number): number {
+  const depth = Math.min(1, Math.max(0, y));
+  return ((36 + depth * 22) * 0.64) / 117;
+}
+
 export function nextLocomotion(current: TravelerLocomotion, gait: number): TravelerLocomotion {
   if (current === 'idle') return gait >= WALK_ON ? 'walk' : 'idle';
   return gait <= WALK_OFF ? 'idle' : 'walk';
@@ -111,19 +148,27 @@ export function clipFrames(pose: TravelerPose, sheet: TravelerSheet): readonly s
   const shown = poseForSheet(pose, sheet);
   if (shown === 'walk') return WALK[sheet];
   if (shown === 'reach') return REACH[sheet] ?? IDLE[sheet];
-  if (shown === 'idle') return IDLE[sheet];
+  if (shown === 'idle' || shown === 'lie') return IDLE[sheet];
   return [IDLE[sheet][0]];
 }
 
 type Motion = { gait: number; pose: TravelerPose; frame: number };
 
-function useTravelerMotion(stride: number, override: 'auto' | 'interact' | 'reach', sheet: TravelerSheet): Motion {
+function useTravelerMotion(
+  stride: number,
+  override: 'auto' | 'interact' | 'reach' | 'lie',
+  sheet: TravelerSheet,
+  x: number,
+  y: number,
+): Motion {
   const strideRef = useRef(stride);
   const overrideRef = useRef(override);
   const sheetRef = useRef(sheet);
+  const posRef = useRef({ x, y });
   strideRef.current = stride;
   overrideRef.current = override;
   sheetRef.current = sheet;
+  posRef.current = { x, y };
   const [motion, setMotion] = useState<Motion>({ gait: 0, pose: 'idle', frame: 0 });
 
   useEffect(() => {
@@ -136,15 +181,21 @@ function useTravelerMotion(stride: number, override: 'auto' | 'interact' | 'reac
     let reachPhase = 0;
     let prevPose: TravelerPose = 'idle';
     let locomotion: TravelerLocomotion = 'idle';
+    let lastPos = { ...posRef.current };
     const tick = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
+      const here = posRef.current;
+      const dist = Math.hypot(here.x - lastPos.x, here.y - lastPos.y);
+      lastPos = here;
       gait = stepGait(gait, strideRef.current, dt);
       locomotion = nextLocomotion(locomotion, gait);
       const requested: TravelerPose = overrideRef.current === 'auto' ? locomotion : overrideRef.current;
       const pose = poseForSheet(requested, sheetRef.current);
-      if (pose === 'walk') walkPhase = stepCycle(walkPhase, gait, dt);
-      else if (pose === 'reach') {
+      if (pose === 'walk') {
+        if (dist > 1e-6) walkPhase = stepCycleByDistance(walkPhase, dist);
+        else if (strideRef.current <= 0.001) walkPhase = stepCycle(walkPhase, gait, dt);
+      } else if (pose === 'reach') {
         reachPhase = prevPose === 'reach' ? stepCycle(reachPhase, 1, dt, REACH_HZ) : 0;
       } else idlePhase = stepCycle(idlePhase, 1, dt, IDLE_CYCLE_HZ);
       prevPose = pose;
@@ -165,6 +216,30 @@ function useTravelerMotion(stride: number, override: 'auto' | 'interact' | 'reac
   return motion;
 }
 
+function sameBlend(a: FrameBlend, b: FrameBlend): boolean {
+  return a.sheet === b.sheet && a.pose === b.pose && a.frame === b.frame && a.facing === b.facing;
+}
+
+function FramePicture({ blend, layer }: { blend: FrameBlend; layer: 'out' | 'current' }) {
+  const frames = clipFrames(blend.pose, blend.sheet);
+  const index = Math.min(frames.length - 1, Math.max(0, blend.frame));
+  return (
+    <span
+      className={layer === 'out' ? 'traveler-frame-wrap out' : 'traveler-frame-wrap'}
+      data-mirror={blend.facing === 'right' ? 'yes' : 'no'}
+    >
+      <img
+        className={layer === 'current' ? 'traveler-figure traveler-frame' : 'traveler-frame'}
+        data-layer={layer}
+        data-frame={index}
+        src={frames[index] ?? frames[0]}
+        alt=""
+        draggable={false}
+      />
+    </span>
+  );
+}
+
 export function TravelerMark({
   x,
   y,
@@ -180,28 +255,29 @@ export function TravelerMark({
   /** 0–1 movement power. Defaults to a full step while `moving` is set. */
   stride?: number;
   /** `reach` plays on a hotspot interaction. `interact` is still reserved, with no frames of its own. */
-  pose?: 'auto' | 'interact' | 'reach';
+  pose?: 'auto' | 'interact' | 'reach' | 'lie';
 }) {
   const sheet = sheetOf(facing);
   const power = stride ?? (moving ? 1 : 0);
-  const motion = useTravelerMotion(power, pose, sheet);
+  const motion = useTravelerMotion(power, pose, sheet, x, y);
   const frames = clipFrames(motion.pose, sheet);
   const frame = Math.min(frames.length - 1, motion.frame);
-  const shownRef = useRef({ sheet, pose: motion.pose, frame });
-  const [outgoing, setOutgoing] = useState<{ sheet: TravelerSheet; pose: TravelerPose; frame: number } | null>(null);
+  const current: FrameBlend = { sheet, pose: motion.pose, frame, facing };
+  const [shown, setShown] = useState(current);
+  const [outgoing, setOutgoing] = useState<FrameBlend | null>(null);
+  if (!sameBlend(shown, current)) {
+    if (blendDuration(shown, current) > 0) setOutgoing(shown);
+    setShown(current);
+  }
 
   useEffect(() => {
-    const previous = shownRef.current;
-    const changed = previous.sheet !== sheet || previous.pose !== motion.pose;
-    shownRef.current = { sheet, pose: motion.pose, frame };
-    if (!changed) return undefined;
-    if (import.meta.env.MODE === 'test') return undefined;
-    setOutgoing(previous);
-    const id = window.setTimeout(() => setOutgoing(null), 200);
+    if (!outgoing || import.meta.env.MODE === 'test') return undefined;
+    const ms = blendDuration(outgoing, shown) || FRAME_BLEND_MS;
+    const id = window.setTimeout(() => setOutgoing(null), ms);
     return () => window.clearTimeout(id);
-  }, [sheet, motion.pose, frame]);
+  }, [outgoing, shown]);
 
-  const showShade = sheet === 'front' || outgoing?.sheet === 'front';
+  const blendMs = outgoing ? blendDuration(outgoing, shown) || FRAME_BLEND_MS : 0;
   return (
     <div
       className="traveler"
@@ -217,35 +293,24 @@ export function TravelerMark({
       data-crossfade={outgoing ? 'yes' : 'no'}
       data-x={x}
       data-y={y}
-      style={{ left: `${x * 100}%`, top: `${y * 100}%` }}
+      style={{
+        left: `${x * 100}%`,
+        top: `${y * 100}%`,
+        height: `${TRAVELER_HEIGHT * 100}%`,
+        width: 'auto',
+        aspectRatio: '3 / 4',
+      }}
       aria-hidden="true"
     >
       <div className="traveler-bob">
         <span
           className="contact-shadow"
           data-testid="contact-shadow"
-          style={{ width: `${(36 + y * 22) * 0.64}px` }}
+          style={{ width: `${contactShadowWidth(y) * 100}%`, height: `${(12 / 156) * 100}%` }}
         />
-        {showShade ? <img className="traveler-shade" src={silhouette} alt="" draggable={false} /> : null}
-        <span className="traveler-frames">
-          {outgoing ? (
-            <img
-              className="traveler-frame"
-              data-layer="out"
-              data-frame={outgoing.frame}
-              src={clipFrames(outgoing.pose, outgoing.sheet)[outgoing.frame] ?? clipFrames(outgoing.pose, outgoing.sheet)[0]}
-              alt=""
-              draggable={false}
-            />
-          ) : null}
-          <img
-            className="traveler-figure traveler-frame"
-            data-layer="current"
-            data-frame={frame}
-            src={frames[frame]}
-            alt=""
-            draggable={false}
-          />
+        <span className="traveler-frames" style={{ ['--frame-blend' as string]: `${blendMs}ms` }}>
+          {outgoing ? <FramePicture blend={outgoing} layer="out" /> : null}
+          <FramePicture blend={shown} layer="current" />
         </span>
       </div>
     </div>

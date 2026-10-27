@@ -3,6 +3,66 @@ export const KEY_STEP = 0.05;
 export const WALK_SPEED = 0.38;
 export const COMPANION_RING = 0.13;
 
+/** How fast wished speed is approached, and how long a release takes to settle. */
+export const VELOCITY_RISE = 3.4;
+export const VELOCITY_FALL = 2.2;
+/** Ground clicks ease off inside this distance so the last step is not a snap. */
+export const ARRIVE_WINDOW = 0.08;
+const STOP_SPEED = 0.012;
+
+function easeAxis(from: number, to: number, dt: number): number {
+  const braking = Math.abs(to) < Math.abs(from) || from * to < 0;
+  const rate = braking ? VELOCITY_FALL : VELOCITY_RISE;
+  const next = from + (to - from) * (1 - Math.exp(-rate * Math.max(0, dt)));
+  if (Math.abs(next) < 1e-4) return 0;
+  return next;
+}
+
+export function easeVelocity(current: Point, desired: Point, dt: number): Point {
+  return { x: easeAxis(current.x, desired.x, dt), y: easeAxis(current.y, desired.y, dt) };
+}
+
+/** `input` is a stick or key vector already scaled by power (length 0–1). */
+export function desiredVelocity(input: Point | null, goal: Point | null, pos: Point, maxSpeed = WALK_SPEED): Point {
+  if (input) return { x: input.x * maxSpeed, y: input.y * maxSpeed };
+  if (!goal) return { x: 0, y: 0 };
+  const dx = goal.x - pos.x;
+  const dy = goal.y - pos.y;
+  const dist = Math.hypot(dx, dy);
+  if (dist < 1e-5) return { x: 0, y: 0 };
+  const power = Math.min(1, dist / ARRIVE_WINDOW);
+  return { x: (dx / dist) * maxSpeed * power, y: (dy / dist) * maxSpeed * power };
+}
+
+export function coastStep(
+  pos: Point,
+  velocity: Point,
+  desired: Point,
+  band: Band,
+  dt: number,
+): { pos: Point; velocity: Point; moving: boolean; blocked: boolean } {
+  const nextVel = easeVelocity(velocity, desired, dt);
+  const speed = Math.hypot(nextVel.x, nextVel.y);
+  if (speed < STOP_SPEED && Math.hypot(desired.x, desired.y) < STOP_SPEED) {
+    return { pos, velocity: { x: 0, y: 0 }, moving: false, blocked: false };
+  }
+  const step = integrate(
+    pos,
+    { x: pos.x + nextVel.x, y: pos.y + nextVel.y },
+    band,
+    speed * Math.max(0, dt),
+  );
+  const movedX = step.pos.x - pos.x;
+  const movedY = step.pos.y - pos.y;
+  const settled = step.blocked && dt > 0 ? { x: movedX / dt, y: movedY / dt } : nextVel;
+  return {
+    pos: step.pos,
+    velocity: settled,
+    moving: Math.hypot(movedX, movedY) > 1e-6,
+    blocked: step.blocked,
+  };
+}
+
 export type Point = { x: number; y: number };
 
 export type Band = { minX: number; maxX: number; minY: number; maxY: number };
@@ -102,18 +162,13 @@ export function pointerToWorld(
   };
 }
 
-export function companionSpot(traveler: Point, level: number, target: Point | null, band: Band, phase = 0): Point {
+/** Beside a person or a prop, on the same ground y. Never orbit upward off the foot plane. */
+export function companionSpot(traveler: Point, level: number, target: Point | null, band: Band, _phase = 0): Point {
   if (level >= 2 && target) {
-    return clampToBand({ x: target.x - 0.06, y: target.y - 0.045 }, band);
+    const side = target.x >= traveler.x ? -1 : 1;
+    return clampToBand({ x: target.x + side * 0.05, y: target.y }, band);
   }
-  const angle = -Math.PI / 2 + Math.sin(phase) * 0.45;
-  return clampToBand(
-    {
-      x: traveler.x + Math.cos(angle) * COMPANION_RING,
-      y: traveler.y + Math.sin(angle) * COMPANION_RING,
-    },
-    band,
-  );
+  return clampToBand({ x: traveler.x - COMPANION_RING, y: traveler.y }, band);
 }
 
 export function approachPlan(from: Point, goal: Point, band: Band, radius: number, step = KEY_STEP): WalkKey[] {

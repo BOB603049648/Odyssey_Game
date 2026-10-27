@@ -6,6 +6,7 @@ import {
   advanceCutscene,
   collectTattoo,
   departEast,
+  farSpot,
   forestChoice,
   giveSharedFish,
   gotoScene,
@@ -58,7 +59,8 @@ export type Action =
   | { type: 'debug-ending'; id: EndingContent['id'] }
   | { type: 'scene-act'; wordId: string; part?: 'a' | 'b' | 'more' | 'less' }
   | { type: 'grab-fish' }
-  | { type: 'shore-stone' };
+  | { type: 'shore-stone' }
+  | { type: 'spot-far'; id: string };
 
 const WATER = 'dba.word.water';
 
@@ -136,6 +138,8 @@ export function reduce(state: SaveData, action: Action): SaveData {
       return touch(grabFish(state));
     case 'shore-stone':
       return touch(shoreStone(state));
+    case 'spot-far':
+      return touch(farSpot(state, action.id));
     default:
       return state;
   }
