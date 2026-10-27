@@ -36,11 +36,12 @@ describe('traveler art', () => {
     expect(mark?.getAttribute('data-facing')).toBe('front');
     expect(current()).toMatch(/idle-front-01/);
     expect(view.container.querySelector('.traveler-shade')).toBeNull();
-    expect(view.container.querySelector('[data-testid="contact-shadow"]')).toBeTruthy();
+    expect(view.container.querySelector('[data-testid="contact-shadow"]')).toBeNull();
+    expect(view.container.querySelector('.foot-ellipse')).toBeNull();
     for (const facing of ['back', 'left', 'right'] as const) {
       view.rerender(<TravelerMark x={0.4} y={0.6} facing={facing} moving={false} />);
       expect(view.container.querySelector('.traveler-shade')).toBeNull();
-      expect(view.container.querySelector('[data-testid="contact-shadow"]')).toBeTruthy();
+      expect(view.container.querySelector('.foot-ellipse')).toBeNull();
     }
   });
 
@@ -54,13 +55,9 @@ describe('traveler art', () => {
     const currentMirror = () =>
       view.container.querySelector('[data-layer="current"]')?.parentElement?.getAttribute('data-mirror');
     expect(currentMirror()).toBe('yes');
-    const shadow = view.container.querySelector('[data-testid="contact-shadow"]') as HTMLElement;
-    expect(shadow.style.width.endsWith('%')).toBe(true);
-    const narrow = shadow.style.width;
     view.rerender(<TravelerMark x={0.4} y={0.9} facing="right" moving />);
-    const wider = view.container.querySelector('[data-testid="contact-shadow"]') as HTMLElement;
     expect(currentMirror()).toBe('no');
-    expect(parseFloat(wider.style.width)).toBeGreaterThan(parseFloat(narrow));
+    expect(view.container.querySelector('.foot-ellipse')).toBeNull();
     expect(contactShadowWidth(0.95)).toBeLessThan(0.7);
     expect(contactShadowWidth(0.95)).toBeGreaterThan(contactShadowWidth(0.3));
     expect(view.container.querySelector('.figure-grade')).toBeTruthy();

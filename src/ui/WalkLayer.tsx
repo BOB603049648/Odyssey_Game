@@ -132,6 +132,7 @@ export function WalkLayer({
   flash?: { kind: 'driftwood' | 'sleep' | 'give'; seq: number; x: number; y: number } | null;
 }) {
   const viewportRef = useRef<HTMLDivElement>(null);
+  const soleRef = useRef<HTMLImageElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
   const pending = useRef<Point | null>(null);
   const sceneRef = useRef(scene);
@@ -391,6 +392,26 @@ export function WalkLayer({
         smoothRef.current = nextCam;
         setCam(nextCam);
       }
+      const sole = soleRef.current;
+      const vp = viewportRef.current;
+      const img = vp?.querySelector('.traveler-figure');
+      if (sole && vp && img instanceof HTMLImageElement) {
+        const ir = img.getBoundingClientRect();
+        const vr = vp.getBoundingClientRect();
+        const pose = vp.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose');
+        if (pose === 'lie' || ir.width < 2) {
+          sole.style.visibility = 'hidden';
+        } else {
+          sole.style.visibility = 'visible';
+          const src = img.currentSrc || img.src;
+          if (sole.src !== src) sole.src = src;
+          sole.style.left = `${ir.left - vr.left}px`;
+          sole.style.top = `${ir.top - vr.top}px`;
+          sole.style.width = `${ir.width}px`;
+          sole.style.height = `${ir.height}px`;
+          sole.style.transform = img.parentElement?.getAttribute('data-mirror') === 'yes' ? 'scaleX(-1)' : 'none';
+        }
+      }
       frame = window.requestAnimationFrame(tick);
     };
     frame = window.requestAnimationFrame(tick);
@@ -585,6 +606,9 @@ export function WalkLayer({
       </div>
       <div className="grade-veil" data-grade={sceneAssembly(plates.previous ?? scene)?.grade ?? 'mist-dawn'} data-testid="grade-veil" />
       <img className="scene-grade" data-testid="scene-grade" src={sceneGrade(scene)} alt="" draggable={false} />
+      <div className="sole-layer" data-testid="sole-layer">
+        <img ref={soleRef} className="sole-stamp" data-testid="sole-stamp" alt="" />
+      </div>
       {teachLine ? (
         <p className="approach-hint" data-testid="approach-hint">
           {t('hint.approach')}

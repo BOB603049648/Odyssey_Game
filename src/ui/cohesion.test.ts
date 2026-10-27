@@ -10,7 +10,7 @@ describe('cohesion shadows and grades', () => {
       pr11_ground: { do_not_stack_hard_shadow_on_baked_props: boolean; fog_rule: string };
       pr12_sticker: { eng_must_not: string; fog_match_baked: boolean };
     };
-    expect(contract.version).toBe('1.3-pr18-wrap');
+    expect(contract.version).toBe('1.3-pr19-solid');
     expect(contract.pr12_sticker.fog_match_baked).toBe(true);
     expect(contract.pr12_sticker.eng_must_not).toMatch(/uniform fog alpha/);
     expect(contract.pr11_ground.do_not_stack_hard_shadow_on_baked_props).toBe(true);
@@ -56,8 +56,10 @@ describe('cohesion shadows and grades', () => {
     expect(css).not.toContain('mask-image: var(--ellipse)');
     expect(css).not.toContain('translate(-50%, 46%)');
     expect(css).not.toContain('translate(-50%, 42%)');
-    expect(css).toMatch(/\.traveler \.foot-ellipse,[\s\S]*?background:\s*none/);
-    expect(css).toMatch(/dba\.scene\.shore"\] \.traveler \.figure-grade\s*\{[^}]*mask-composite:\s*intersect/);
+    expect(css).toMatch(/\.traveler \.foot-ellipse\s*\{[^}]*background:\s*none/);
+    expect(css).toMatch(/\.traveler \.figure-grade\s*\{[^}]*#000 80%[^}]*mask-composite:\s*intersect/);
+    expect(css).toMatch(/\.sole-stamp\s*\{[^}]*transparent 91%[^}]*#000 91%/);
+    expect(css).toMatch(/dba\.scene\.shore"\] \.companion-anchor \.figure-grade\.grade-color\s*\{[^}]*opacity:\s*0/);
     expect(css).not.toContain('.sole-ao');
     expect(css).not.toContain('.fog-fringe');
   });
