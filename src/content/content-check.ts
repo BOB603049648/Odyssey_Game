@@ -208,7 +208,7 @@ export function checkContent(): string[] {
       const layer = kit.slots.find((slot) => slot.id === 'art.night.prop.old-layer');
       const embers = kit.slots.find((slot) => slot.id === 'art.night.prop.embers');
       if (layer?.spot !== 'night-read') errors.push('old-layer hotspot must be night-read');
-      if (embers?.spot !== 'night-embers') errors.push('embers hotspot must be night-embers');
+      if (embers?.spot !== 'night-ember') errors.push('embers hotspot must be night-ember');
     }
     if (sceneId === 'dba.scene.yard') {
       for (const id of ['art.yard.prop.grain-bags', 'art.yard.prop.dried-fish', 'art.yard.prop.more-less-boards']) {

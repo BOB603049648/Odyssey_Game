@@ -88,7 +88,7 @@ export const SPOTS: Record<IslandScene, readonly Spot[]> = {
   ],
   'dba.scene.night': [
     { id: 'night-read', x: 0.36, y: 0.58, r: 0.062 },
-    { id: 'night-embers', x: 0.58, y: 0.72, r: 0.038 },
+    { id: 'night-ember', x: 0.58, y: 0.72, r: 0.038 },
     { id: 'night-memory', x: 0.64, y: 0.64, r: 0.058 },
   ],
 };

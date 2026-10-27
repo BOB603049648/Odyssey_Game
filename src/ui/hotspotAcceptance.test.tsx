@@ -160,11 +160,11 @@ describe('hotspot acceptance', () => {
     expect(view.container.querySelector('.plate-photo')).toBeNull();
   });
 
-  it('mounts the night layers on night-read and night-embers', () => {
-    // camp：火旁过夜铺可读 + 北缝始终可进 night。旧层热区定稿 night-read，余烬定稿 night-embers，北缝无锁。
+  it('mounts the night layers on night-read and night-ember', () => {
+    // camp：火旁过夜铺可读 + 北缝始终可进 night。旧层热区定稿 night-read，余烬定稿 night-ember，北缝无锁。
     const view = render(<PlateStack plate="dba.scene.night" previous={null} />);
     expect(screen.getByTestId('prop-art.night.prop.old-layer').getAttribute('data-spot')).toBe('night-read');
-    expect(screen.getByTestId('prop-art.night.prop.embers').getAttribute('data-spot')).toBe('night-embers');
+    expect(screen.getByTestId('prop-art.night.prop.embers').getAttribute('data-spot')).toBe('night-ember');
     expect(screen.getByTestId('prop-art.night.prop.memory-scrap').getAttribute('data-spot')).toBe('night-memory');
     for (const id of [
       'prop-art.night.prop.old-layer',

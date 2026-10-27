@@ -586,7 +586,7 @@
         "kind": "embers",
         "asset": "art.night.prop.embers",
         "parallax": 1,
-        "spot": "night-embers",
+        "spot": "night-ember",
         "x": 0.58,
         "y": 0.72,
         "w": 0.32,
