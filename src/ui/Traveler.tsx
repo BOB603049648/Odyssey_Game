@@ -1,19 +1,28 @@
 import { useEffect, useRef, useState } from 'react';
-import side from '../assets/traveler/02-side.png';
-import back from '../assets/traveler/03-back.png';
-import front from '../assets/traveler/04-front.png';
+import idleFront01 from '../assets/traveler/idle-front-01.png';
+import idleFront02 from '../assets/traveler/idle-front-02.png';
+import idleSide01 from '../assets/traveler/idle-side-01.png';
+import idleSide02 from '../assets/traveler/idle-side-02.png';
 import silhouette from '../assets/traveler/05-silhouette.png';
+import walkBack01 from '../assets/traveler/walk-back-01.png';
+import walkBack02 from '../assets/traveler/walk-back-02.png';
+import walkBack03 from '../assets/traveler/walk-back-03.png';
+import walkBack04 from '../assets/traveler/walk-back-04.png';
+import walkFront01 from '../assets/traveler/walk-front-01.png';
+import walkFront02 from '../assets/traveler/walk-front-02.png';
+import walkFront03 from '../assets/traveler/walk-front-03.png';
+import walkFront04 from '../assets/traveler/walk-front-04.png';
+import walkSide01 from '../assets/traveler/walk-side-01.png';
+import walkSide02 from '../assets/traveler/walk-side-02.png';
+import walkSide03 from '../assets/traveler/walk-side-03.png';
+import walkSide04 from '../assets/traveler/walk-side-04.png';
 
 export type TravelerFacing = 'front' | 'back' | 'left' | 'right';
 export type TravelerSheet = 'front' | 'side' | 'back';
 export type TravelerPose = 'idle' | 'walk' | 'interact' | 'reach';
 export type TravelerLocomotion = 'idle' | 'walk';
 
-/**
- * v3 sheets drop in here: walk is 4 frames × front/side/back, idle is 2.
- * Until those files land, every slot repeats the matching still. The frame
- * index still advances, so the rhythm can be checked before the drawings change.
- */
+/** v3 P0: walk is 4 frames × front/side/back; idle is 2 for front and side. */
 export const TRAVELER_FRAME_COUNTS = {
   idle: 2,
   walk: 4,
@@ -21,10 +30,17 @@ export const TRAVELER_FRAME_COUNTS = {
   reach: 1,
 } as const;
 
-const STILL: Record<TravelerSheet, string> = {
-  front,
-  side,
-  back,
+const WALK: Record<TravelerSheet, readonly string[]> = {
+  front: [walkFront01, walkFront02, walkFront03, walkFront04],
+  side: [walkSide01, walkSide02, walkSide03, walkSide04],
+  back: [walkBack01, walkBack02, walkBack03, walkBack04],
+};
+
+/** Back idle was not in the P0 set. Both slots hold walk-back-01 until that sheet arrives. */
+const IDLE: Record<TravelerSheet, readonly string[]> = {
+  front: [idleFront01, idleFront02],
+  side: [idleSide01, idleSide02],
+  back: [walkBack01, walkBack01],
 };
 
 /** Full-speed walk cycles per second. Frame rate scales with gait, which eases toward stride. */
@@ -74,8 +90,9 @@ export function frameIndex(phase: number, count: number): number {
 }
 
 export function clipFrames(pose: TravelerPose, sheet: TravelerSheet): readonly string[] {
-  const still = STILL[sheet];
-  return Array.from({ length: TRAVELER_FRAME_COUNTS[pose] }, () => still);
+  if (pose === 'walk') return WALK[sheet];
+  if (pose === 'idle') return IDLE[sheet];
+  return [IDLE[sheet][0]];
 }
 
 type Motion = { gait: number; pose: TravelerPose; frame: number };
@@ -178,7 +195,7 @@ export function TravelerMark({
         <span
           className="contact-shadow"
           data-testid="contact-shadow"
-          style={{ width: `${36 + y * 22}%` }}
+          style={{ width: `${(36 + y * 22) * 0.64}px` }}
         />
         {showShade ? <img className="traveler-shade" src={silhouette} alt="" draggable={false} /> : null}
         <span className="traveler-frames">

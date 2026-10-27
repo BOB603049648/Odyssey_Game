@@ -498,7 +498,7 @@ h1 {
 .traveler {
   position: absolute;
   z-index: 5;
-  width: 64px;
+  width: 117px;
   height: 156px;
   transform: translate(-50%, -96%);
   pointer-events: none;
@@ -512,7 +512,7 @@ h1 {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center bottom;
   pointer-events: none;
   user-select: none;
@@ -542,9 +542,6 @@ h1 {
   transform-origin: 50% 100%;
   animation: traveler-breath 3.2s ease-in-out infinite;
 }
-.traveler[data-pose="walk"] .traveler-frame[data-frame="1"] { transform: translateY(-3px) rotate(-1.4deg); }
-.traveler[data-pose="walk"] .traveler-frame[data-frame="2"] { transform: translateY(1px) rotate(0.4deg); }
-.traveler[data-pose="walk"] .traveler-frame[data-frame="3"] { transform: translateY(-2px) rotate(1.5deg); }
 .traveler[data-pose="interact"] .traveler-frame,
 .traveler[data-pose="reach"] .traveler-frame { transform: translateY(-1px); }
 
