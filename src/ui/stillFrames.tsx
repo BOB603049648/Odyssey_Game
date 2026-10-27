@@ -5,6 +5,9 @@ const MOTIF = {
   'art.pro.dark': 'eyes',
   'art.pro.break': 'scroll-break',
   'art.pro.tide': 'follow-step',
+  'art.mem.rain': 'rain',
+  'art.mem.kitten': 'kitten',
+  'art.mem.cloak': 'cloak',
 } as const;
 
 export type StillId = keyof typeof MOTIF;

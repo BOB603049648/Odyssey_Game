@@ -106,6 +106,7 @@ describe('playable slice', () => {
     expect(screen.getByText('签署手势')).toBeTruthy();
     expect(screen.getByTestId('case-dba.ev.b').getAttribute('data-held')).toBe('no');
     expect(screen.getByTestId('case-dba.ev.main').getAttribute('data-held')).toBe('no');
+    expect(screen.queryByTestId('evidence-closeup')).toBeNull();
     expect(screen.queryByText('奈奈茶')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: '合上' }));
 
@@ -161,13 +162,16 @@ describe('playable slice', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     expect(screen.getByTestId('memory-plate').getAttribute('data-frame')).toBe('rain');
+    expect(screen.getByTestId('still-frame').getAttribute('data-art-id')).toBe('art.mem.rain');
     expect(screen.getByTestId('memory-art').textContent).toBe('');
     expect(screen.getByTestId('memory-plate').querySelector('.nanaicha-look')?.getAttribute('data-figure')).toBe('adult');
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     expect(screen.getByTestId('memory-plate').getAttribute('data-frame')).toBe('kitten');
+    expect(screen.getAllByTestId('still-frame').some((frame) => frame.getAttribute('data-art-id') === 'art.mem.kitten')).toBe(true);
     expect(screen.getByTestId('memory-plate').querySelector('.nanaicha-look')?.getAttribute('data-figure')).toBe('kitten');
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     expect(screen.getByTestId('memory-plate').getAttribute('data-frame')).toBe('cloak');
+    expect(screen.getAllByTestId('still-frame').some((frame) => frame.getAttribute('data-art-id') === 'art.mem.cloak')).toBe(true);
     fireEvent.click(screen.getByRole('button', { name: '合上' }));
     expect(screen.queryByTestId('memory-plate')).toBeNull();
 
@@ -269,6 +273,7 @@ describe('playable slice', () => {
     fireEvent.keyDown(window, { key: 'f' });
     expect(screen.getByRole('dialog', { name: '案卷' })).toBeTruthy();
     expect(useGame.getState().save.evidence).toContain('dba.ev.main');
+    expect(screen.getByTestId('evidence-closeup').getAttribute('src')).toMatch(/art\.ev\.main\.closeup/);
     expect(useGame.getState().save.beats['dba.beat.old-layer']).toBe(true);
   });
 

@@ -10,6 +10,7 @@ import { GlossSwitch } from './GlossSwitch';
 import { Glyph } from './glyphs';
 import { hintMark } from './hintMark';
 import { t, type MessageKey } from './i18n';
+import closeup from '../assets/art/slots/art.ev.main.closeup.jpg';
 import { EnterVeil } from './Plate';
 import { MemoryRain } from './scenes';
 import { visibleSpots } from './spotViews';
@@ -261,7 +262,13 @@ function CaseFile({ save, onMemory }: { save: SaveData; onMemory: () => void }) 
         const label = has ? t(item.labelKey as MessageKey) : t('casefile.emptySlot');
         return (
           <figure key={item.id} data-testid={`case-${item.id}`} data-held={has ? 'yes' : 'no'}>
-            {has ? <BreakMark /> : <EmptyMark />}
+            {has && item.id === 'dba.ev.main' ? (
+              <img className="evidence-closeup" data-testid="evidence-closeup" src={closeup} alt="" draggable={false} />
+            ) : has ? (
+              <BreakMark />
+            ) : (
+              <EmptyMark />
+            )}
             <figcaption>
               {label}
               {has && item.id === 'dba.ev.main' ? (

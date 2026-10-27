@@ -957,6 +957,14 @@ h1 {
 }
 
 .casefile figure[data-held="no"] { opacity: 0.4; }
+.casefile figure:has(.evidence-closeup) { grid-column: 1 / -1; }
+.casefile .evidence-closeup {
+  display: block;
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  object-position: center;
+}
 .casefile figcaption { margin-top: 6px; }
 
 .mural-screen {

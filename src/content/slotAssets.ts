@@ -52,6 +52,10 @@ import nightBuilding from '../assets/art/slots/art.night.building.png';
 import nightFg from '../assets/art/slots/art.night.fg.png';
 import nightLayer from '../assets/art/slots/art.night.prop.old-layer.png';
 import nightEmbers from '../assets/art/slots/art.night.prop.embers.png';
+import evMain from '../assets/art/slots/art.ev.main.closeup.jpg';
+import memRain from '../assets/art/slots/art.mem.rain.jpg';
+import memKitten from '../assets/art/slots/art.mem.kitten.png';
+import memCloak from '../assets/art/slots/art.mem.cloak.jpg';
 
 /** Delivered slot files. Missing ids stay null in scene JSON and render as blocks. */
 export const SLOT_ASSETS: Record<string, string> = {
@@ -109,6 +113,10 @@ export const SLOT_ASSETS: Record<string, string> = {
   'art.night.fg': nightFg,
   'art.night.prop.old-layer': nightLayer,
   'art.night.prop.embers': nightEmbers,
+  'art.ev.main.closeup': evMain,
+  'art.mem.rain': memRain,
+  'art.mem.kitten': memKitten,
+  'art.mem.cloak': memCloak,
 };
 
 export function resolveSlotAsset(asset: string | null): string | null {
