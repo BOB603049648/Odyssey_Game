@@ -1,0 +1,439 @@
+{
+  "version": "1.2-nanaicha-traj",
+  "updated": "2026-10-28T01:03:25+08:00",
+  "unit": "meters",
+  "traveler": {
+    "height_m": 1.75,
+    "sprite": {
+      "path_glob": "traveler-mythic/cloud-inspired/v3/anim/*.png",
+      "canvas_w": 864,
+      "canvas_h": 1152,
+      "body_fill_pct_h": 0.92,
+      "opaque_body_h_px_approx": 1060,
+      "px_per_m": 605.7,
+      "note": "idle-front-01 opaque ~95.7% H; contract uses 0.92 design target → ~1060px / 1.75m ≈ 605.7 px/m on traveler sheet"
+    },
+    "foot_anchor": "bottom-center of opaque bounds. foot_pad_below_opaque_max_px=24: traveler soles MAY have 16–24px clear transparent below soles (AA)."
+  },
+  "prop_subject_height_pct_of_plate_h": {
+    "hand_accessory": {
+      "min": 0.15,
+      "max": 0.18,
+      "examples": [
+        "shore/art.shore.prop.gourd.png"
+      ]
+    },
+    "knee_prop": {
+      "min": 0.22,
+      "max": 0.3,
+      "examples": [
+        "camp/art.camp.prop.fire.png",
+        "camp/art.camp.prop.paper-bundles.png",
+        "yard/art.yard.prop.grain-bags.png",
+        "camp/art.camp.prop.sleep-mat.png",
+        "shore/art.shore.prop.driftwood.png"
+      ]
+    },
+    "plaque": {
+      "min": 0.35,
+      "max": 0.45,
+      "examples": [
+        "yard/art.yard.prop.more-less-boards.png",
+        "night/art.night.prop.old-layer.png"
+      ]
+    },
+    "sign_post": {
+      "min": 0.75,
+      "max": 0.85,
+      "examples": [
+        "path/art.path.prop.danger-board.png"
+      ]
+    },
+    "door_curtain": {
+      "min": 0.9,
+      "max": 1.0,
+      "examples": [
+        "camp/art.camp.prop.north-curtain.png"
+      ]
+    },
+    "standing_rack": {
+      "min": 0.4,
+      "max": 0.5,
+      "examples": [
+        "yard/art.yard.prop.dried-fish.png"
+      ],
+      "note": "rack ~shoulder–head of traveler when eng maps opaque H to world; was 0.78 pre-p1"
+    },
+    "sitting_guide_cat": {
+      "min": 0.55,
+      "max": 0.7,
+      "examples": [
+        "shore/art.shore.prop.nanaicha.png",
+        "yard/art.yard.prop.nanaicha.png"
+      ],
+      "note": "oversized HOUSE CAT sit; shoulder ~1.1–1.3× traveler when eng maps opaque H via contract; lying/guard may be ~0.48–0.55"
+    },
+    "lying_guard_cat": {
+      "min": 0.48,
+      "max": 0.55,
+      "examples": [
+        "camp/art.camp.prop.nanaicha.png"
+      ],
+      "note": "fireside/sleep-mat side guard loaf; still foot-anchored haunches at bottom"
+    }
+  },
+  "world_length_guidelines_m": {
+    "gourd": "0.25–0.35 hand ladle",
+    "driftwood_log": "0.8–1.2 length; not 2–3 person widths of plate fill",
+    "fire_stone_circle_diameter": "1.0–1.5",
+    "sleep_mat_length": "~1.8 person lying; thickness low (~0.15–0.25 visual H)",
+    "grain_bags_stack": "knee–waist 0.4–0.8",
+    "dried_fish_rack_height": "1.2–1.5",
+    "giant_guide_cat_nanaicha": "oversized HOUSE CAT; shoulder just above adult chest (~1.1–1.3× traveler); NOT divine beast; ONE instance only in tide still; scene props foot-anchored"
+  },
+  "foot_anchor": {
+    "rule": "Shared: foot_pad_below_opaque_max_px = 24 for ALL sheets. Traveler: soles may have 16–24px clear transparent pad BELOW opaque max (AA / foot clearance). Props: prefer most empty space ABOVE subject (bottom-heavy); still allow ≤24px transparent below base for AA. Do NOT leave large empty below base (that causes float when pivot is opaque-foot).",
+    "foot_pad_below_opaque_max_px": 24,
+    "traveler_pad_below_soles_px": {
+      "min": 16,
+      "max": 24
+    },
+    "prop_pad_below_base_px": {
+      "min": 0,
+      "max": 24,
+      "prefer": "minimal; spare space ABOVE"
+    },
+    "engine_pivot_recommended": "bottom-center of opaque alpha bounds (NOT canvas center, NOT canvas bottom if subject floats mid-canvas)",
+    "anti_pattern": "Prior shrink centered small subjects → playtest float when pivot=canvas-center or drawY ignores opaque foot",
+    "nanaicha_props": {
+      "shore/art.shore.prop.nanaicha.png": {
+        "opaque_bbox_subject": [
+          457,
+          258,
+          822,
+          704
+        ],
+        "subjH_pct": 61.9,
+        "foot_pad_px": 16,
+        "world_pose": "tide-line / driftwood-side guide; default gaze toward east path or island-gourd (water→…)",
+        "baked_contact_shadow": true
+      },
+      "camp/art.camp.prop.nanaicha.png": {
+        "opaque_bbox_subject": [
+          381,
+          344,
+          898,
+          704
+        ],
+        "subjH_pct": 50.0,
+        "foot_pad_px": 16,
+        "world_pose": "fireside / sleep-mat side guard (after sleep) or camp→yard east hint pre-food; haunches on ground",
+        "baked_contact_shadow": true
+      },
+      "yard/art.yard.prop.nanaicha.png": {
+        "opaque_bbox_subject": [
+          471,
+          272,
+          809,
+          704
+        ],
+        "subjH_pct": 60.0,
+        "foot_pad_px": 16,
+        "world_pose": "by grain-bags / yard-give companion; gaze at give-side bags not traveler face",
+        "baked_contact_shadow": true
+      }
+    },
+    "engine": "pivot = bottom-center of opaque alpha bounds (subject feet, not canvas center). Place on ground Y like other props. Do NOT float by canvas-centering. Contact ellipse soft-shadow is baked into nanaicha prop PNGs; eng may still add y-scaled shadow for traveler.",
+    "scene_cards": "§5.1 ch1-dongba-scene-cards.md; gaze queue water→food→sleep→danger; acceptance hotspot §7.4 / §7.5#7"
+  },
+  "plate_canvas_defaults": {
+    "props_wide": "1280×720",
+    "gourd_square": "1024×1024",
+    "driftwood": "1152×864",
+    "traveler": "864×1152"
+  },
+  "frame_list": {
+    "base": "/workspace/odyssey-art/traveler-mythic/cloud-inspired/v3/anim/",
+    "walk_front": [
+      "walk-front-01.png",
+      "walk-front-02.png",
+      "walk-front-03.png",
+      "walk-front-04.png"
+    ],
+    "walk_side": [
+      "walk-side-01.png",
+      "walk-side-02.png",
+      "walk-side-03.png",
+      "walk-side-04.png"
+    ],
+    "walk_back": [
+      "walk-back-01.png",
+      "walk-back-02.png",
+      "walk-back-03.png",
+      "walk-back-04.png"
+    ],
+    "idle_front": [
+      "idle-front-01.png",
+      "idle-front-02.png"
+    ],
+    "idle_side": [
+      "idle-side-01.png",
+      "idle-side-02.png"
+    ],
+    "idle_back": [
+      "idle-back-01.png",
+      "idle-back-02.png"
+    ],
+    "reach_front": [
+      "reach-front-01.png",
+      "reach-front-02.png"
+    ],
+    "reach_side": [
+      "reach-side-01.png"
+    ],
+    "walk_back_cycle_note": "walk-back-01..04 pairwise RGB diff mean 10–21 — distinct cycle, NOT frozen copies of -01. Unlock all four in engine (was locking only -01).",
+    "all_png_ls": [
+      "idle-back-01.png",
+      "idle-back-02.png",
+      "idle-front-01.png",
+      "idle-front-02.png",
+      "idle-side-01.png",
+      "idle-side-02.png",
+      "reach-front-01.png",
+      "reach-front-02.png",
+      "reach-side-01.png",
+      "walk-back-01.png",
+      "walk-back-02.png",
+      "walk-back-03.png",
+      "walk-back-04.png",
+      "walk-front-01.png",
+      "walk-front-02.png",
+      "walk-front-03.png",
+      "walk-front-04.png",
+      "walk-side-01.png",
+      "walk-side-02.png",
+      "walk-side-03.png",
+      "walk-side-04.png"
+    ],
+    "count": 21
+  },
+  "p1_playtest_fixes": {
+    "tide": "remove duplicate small cloaked cat BR; keep ONE giant housecat-scale 奈奈茶 hood-up",
+    "shore_props": "re-anchor feet + keep gourd 15–18%; driftwood subject smaller",
+    "camp_props": "re-anchor fire/mat/bundles; fire ≤30% H; co-ground note for eng world Y",
+    "yard_props": "grain bags knee–waist on ground; fish rack + boards foot-anchored",
+    "shore_fg_white_fence": "NOT in art.shore.fg.png / ground (debug grid in playtest) — eng P2",
+    "nanaicha_ground": "new shore/camp/yard nanaicha props foot-anchored + baked contact shadow; tide still refreshed art.pro.tide.jpg=v4 ONE cat paws on wet sand; eng must place companion on Band ground Y per §5.1 (not canvas-center float)"
+  },
+  "still_needs_eng": [
+    "Use opaque-bounds bottom-center as sprite pivot for all hotspot props",
+    "Retune worldScale / prop display height so opaque subject H maps via art-scale-contract px_per_m",
+    "Camp/yard building world Y so foundation sits on ground plate (art feet re-anchored; placement still eng)",
+    "Do not overlay second 奈奈茶 on tide still; unlock walk-back-02/03/04 + idle-back",
+    "Place nanaicha scene props with opaque-bounds bottom-center pivot on walkable Band Y (same contact plane as traveler)",
+    "Companion gaze/position state machine per §5.1 (water→food→sleep→danger); do not canvas-center float",
+    "Tide: do not overlay second cat; use art.pro.tide.jpg (v4 grounded)",
+    "Wire companion waypoint machine to nanaicha/traj/ landings per §5.1 (water→food→sleep→danger)",
+    "Optional leap-01/02 between landings; landings use opaque-foot pivot + baked contact shadow"
+  ],
+  "p1_measured_after": {
+    "shore.gourd_subjH%": 16.0,
+    "shore.driftwood_subjH%": 18.1,
+    "camp.fire_subjH%": 24.0,
+    "camp.sleep-mat_subjH%": 21.8,
+    "camp.paper-bundles_subjH%": 21.9,
+    "camp.building_subjH%": 71.9,
+    "yard.grain-bags_subjH%": 24.0,
+    "yard.dried-fish_subjH%": 45.0,
+    "yard.more-less-boards_subjH%": 28.1,
+    "yard.building_subjH%": 70.0,
+    "foot_pad_px": 16,
+    "tide": "art.pro.tide.jpg = art.pro.tide-v4.jpg; ONE cloaked cat, paws on wet sand (prefer over mid-air v3 float)",
+    "shore.nanaicha_subjH%": 61.9,
+    "camp.nanaicha_subjH%": 50.0,
+    "yard.nanaicha_subjH%": 60.0,
+    "nanaicha_foot_pad_px": 16
+  },
+  "interact_success_overlays": {
+    "note": "Eng swaps or crossfades briefly to .interact.png on interact SUCCESS. Same canvas size, same subject position/scale; pivot identical to base prop (bottom-center of base opaque bounds — glow may expand alpha slightly; use BASE pivot).",
+    "overlays": [
+      {
+        "base": "shore/art.shore.prop.driftwood.png",
+        "interact": "shore/art.shore.prop.driftwood.interact.png"
+      },
+      {
+        "base": "camp/art.camp.prop.sleep-mat.png",
+        "interact": "camp/art.camp.prop.sleep-mat.interact.png"
+      },
+      {
+        "base": "yard/art.yard.prop.grain-bags.png",
+        "interact": "yard/art.yard.prop.grain-bags.interact.png"
+      }
+    ]
+  },
+  "nanaicha_trajectory": {
+    "base": "/workspace/odyssey-art/nanaicha/traj/",
+    "canvas": "864×1152 RGBA character-framed (same as traveler anim)",
+    "lock": "oversized HOUSE CAT seal-point; hood UP; rope flat knot; blue eyes in hood; NOT divine beast / leopard",
+    "pivot": "bottom-center of opaque alpha bounds; landings have soft baked contact shadow; leaps mid-air (float OK)",
+    "stage_queue": [
+      "water",
+      "food",
+      "sleep",
+      "danger"
+    ],
+    "scene_cards": "§5.1 ch1-dongba-scene-cards.md",
+    "landings": [
+      {
+        "id": "land-shore-driftwood",
+        "file": "land-shore-driftwood.png",
+        "scene": "shore",
+        "beat_stage": "pre-water / S0",
+        "pose": "crouch/sit beside driftwood",
+        "gaze": "driftwood",
+        "readable": "这里能喘",
+        "§5.1": "S0 迎人 → 漂木旁",
+        "path": "nanaicha/traj/land-shore-driftwood.png",
+        "opaque_bbox": [
+          22,
+          360,
+          841,
+          1133
+        ],
+        "subjH_pct": 67.2,
+        "foot_pad_px": 18
+      },
+      {
+        "id": "land-shore-gourd",
+        "file": "land-shore-gourd.png",
+        "scene": "shore",
+        "beat_stage": "water / S1",
+        "pose": "half-step stop by water gourd",
+        "gaze": "gourd",
+        "readable": "喝水",
+        "§5.1": "S1 引水 → 水瓢旁",
+        "path": "nanaicha/traj/land-shore-gourd.png",
+        "opaque_bbox": [
+          22,
+          326,
+          841,
+          1133
+        ],
+        "subjH_pct": 70.1,
+        "foot_pad_px": 18
+      },
+      {
+        "id": "land-shore-east-gap",
+        "file": "land-shore-east-gap.png",
+        "scene": "shore",
+        "beat_stage": "post-water / S2 → camp",
+        "pose": "stand at east door/gap, body faces east",
+        "gaze": "east / camp smoke",
+        "readable": "往有烟",
+        "§5.1": "S2 引营 → 东门→camp",
+        "path": "nanaicha/traj/land-shore-east-gap.png",
+        "opaque_bbox": [
+          22,
+          213,
+          841,
+          1133
+        ],
+        "subjH_pct": 79.9,
+        "foot_pad_px": 18
+      },
+      {
+        "id": "land-camp-sleep-mat",
+        "file": "land-camp-sleep-mat.png",
+        "scene": "camp",
+        "beat_stage": "post-food pre-sleep / C2",
+        "pose": "crouch at sleep-mat side",
+        "gaze": "mat + fire",
+        "readable": "food done → sleep",
+        "§5.1": "C2 引睡 → 睡铺侧",
+        "path": "nanaicha/traj/land-camp-sleep-mat.png",
+        "opaque_bbox": [
+          22,
+          272,
+          841,
+          1133
+        ],
+        "subjH_pct": 74.8,
+        "foot_pad_px": 18
+      },
+      {
+        "id": "land-camp-fireside",
+        "file": "land-camp-fireside.png",
+        "scene": "camp",
+        "beat_stage": "post-sleep / C3",
+        "pose": "loaf/curl by fire, eyes half-open guard",
+        "gaze": "guard half-open; occasional north curtain / east",
+        "readable": "守夜",
+        "§5.1": "C3 守夜 → 火旁 guard 蜷",
+        "path": "nanaicha/traj/land-camp-fireside.png",
+        "opaque_bbox": [
+          22,
+          573,
+          841,
+          1133
+        ],
+        "subjH_pct": 48.7,
+        "foot_pad_px": 18
+      },
+      {
+        "id": "land-yard-give",
+        "file": "land-yard-give.png",
+        "scene": "yard",
+        "beat_stage": "food / Y0",
+        "pose": "sit by grain give-side",
+        "gaze": "give bag/string",
+        "readable": "分享/给",
+        "§5.1": "Y0 引递 → yard-give 递出位旁",
+        "path": "nanaicha/traj/land-yard-give.png",
+        "opaque_bbox": [
+          22,
+          141,
+          841,
+          1133
+        ],
+        "subjH_pct": 86.2,
+        "foot_pad_px": 18
+      }
+    ],
+    "leaps": [
+      {
+        "id": "leap-01",
+        "file": "leap-01.png",
+        "note": "short mid-air arc start between landings; float OK; no target needed",
+        "path": "nanaicha/traj/leap-01.png",
+        "opaque_bbox": [
+          22,
+          262,
+          841,
+          808
+        ],
+        "subjH_pct": 47.5,
+        "foot_pad_px": 343
+      },
+      {
+        "id": "leap-02",
+        "file": "leap-02.png",
+        "note": "short mid-air arc peak/descent; float OK",
+        "path": "nanaicha/traj/leap-02.png",
+        "opaque_bbox": [
+          36,
+          64,
+          827,
+          1007
+        ],
+        "subjH_pct": 81.9,
+        "foot_pad_px": 144
+      }
+    ],
+    "waypoint_machine_hint": "Swap companion sprite to landing id by §5.1 state; optional 1–2 leap frames on transition. Prefer traj/ sheets over single scene prop for pose variety. Scene props shore/camp/yard art.*.prop.nanaicha.png remain fallback defaults.",
+    "alias_scene_props": {
+      "shore/art.shore.prop.nanaicha.png": "fallback ≈ land-shore-driftwood / land-shore-gourd sit",
+      "camp/art.camp.prop.nanaicha.png": "fallback ≈ land-camp-fireside loaf",
+      "yard/art.yard.prop.nanaicha.png": "fallback ≈ land-yard-give sit"
+    }
+  }
+}

@@ -29,7 +29,17 @@ describe('phone layout', () => {
     expect(phone).toContain('.hud-actions');
     expect(phone).toContain('flex-direction: row');
     expect(phone).toContain('.companion-anchor');
+    expect(phone).not.toContain('translate(-72%');
+    expect(phone).not.toContain('-108%');
     expect(phone).toContain('pointer-events: none');
     expect(css).not.toMatch(/body\s*\{[^}]*touch-action:\s*none/);
+  });
+
+  it('does not pin the traveler to fixed pixels on a phone', () => {
+    const phone = mediaBlock(css, '@media (max-width: 960px), (max-height: 540px)');
+    expect(phone).not.toMatch(/\.traveler\s*\{[^}]*46px/);
+    expect(phone).not.toMatch(/\.traveler\s*\{[^}]*112px/);
+    expect(css).not.toMatch(/\.traveler\s*\{[^}]*width:\s*117px/);
+    expect(css).not.toMatch(/\.traveler\s*\{[^}]*height:\s*156px/);
   });
 });

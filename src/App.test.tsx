@@ -311,7 +311,7 @@ describe('playable slice', () => {
 
     const wood = spot('dba.scene.shore', 'shore-driftwood');
     walkTo('dba.scene.shore', wood, wood.r);
-    expect(screen.getByTestId('approach-hint').textContent).toBe('走近再互动。');
+    expect(screen.getByTestId('approach-hint').textContent).toBe('近一点。手才能够到。');
     expect(useGame.getState().save.flags['dba.flag.taught-approach']).toBe(true);
 
     walkTo('dba.scene.shore', { x: 0.42, y: 0.62 }, 0.02);

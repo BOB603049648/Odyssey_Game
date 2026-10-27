@@ -147,6 +147,8 @@ export const saveDataSchema = z.object({
   feedback: z.object({
     seq: z.number().int().nonnegative(),
     kind: z.enum(['none', 'ok', 'no']),
+    /** Locale key for a diegetic line. Absent when the beat has nothing to say. */
+    line: z.string().optional(),
   }),
   stepCounter: z.number().int().nonnegative(),
   settings: settingsSchema,

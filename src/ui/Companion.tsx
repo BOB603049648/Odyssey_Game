@@ -10,6 +10,8 @@ export function Companion({
   purr,
   knot = 'rest',
   onAsk,
+  figure,
+  frame,
 }: {
   level: HintLevel;
   anchor: HintAnchor;
@@ -17,6 +19,9 @@ export function Companion({
   purr: boolean;
   knot?: KnotMark;
   onAsk: () => void;
+  /** Grounded scene plate or a trajectory frame. The anchor still moves. */
+  figure?: string;
+  frame?: string;
 }) {
   return (
     <button
@@ -29,11 +34,16 @@ export function Companion({
       data-pose={pose}
       data-state={nanaichaState(level, pose)}
       data-knot={knot}
+      data-frame={frame}
       onClick={onAsk}
       aria-label={t('companion.ask')}
     >
       <span className="companion-sway">
-        <CatMark look={anchor} state={nanaichaState(level, pose)} knot={knot} />
+        {figure ? (
+          <img className="nanaicha-ground" data-look={anchor} data-frame={frame} src={figure} alt="" draggable={false} />
+        ) : (
+          <CatMark look={anchor} state={nanaichaState(level, pose)} knot={knot} />
+        )}
       </span>
     </button>
   );

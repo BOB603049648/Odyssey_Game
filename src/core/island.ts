@@ -41,30 +41,31 @@ export function gotoScene(state: SaveData, scene: string): SaveData {
 
 export function sitDriftwood(state: SaveData): SaveData {
   if (state.currentScene !== 'dba.scene.shore') return deny(state);
+  const again = state.flags['dba.flag.driftwood'] === true;
   return {
     ...state,
     flags: { ...state.flags, 'dba.flag.driftwood': true },
-    feedback: { seq: state.feedback.seq + 1, kind: 'ok' },
+    feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: again ? 'spot.driftwood.again' : 'spot.driftwood.ok' },
   };
 }
 
 export function sleepAtCamp(state: SaveData): SaveData {
   if (state.currentScene !== 'dba.scene.camp') return deny(state);
-  if (!learned(state, SLEEP) || !learned(state, FIRE)) return deny(state);
+  if (!learned(state, SLEEP) || !learned(state, FIRE)) return deny(state, 'spot.sleep.no');
   return {
     ...state,
     beats: { ...state.beats, 'dba.beat.sleep': true },
-    feedback: { seq: state.feedback.seq + 1, kind: 'ok' },
+    feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: 'spot.sleep.ok' },
   };
 }
 
 export function giveSharedFish(state: SaveData): SaveData {
   if (state.currentScene !== 'dba.scene.yard') return deny(state);
-  if (!learned(state, SHARE) || !learned(state, GIVE)) return deny(state);
+  if (!learned(state, SHARE) || !learned(state, GIVE)) return deny(state, 'spot.give.no');
   return {
     ...state,
     beats: { ...state.beats, 'dba.beat.food': true },
-    feedback: { seq: state.feedback.seq + 1, kind: 'ok' },
+    feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: 'spot.give.ok' },
   };
 }
 
@@ -127,7 +128,23 @@ export function grabFish(state: SaveData): SaveData {
   return {
     ...state,
     flags: { ...state.flags, 'dba.flag.wrong-share': true },
-    feedback: { seq: state.feedback.seq + 1, kind: 'no' },
+    feedback: { seq: state.feedback.seq + 1, kind: 'no', line: 'spot.give.wrong' },
+  };
+}
+
+const FAR_LINES: Record<string, string> = {
+  'shore-driftwood': 'spot.driftwood.far',
+  'camp-sleep': 'spot.sleep.far',
+  'yard-give': 'spot.give.far',
+};
+
+/** Out of radius: a line only. No sit, no beat, no taught-approach, no word. */
+export function farSpot(state: SaveData, id: string): SaveData {
+  const line = FAR_LINES[id];
+  if (!line) return state;
+  return {
+    ...state,
+    feedback: { seq: state.feedback.seq + 1, kind: 'no', line },
   };
 }
 
@@ -251,8 +268,8 @@ function withBoneCell(state: SaveData): SaveData {
   return { ...state, flags: { ...state.flags, 'dba.flag.bone-cell': true } };
 }
 
-function deny(state: SaveData): SaveData {
-  return { ...state, feedback: { seq: state.feedback.seq + 1, kind: 'no' } };
+function deny(state: SaveData, line?: string): SaveData {
+  return { ...state, feedback: { seq: state.feedback.seq + 1, kind: 'no', ...(line ? { line } : {}) } };
 }
 
 function addEvidence(state: SaveData, id: string): SaveData {

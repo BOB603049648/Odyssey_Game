@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { playMeow } from '../audio/placeholder';
 import { t, type MessageKey } from './i18n';
-import { CatMark } from './companion/CatMark';
 import { EnterVeil, PlateStack } from './Plate';
 import { useCrossfade } from './useCrossfade';
 
@@ -20,7 +19,6 @@ export function PrologueScreen({ step, onAdvance }: { step: number; onAdvance: (
       <PlateStack plate={plates.current} previous={plates.previous} />
       <EnterVeil />
       <p className="eyebrow">{t('scene.prologue')}</p>
-      {step === 3 ? <CatMark look="ahead" state="walk" /> : null}
       <div className="hud-caption" key={step}>
         <p className="caption">{t(line)}</p>
         <button type="button" className="btn primary" onClick={onAdvance}>

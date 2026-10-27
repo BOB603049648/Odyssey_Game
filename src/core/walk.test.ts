@@ -3,6 +3,7 @@ import { ISLAND_SCENES } from './island';
 import { BANDS, GATES, SPAWNS, SPOTS, crossed, gateAt } from './stage';
 import {
   KEY_STEP,
+  WALK_SPEED,
   approachPlan,
   cameraOffset,
   followCamera,
@@ -13,6 +14,9 @@ import {
   integrate,
   pointerToWorld,
   soften,
+  coastStep,
+  desiredVelocity,
+  easeVelocity,
   stepKey,
 } from './walk';
 
@@ -62,17 +66,47 @@ describe('walk', () => {
     expect(followCamera({ x: 10, y: 10 }, { x: 10, y: 30 }, 1)).toEqual({ x: 10, y: 30 });
   });
 
+  it('eases velocity in and out instead of snapping to a stop', () => {
+    const band = { minX: 0, maxX: 1, minY: 0, maxY: 1 };
+    const glide = coastStep({ x: 0.4, y: 0.6 }, { x: WALK_SPEED, y: 0 }, { x: 0, y: 0 }, band, 1 / 60);
+    expect(glide.pos.x).toBeGreaterThan(0.4);
+    expect(glide.pos.x - 0.4).toBeLessThan(KEY_STEP);
+    expect(glide.velocity.x).toBeGreaterThan(0);
+    expect(glide.velocity.x).toBeLessThan(WALK_SPEED);
+
+    const start = coastStep({ x: 0.4, y: 0.6 }, { x: 0, y: 0 }, { x: WALK_SPEED, y: 0 }, band, 1 / 60);
+    expect(start.pos.x - 0.4).toBeGreaterThan(0);
+    expect(start.pos.x - 0.4).toBeLessThan(KEY_STEP * 0.5);
+    expect(start.velocity.x).toBeGreaterThan(0);
+    expect(start.velocity.x).toBeLessThan(WALK_SPEED * 0.5);
+
+    let velocity = { x: WALK_SPEED, y: 0 };
+    for (let i = 0; i < 27; i += 1) velocity = easeVelocity(velocity, { x: 0, y: 0 }, 1 / 60);
+    expect(velocity.x).toBeGreaterThan(WALK_SPEED * 0.15);
+    expect(velocity.x).toBeLessThan(WALK_SPEED * 0.7);
+    for (let i = 0; i < 70; i += 1) velocity = easeVelocity(velocity, { x: 0, y: 0 }, 1 / 60);
+    expect(velocity.x).toBeLessThan(WALK_SPEED * 0.08);
+
+    const far = desiredVelocity(null, { x: 0.8, y: 0.5 }, { x: 0.2, y: 0.5 });
+    const near = desiredVelocity(null, { x: 0.23, y: 0.5 }, { x: 0.2, y: 0.5 });
+    expect(far.x).toBeCloseTo(WALK_SPEED, 2);
+    expect(near.x).toBeGreaterThan(0);
+    expect(near.x).toBeLessThan(far.x * 0.6);
+  });
+
   it('reads a ground click as a world point', () => {
     expect(pointerToWorld(30, 40, { left: 10, top: 10, width: 100, height: 50 })).toEqual({ x: 0.2, y: 0.6 });
     expect(pointerToWorld(0, 0, { left: 0, top: 0, width: 0, height: 10 })).toBeNull();
   });
 
-  it('keeps the companion on a ring away from the traveler until a hint sends them to the spot', () => {
+  it('keeps the companion on the same ground line as the traveler or the hotspot', () => {
     const traveler = { x: 0.5, y: 0.62 };
     const open = { minX: 0, maxX: 1, minY: 0, maxY: 1 };
     const follow = companionSpot(traveler, 0, { x: 0.2, y: 0.2 }, open, 0);
+    expect(follow.y).toBeCloseTo(traveler.y);
     expect(distance(follow, traveler)).toBeGreaterThan(0.08);
     const beside = companionSpot(traveler, 2, { x: 0.7, y: 0.6 }, open, 0);
+    expect(beside.y).toBeCloseTo(0.6);
     expect(distance(beside, { x: 0.7, y: 0.6 })).toBeLessThan(0.1);
     expect(beside).not.toEqual(traveler);
   });
