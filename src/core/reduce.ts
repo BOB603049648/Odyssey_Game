@@ -1,6 +1,6 @@
 import { LEXEMES } from '../content/catalog';
 import { isLayerUnlocked, requirementsMet } from './conditions';
-import { debugEvidence, debugForceEnding, debugHotspots, debugLearnNext, debugScene } from './debug';
+import { debugEvidence, debugForceEnding, debugHotspots, debugLearnNext, debugScene, debugWalkable } from './debug';
 import { hintCap, hintTarget, type CompanionPose, type HintAnchor } from './hints';
 import {
   advanceCutscene,
@@ -35,7 +35,8 @@ export type Action =
   | { type: 'poke-gourd' }
   | { type: 'use-word'; wordId: string }
   | { type: 'set-show-gloss'; value: boolean }
-  | { type: 'open-overlay'; overlay: 'lexicon' | 'settings' | 'casefile' }
+  | { type: 'open-overlay'; overlay: 'lexicon' | 'settings' | 'casefile' | 'chart' }
+  | { type: 'teach-approach' }
   | { type: 'close-overlay' }
   | { type: 'goto-scene'; scene: string }
   | { type: 'sit-driftwood' }
@@ -53,12 +54,13 @@ export type Action =
   | { type: 'debug-learn-next' }
   | { type: 'debug-evidence'; id: string }
   | { type: 'debug-hotspots'; value: boolean }
+  | { type: 'debug-walkable'; value: boolean }
   | { type: 'debug-ending'; id: EndingContent['id'] }
   | { type: 'scene-act'; wordId: string; part?: 'a' | 'b' | 'more' | 'less' }
   | { type: 'grab-fish' }
   | { type: 'shore-stone' };
 
-const WATER = 'myp.word.water';
+const WATER = 'dba.word.water';
 
 export function reduce(state: SaveData, action: Action): SaveData {
   switch (action.type) {
@@ -101,7 +103,7 @@ export function reduce(state: SaveData, action: Action): SaveData {
     case 'collect-tattoo':
       return touch(collectTattoo(state));
     case 'read-old-layer':
-      if (state.currentScene === 'myp.scene.night' && !canReadOldLayer(state)) return openMural(state);
+      if (state.currentScene === 'dba.scene.night' && !canReadOldLayer(state)) return openMural(state);
       return touch(readOldLayer(state));
     case 'depart':
       return touch(departEast(state));
@@ -121,6 +123,11 @@ export function reduce(state: SaveData, action: Action): SaveData {
       return touch(debugEvidence(state, action.id));
     case 'debug-hotspots':
       return touch(debugHotspots(state, action.value));
+    case 'debug-walkable':
+      return touch(debugWalkable(state, action.value));
+    case 'teach-approach':
+      if (state.flags['dba.flag.taught-approach'] === true) return state;
+      return touch({ ...state, flags: { ...state.flags, 'dba.flag.taught-approach': true } });
     case 'debug-ending':
       return touch(debugForceEnding(state, action.id));
     case 'scene-act':
@@ -150,12 +157,18 @@ function advancePrologue(state: SaveData): SaveData {
   if (state.prologueStep >= 3) return enterShore(state);
   const prologueStep = state.prologueStep + 1;
   let next: SaveData = { ...state, prologueStep };
-  if (prologueStep === 1) next = { ...next, currentScene: 'pro.scene.dark' };
+  if (prologueStep === 1) {
+    next = {
+      ...next,
+      currentScene: 'pro.scene.dark',
+      flags: { ...next.flags, 'pro.flag.heard-meow': true },
+    };
+  }
   if (prologueStep === 2) {
     next = {
       ...next,
       currentScene: 'pro.scene.break',
-      evidence: next.evidence.includes('myp.ev.a') ? next.evidence : [...next.evidence, 'myp.ev.a'],
+      evidence: next.evidence.includes('dba.ev.a') ? next.evidence : [...next.evidence, 'dba.ev.a'],
       beats: { ...next.beats, 'pro.beat.storm': true },
       flags: { ...next.flags, 'pro.flag.saw-break': true },
     };
@@ -168,10 +181,10 @@ function enterShore(state: SaveData): SaveData {
   return touch({
     ...state,
     screen: 'island',
-    currentScene: 'myp.scene.shore',
+    currentScene: 'dba.scene.shore',
     overlay: 'none',
     selectedCellId: null,
-    beats: { ...state.beats, 'pro.beat.storm': true, 'myp.beat.meet': true },
+    beats: { ...state.beats, 'pro.beat.storm': true, 'dba.beat.meet': true },
     flags: { ...state.flags, 'pro.flag.met-companion': true },
     companion: { level: 0, targetId: null, pawUsed: false },
   });
@@ -201,7 +214,7 @@ function closeScreen(state: SaveData): SaveData {
     return touch({
       ...state,
       screen: 'island',
-      currentScene: state.currentScene.startsWith('myp.scene.') ? state.currentScene : 'myp.scene.shore',
+      currentScene: state.currentScene.startsWith('dba.scene.') ? state.currentScene : 'dba.scene.shore',
       muralMode: 'learn',
       overlay: 'none',
       selectedCellId: null,
@@ -223,7 +236,7 @@ function selectLayer(state: SaveData, layer: MuralLayer): SaveData {
     layer,
   );
   if (layer !== 'abstract') return touch(revealed);
-  return touch({ ...revealed, beats: { ...revealed.beats, 'myp.beat.abstract-open': true } });
+  return touch({ ...revealed, beats: { ...revealed.beats, 'dba.beat.abstract-open': true } });
 }
 
 function selectReview(state: SaveData): SaveData {
@@ -291,8 +304,8 @@ function requestHint(state: SaveData): SaveData {
 }
 
 function pokeGourd(state: SaveData): SaveData {
-  if (isLearnedState(state.words[WATER]?.state) && state.beats['myp.beat.water'] !== true) {
-    return touch({ ...state, overlay: 'use-word', screen: 'island', currentScene: 'myp.scene.shore' });
+  if (isLearnedState(state.words[WATER]?.state) && state.beats['dba.beat.water'] !== true) {
+    return touch({ ...state, overlay: 'use-word', screen: 'island', currentScene: 'dba.scene.shore' });
   }
   return mark(state, { feedback: { seq: state.feedback.seq + 1, kind: 'no' } });
 }
@@ -300,7 +313,7 @@ function pokeGourd(state: SaveData): SaveData {
 function useWord(state: SaveData, wordId: string): SaveData {
   if (wordId === WATER && isLearnedState(state.words[WATER]?.state)) {
     return mark(state, {
-      beats: { ...state.beats, 'myp.beat.water': true },
+      beats: { ...state.beats, 'dba.beat.water': true },
       overlay: 'none',
       stepCounter: state.stepCounter + 1,
       companion: { level: 0, targetId: null, pawUsed: false },

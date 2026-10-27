@@ -4,7 +4,7 @@ import type { WordProgress } from './schema';
 
 function word(overrides: Partial<WordProgress> = {}): WordProgress {
   return {
-    id: 'myp.word.water',
+    id: 'dba.word.water',
     state: 'seen',
     box: 1,
     correct: 0,

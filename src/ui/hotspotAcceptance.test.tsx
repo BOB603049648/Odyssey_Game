@@ -1,0 +1,123 @@
+import { cleanup, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it } from 'vitest';
+import { SCENE_ASSEMBLIES } from '../content/catalog';
+import { BANDS, GATES, SPAWNS, SPOTS } from '../core/stage';
+import { PlateStack } from './Plate';
+
+/**
+ * 编导写死的场景验收句：
+ * - shore：出生约两秒内能指 漂木 + 水瓢
+ * - camp：火旁过夜铺可读 + 北缝始终可进 night
+ * - yard：粮袋 / 鱼干 / 多/少木牌 三件同屏可读
+ * 热区锚在独立 props，不靠整板像素，也不靠问号贴纸。
+ */
+
+afterEach(() => {
+  cleanup();
+});
+
+function kit(id: string) {
+  const found = SCENE_ASSEMBLIES.find((scene) => scene.id === id);
+  if (!found) throw new Error(id);
+  return found;
+}
+
+function prop(id: string, scene: string) {
+  return kit(scene).slots.find((slot) => slot.id === id);
+}
+
+describe('hotspot acceptance', () => {
+  it('anchors every shore, camp, and yard spot on its own prop', () => {
+    const shore = [
+      ['shore-driftwood', 'art.shore.prop.driftwood', 0.33, 0.71, 0.05],
+      ['shore-stone', 'art.shore.prop.break-shard', 0.17, 0.68, 0.05],
+      ['island-gourd', 'art.shore.prop.gourd', 0.58, 0.64, 0.068],
+      ['island-mural', 'art.shore.prop.mural-wall', 0.2, 0.56, 0.072],
+      ['shore-depart', 'art.shore.prop.east-gap', 0.74, 0.54, 0.05],
+    ] as const;
+    expect(SPOTS['dba.scene.shore']).toHaveLength(5);
+    for (const [spotId, artId, x, y, r] of shore) {
+      const spot = SPOTS['dba.scene.shore'].find((item) => item.id === spotId);
+      expect(spot).toMatchObject({ x, y, r });
+      const slot = prop(artId, 'dba.scene.shore');
+      expect(slot?.slot).toBe('props');
+      expect(slot?.spot).toBe(spotId);
+      expect(slot?.x).toBe(x);
+      expect(slot?.y).toBe(y);
+    }
+    const wood = prop('art.shore.prop.driftwood', 'dba.scene.shore');
+    const gourd = prop('art.shore.prop.gourd', 'dba.scene.shore');
+    const gap = prop('art.shore.prop.east-gap', 'dba.scene.shore');
+    expect(wood && gourd && wood.x! < gourd.x!).toBe(true);
+    expect(gap?.slot).toBe('props');
+    expect(kit('dba.scene.shore').slots.find((slot) => slot.slot === 'sky')?.id).not.toBe('art.shore.prop.east-gap');
+
+    expect(SPOTS['dba.scene.camp']).toHaveLength(8);
+    expect(prop('art.camp.prop.fire', 'dba.scene.camp')?.spot).toBe('camp-sleep');
+    expect(prop('art.camp.prop.sleep-mat', 'dba.scene.camp')?.spot).toBe('camp-sleep');
+    expect(prop('art.camp.prop.north-curtain', 'dba.scene.camp')?.slot).toBe('props');
+    for (const id of ['home', 'eat', 'drink', 'walk', 'take', 'me', 'you']) {
+      expect(prop(`art.camp.prop.act-${id}`, 'dba.scene.camp')?.spot).toBe(`act:dba.word.${id}`);
+    }
+    const night = GATES.find((gate) => gate.from === 'dba.scene.camp' && gate.to === 'dba.scene.night');
+    expect(night).toMatchObject({ x: 0.5, y: 0.42, r: 0.04, edge: 'north' });
+
+    expect(SPOTS['dba.scene.yard']).toHaveLength(6);
+    expect(prop('art.yard.prop.grain-bags', 'dba.scene.yard')?.spot).toBe('yard-give');
+    expect(prop('art.yard.prop.dried-fish', 'dba.scene.yard')?.kind).toBe('dried-fish');
+    expect(prop('art.yard.prop.more-less-boards', 'dba.scene.yard')?.spot).toBe('act:dba.word.amount:more');
+    expect(prop('art.yard.prop.more-less-boards.less', 'dba.scene.yard')?.spot).toBe('act:dba.word.amount:less');
+    const give = SPOTS['dba.scene.yard'].find((item) => item.id === 'yard-give');
+    const grab = SPOTS['dba.scene.yard'].find((item) => item.id === 'yard-grab');
+    expect(give && grab && grab.x < give.x).toBe(true);
+
+    for (const scene of ['dba.scene.shore', 'dba.scene.camp', 'dba.scene.yard'] as const) {
+      const band = BANDS[scene];
+      expect(SPAWNS[scene].y).toBeGreaterThanOrEqual(band.minY);
+      for (const spot of SPOTS[scene]) {
+        expect(spot.x).toBeGreaterThanOrEqual(band.minX);
+        expect(spot.x).toBeLessThanOrEqual(band.maxX);
+        expect(spot.y).toBeGreaterThanOrEqual(band.minY);
+        expect(spot.y).toBeLessThanOrEqual(band.maxY);
+      }
+    }
+  });
+
+  it('lights only the prop you have walked up to', () => {
+    const { container } = render(
+      <PlateStack plate="dba.scene.shore" previous={null} near={['shore-driftwood']} activeSpots={null} cam={{ x: 40, y: 0 }} />,
+    );
+    expect(container.querySelector('.plate-photo')).toBeNull();
+    expect(container.querySelector('[data-assembly="slots"]')?.getAttribute('data-legacy-plate')).toBe('shore.jpg');
+    const wood = screen.getByTestId('prop-art.shore.prop.driftwood');
+    const gourd = screen.getByTestId('prop-art.shore.prop.gourd');
+    expect(wood.getAttribute('data-cue')).toBe('near');
+    expect(wood.getAttribute('data-placeholder')).toBe('art');
+    expect(gourd.getAttribute('data-cue')).toBe('far');
+    expect(gourd.querySelector('img')).toBeTruthy();
+    expect(screen.getByTestId('prop-art.shore.prop.east-gap').getAttribute('data-slot')).toBe('props');
+    expect(screen.getByTestId('prop-art.shore.prop.east-gap').getAttribute('data-placeholder')).toBe('block');
+    expect(container.textContent).not.toContain('?');
+    const sky = screen.getByTestId('slot-sky');
+    expect(sky.style.transform).toMatch(/translate3d\(31\.2/);
+    const props = container.querySelectorAll('[data-interactable="yes"]');
+    expect(props.length).toBe(5);
+  });
+
+  it('shows the camp mat and the yard trio as separate props', () => {
+    const camp = render(<PlateStack plate="dba.scene.camp" previous={null} />);
+    expect(screen.getByTestId('prop-art.camp.prop.sleep-mat').getAttribute('data-spot')).toBe('camp-sleep');
+    expect(screen.getByTestId('prop-art.camp.prop.fire').getAttribute('data-spot')).toBe('camp-sleep');
+    expect(screen.getByTestId('prop-art.camp.prop.north-curtain').getAttribute('data-kind')).toBe('north-curtain');
+    expect(camp.container.querySelector('.plate-photo')).toBeNull();
+    expect(camp.container.textContent).not.toContain('?');
+    camp.unmount();
+
+    const yard = render(<PlateStack plate="dba.scene.yard" previous={null} />);
+    expect(screen.getByTestId('prop-art.yard.prop.grain-bags').getAttribute('data-kind')).toBe('grain-bags');
+    expect(screen.getByTestId('prop-art.yard.prop.dried-fish').getAttribute('data-kind')).toBe('dried-fish');
+    expect(screen.getByTestId('prop-art.yard.prop.more-less-boards').getAttribute('data-kind')).toBe('more-board');
+    expect(yard.container.querySelector('.plate-photo')).toBeNull();
+    expect(yard.container.textContent).not.toContain('?');
+  });
+});

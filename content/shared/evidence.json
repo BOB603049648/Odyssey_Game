@@ -1,23 +1,23 @@
 [
   {
-    "id": "myp.ev.a",
-    "island": "myp",
+    "id": "dba.ev.a",
+    "island": "dba",
     "kind": "side",
-    "labelKey": "evidence.myp.ev.a",
+    "labelKey": "evidence.dba.ev.a",
     "skippable": false
   },
   {
-    "id": "myp.ev.b",
-    "island": "myp",
+    "id": "dba.ev.b",
+    "island": "dba",
     "kind": "side",
-    "labelKey": "evidence.myp.ev.b",
+    "labelKey": "evidence.dba.ev.b",
     "skippable": true
   },
   {
-    "id": "myp.ev.main",
-    "island": "myp",
+    "id": "dba.ev.main",
+    "island": "dba",
     "kind": "main",
-    "labelKey": "evidence.myp.ev.main",
+    "labelKey": "evidence.dba.ev.main",
     "skippable": true
   }
 ]

@@ -14,9 +14,9 @@ function confronted(choice: 'deny' | 'stay' | 'restart', evidence: string[]) {
 }
 
 const fullCase = [
-  'myp.ev.a',
-  'myp.ev.b',
-  'myp.ev.main',
+  'dba.ev.a',
+  'dba.ev.b',
+  'dba.ev.main',
   'nmn.ev.a',
   'nmn.ev.b',
   'nmn.ev.main',
@@ -47,7 +47,7 @@ describe('ending stubs', () => {
 
   it('resolves A, B, and C without a replay path', () => {
     expect(resolveEnding(confronted('deny', fullCase))).toBe('false-home');
-    expect(resolveEnding(confronted('stay', ['myp.ev.a']))).toBe('false-home');
+    expect(resolveEnding(confronted('stay', ['dba.ev.a']))).toBe('false-home');
     const stay = confronted('stay', fullCase);
     const restart = confronted('restart', fullCase);
     expect(resolveEnding(stay)).toBe('new-interpreter');

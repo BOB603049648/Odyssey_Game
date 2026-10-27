@@ -39,7 +39,7 @@ export function DevTools({
             <button type="button" className="btn" data-testid="debug-learn" onClick={() => dispatch({ type: 'debug-learn-next' })}>
               学会下一词
             </button>
-            <button type="button" className="btn" data-testid="debug-evidence" onClick={() => dispatch({ type: 'debug-evidence', id: 'myp.ev.main' })}>
+            <button type="button" className="btn" data-testid="debug-evidence" onClick={() => dispatch({ type: 'debug-evidence', id: 'dba.ev.main' })}>
               主证物
             </button>
             <button
@@ -49,6 +49,14 @@ export function DevTools({
               onClick={() => dispatch({ type: 'debug-hotspots', value: save.flags['dev.hotspots'] !== true })}
             >
               热区
+            </button>
+            <button
+              type="button"
+              className="btn"
+              data-testid="debug-walkable"
+              onClick={() => dispatch({ type: 'debug-walkable', value: save.flags['dev.walkable'] !== true })}
+            >
+              可行走
             </button>
           </div>
           <div className="row">

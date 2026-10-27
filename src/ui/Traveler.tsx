@@ -45,6 +45,11 @@ export function TravelerMark({
       aria-hidden="true"
     >
       <div className="traveler-bob">
+        <span
+          className="contact-shadow"
+          data-testid="contact-shadow"
+          style={{ width: `${36 + y * 22}%` }}
+        />
         {facing === 'front' ? <img className="traveler-shade" src={silhouette} alt="" draggable={false} /> : null}
         <img className="traveler-figure" src={FIGURE[facing]} alt="" draggable={false} />
       </div>

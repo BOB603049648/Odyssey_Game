@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const islandIdSchema = z.enum(['myp', 'nmn', 'amh', 'iku', 'eus']);
+export const islandIdSchema = z.enum(['dba', 'nmn', 'amh', 'iku', 'eus']);
 export const layerSchema = z.enum([
   'concrete',
   'action',
@@ -50,7 +50,7 @@ export const companionSchema = z.object({
   speaks: z.literal(false),
   teachesLanguage: z.literal(false),
   form: z.object({
-    island: z.literal('myp'),
+    island: z.literal('dba'),
     skin: z.string(),
     scale: z.number(),
     markings: z.string(),
@@ -78,8 +78,8 @@ export const hintPlanSchema = z.object({
     'use-word',
     'mural',
     'camp-sleep',
-    'fishery-give',
-    'forest-stop',
+    'yard-give',
+    'path-stop',
     'night-read',
     'shore-depart',
   ]),
@@ -123,7 +123,7 @@ export const saveDataSchema = z.object({
   currentScene: z.string(),
   screen: z.enum(['title', 'prologue', 'island', 'mural']),
   prologueStep: z.number().int().nonnegative(),
-  overlay: z.enum(['none', 'lexicon', 'settings', 'casefile', 'use-word', 'depart', 'memory']),
+  overlay: z.enum(['none', 'lexicon', 'settings', 'casefile', 'use-word', 'depart', 'memory', 'chart']),
   cutsceneStep: z.number().int().nonnegative().default(0),
   activeLayer: muralLayerSchema,
   muralMode: z.enum(['learn', 'review']),
@@ -165,3 +165,32 @@ export type EvidenceContent = z.infer<typeof evidenceSchema>;
 export type MemoryContent = z.infer<typeof memorySchema>;
 export type HintPlanContent = z.infer<typeof hintPlanSchema>;
 export type Box = WordProgress['box'];
+
+/** Walkable scenes are assembled from these slots. `far`/`sky` are the slowest parallax. */
+export const sceneSlotNameSchema = z.enum(['sky', 'far', 'ground', 'building', 'props', 'fg']);
+
+export const sceneSlotSchema = z.object({
+  id: z.string().min(1),
+  slot: sceneSlotNameSchema,
+  kind: z.string().min(1),
+  /** Null until the language-island artist delivers a slot file. */
+  asset: z.string().nullable(),
+  parallax: z.number(),
+  spot: z.string().optional(),
+  x: z.number().optional(),
+  y: z.number().optional(),
+  w: z.number().optional(),
+  h: z.number().optional(),
+});
+
+export const sceneAssemblySchema = z.object({
+  id: z.string(),
+  grade: z.string(),
+  /** Old full-bleed plate filename. Metadata only — never the rendered background. */
+  legacyPlate: z.string().nullable(),
+  slots: z.array(sceneSlotSchema).min(1),
+});
+
+export type SceneSlotName = z.infer<typeof sceneSlotNameSchema>;
+export type SceneSlot = z.infer<typeof sceneSlotSchema>;
+export type SceneAssembly = z.infer<typeof sceneAssemblySchema>;

@@ -17,11 +17,12 @@ import {
   type Point,
   type WalkKey,
 } from '../core/walk';
+import { sceneAssembly } from '../content/catalog';
 import { Companion } from './Companion';
 import type { KnotMark } from './companion/CatMark';
 import { Glyph } from './glyphs';
+import { t } from './i18n';
 import { PlateStack } from './Plate';
-import { CampArt, FisheryArt, ForestArt, NightArt, RockArt, ShoreArt } from './scenes';
 import { gateLabel, hintSpotId, type SpotView } from './spotViews';
 import { facingFromMove, TravelerMark, type TravelerFacing } from './Traveler';
 import { WalkStick } from './WalkStick';
@@ -77,6 +78,9 @@ export function WalkLayer({
   onInteract,
   onAsk,
   onEscape,
+  taught = false,
+  onTeach,
+  showWalkMask = false,
 }: {
   scene: IslandScene;
   drank: boolean;
@@ -91,6 +95,9 @@ export function WalkLayer({
   onInteract: (id: string) => void;
   onAsk: () => void;
   onEscape: () => void;
+  taught?: boolean;
+  onTeach?: () => void;
+  showWalkMask?: boolean;
 }) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
@@ -118,6 +125,7 @@ export function WalkLayer({
   const [view, setView] = useState({ w: 1280, h: 720 });
   const [arrive, setArrive] = useState<string | null>(null);
   const [cam, setCam] = useState<Point>({ x: 0, y: 0 });
+  const [teachLine, setTeachLine] = useState(false);
   const viewRef = useRef(view);
   const plates = useCrossfade(scene, 980);
   viewRef.current = view;
@@ -322,9 +330,10 @@ export function WalkLayer({
         const frameView = viewRef.current;
         const goalCam = cameraOffset(posRef.current, frameView.w, frameView.h);
         const prevCam = smoothRef.current ?? goalCam;
-        const nextCam = smoothRef.current
-          ? followCamera(prevCam, goalCam, 1 - Math.exp(-3.4 * dt))
-          : goalCam;
+        const gap = Math.hypot(goalCam.x - prevCam.x, goalCam.y - prevCam.y);
+        const nextCam = !smoothRef.current || gap < 1.5
+          ? goalCam
+          : followCamera(prevCam, goalCam, 1 - Math.exp(-2.6 * dt));
         smoothRef.current = nextCam;
         setCam(nextCam);
       }
@@ -338,6 +347,22 @@ export function WalkLayer({
   const worldH = view.h * WORLD_SCALE;
   const shownCam = import.meta.env.MODE === 'test' ? cameraOffset(pos, view.w, view.h) : cam;
   const near = spots.filter((spot) => inRadius(pos, spot, spot.r)).map((spot) => spot.id);
+  const teachSpot = near.includes('shore-driftwood') ? 'shore-driftwood' : '';
+  const onTeachRef = useRef(onTeach);
+  const taughtRef = useRef(taught);
+  onTeachRef.current = onTeach;
+  taughtRef.current = taught;
+  const spotIds = spots.map((spot) => spot.id);
+
+  useEffect(() => {
+    if (!teachSpot) {
+      setTeachLine(false);
+      return;
+    }
+    if (taughtRef.current) return;
+    setTeachLine(true);
+    onTeachRef.current?.();
+  }, [teachSpot]);
 
   useEffect(() => {
     if (!arrive) return undefined;
@@ -355,11 +380,19 @@ export function WalkLayer({
       data-cam-x={shownCam.x.toFixed(1)}
       data-cam-y={shownCam.y.toFixed(1)}
       data-arrive={arrive ?? 'no'}
+      data-drank={drank ? 'yes' : 'no'}
     >
       <div className="world-cam" data-testid="world-camera" style={{ transform: `translate3d(${-shownCam.x}px, ${-shownCam.y}px, 0)` }}>
         <div ref={worldRef} className="world-layer" style={{ width: worldW, height: worldH }}>
-          <PlateStack plate={plates.current} previous={plates.previous} />
-          <ScenePlate scene={scene} drank={drank} />
+          <PlateStack
+            plate={plates.current}
+            previous={plates.previous}
+            cam={shownCam}
+            near={near}
+            activeSpots={spotIds}
+            showWalkMask={showWalkMask}
+            pass="back"
+          />
           <div className="walk-ground" data-testid="walk-ground" onPointerDown={onGround} />
           {gatesFrom(scene).map((gate) => (
             <button
@@ -398,17 +431,31 @@ export function WalkLayer({
                   interactRef.current(spot.id);
                 }}
               >
-                {spot.id === 'island-gourd' ? <GourdMark /> : null}
                 {spot.glyph ? <Glyph id={spot.glyph} /> : spot.label}
               </button>
             );
           })}
           <div className="companion-anchor" style={{ left: pct(cat.x), top: pct(cat.y) }} data-testid="companion-anchor">
+            <span className="contact-shadow" data-testid="contact-shadow" />
             <Companion level={hint.level} anchor={hint.anchor} pose={hint.pose} purr={purr} knot={knot} onAsk={onAsk} />
           </div>
           <TravelerMark x={pos.x} y={pos.y} facing={facing} moving={moving} />
+          <PlateStack
+            plate={plates.current}
+            previous={plates.previous}
+            cam={shownCam}
+            near={near}
+            activeSpots={spotIds}
+            pass="fg"
+          />
         </div>
       </div>
+      <div className="grade-veil" data-grade={sceneAssembly(scene)?.grade ?? 'mist-dawn'} data-testid="grade-veil" />
+      {teachLine ? (
+        <p className="approach-hint" data-testid="approach-hint">
+          {t('hint.approach')}
+        </p>
+      ) : null}
       <WalkStick
         onVector={(vector) => {
           stickRef.current = vector;
@@ -416,22 +463,5 @@ export function WalkLayer({
         }}
       />
     </div>
-  );
-}
-
-function ScenePlate({ scene, drank }: { scene: IslandScene; drank: boolean }) {
-  if (scene === 'myp.scene.camp') return <CampArt />;
-  if (scene === 'myp.scene.fishery') return <FisheryArt />;
-  if (scene === 'myp.scene.rock') return <RockArt />;
-  if (scene === 'myp.scene.forest') return <ForestArt />;
-  if (scene === 'myp.scene.night') return <NightArt />;
-  return <ShoreArt drank={drank} />;
-}
-
-function GourdMark() {
-  return (
-    <svg className="glyph pouch" viewBox="0 0 64 64" aria-hidden="true">
-      <path d="M24 18h16c2 8 10 10 10 18 0 12-8 16-18 16S14 48 14 36c0-8 8-10 10-18z" />
-    </svg>
   );
 }

@@ -26,8 +26,8 @@ describe('save storage', () => {
       ngCount: 2,
       words: {
         ...current.words,
-        'myp.word.water': {
-          ...current.words['myp.word.water'],
+        'dba.word.water': {
+          ...current.words['dba.word.water'],
           state: 'ghost',
         },
       },
@@ -39,7 +39,7 @@ describe('save storage', () => {
     expect(parseSave(raw)?.version).toBe(2);
     expect(loaded?.version).toBe(2);
     expect(loaded?.muralMode).toBe('learn');
-    expect(loaded?.words['myp.word.water']?.state).toBe('learned');
+    expect(loaded?.words['dba.word.water']?.state).toBe('learned');
     expect(loaded && 'ngCount' in loaded).toBe(false);
   });
 });

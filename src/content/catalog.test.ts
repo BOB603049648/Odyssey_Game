@@ -34,11 +34,11 @@ const GLOSSES = [
 ];
 
 describe('island 1 catalog', () => {
-  it('ships the 28 documented Pirahã teaching glosses with empty unverified forms', () => {
+  it('ships the 28 dongba teaching glosses with empty unverified forms', () => {
     expect(LEXEMES.map((item) => item.gloss)).toEqual(GLOSSES);
     expect(new Set(LEXEMES.map((item) => item.id)).size).toBe(28);
     for (const lexeme of LEXEMES) {
-      expect(lexeme.island).toBe('myp');
+      expect(lexeme.island).toBe('dba');
       expect(lexeme.inLexicon).toBe(true);
       expect(lexeme.verification.status).toBe('draft');
       expect(lexeme.forms.native ?? '').toBe('');
@@ -59,9 +59,14 @@ describe('island 1 catalog', () => {
     expect(COMPANION.name).toBe('奈奈茶');
     expect(COMPANION.speaks).toBe(false);
     expect(COMPANION.teachesLanguage).toBe(false);
-    expect(EVIDENCE.map((item) => item.id)).toEqual(['myp.ev.a', 'myp.ev.b', 'myp.ev.main']);
+    expect(EVIDENCE.map((item) => item.id)).toEqual(['dba.ev.a', 'dba.ev.b', 'dba.ev.main']);
     expect(ENDINGS.map((item) => item.id)).toEqual(['false-home', 'new-interpreter', 'restart-echo']);
-    expect(zh['evidence.myp.ev.a']).toBe('签署手势');
+    expect(zh['evidence.dba.ev.a']).toBe('签署手势');
+    expect(zh['evidence.dba.ev.main']).toBe('抹画的长卷');
+    expect(zh['prologue.2']).toContain('长卷');
+    expect(zh['prologue.2']).not.toContain('石头');
+    expect(COMPANION.form.markings).not.toContain('雨林');
+    expect(COMPANION.form.markings).toContain('帽兜');
     const prologue = Object.entries(zh)
       .filter(([key]) => key.startsWith('prologue.'))
       .map(([, value]) => value)

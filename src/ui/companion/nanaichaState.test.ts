@@ -24,8 +24,8 @@ describe('nanaichaState', () => {
 describe('knotMark', () => {
   it('glows only while the rope-knot evidence is held', () => {
     expect(knotMark([])).toBe('rest');
-    expect(knotMark(['myp.ev.a'])).toBe('rest');
-    expect(knotMark(['myp.ev.b'])).toBe('glow');
-    expect(knotMark(['myp.ev.a', 'myp.ev.main'])).toBe('rest');
+    expect(knotMark(['dba.ev.a'])).toBe('rest');
+    expect(knotMark(['dba.ev.b'])).toBe('glow');
+    expect(knotMark(['dba.ev.a', 'dba.ev.main'])).toBe('rest');
   });
 });
