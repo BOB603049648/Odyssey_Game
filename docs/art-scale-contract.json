@@ -1,6 +1,6 @@
 {
-  "version": "1.3-pr14-plate",
-  "updated": "2026-10-28T05:20:48+08:00",
+  "version": "1.3-pr15-rim",
+  "updated": "2026-10-28T05:38:16+08:00",
   "unit": "meters",
   "traveler": {
     "height_m": 1.75,
@@ -249,7 +249,11 @@
     "PR11: place all rebaked props with opaque-foot (solid thr~128) on walkable Band coplanar with traveler",
     "PR11: dried-fish on roof platform or under-eave ground Band — never roof-ridge fog void",
     "PR11: do NOT stack hard drop-shadows on baked props (act-*, fire, bags, fish, mats, nanaicha, traveler)",
-    "PR11: fog after composite; world ambient + shadowTint; traveler already has baked foot soft"
+    "PR11: fog after composite; world ambient + shadowTint; traveler already has baked foot soft",
+    "PR15: do NOT stack pale/cyan elliptical foot pad on traveler — art bakes sand-DARK rgb~(28,22,16)",
+    "PR15: yard nanaicha opaque-foot on step Band (禁悬空); wall-stick traveler = eng Y-sort",
+    "PR15: curtain cyan≈0 in art; if seam still cyan at 棚火到达角 check eng interior self-illum",
+    "PR15: shore nanaicha PASSED — do not re-touch shore cat / land-shore-*"
   ],
   "p1_measured_after": {
     "shore.gourd_subjH%": 16.0,
@@ -689,5 +693,39 @@
     "zip": "art-pr12-sticker-pack.zip",
     "backup": "*/raw/pre-pr12-sticker/"
   },
-  "pack_role": "auxiliary"
+  "pack_role": "auxiliary",
+  "pr15_rim": {
+    "updated": "2026-10-28T05:38:16+08:00",
+    "role": "auxiliary",
+    "summary": "PR15 rim FAIL辅包（编导再收窄）：旅人沙地暗褐接触影贴靴底；前坪猫爪贴台阶；粮袋去亮边保落地；门帘轻暖重申；雾岸大猫/land-shore-* 未改（已通过）。",
+    "zip": "art-pr15-rim-pack.zip",
+    "report": "_pr15-rim-report.json",
+    "backup": "*/raw/pre-pr15-rim/",
+    "do_not_touch": [
+      "shore/art.shore.prop.nanaicha.png",
+      "nanaicha/traj/land-shore-driftwood.png",
+      "nanaicha/traj/land-shore-east-gap.png",
+      "nanaicha/traj/land-shore-gourd.png",
+      "shore/art.shore.prop.east-gap.png"
+    ],
+    "verify": {
+      "curtain_hard_cyan_px": 0,
+      "curtain_hi_sat_cyan_px": 0,
+      "curtain_bright_cool_px": 0,
+      "curtain_cyan_pass": true,
+      "traveler_pale_pad_px": 0,
+      "traveler_soft_shadow_rgb": [
+        28.2,
+        22.2,
+        16.2
+      ],
+      "traveler_bright_rim_px": 7,
+      "traveler_foot_pad_px": 5,
+      "yard_cat_pale_pad_px": 0,
+      "yard_cat_bright_rim_px": 0,
+      "yard_cat_foot_pad_px": 8,
+      "shore_cat_modified": false
+    },
+    "eng_must_not": "uniform fog α; stack hard/pale-cyan foot pad on traveler; float yard cat off step Band; ignore curtain eng interior glow"
+  }
 }

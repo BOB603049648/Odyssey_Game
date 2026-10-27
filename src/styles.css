@@ -508,6 +508,16 @@ h1 {
 .walk-viewport[data-scene="dba.scene.shore"] .companion-anchor .contact-shadow {
   opacity: 1;
 }
+/* Shore sand is pale. The shared blue shadow-tint reads as a cyan pad and a light seam. */
+.walk-viewport[data-scene="dba.scene.shore"] .traveler .foot-ellipse {
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(28, 22, 16, 0.94) 0%,
+    rgba(28, 22, 16, 0.7) 28%,
+    rgba(28, 22, 16, 0.28) 48%,
+    transparent 66%
+  );
+}
 
 .traveler {
   position: absolute;

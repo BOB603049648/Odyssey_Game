@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ISLAND_SCENES } from './island';
-import { BANDS, GATES, SPAWNS, SPOTS, crossed, gateAt } from './stage';
+import { BANDS, GATES, SPAWNS, SPOTS, crossed, gateAt, plantOnGround } from './stage';
 import {
   KEY_STEP,
   WALK_SPEED,
@@ -122,6 +122,10 @@ describe('shore and camp layout', () => {
   it('keeps spawns, spots, and gates inside the walkable band', () => {
     expect(BANDS['dba.scene.camp'].minY).toBeGreaterThanOrEqual(0.8);
     expect(BANDS['dba.scene.yard'].minY).toBeGreaterThanOrEqual(0.76);
+    expect(plantOnGround('dba.scene.yard', { x: 0.5, y: 0.8 }).y).toBeGreaterThanOrEqual(0.92);
+    expect(plantOnGround('dba.scene.yard', { x: 0.16, y: 0.78 }).y).toBeCloseTo(0.78);
+    expect(plantOnGround('dba.scene.camp', { x: 0.5, y: 0.84 }).y).toBeCloseTo(0.84);
+    expect(SPAWNS['dba.scene.yard'].y).toBeGreaterThanOrEqual(0.92);
     const give = SPOTS['dba.scene.yard'].find((spot) => spot.id === 'yard-give');
     expect(give && give.y).toBeGreaterThanOrEqual(0.88);
     for (const scene of ISLAND_SCENES) {

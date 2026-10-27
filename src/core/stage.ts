@@ -39,7 +39,8 @@ export const BANDS: Record<IslandScene, Band> = {
 export const SPAWNS: Record<IslandScene, Point> = {
   'dba.scene.shore': { x: 0.42, y: 0.62 },
   'dba.scene.camp': { x: 0.46, y: 0.84 },
-  'dba.scene.yard': { x: 0.42, y: 0.8 },
+  /** In front of the steps. y 0.80 is the hall wall. */
+  'dba.scene.yard': { x: 0.42, y: 0.92 },
   'dba.scene.hall': { x: 0.48, y: 0.64 },
   'dba.scene.path': { x: 0.42, y: 0.64 },
   'dba.scene.night': { x: 0.5, y: 0.74 },
@@ -99,6 +100,28 @@ export const SPOTS: Record<IslandScene, readonly Spot[]> = {
     { id: 'night-memory', x: 0.7, y: 0.7, r: 0.046 },
   ],
 };
+
+/**
+ * Center of the yard plate is the hall facade, not a floor.
+ * Side courts (fish racks, gates) stay on the band. Feet in the door span
+ * drop to the step/court line instead of painting on the wall.
+ */
+export const YARD_FACADE = { minX: 0.4, maxX: 0.66, groundY: 0.92 } as const;
+
+export function plantOnGround(scene: IslandScene, pos: Point): Point {
+  const band = BANDS[scene];
+  const x = Math.min(band.maxX, Math.max(band.minX, pos.x));
+  let y = Math.min(band.maxY, Math.max(band.minY, pos.y));
+  if (
+    scene === 'dba.scene.yard' &&
+    x > YARD_FACADE.minX &&
+    x < YARD_FACADE.maxX &&
+    y < YARD_FACADE.groundY
+  ) {
+    y = YARD_FACADE.groundY;
+  }
+  return { x, y };
+}
 
 export function gatesFrom(scene: IslandScene): readonly Gate[] {
   return GATES.filter((gate) => gate.from === scene);

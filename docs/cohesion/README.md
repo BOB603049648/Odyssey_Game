@@ -93,3 +93,9 @@ Fog-match（降对比/饱和、2–3px 柔边、高光压、暖/冷 fringe）**�
 ## PR14 plate note
 
 合同 `1.3-pr14-plate`。美工辅包去掉旅人浅色脚补丁、猫描边/平底、鱼架与 act-* 矩形底板；接触影贴在不透明靴底上。工程用精灵自身 alpha 做场景光 wrap（`color` + `soft-light`），接触椭圆中心落在靴底。勿对精灵 uniform fog α 乘算，勿在已烘影道具上再叠硬影。报告 `docs/_pr14-plate-report.json`。
+
+---
+
+## PR15 rim note
+
+合同 `1.3-pr15-rim`。雾岸旅人接触影用沙地暗褐，中心在靴底，不再用青白 shadow-tint。前坪门脸不是地面：人在门宽范围内脚锚落到台阶/石板。前坪猫落地帧用爪贴台阶的槽位图。雾岸猫、标石、门帘暖黄、北界 0.80 未改逻辑。报告 `docs/_pr15-rim-report.json`。

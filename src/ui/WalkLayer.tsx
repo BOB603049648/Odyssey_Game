@@ -5,7 +5,7 @@ import { companionFrameId, LEAP_01_MS, LEAP_02_MS, type TrajClip } from '../core
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
 import type { HintLevel } from '../core/schema';
-import { BANDS, SPAWNS, SPOTS, gateAt, gatesFrom, nearestSpot, type GateEdge } from '../core/stage';
+import { BANDS, SPAWNS, SPOTS, gateAt, gatesFrom, nearestSpot, plantOnGround, type GateEdge } from '../core/stage';
 import {
   WALK_SPEED,
   WORLD_SCALE,
@@ -149,7 +149,7 @@ export function WalkLayer({
   const held = useRef(new Set<WalkKey>());
   const movingRef = useRef(false);
   const velocityRef = useRef<Point>({ x: 0, y: 0 });
-  const posRef = useRef<Point>(remembered ?? SPAWNS[scene]);
+  const posRef = useRef<Point>(plantOnGround(scene, remembered ?? SPAWNS[scene]));
   const [pos, setPos] = useState<Point>(posRef.current);
   const [facing, setFacing] = useState<TravelerFacing>('front');
   const [moving, setMoving] = useState(false);
@@ -193,7 +193,7 @@ export function WalkLayer({
   movingRef.current = moving;
 
   if (sceneRef.current !== scene) {
-    const next = pending.current ?? remembered ?? SPAWNS[scene];
+    const next = plantOnGround(scene, pending.current ?? remembered ?? SPAWNS[scene]);
     pending.current = null;
     sceneRef.current = scene;
     posRef.current = next;
@@ -253,7 +253,8 @@ export function WalkLayer({
   }
 
   function apply(next: Point, isMoving: boolean, isBlocked: boolean, dx: number, dy: number, power = 1) {
-    const gate = gateAt(sceneRef.current, next);
+    const planted = plantOnGround(sceneRef.current, next);
+    const gate = gateAt(sceneRef.current, planted);
     if (gate) {
       velocityRef.current = { x: 0, y: 0 };
       pending.current = gate.arrival;
@@ -265,9 +266,10 @@ export function WalkLayer({
       exitRef.current(gate.to);
       return;
     }
+    next = planted;
     posRef.current = next;
     setFacing((current) => facingFromMove(dx, dy, current));
-    setPos(next);
+    setPos(planted);
     setMoving(isMoving);
     setStride(isMoving ? Math.min(1, Math.max(0, power)) : 0);
     setBlocked(isBlocked);
@@ -289,10 +291,10 @@ export function WalkLayer({
 
   function seek(point: Point) {
     const band = BANDS[sceneRef.current];
-    targetRef.current = {
+    targetRef.current = plantOnGround(sceneRef.current, {
       x: Math.min(band.maxX, Math.max(band.minX, point.x)),
       y: Math.min(band.maxY, Math.max(band.minY, point.y)),
-    };
+    });
   }
 
   function onGround(event: React.PointerEvent<HTMLDivElement>) {
@@ -515,8 +517,10 @@ export function WalkLayer({
             <Companion
               frame={companionFrameId(catPost.beat, clip)}
               figure={
-                TRAJ_SRC[companionFrameId(catPost.beat, clip)] ??
-                (scene === 'dba.scene.camp' ? campCat : scene === 'dba.scene.yard' || scene === 'dba.scene.path' ? yardCat : shoreCat)
+                scene === 'dba.scene.yard' && clip === 'land'
+                  ? yardCat
+                  : TRAJ_SRC[companionFrameId(catPost.beat, clip)] ??
+                    (scene === 'dba.scene.camp' ? campCat : scene === 'dba.scene.yard' || scene === 'dba.scene.path' ? yardCat : shoreCat)
               }
               level={hint.level}
               anchor={hint.pose === 'fetch' ? hint.anchor : catPost.look}
