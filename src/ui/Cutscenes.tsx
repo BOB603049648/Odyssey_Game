@@ -3,7 +3,7 @@ import type { Action } from '../core/reduce';
 import type { SaveData } from '../core/schema';
 import { t } from './i18n';
 import { EnterVeil, PlateStack } from './Plate';
-import { CatMark } from './scenes';
+import { CatMark } from './companion/CatMark';
 import { useCrossfade } from './useCrossfade';
 
 const FRAMES = MEMORIES[0]?.frames ?? ['rain', 'kitten', 'cloak'];

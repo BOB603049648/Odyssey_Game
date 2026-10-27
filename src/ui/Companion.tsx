@@ -1,6 +1,6 @@
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { HintLevel } from '../core/schema';
-import { CatMark } from './scenes';
+import { CatMark } from './companion/CatMark';
 import { t } from './i18n';
 
 export function Companion({
