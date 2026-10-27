@@ -1,6 +1,6 @@
 {
-  "version": "1.3-pr15-rim",
-  "updated": "2026-10-28T05:38:16+08:00",
+  "version": "1.3-pr16-wrap",
+  "updated": "2026-10-28T06:03:57+08:00",
   "unit": "meters",
   "traveler": {
     "height_m": 1.75,
@@ -13,7 +13,7 @@
       "px_per_m": 605.7,
       "note": "idle-front-01 opaque ~95.7% H; contract uses 0.92 design target → ~1060px / 1.75m ≈ 605.7 px/m on traveler sheet"
     },
-    "foot_anchor": "bottom-center opaque. pad≤24. PR14: sand-tan AO STUCK to opaque soles (no pale gap); side fog-wrap."
+    "foot_anchor": "bottom-center opaque. pad≤24. PR16: sand-DARK AO rgb(28,22,16) STUCK to opaque soles (no pale/cyan pad, no shallow gap); outer silhouette fog-melt soft edge (no hard dark outline)."
   },
   "prop_subject_height_pct_of_plate_h": {
     "hand_accessory": {
@@ -253,7 +253,13 @@
     "PR15: do NOT stack pale/cyan elliptical foot pad on traveler — art bakes sand-DARK rgb~(28,22,16)",
     "PR15: yard nanaicha opaque-foot on step Band (禁悬空); wall-stick traveler = eng Y-sort",
     "PR15: curtain cyan≈0 in art; if seam still cyan at 棚火到达角 check eng interior self-illum",
-    "PR15: shore nanaicha PASSED — do not re-touch shore cat / land-shore-*"
+    "PR15: shore nanaicha PASSED — do not re-touch shore cat / land-shore-*",
+    "PR16: do NOT stack pale/cyan elliptical foot pad on traveler — art bakes sand-DARK rgb~(28,22,16) flush soles",
+    "PR16: yard nanaicha opaque-foot on step Band; camp nanaicha opaque-foot on porch deck",
+    "PR16: grain-bags grounded — no float pad; eng place on terrace Band",
+    "PR16: curtain cyan≈0 warm cream — do not re-clear; if seam cyan check eng interior glow",
+    "PR16: shore nanaicha + land-shore-* LOCKED — do not re-touch",
+    "PR16: eng wrap — shared fog after composite; no hard outline stack on baked soft-edge sprites"
   ],
   "p1_measured_after": {
     "shore.gourd_subjH%": 16.0,
@@ -727,5 +733,53 @@
       "shore_cat_modified": false
     },
     "eng_must_not": "uniform fog α; stack hard/pale-cyan foot pad on traveler; float yard cat off step Band; ignore curtain eng interior glow"
+  },
+  "pr16_wrap": {
+    "updated": "2026-10-28T06:03:57+08:00",
+    "role": "auxiliary",
+    "summary": "PR16 wrap FAIL辅包：旅人全帧溶雾软边+暗褐AO贴靴清青白亮垫；前坪猫爪贴阶槽 + 棚火猫爪贴廊板；粮袋落地去悬垫；扁板/鱼架清底板软边。门帘仅cyan抽检勿主改；雾岸猫/land-shore-*锁死未改。",
+    "zip": "art-pr16-wrap-pack.zip",
+    "report": "_pr16-wrap-report.json",
+    "backup": "*/raw/pre-pr16-wrap/",
+    "do_not_touch": [
+      "shore/art.shore.prop.nanaicha.png",
+      "nanaicha/traj/land-shore-driftwood.png",
+      "nanaicha/traj/land-shore-east-gap.png",
+      "nanaicha/traj/land-shore-gourd.png",
+      "shore/art.shore.prop.east-gap.png"
+    ],
+    "verify": {
+      "curtain_hard_cyan_px": 0,
+      "curtain_hi_sat_cyan_px": 0,
+      "curtain_bright_cool_px": 0,
+      "curtain_cyan_pass": true,
+      "curtain_main_edit": false,
+      "traveler_pale_pad_px_max": 0,
+      "traveler_soft_shadow_rgb": [
+        27.8,
+        21.9,
+        16.0
+      ],
+      "traveler_bright_rim_px": 14,
+      "traveler_dark_rim_px": 72923,
+      "traveler_foot_pad_px": 8,
+      "yard_cat_pale_pad_px": 0,
+      "yard_cat_bright_rim_px": 0,
+      "yard_cat_foot_pad_px": 9,
+      "camp_cat_pale_pad_px": 0,
+      "camp_cat_bright_rim_px": 0,
+      "camp_cat_foot_pad_px": 10,
+      "grain_pale_pad_px": 0,
+      "grain_pale_rect_px": 0,
+      "boards_pale_rect_px": 0,
+      "fish_pale_rect_px": 0,
+      "shore_cat_modified": false,
+      "shore_cat": "light_only_N/A_locked_untouched",
+      "land_shore_modified": false,
+      "pale_pad": 0
+    },
+    "eng_must_not": "uniform fog α; stack hard/pale-cyan foot pad on traveler; float yard cat off step Band / camp cat off porch; ignore eng wrap co-fog",
+    "shore_cat": "untouched (passed melt; not light-edited)",
+    "curtain": "cyan-check only; no main edit"
   }
 }

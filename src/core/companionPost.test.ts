@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { companionPost, gazeQueue, NANAICHA_FOOT } from './companionPost';
-import { BANDS, GATES, SPOTS } from './stage';
+import { BANDS, GATES, SPOTS, YARD_FACADE } from './stage';
 
 const shore = 'dba.scene.shore' as const;
 const camp = 'dba.scene.camp' as const;
@@ -78,7 +78,8 @@ describe('companion feet and gaze', () => {
     const grab = SPOTS[yard].find((spot) => spot.id === 'yard-grab')!;
     expect(give.targetId).toBe('yard-give');
     expect(give.look).toBe('give');
-    expect(give.y).toBeCloseTo(pile.y);
+    expect(give.y).toBeCloseTo(YARD_FACADE.groundY);
+    expect(give.y).toBeGreaterThan(pile.y);
     expect(Math.abs(give.x - grab.x)).toBeGreaterThan(0.2);
 
     const home = companionPost(yard, { 'dba.beat.water': true, 'dba.beat.food': true }, {});

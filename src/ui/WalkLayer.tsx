@@ -517,10 +517,12 @@ export function WalkLayer({
             <Companion
               frame={companionFrameId(catPost.beat, clip)}
               figure={
-                scene === 'dba.scene.yard' && clip === 'land'
-                  ? yardCat
-                  : TRAJ_SRC[companionFrameId(catPost.beat, clip)] ??
-                    (scene === 'dba.scene.camp' ? campCat : scene === 'dba.scene.yard' || scene === 'dba.scene.path' ? yardCat : shoreCat)
+                TRAJ_SRC[companionFrameId(catPost.beat, clip)] ??
+                (scene === 'dba.scene.camp'
+                  ? campCat
+                  : scene === 'dba.scene.yard' || scene === 'dba.scene.path'
+                    ? yardCat
+                    : shoreCat)
               }
               level={hint.level}
               anchor={hint.pose === 'fetch' ? hint.anchor : catPost.look}
