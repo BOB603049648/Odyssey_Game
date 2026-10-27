@@ -15,10 +15,12 @@ export function PrologueScreen({ step, onAdvance }: { step: number; onAdvance: (
     <section className="prologue" data-testid="prologue" data-prologue-step={step}>
       <p className="eyebrow">{t('scene.prologue')}</p>
       <PrologueArt step={step} />
-      <p className="caption">{t(line)}</p>
-      <button type="button" className="btn primary" onClick={onAdvance}>
-        {step >= 3 ? t('menu.ashore') : t('menu.next')}
-      </button>
+      <div className="hud-caption">
+        <p className="caption">{t(line)}</p>
+        <button type="button" className="btn primary" onClick={onAdvance}>
+          {step >= 3 ? t('menu.ashore') : t('menu.next')}
+        </button>
+      </div>
     </section>
   );
 }

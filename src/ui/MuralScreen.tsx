@@ -36,7 +36,7 @@ export function MuralScreen({
   const learned = LEXEMES.filter((lexeme) => isLearnedState(save.words[lexeme.id]?.state));
 
   return (
-    <section className={shake ? 'mural shake' : 'mural'}>
+    <section className={shake ? 'mural-screen shake' : 'mural-screen'}>
       <header className="bar">
         <div>
           <p className="eyebrow">{t('scene.mural')}</p>

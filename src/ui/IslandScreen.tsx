@@ -50,28 +50,20 @@ export function IslandScreen({
 
   return (
     <section className={shake ? 'island shake' : 'island'}>
-      <header className="bar">
-        <div>
-          <p className="eyebrow">{t(SCENE_TITLE[scene])}</p>
-          <p className="count" aria-label={`${learned.length}`}>
-            {learned.length}/28
-          </p>
-        </div>
-        <div className="row">
-          <button type="button" className="btn" onClick={onTitle}>
-            {t('menu.title')}
-          </button>
-          <button type="button" className="btn" onClick={() => dispatch({ type: 'open-overlay', overlay: 'lexicon' })}>
-            {t('menu.lexicon')}
-          </button>
-          <button type="button" className="btn" onClick={() => dispatch({ type: 'open-overlay', overlay: 'casefile' })}>
-            {t('menu.casefile')}
-          </button>
-          <button type="button" className="btn" onClick={() => dispatch({ type: 'open-overlay', overlay: 'settings' })}>
-            {t('menu.settings')}
-          </button>
-        </div>
-      </header>
+      <div className="hud-actions row">
+        <button type="button" className="btn" onClick={onTitle}>
+          {t('menu.title')}
+        </button>
+        <button type="button" className="btn" onClick={() => dispatch({ type: 'open-overlay', overlay: 'lexicon' })}>
+          {t('menu.lexicon')}
+        </button>
+        <button type="button" className="btn" onClick={() => dispatch({ type: 'open-overlay', overlay: 'casefile' })}>
+          {t('menu.casefile')}
+        </button>
+        <button type="button" className="btn" onClick={() => dispatch({ type: 'open-overlay', overlay: 'settings' })}>
+          {t('menu.settings')}
+        </button>
+      </div>
       <nav className="scene-nav" aria-label={t('scene.shore')}>
         {ISLAND_SCENES.map((id) => (
           <button
@@ -111,6 +103,18 @@ export function IslandScreen({
           />
         ) : null}
         {save.memories.includes('myp.mem.rain-night') ? <MemoryRain /> : null}
+        <div className="hud-place">
+          <p className="eyebrow">{t(SCENE_TITLE[scene])}</p>
+          <p className="count" aria-label={`${learned.length}`}>
+            {learned.length}/28
+          </p>
+        </div>
+        <div className="hud-compass" aria-hidden="true">
+          <span className="tick sw">SW</span>
+          <span className="tick nw">NW</span>
+          <span className="tick e">E</span>
+          <i className="rose" />
+        </div>
         <Companion
           level={hint.level}
           anchor={hint.anchor}

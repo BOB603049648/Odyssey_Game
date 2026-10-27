@@ -1,5 +1,4 @@
 import { GlossSwitch } from './GlossSwitch';
-import { CatMark } from './scenes';
 import { t } from './i18n';
 
 export function TitleScreen({
@@ -17,19 +16,25 @@ export function TitleScreen({
 }) {
   return (
     <section className="title-screen">
-      <CatMark />
       <p className="eyebrow">{t('scene.prologue')}</p>
-      <h1>{t('meta.title')}</h1>
-      <p className="tagline">{t('meta.tagline')}</p>
-      <div className="row">
-        <button type="button" className="btn primary" onClick={onNew}>
-          {t('menu.newGame')}
-        </button>
-        <button type="button" className="btn" onClick={onContinue} disabled={!canContinue}>
-          {t('menu.continue')}
-        </button>
+      <div className="title-block">
+        <h1>{t('meta.title')}</h1>
+        <p className="latin-title" aria-hidden="true">
+          <span />
+          Odyssey
+          <span />
+        </p>
+        <p className="tagline">{t('meta.tagline')}</p>
+        <div className="row">
+          <button type="button" className="btn primary" onClick={onNew}>
+            {t('menu.newGame')}
+          </button>
+          <button type="button" className="btn" onClick={onContinue} disabled={!canContinue}>
+            {t('menu.continue')}
+          </button>
+        </div>
+        <GlossSwitch checked={showGloss} onChange={onToggleGloss} />
       </div>
-      <GlossSwitch checked={showGloss} onChange={onToggleGloss} />
     </section>
   );
 }
