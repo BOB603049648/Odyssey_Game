@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ISLAND_SCENES } from './island';
-import { BANDS, GATES, SPAWNS, SPOTS, crossed, gateAt, plantOnGround } from './stage';
+import { BANDS, GATES, SHORE_MARKER, SPAWNS, SPOTS, crossed, gateAt, plantOnGround } from './stage';
 import {
   KEY_STEP,
   WALK_SPEED,
@@ -123,8 +123,17 @@ describe('shore and camp layout', () => {
     expect(BANDS['dba.scene.camp'].minY).toBeGreaterThanOrEqual(0.8);
     expect(BANDS['dba.scene.yard'].minY).toBeGreaterThanOrEqual(0.76);
     expect(plantOnGround('dba.scene.yard', { x: 0.5, y: 0.8 }).y).toBeGreaterThanOrEqual(0.92);
+    expect(plantOnGround('dba.scene.yard', { x: 0.28, y: 0.8 }).y).toBeGreaterThanOrEqual(0.92);
+    expect(plantOnGround('dba.scene.yard', { x: 0.72, y: 0.8 }).y).toBeGreaterThanOrEqual(0.92);
     expect(plantOnGround('dba.scene.yard', { x: 0.16, y: 0.78 }).y).toBeCloseTo(0.78);
+    expect(plantOnGround('dba.scene.yard', { x: 0.36, y: 0.76 }).y).toBeCloseTo(0.76);
+    expect(plantOnGround('dba.scene.shore', { x: 0.74, y: 0.48 }).y).toBe(SHORE_MARKER.sandY);
+    expect(plantOnGround('dba.scene.shore', { x: 0.42, y: 0.5 }).y).toBeCloseTo(0.5);
+    expect(plantOnGround('dba.scene.shore', { x: 0.74, y: 0.7 }).y).toBeCloseTo(0.7);
     expect(plantOnGround('dba.scene.camp', { x: 0.5, y: 0.84 }).y).toBeCloseTo(0.84);
+    for (const gate of GATES.filter((item) => item.to === 'dba.scene.yard')) {
+      expect(gate.arrival.y).toBeGreaterThanOrEqual(0.92);
+    }
     expect(SPAWNS['dba.scene.yard'].y).toBeGreaterThanOrEqual(0.92);
     const give = SPOTS['dba.scene.yard'].find((spot) => spot.id === 'yard-give');
     expect(give && give.y).toBeGreaterThanOrEqual(0.88);

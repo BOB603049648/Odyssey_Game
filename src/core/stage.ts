@@ -50,12 +50,12 @@ export const GATES: readonly Gate[] = [
   { from: 'dba.scene.shore', to: 'dba.scene.camp', x: 0.9, y: 0.63, r: 0.04, edge: 'east', arrival: { x: 0.34, y: 0.84 } },
   { from: 'dba.scene.shore', to: 'dba.scene.hall', x: 0.11, y: 0.7, r: 0.04, edge: 'west', arrival: { x: 0.48, y: 0.6 } },
   { from: 'dba.scene.camp', to: 'dba.scene.shore', x: 0.1, y: 0.84, r: 0.04, edge: 'west', arrival: { x: 0.7, y: 0.62 } },
-  { from: 'dba.scene.camp', to: 'dba.scene.yard', x: 0.9, y: 0.84, r: 0.04, edge: 'east', arrival: { x: 0.28, y: 0.8 } },
+  { from: 'dba.scene.camp', to: 'dba.scene.yard', x: 0.9, y: 0.84, r: 0.04, edge: 'east', arrival: { x: 0.28, y: 0.92 } },
   { from: 'dba.scene.camp', to: 'dba.scene.night', x: 0.5, y: 0.8, r: 0.04, edge: 'north', arrival: { x: 0.55, y: 0.74 } },
   { from: 'dba.scene.yard', to: 'dba.scene.camp', x: 0.11, y: 0.8, r: 0.04, edge: 'west', arrival: { x: 0.72, y: 0.84 } },
   { from: 'dba.scene.yard', to: 'dba.scene.path', x: 0.9, y: 0.78, r: 0.04, edge: 'east', arrival: { x: 0.3, y: 0.64 } },
   { from: 'dba.scene.hall', to: 'dba.scene.shore', x: 0.5, y: 0.8, r: 0.04, edge: 'south', arrival: { x: 0.28, y: 0.62 } },
-  { from: 'dba.scene.path', to: 'dba.scene.yard', x: 0.11, y: 0.64, r: 0.04, edge: 'west', arrival: { x: 0.72, y: 0.8 } },
+  { from: 'dba.scene.path', to: 'dba.scene.yard', x: 0.11, y: 0.64, r: 0.04, edge: 'west', arrival: { x: 0.72, y: 0.92 } },
   { from: 'dba.scene.night', to: 'dba.scene.camp', x: 0.5, y: 0.8, r: 0.04, edge: 'south', arrival: { x: 0.62, y: 0.84 } },
 ];
 
@@ -103,22 +103,39 @@ export const SPOTS: Record<IslandScene, readonly Spot[]> = {
 
 /**
  * Center of the yard plate is the hall facade, not a floor.
- * Side courts (fish racks, gates) stay on the band. Feet in the door span
- * drop to the step/court line instead of painting on the wall.
+ * Side courts (fish racks) stay on the band. Feet in the door span
+ * and the two gate mouths drop to the step line instead of painting on the wall.
  */
 export const YARD_FACADE = { minX: 0.4, maxX: 0.66, groundY: 0.92 } as const;
+
+/** West mouth (camp arrival) and east mouth (path arrival). Fish racks at x 0.16 and 0.36 stay outside. */
+const YARD_APRONS = [
+  { minX: 0.22, maxX: 0.34 },
+  { minX: 0.68, maxX: 0.82 },
+] as const;
+
+/**
+ * East-gap marker stone. The plate art stays. Feet must not stand on its top;
+ * they drop to the sand/rock line. The depart hotspot still reaches that line.
+ */
+export const SHORE_MARKER = { minX: 0.64, maxX: 0.82, sandY: 0.57 } as const;
 
 export function plantOnGround(scene: IslandScene, pos: Point): Point {
   const band = BANDS[scene];
   const x = Math.min(band.maxX, Math.max(band.minX, pos.x));
   let y = Math.min(band.maxY, Math.max(band.minY, pos.y));
-  if (
-    scene === 'dba.scene.yard' &&
-    x > YARD_FACADE.minX &&
-    x < YARD_FACADE.maxX &&
-    y < YARD_FACADE.groundY
-  ) {
+  const onFacade = x > YARD_FACADE.minX && x < YARD_FACADE.maxX;
+  const onApron = YARD_APRONS.some((span) => x > span.minX && x < span.maxX);
+  if (scene === 'dba.scene.yard' && (onFacade || onApron) && y < YARD_FACADE.groundY) {
     y = YARD_FACADE.groundY;
+  }
+  if (
+    scene === 'dba.scene.shore' &&
+    x >= SHORE_MARKER.minX &&
+    x <= SHORE_MARKER.maxX &&
+    y < SHORE_MARKER.sandY
+  ) {
+    y = SHORE_MARKER.sandY;
   }
   return { x, y };
 }

@@ -512,8 +512,12 @@ h1 {
 .walk-viewport[data-scene="dba.scene.shore"] .companion-anchor .contact-shadow {
   opacity: 1;
 }
-/* Baked sole AO is already sand-brown rgb(28,22,16). A second disc sits off the leather and opens a light seam. */
+/* Kill the pale ellipse. The sole contact is the masked multiply AO, not a second disc. */
 .walk-viewport[data-scene="dba.scene.shore"] .traveler .foot-ellipse {
+  background: none;
+}
+.walk-viewport[data-scene="dba.scene.yard"] .companion-anchor .foot-ellipse,
+.walk-viewport[data-scene="dba.scene.camp"] .companion-anchor .foot-ellipse {
   background: none;
 }
 
@@ -540,6 +544,8 @@ h1 {
 
 .traveler-frames { position: relative; height: 100%; }
 .traveler-frame-wrap { display: block; position: relative; height: 100%; }
+.sole-ao { display: none; }
+.fog-fringe { display: none; }
 .traveler-frame-wrap[data-mirror="yes"] { transform: scaleX(-1); }
 .traveler-frame {
   display: block;
@@ -1946,6 +1952,56 @@ h1 {
   mask-repeat: no-repeat, no-repeat;
   -webkit-mask-composite: source-in;
   mask-composite: intersect;
+}
+/* One dark-brown multiply on the shore sole. Masked to the sprite so it cannot paint a pad on the sand. */
+.walk-viewport[data-scene="dba.scene.shore"] .traveler .sole-ao {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  background: radial-gradient(
+    ellipse 28% 4.2% at 50% 99%,
+    rgb(28, 22, 16) 0%,
+    rgb(28, 22, 16) 42%,
+    rgba(28, 22, 16, 0.35) 70%,
+    transparent 82%
+  );
+  -webkit-mask-image: var(--figure);
+  mask-image: var(--figure);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-position: center bottom;
+  mask-position: center bottom;
+}
+/* Soft scene-light fringe so the cutout melts. Blur sits outside the mask. Shore cat is not in this set. */
+.walk-viewport .traveler .fog-fringe,
+.walk-viewport[data-scene="dba.scene.yard"] .nanaicha-figure .fog-fringe,
+.walk-viewport[data-scene="dba.scene.camp"] .nanaicha-figure .fog-fringe {
+  display: block;
+  position: absolute;
+  inset: -3.5%;
+  z-index: -1;
+  filter: blur(6px);
+  opacity: 0.46;
+  pointer-events: none;
+}
+.fog-fringe-mask {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--figure-light, #c5d0d4);
+  -webkit-mask-image: var(--figure);
+  mask-image: var(--figure);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-position: center bottom;
+  mask-position: center bottom;
 }
 
 .contact-shadow {

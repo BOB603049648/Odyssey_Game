@@ -55,8 +55,10 @@ describe('companion feet and gaze', () => {
     const hungry = companionPost(camp, { 'dba.beat.water': true }, {});
     const east = GATES.find((item) => item.from === camp && item.to === yard)!;
     expect(hungry.targetId).toBe('camp-east');
-    expect(hungry.y).toBeCloseTo(east.y);
-    expect(hungry.x).toBeLessThan(east.x);
+    expect(hungry.x).toBeCloseTo(0.7);
+    expect(hungry.y).toBeCloseTo(0.85);
+    expect(hungry.x).toBeLessThan(east.x - 0.12);
+    expect(hungry.y).toBeGreaterThanOrEqual(BANDS[camp].minY);
 
     const sleepy = companionPost(camp, { 'dba.beat.water': true, 'dba.beat.food': true }, {});
     const mat = SPOTS[camp].find((spot) => spot.id === 'camp-sleep')!;
@@ -78,7 +80,9 @@ describe('companion feet and gaze', () => {
     const grab = SPOTS[yard].find((spot) => spot.id === 'yard-grab')!;
     expect(give.targetId).toBe('yard-give');
     expect(give.look).toBe('give');
+    expect(give.x).toBeCloseTo(0.52);
     expect(give.y).toBeCloseTo(YARD_FACADE.groundY);
+    expect(pile.x - give.x).toBeGreaterThan(0.2);
     expect(give.y).toBeGreaterThan(pile.y);
     expect(Math.abs(give.x - grab.x)).toBeGreaterThan(0.2);
 

@@ -50,6 +50,9 @@ export function Companion({
         <span className="companion-sway">
           {figure ? (
             <span className="nanaicha-figure" style={{ ['--figure' as string]: `url("${figure}")` }}>
+              <span className="fog-fringe" aria-hidden="true">
+                <span className="fog-fringe-mask" />
+              </span>
               <img className="nanaicha-ground" data-look={anchor} data-frame={frame} src={figure} alt="" draggable={false} />
               <span className="figure-grade grade-color" />
               <span className="figure-grade grade-soft" />

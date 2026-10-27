@@ -79,7 +79,8 @@ export function companionPost(
 
   if (scene === 'dba.scene.camp') {
     if (beats['dba.beat.food'] !== true) {
-      const feet = insideGate(scene, 'dba.scene.yard');
+      /* East porch deck. The yard-gate lip (x≈0.85) is the water-side fog, off the boards. */
+      const feet = clampToBand({ x: 0.7, y: 0.85 }, BANDS[scene]);
       return { ...feet, look: 'give', pose: 'lead', targetId: 'camp-east', beat: 'C1', queue: 'food' };
     }
     if (beats['dba.beat.sleep'] !== true) {
@@ -94,9 +95,8 @@ export function companionPost(
 
   if (scene === 'dba.scene.yard') {
     if (beats['dba.beat.food'] !== true) {
-      const pile = spotAt(scene, 'yard-give');
-      /* Step groove, the same line the traveler uses in front of the hall. */
-      const feet = plant(scene, { x: pile.x, y: YARD_FACADE.groundY }, -1);
+      /* Step groove. The grain pile at x≈0.80 is 0.30 wide, so x 0.75 plants the legs in the bags. */
+      const feet = clampToBand({ x: 0.52, y: YARD_FACADE.groundY }, BANDS[scene]);
       const tilt = flags['dba.flag.wrong-share'] === true;
       return {
         ...feet,

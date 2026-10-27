@@ -1,6 +1,6 @@
 {
-  "version": "1.3-pr16-wrap",
-  "updated": "2026-10-28T06:03:57+08:00",
+  "version": "1.3-pr17-ao",
+  "updated": "2026-10-28T06:43:16+08:00",
   "unit": "meters",
   "traveler": {
     "height_m": 1.75,
@@ -13,7 +13,7 @@
       "px_per_m": 605.7,
       "note": "idle-front-01 opaque ~95.7% H; contract uses 0.92 design target → ~1060px / 1.75m ≈ 605.7 px/m on traveler sheet"
     },
-    "foot_anchor": "bottom-center opaque. pad≤24. PR16: sand-DARK AO rgb(28,22,16) STUCK to opaque soles (no pale/cyan pad, no shallow gap); outer silhouette fog-melt soft edge (no hard dark outline)."
+    "foot_anchor": "bottom-center opaque. pad≤24. PR17: one multiply AO rgb(28,22,16) stuck to the sole (pale ellipse layer removed, no bright center); outer silhouette fog-melt. Eng must not stack a second pale disc."
   },
   "prop_subject_height_pct_of_plate_h": {
     "hand_accessory": {
@@ -781,5 +781,34 @@
     "eng_must_not": "uniform fog α; stack hard/pale-cyan foot pad on traveler; float yard cat off step Band / camp cat off porch; ignore eng wrap co-fog",
     "shore_cat": "untouched (passed melt; not light-edited)",
     "curtain": "cyan-check only; no main edit"
+  },
+  "pr17_ao": {
+    "updated": "2026-10-28T06:43:16+08:00",
+    "role": "auxiliary",
+    "summary": "PR17 ao：旅人清亮垫，单团暗褐 AO 贴靴；前坪猫爪贴阶槽（锚离粮袋）；棚火猫爪贴廊板；粮袋去厚石盘；鱼架清软椭圆脚贴。扁板、门帘、雾岸猫、land-shore-*、标石未改。",
+    "zip": "art-pr17-ao-pack.zip",
+    "report": "_pr17-ao-report.json",
+    "do_not_touch": [
+      "shore/art.shore.prop.nanaicha.png",
+      "nanaicha/traj/land-shore-driftwood.png",
+      "nanaicha/traj/land-shore-east-gap.png",
+      "nanaicha/traj/land-shore-gourd.png",
+      "shore/art.shore.prop.east-gap.png",
+      "yard/art.yard.prop.more-less-boards.png",
+      "camp/art.camp.prop.north-curtain.png"
+    ],
+    "verify": {
+      "curtain_wrote": false,
+      "boards_untouched": true,
+      "traveler_pale_pad_px_max": 0,
+      "shore_cat_modified": false,
+      "land_shore_modified": false,
+      "marker_stone_modified": false,
+      "pale_pad": 0
+    },
+    "eng_must_not": "uniform fog α; stack a pale/cyan foot ellipse; stand on the east-gap stone top; plant the yard cat inside the grain pile; plant the camp cat off the porch",
+    "shore_cat": "untouched",
+    "curtain": "wrote=false",
+    "boards": "untouched"
   }
 }
