@@ -237,13 +237,12 @@ h1 {
 
 .cat .cat-body { fill: #1a120e; stroke: #d9c7a4; }
 .cat .cat-spot, .cat .cat-ear { stroke: #d9c7a4; }
-.cat .leaf { fill: #1d3328; stroke: #d9c7a4; }
 .cat .rope, .cat .tail { stroke: #d9c7a4; }
 .cat .knot { fill: #e7d7b0; stroke: none; }
 .cat .eyes { fill: #e7c27a; stroke: none; }
 
 .companion {
-  width: 176px;
+  width: 220px;
   padding: 0;
   border-radius: 0;
   background: transparent;
@@ -302,28 +301,47 @@ h1 {
   user-select: none;
 }
 
+.cloak,
+.cloak-hood,
 .collar-knot {
   position: absolute;
-  left: 43%;
-  top: 34%;
-  width: 14%;
-  height: 8%;
-  border-radius: 40%;
   background: transparent;
   pointer-events: none;
 }
 
+.cloak {
+  left: 2%;
+  top: 30%;
+  width: 58%;
+  height: 62%;
+}
+
+.cloak-hood {
+  left: 8%;
+  top: 22%;
+  width: 36%;
+  height: 12%;
+}
+
+.collar-knot {
+  left: 58%;
+  top: 31%;
+  width: 12%;
+  height: 6%;
+  border-radius: 40%;
+}
+
 .companion[data-knot="glow"] .collar-knot,
 .collar-knot[data-knot="glow"] {
-  background: rgba(212, 160, 23, 0.28);
-  box-shadow: 0 0 14px 5px rgba(212, 160, 23, 0.85);
+  background: radial-gradient(circle, rgba(196, 154, 96, 0.42) 0%, rgba(196, 154, 96, 0) 72%);
+  box-shadow: 0 0 8px 1px rgba(168, 124, 72, 0.45);
 }
 
 .prologue > .nanaicha-look {
   position: absolute;
-  right: 8vw;
-  bottom: 4vh;
-  width: min(36vh, 260px);
+  right: 6vw;
+  bottom: 2vh;
+  width: min(42vh, 280px);
   z-index: 1;
   pointer-events: none;
 }

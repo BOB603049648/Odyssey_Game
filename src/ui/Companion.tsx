@@ -1,6 +1,6 @@
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { HintLevel } from '../core/schema';
-import { CatMark, nanaichaState } from './companion/CatMark';
+import { CatMark, nanaichaState, type KnotMark } from './companion/CatMark';
 import { t } from './i18n';
 
 export function Companion({
@@ -8,12 +8,14 @@ export function Companion({
   anchor,
   pose,
   purr,
+  knot = 'rest',
   onAsk,
 }: {
   level: HintLevel;
   anchor: HintAnchor;
   pose: CompanionPose;
   purr: boolean;
+  knot?: KnotMark;
   onAsk: () => void;
 }) {
   return (
@@ -26,12 +28,12 @@ export function Companion({
       data-look={anchor}
       data-pose={pose}
       data-state={nanaichaState(level, pose)}
-      data-knot="rest"
+      data-knot={knot}
       onClick={onAsk}
       aria-label={t('companion.ask')}
     >
       <span className="companion-sway">
-        <CatMark look={anchor} state={nanaichaState(level, pose)} />
+        <CatMark look={anchor} state={nanaichaState(level, pose)} knot={knot} />
       </span>
     </button>
   );

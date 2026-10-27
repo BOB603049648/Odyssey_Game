@@ -116,8 +116,10 @@ describe('playable slice', () => {
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     expect(screen.getByTestId('memory-plate').getAttribute('data-frame')).toBe('rain');
     expect(screen.getByTestId('memory-art').textContent).toBe('');
+    expect(screen.getByTestId('memory-plate').querySelector('.nanaicha-look')?.getAttribute('data-figure')).toBe('adult');
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     expect(screen.getByTestId('memory-plate').getAttribute('data-frame')).toBe('kitten');
+    expect(screen.getByTestId('memory-plate').querySelector('.nanaicha-look')?.getAttribute('data-figure')).toBe('kitten');
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     expect(screen.getByTestId('memory-plate').getAttribute('data-frame')).toBe('cloak');
     fireEvent.click(screen.getByRole('button', { name: '合上' }));
@@ -141,6 +143,25 @@ describe('playable slice', () => {
     fireEvent.click(screen.getByRole('button', { name: '案卷' }));
     fireEvent.click(screen.getByTestId('case-memory'));
     expect(screen.getByTestId('memory-plate').getAttribute('data-frame')).toBe('rain');
+    expect(screen.queryByText('奈奈茶')).toBeNull();
+  });
+
+  it('keeps the collar dark until the rope-knot evidence is in the case', () => {
+    let save = reduce(newGameState(), { type: 'new-game' });
+    for (let step = 0; step < 4; step += 1) save = reduce(save, { type: 'advance-prologue' });
+    localStorage.setItem(SAVE_KEY, JSON.stringify(save));
+    useGame.getState().resetForTests();
+    const first = render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: '继续' }));
+    expect(screen.getByTestId('companion').getAttribute('data-knot')).toBe('rest');
+    first.unmount();
+
+    save = reduce(save, { type: 'debug-evidence', id: 'myp.ev.b' });
+    localStorage.setItem(SAVE_KEY, JSON.stringify(save));
+    useGame.getState().resetForTests();
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: '继续' }));
+    expect(screen.getByTestId('companion').getAttribute('data-knot')).toBe('glow');
     expect(screen.queryByText('奈奈茶')).toBeNull();
   });
 });

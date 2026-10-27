@@ -6,6 +6,7 @@ import type { Action } from '../core/reduce';
 import type { MuralLayer, SaveData } from '../core/schema';
 import { isLearnedState } from '../core/words';
 import { Companion } from './Companion';
+import { knotMark } from './companion/CatMark';
 import { hintMark, OverlaySheet } from './IslandScreen';
 import { Glyph } from './glyphs';
 import { t } from './i18n';
@@ -163,6 +164,7 @@ export function MuralScreen({
         anchor={hint.anchor}
         pose={hint.pose}
         purr={purr}
+        knot={knotMark(save.evidence)}
         onAsk={() => dispatch({ type: 'request-hint' })}
       />
       <OverlaySheet save={save} dispatch={dispatch} learned={learned} hint={hint} />

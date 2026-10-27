@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { nanaichaState } from './CatMark';
+import { knotMark, nanaichaState } from './CatMark';
 
 describe('nanaichaState', () => {
   it('maps hint levels onto look, walk, and tap', () => {
@@ -18,5 +18,14 @@ describe('nanaichaState', () => {
     expect(nanaichaState(0, 'lead')).toBe('walk');
     expect(nanaichaState(0, 'wait')).toBe('idle');
     expect(nanaichaState(0, 'idle')).toBe('idle');
+  });
+});
+
+describe('knotMark', () => {
+  it('glows only while the rope-knot evidence is held', () => {
+    expect(knotMark([])).toBe('rest');
+    expect(knotMark(['myp.ev.a'])).toBe('rest');
+    expect(knotMark(['myp.ev.b'])).toBe('glow');
+    expect(knotMark(['myp.ev.a', 'myp.ev.main'])).toBe('rest');
   });
 });

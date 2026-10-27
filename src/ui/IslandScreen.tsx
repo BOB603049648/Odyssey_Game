@@ -6,6 +6,7 @@ import type { Action } from '../core/reduce';
 import type { SaveData } from '../core/schema';
 import { isLearnedState } from '../core/words';
 import { Companion } from './Companion';
+import { knotMark } from './companion/CatMark';
 import { GlossSwitch } from './GlossSwitch';
 import { Glyph } from './glyphs';
 import { t, type MessageKey } from './i18n';
@@ -127,6 +128,7 @@ export function IslandScreen({
           anchor={hint.anchor}
           pose={hint.pose}
           purr={purr}
+          knot={knotMark(save.evidence)}
           onAsk={() => dispatch({ type: 'request-hint' })}
         />
       </div>

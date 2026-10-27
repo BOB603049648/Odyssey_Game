@@ -35,7 +35,7 @@ npm run build
 
 ## 向导画面
 
-画面上不写向导的名字。立绘在 [`src/ui/companion/CatMark.tsx`](src/ui/companion/CatMark.tsx)，图在 `src/assets/companion/nanaicha/`（`nanaicha-hero.png` 用于场景，`nanaicha-silhouette.png` 用于回忆）。内部 id 是 `nanaicha`。颈上的结是 class `collar-knot`；以后把 `data-knot` 设成 `glow` 就会亮，现在默认 `rest`。
+画面上不写向导的名字。立绘是披着旅行披风的暹罗色点家猫，组件在 [`src/ui/companion/CatMark.tsx`](src/ui/companion/CatMark.tsx)，图在 `src/assets/companion/nanaicha/`（`nanaicha-hero.png` 与 `nanaicha-silhouette.png` 是披风版主线，`kitten/` 是不披风的幼年回忆）。内部 id 是 `nanaicha`。披风钩子是 class `cloak` / `cloak-hood`（`data-cloak="worn"`，`data-hood="down"`）。颈上扁结是 class `collar-knot`；案卷持有绳结纹身时 `data-knot` 为 `glow`，否则 `rest`。造型说明在 [`docs/characters/奈奈茶.md`](docs/characters/奈奈茶.md)，氛围和姿势参考在 `docs/assets/nanaicha/`。
 
 手机壳只放了 `capacitor.config.ts`（`webDir` 为 `dist`）。还没有 iOS / Android 工程。
 
@@ -49,6 +49,7 @@ npm run build
 | [docs/04-壁画视觉词典-皮拉罕.md](docs/04-壁画视觉词典-皮拉罕.md) | 第一岛壁画教学机制 |
 | [docs/05-主线剧本与世界观.md](docs/05-主线剧本与世界观.md) | 群岛历史、向导、回忆线、15 枚证物、Boss 对峙与结局 |
 | [docs/06-开发文档.md](docs/06-开发文档.md) | 技术选型、架构、数据模型、内容核对流程、测试与里程碑 |
+| [docs/characters/奈奈茶.md](docs/characters/奈奈茶.md) | 向导造型定稿：暹罗色点家猫，颈结，无耳叶 |
 | [docs/islands/01-皮拉罕岛.md](docs/islands/01-皮拉罕岛.md) | 岛 1 完整设计 |
 | [docs/islands/02-塔阿岛.md](docs/islands/02-塔阿岛.md) | 岛 2 完整设计 |
 | [docs/islands/03-阿姆哈拉岛.md](docs/islands/03-阿姆哈拉岛.md) | 岛 3 完整设计 |
