@@ -29,6 +29,12 @@ import { useCrossfade } from './useCrossfade';
 
 type Hint = { level: HintLevel; anchor: HintAnchor; wordId: string | null; pose: CompanionPose };
 
+function isInteractKey(event: KeyboardEvent): boolean {
+  const key = event.key;
+  if (key === 'e' || key === 'E' || key === 'f' || key === 'F' || key === 'Enter' || key === ' ') return true;
+  return event.code === 'KeyE' || event.code === 'KeyF' || event.code === 'Enter' || event.code === 'NumpadEnter' || event.code === 'Space';
+}
+
 function keyOf(event: KeyboardEvent): WalkKey | null {
   const code = event.code;
   const key = event.key.toLowerCase();
@@ -240,10 +246,12 @@ export function WalkLayer({
         return;
       }
       if (pausedRef.current) return;
-      if (event.key === 'e' || event.key === 'E') {
-        event.preventDefault();
+      if (isInteractKey(event)) {
+        if (event.repeat) return;
         const spot = nearestSpot(spotsRef.current, posRef.current);
-        if (spot) interactRef.current(spot.id);
+        if (!spot) return;
+        event.preventDefault();
+        interactRef.current(spot.id);
         return;
       }
       const key = keyOf(event);

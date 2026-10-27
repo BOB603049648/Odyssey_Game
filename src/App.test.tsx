@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { App } from './App';
 import { canDepart, type IslandScene } from './core/island';
 import { reduce } from './core/reduce';
@@ -193,6 +193,62 @@ describe('playable slice', () => {
     fireEvent.click(screen.getByTestId('case-memory'));
     expect(screen.getByTestId('memory-plate').getAttribute('data-frame')).toBe('rain');
     expect(screen.queryByText('奈奈茶')).toBeNull();
+  });
+
+  it('opens a hotspot underfoot with click, E, Enter, Space, and F', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: '新游戏' }));
+    fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
+    fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
+    fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
+    fireEvent.click(screen.getByRole('button', { name: '走上潮线' }));
+
+    const mural = spot('myp.scene.shore', 'island-mural');
+    for (const key of ['e', 'Enter', ' ', 'f']) {
+      walkTo('myp.scene.shore', mural, mural.r);
+      expect(screen.getByTestId('walk-stage').getAttribute('data-near')).toContain('island-mural');
+      fireEvent.keyDown(window, { key });
+      expect(screen.getByTestId('mural-review')).toBeTruthy();
+      fireEvent.click(screen.getByRole('button', { name: '返回' }));
+      expect(screen.getByTestId('shore')).toBeTruthy();
+    }
+
+    act(() => {
+      useGame.getState().dispatch({ type: 'debug-scene', scene: 'myp.scene.night' });
+    });
+    expect(screen.getByTestId('scene').getAttribute('data-scene')).toBe('myp.scene.night');
+    const read = spot('myp.scene.night', 'night-read');
+    walkTo('myp.scene.night', read, read.r);
+    expect(screen.getByTestId('walk-stage').getAttribute('data-near')).toContain('night-read');
+    fireEvent.click(screen.getByTestId('night-read'));
+    expect(screen.getByTestId('mural-review')).toBeTruthy();
+    expect(useGame.getState().save.evidence).not.toContain('myp.ev.main');
+    expect(useGame.getState().save.currentScene).toBe('myp.scene.night');
+    fireEvent.click(screen.getByRole('button', { name: '返回' }));
+
+    walkTo('myp.scene.night', read, read.r);
+    fireEvent.keyDown(window, { key: 'Enter' });
+    expect(screen.getByTestId('mural-review')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: '返回' }));
+
+    const learned = ['myp.word.hunger', 'myp.word.promise', 'myp.word.danger'].reduce(
+      (next, id) => ({
+        ...next,
+        words: {
+          ...next.words,
+          [id]: { ...next.words[id], state: 'learned' as const, correct: next.words[id].correct + 1 },
+        },
+      }),
+      useGame.getState().save,
+    );
+    act(() => {
+      useGame.setState({ save: learned });
+    });
+    walkTo('myp.scene.night', read, read.r);
+    fireEvent.keyDown(window, { key: 'f' });
+    expect(screen.getByRole('dialog', { name: '案卷' })).toBeTruthy();
+    expect(useGame.getState().save.evidence).toContain('myp.ev.main');
+    expect(useGame.getState().save.beats['myp.beat.old-layer']).toBe(true);
   });
 
   it('keeps the collar dark until the rope-knot evidence is in the case', () => {
