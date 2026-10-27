@@ -264,6 +264,10 @@ h1 {
   transform-origin: 50% 42%;
   animation: nanaicha-breath 3.6s ease-in-out infinite;
 }
+/* The anchor is the foot box. A wide plate otherwise shrinks to its own height and sits on the top edge, so the paws hang above the pivot. */
+.companion-anchor .companion-sway {
+  height: 100%;
+}
 
 .nanaicha-look {
   display: block;
@@ -508,15 +512,9 @@ h1 {
 .walk-viewport[data-scene="dba.scene.shore"] .companion-anchor .contact-shadow {
   opacity: 1;
 }
-/* Shore sand is pale. The shared blue shadow-tint reads as a cyan pad and a light seam. */
+/* Baked sole AO is already sand-brown rgb(28,22,16). A second disc sits off the leather and opens a light seam. */
 .walk-viewport[data-scene="dba.scene.shore"] .traveler .foot-ellipse {
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(28, 22, 16, 0.94) 0%,
-    rgba(28, 22, 16, 0.7) 28%,
-    rgba(28, 22, 16, 0.28) 48%,
-    transparent 66%
-  );
+  background: none;
 }
 
 .traveler {
@@ -1921,6 +1919,34 @@ h1 {
 .walk-viewport[data-scene="dba.scene.camp"] .figure-grade.grade-color { opacity: 0.64; }
 .walk-viewport[data-scene="dba.scene.yard"] .figure-grade.grade-color { opacity: 0.74; }
 .walk-viewport[data-scene="dba.scene.yard"] .figure-grade.grade-soft { opacity: 0.58; }
+/* Color + soft-light of the shore grade lifts the baked boot AO into a cool pad.
+   The body keeps the wrap. The sole band stays the baked brown. */
+.walk-viewport[data-scene="dba.scene.shore"] .traveler .figure-grade {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 86%, transparent 94%), var(--figure);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 86%, transparent 94%), var(--figure);
+  -webkit-mask-size: 100% 100%, contain;
+  mask-size: 100% 100%, contain;
+  -webkit-mask-position: center center, center bottom;
+  mask-position: center center, center bottom;
+  -webkit-mask-repeat: no-repeat, no-repeat;
+  mask-repeat: no-repeat, no-repeat;
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+/* Yard hall light and the camp wrap do the same to a dark paw contact. Shore cat stays as shipped. */
+.walk-viewport[data-scene="dba.scene.yard"] .companion-anchor .figure-grade,
+.walk-viewport[data-scene="dba.scene.camp"] .companion-anchor .figure-grade {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 88%, transparent 96%), var(--figure);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 88%, transparent 96%), var(--figure);
+  -webkit-mask-size: 100% 100%, contain;
+  mask-size: 100% 100%, contain;
+  -webkit-mask-position: center center, center bottom;
+  mask-position: center center, center bottom;
+  -webkit-mask-repeat: no-repeat, no-repeat;
+  mask-repeat: no-repeat, no-repeat;
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
 
 .contact-shadow {
   position: absolute;

@@ -1,6 +1,6 @@
 import type { CompanionPose, HintAnchor } from './hints';
 import type { IslandScene } from './island';
-import { BANDS, GATES, SPOTS } from './stage';
+import { BANDS, GATES, SPOTS, YARD_FACADE } from './stage';
 import { clampToBand, type Point } from './walk';
 
 /** Opaque-bbox foot of the 864×1152 landing frames (18px pad on a 1152 canvas). */
@@ -87,13 +87,16 @@ export function companionPost(
       const feet = clampToBand({ x: mat.x - 0.14, y: mat.y }, BANDS[scene]);
       return { ...feet, look: 'sleep', pose: 'sit-near', targetId: 'camp-sleep', beat: 'C2', queue: 'sleep' };
     }
-    const feet = clampToBand({ x: 0.66, y: 0.82 }, BANDS[scene]);
+    /* Porch boards. 0.82 still sits on the wall side of the deck seam. */
+    const feet = clampToBand({ x: 0.66, y: 0.86 }, BANDS[scene]);
     return { ...feet, look: 'sleep', pose: 'curl', targetId: 'camp-fire', beat: 'C3', queue: 'guard' };
   }
 
   if (scene === 'dba.scene.yard') {
     if (beats['dba.beat.food'] !== true) {
-      const feet = plant(scene, spotAt(scene, 'yard-give'), -1);
+      const pile = spotAt(scene, 'yard-give');
+      /* Step groove, the same line the traveler uses in front of the hall. */
+      const feet = plant(scene, { x: pile.x, y: YARD_FACADE.groundY }, -1);
       const tilt = flags['dba.flag.wrong-share'] === true;
       return {
         ...feet,
