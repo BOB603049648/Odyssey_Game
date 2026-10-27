@@ -121,7 +121,9 @@ describe('walk', () => {
 describe('shore and camp layout', () => {
   it('keeps spawns, spots, and gates inside the walkable band', () => {
     expect(BANDS['dba.scene.camp'].minY).toBeGreaterThanOrEqual(0.66);
-    expect(BANDS['dba.scene.yard'].minY).toBeGreaterThanOrEqual(0.7);
+    expect(BANDS['dba.scene.yard'].minY).toBeGreaterThanOrEqual(0.76);
+    const give = SPOTS['dba.scene.yard'].find((spot) => spot.id === 'yard-give');
+    expect(give && give.y).toBeGreaterThanOrEqual(0.88);
     for (const scene of ISLAND_SCENES) {
       const band = BANDS[scene];
       const spawn = SPAWNS[scene];

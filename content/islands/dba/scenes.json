@@ -146,7 +146,7 @@
         "parallax": 1,
         "spot": "camp-sleep",
         "x": 0.56,
-        "y": 0.75,
+        "y": 0.82,
         "w": 0.18,
         "h": 0.14
       },
@@ -169,7 +169,7 @@
         "asset": "art.camp.prop.paper-bundles",
         "parallax": 1,
         "x": 0.18,
-        "y": 0.78,
+        "y": 0.84,
         "w": 0.16,
         "h": 0.12
       },
@@ -192,7 +192,7 @@
         "parallax": 1,
         "spot": "act:dba.word.home",
         "x": 0.3,
-        "y": 0.83,
+        "y": 0.85,
         "w": 0.13,
         "h": 0.16
       },
@@ -204,7 +204,7 @@
         "parallax": 1,
         "spot": "act:dba.word.eat",
         "x": 0.39,
-        "y": 0.83,
+        "y": 0.85,
         "w": 0.13,
         "h": 0.14
       },
@@ -216,7 +216,7 @@
         "parallax": 1,
         "spot": "act:dba.word.drink",
         "x": 0.48,
-        "y": 0.83,
+        "y": 0.85,
         "w": 0.12,
         "h": 0.16
       },
@@ -228,7 +228,7 @@
         "parallax": 1,
         "spot": "act:dba.word.walk",
         "x": 0.57,
-        "y": 0.83,
+        "y": 0.85,
         "w": 0.14,
         "h": 0.12
       },
@@ -240,7 +240,7 @@
         "parallax": 1,
         "spot": "act:dba.word.take",
         "x": 0.66,
-        "y": 0.83,
+        "y": 0.85,
         "w": 0.13,
         "h": 0.14
       },
@@ -252,7 +252,7 @@
         "parallax": 1,
         "spot": "act:dba.word.me",
         "x": 0.75,
-        "y": 0.83,
+        "y": 0.85,
         "w": 0.12,
         "h": 0.16
       },
@@ -264,7 +264,7 @@
         "parallax": 1,
         "spot": "act:dba.word.you",
         "x": 0.84,
-        "y": 0.83,
+        "y": 0.85,
         "w": 0.12,
         "h": 0.16
       },
@@ -317,8 +317,8 @@
         "asset": "art.yard.prop.grain-bags",
         "parallax": 1,
         "spot": "yard-give",
-        "x": 0.7,
-        "y": 0.8,
+        "x": 0.8,
+        "y": 0.9,
         "w": 0.3,
         "h": 0.24
       },
@@ -329,8 +329,8 @@
         "asset": "art.yard.prop.grain-bags",
         "parallax": 1,
         "spot": "yard-grab",
-        "x": 0.28,
-        "y": 0.84,
+        "x": 0.24,
+        "y": 0.9,
         "w": 0.26,
         "h": 0.2
       },
@@ -366,7 +366,7 @@
         "parallax": 1,
         "spot": "act:dba.word.amount:more",
         "x": 0.48,
-        "y": 0.78,
+        "y": 0.88,
         "w": 0.2,
         "h": 0.24
       },
@@ -378,7 +378,7 @@
         "parallax": 1,
         "spot": "act:dba.word.amount:less",
         "x": 0.58,
-        "y": 0.78,
+        "y": 0.88,
         "w": 0.16,
         "h": 0.2
       },

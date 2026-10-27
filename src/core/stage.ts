@@ -19,8 +19,8 @@ export type Gate = {
 const shoreBand: Band = { minX: 0.05, maxX: 0.96, minY: 0.4, maxY: 0.84 };
 /** Deck only. The shed roof occupies about y 0.28–0.62 of the plate. */
 const campBand: Band = { minX: 0.05, maxX: 0.96, minY: 0.68, maxY: 0.88 };
-/** Stone court under the eaves. The ridge sits above y 0.70. */
-const yardBand: Band = { minX: 0.05, maxX: 0.96, minY: 0.72, maxY: 0.88 };
+/** Forecourt and lower steps. The balcony plaques sit above y 0.76. */
+const yardBand: Band = { minX: 0.05, maxX: 0.96, minY: 0.76, maxY: 0.94 };
 const pathBand: Band = { minX: 0.05, maxX: 0.96, minY: 0.4, maxY: 0.84 };
 const nightBand: Band = { minX: 0.05, maxX: 0.96, minY: 0.64, maxY: 0.84 };
 
@@ -65,19 +65,19 @@ export const SPOTS: Record<IslandScene, readonly Spot[]> = {
   ],
   'dba.scene.camp': [
     { id: 'camp-sleep', x: 0.42, y: 0.745, r: 0.042 },
-    { id: 'act:dba.word.home', x: 0.3, y: 0.83, r: 0.036 },
-    { id: 'act:dba.word.eat', x: 0.39, y: 0.83, r: 0.036 },
-    { id: 'act:dba.word.drink', x: 0.48, y: 0.83, r: 0.036 },
-    { id: 'act:dba.word.walk', x: 0.57, y: 0.83, r: 0.036 },
-    { id: 'act:dba.word.take', x: 0.66, y: 0.83, r: 0.036 },
-    { id: 'act:dba.word.me', x: 0.75, y: 0.83, r: 0.036 },
-    { id: 'act:dba.word.you', x: 0.84, y: 0.83, r: 0.036 },
+    { id: 'act:dba.word.home', x: 0.3, y: 0.85, r: 0.034 },
+    { id: 'act:dba.word.eat', x: 0.39, y: 0.85, r: 0.034 },
+    { id: 'act:dba.word.drink', x: 0.48, y: 0.85, r: 0.034 },
+    { id: 'act:dba.word.walk', x: 0.57, y: 0.85, r: 0.034 },
+    { id: 'act:dba.word.take', x: 0.66, y: 0.85, r: 0.034 },
+    { id: 'act:dba.word.me', x: 0.75, y: 0.85, r: 0.034 },
+    { id: 'act:dba.word.you', x: 0.84, y: 0.85, r: 0.034 },
   ],
   'dba.scene.yard': [
-    { id: 'yard-give', x: 0.7, y: 0.8, r: 0.05 },
-    { id: 'yard-grab', x: 0.28, y: 0.84, r: 0.048 },
-    { id: 'act:dba.word.amount:more', x: 0.48, y: 0.78, r: 0.038 },
-    { id: 'act:dba.word.amount:less', x: 0.58, y: 0.78, r: 0.038 },
+    { id: 'yard-give', x: 0.8, y: 0.9, r: 0.042 },
+    { id: 'yard-grab', x: 0.24, y: 0.9, r: 0.04 },
+    { id: 'act:dba.word.amount:more', x: 0.48, y: 0.88, r: 0.036 },
+    { id: 'act:dba.word.amount:less', x: 0.58, y: 0.88, r: 0.036 },
     { id: 'act:dba.word.size:a', x: 0.16, y: 0.78, r: 0.036 },
     { id: 'act:dba.word.size:b', x: 0.36, y: 0.76, r: 0.034 },
   ],

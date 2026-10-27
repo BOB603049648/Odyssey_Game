@@ -8,8 +8,11 @@ describe('cohesion shadows and grades', () => {
       version: string;
       cohesion: { baked_contact_shadow_props: string[] };
       pr11_ground: { do_not_stack_hard_shadow_on_baked_props: boolean; fog_rule: string };
+      pr12_sticker: { eng_must_not: string; fog_match_baked: boolean };
     };
-    expect(contract.version).toBe('1.3-pr11-ground');
+    expect(contract.version).toBe('1.3-pr12-sticker');
+    expect(contract.pr12_sticker.fog_match_baked).toBe(true);
+    expect(contract.pr12_sticker.eng_must_not).toMatch(/uniform fog alpha/);
     expect(contract.pr11_ground.do_not_stack_hard_shadow_on_baked_props).toBe(true);
     expect(contract.pr11_ground.fog_rule).toMatch(/AFTER composite/);
     expect(contract.cohesion.baked_contact_shadow_props).toContain('shore/art.shore.prop.driftwood.png');
