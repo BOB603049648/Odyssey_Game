@@ -1,5 +1,6 @@
 import { GlossSwitch } from './GlossSwitch';
 import { t } from './i18n';
+import { EnterVeil, PlateStack } from './Plate';
 
 export function TitleScreen({
   canContinue,
@@ -16,6 +17,8 @@ export function TitleScreen({
 }) {
   return (
     <section className="title-screen">
+      <PlateStack plate="keyart" previous={null} />
+      <EnterVeil />
       <p className="eyebrow">{t('scene.prologue')}</p>
       <div className="title-block">
         <h1>{t('meta.title')}</h1>

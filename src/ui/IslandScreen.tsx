@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { EVIDENCE, LEXEMES } from '../content/catalog';
 import { hintPresentation } from '../core/hints';
 import { ISLAND_SCENES, type IslandScene } from '../core/island';
@@ -8,7 +9,9 @@ import { Companion } from './Companion';
 import { GlossSwitch } from './GlossSwitch';
 import { Glyph } from './glyphs';
 import { t, type MessageKey } from './i18n';
+import { EnterVeil, PlateStack } from './Plate';
 import { CampArt, FisheryArt, ForestArt, MemoryRain, NightArt, RockArt, ShoreArt } from './scenes';
+import { useCrossfade, useFadePresence } from './useCrossfade';
 import { useFeedbackFx } from './useFeedbackFx';
 import { useIdleHint } from './useIdleHint';
 
@@ -47,9 +50,11 @@ export function IslandScreen({
   const learned = LEXEMES.filter((lexeme) => isLearnedState(save.words[lexeme.id]?.state));
   const scene = isIslandSceneId(save.currentScene) ? save.currentScene : 'myp.scene.shore';
   const drank = save.beats['myp.beat.water'] === true;
+  const plates = useCrossfade(scene);
 
   return (
     <section className={shake ? 'island shake' : 'island'}>
+      <EnterVeil />
       <div className="hud-actions row">
         <button type="button" className="btn" onClick={onTitle}>
           {t('menu.title')}
@@ -74,7 +79,8 @@ export function IslandScreen({
             data-testid={`nav-${id.split('.').at(-1)}`}
             onClick={() => dispatch({ type: 'goto-scene', scene: id })}
           >
-            {t(NAV_LABEL[id])}
+            <i className="nav-mark" aria-hidden="true" />
+            <span className="nav-name">{t(NAV_LABEL[id])}</span>
           </button>
         ))}
       </nav>
@@ -91,6 +97,7 @@ export function IslandScreen({
         data-bone-cell={save.flags['myp.flag.bone-cell'] === true ? 'yes' : 'no'}
         data-hotspots={save.flags['dev.hotspots'] === true ? 'on' : 'off'}
       >
+        <PlateStack plate={plates.current} previous={plates.previous} />
         <SceneArt scene={scene} drank={drank} />
         <SceneHotspots save={save} scene={scene} dispatch={dispatch} hint={hint} />
         {save.chart.includes('chart.nmn') ? (
@@ -269,23 +276,28 @@ export function OverlaySheet({
   learned: typeof LEXEMES;
   hint: { level: number; anchor: string; wordId: string | null };
 }) {
-  if (save.overlay === 'none' || save.overlay === 'depart' || save.overlay === 'memory') return null;
+  const open = save.overlay !== 'none' && save.overlay !== 'depart' && save.overlay !== 'memory';
+  const presence = useFadePresence(open);
+  const held = useRef(save.overlay);
+  if (open) held.current = save.overlay;
+  const overlay = held.current;
+  if (!presence.mounted || overlay === 'none' || overlay === 'depart' || overlay === 'memory') return null;
   return (
-    <div className="sheet" role="dialog" aria-label={sheetLabel(save.overlay)}>
+    <div className={`sheet ${presence.phase}`} role="dialog" aria-label={sheetLabel(overlay)}>
       <button type="button" className="btn" onClick={() => dispatch({ type: 'close-overlay' })}>
         {t('menu.close')}
       </button>
-      {save.overlay === 'settings' ? (
+      {overlay === 'settings' ? (
         <GlossSwitch
           checked={save.settings.showGloss}
           onChange={(value) => dispatch({ type: 'set-show-gloss', value })}
         />
       ) : null}
-      {save.overlay === 'lexicon' ? <Lexicon save={save} words={learned} /> : null}
-      {save.overlay === 'casefile' ? (
+      {overlay === 'lexicon' ? <Lexicon save={save} words={learned} /> : null}
+      {overlay === 'casefile' ? (
         <CaseFile save={save} onMemory={() => dispatch({ type: 'open-memory' })} />
       ) : null}
-      {save.overlay === 'use-word' ? (
+      {overlay === 'use-word' ? (
         <div data-testid="use-word">
           <div className="choices">
             {learned.map((lexeme) => (

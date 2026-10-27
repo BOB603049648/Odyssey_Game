@@ -27,7 +27,9 @@ export function Companion({
       onClick={onAsk}
       aria-label={t('companion.ask')}
     >
-      <CatMark look={anchor} />
+      <span className="companion-sway">
+        <CatMark look={anchor} />
+      </span>
     </button>
   );
 }

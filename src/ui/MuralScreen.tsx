@@ -9,6 +9,7 @@ import { Companion } from './Companion';
 import { hintMark, OverlaySheet } from './IslandScreen';
 import { Glyph } from './glyphs';
 import { t } from './i18n';
+import { EnterVeil, PlateStack } from './Plate';
 import { useFeedbackFx } from './useFeedbackFx';
 import { useIdleHint } from './useIdleHint';
 
@@ -37,6 +38,8 @@ export function MuralScreen({
 
   return (
     <section className={shake ? 'mural-screen shake' : 'mural-screen'}>
+      <PlateStack plate="mural" previous={null} />
+      <EnterVeil />
       <header className="bar">
         <div>
           <p className="eyebrow">{t('scene.mural')}</p>

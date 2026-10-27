@@ -2,7 +2,9 @@ import { MEMORIES } from '../content/catalog';
 import type { Action } from '../core/reduce';
 import type { SaveData } from '../core/schema';
 import { t } from './i18n';
+import { EnterVeil, PlateStack } from './Plate';
 import { CatMark } from './scenes';
+import { useCrossfade } from './useCrossfade';
 
 const FRAMES = MEMORIES[0]?.frames ?? ['rain', 'kitten', 'cloak'];
 
@@ -13,9 +15,15 @@ export function Cutscenes({
   save: SaveData;
   dispatch: (action: Action) => void;
 }) {
+  const frame = FRAMES[save.cutsceneStep] ?? 'rain';
+  const plate =
+    save.overlay === 'depart' ? 'keyart' : frame === 'kitten' ? 'prologue-1' : frame === 'cloak' ? 'prologue-2' : 'myp.scene.night';
+  const plates = useCrossfade(plate);
   if (save.overlay === 'depart') {
     return (
       <section className="cutscene" data-testid="depart-plate" data-chart="chart.nmn">
+        <PlateStack plate={plates.current} previous={plates.previous} />
+        <EnterVeil />
         <div className="plate depart-art">
           <svg viewBox="0 0 640 320" aria-hidden="true">
             <path d="M40 220h560M80 220V150h180v70" />
@@ -32,10 +40,11 @@ export function Cutscenes({
     );
   }
   if (save.overlay !== 'memory') return null;
-  const frame = FRAMES[save.cutsceneStep] ?? 'rain';
   const last = save.cutsceneStep >= FRAMES.length - 1;
   return (
     <section className="cutscene" data-testid="memory-plate" data-frame={frame}>
+      <PlateStack plate={plates.current} previous={plates.previous} />
+      <EnterVeil />
       <MemoryFrame frame={frame} />
       <button type="button" className="btn primary" onClick={() => dispatch({ type: 'advance-cutscene' })}>
         {last ? t('menu.close') : t('menu.next')}
