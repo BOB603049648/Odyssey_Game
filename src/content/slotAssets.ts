@@ -33,6 +33,13 @@ import campWalk from '../assets/art/slots/art.camp.prop.act-walk.png';
 import campTake from '../assets/art/slots/art.camp.prop.act-take.png';
 import campMe from '../assets/art/slots/art.camp.prop.act-me.png';
 import campYou from '../assets/art/slots/art.camp.prop.act-you.png';
+import hallFar from '../assets/art/slots/art.hall.far.jpg';
+import hallGround from '../assets/art/slots/art.hall.ground.jpg';
+import hallBuilding from '../assets/art/slots/art.hall.building.png';
+import hallFg from '../assets/art/slots/art.hall.fg.png';
+import hallScroll from '../assets/art/slots/art.hall.prop.scroll-wall.png';
+import hallStamps from '../assets/art/slots/art.hall.prop.stamp-rail.png';
+import hallKnot from '../assets/art/slots/art.hall.prop.wrist-knot.png';
 
 /** Delivered slot files. Missing ids stay null in scene JSON and render as blocks. */
 export const SLOT_ASSETS: Record<string, string> = {
@@ -71,6 +78,13 @@ export const SLOT_ASSETS: Record<string, string> = {
   'art.camp.prop.act-take': campTake,
   'art.camp.prop.act-me': campMe,
   'art.camp.prop.act-you': campYou,
+  'art.hall.far': hallFar,
+  'art.hall.ground': hallGround,
+  'art.hall.building': hallBuilding,
+  'art.hall.fg': hallFg,
+  'art.hall.prop.scroll-wall': hallScroll,
+  'art.hall.prop.stamp-rail': hallStamps,
+  'art.hall.prop.wrist-knot': hallKnot,
 };
 
 export function resolveSlotAsset(asset: string | null): string | null {

@@ -130,4 +130,22 @@ describe('hotspot acceptance', () => {
     expect(yard.container.querySelector('.plate-photo')).toBeNull();
     expect(yard.container.textContent).not.toContain('?');
   });
+
+  it('anchors the hall scrolls, stamps, and wrist knot on their hotspots', () => {
+    const view = render(<PlateStack plate="dba.scene.hall" previous={null} />);
+    expect(screen.getByTestId('prop-art.hall.prop.scroll-wall').getAttribute('data-spot')).toBe('hall-mural');
+    expect(screen.getByTestId('prop-art.hall.prop.stamp-rail').getAttribute('data-spot')).toBe('hall-stamps');
+    expect(screen.getByTestId('prop-art.hall.prop.wrist-knot').getAttribute('data-spot')).toBe('hall-tattoo');
+    for (const id of [
+      'prop-art.hall.prop.scroll-wall',
+      'prop-art.hall.prop.stamp-rail',
+      'prop-art.hall.prop.wrist-knot',
+      'slot-far',
+      'slot-ground',
+    ]) {
+      expect(screen.getByTestId(id).getAttribute('data-placeholder')).toBe('art');
+      expect(screen.getByTestId(id).querySelector('img')).toBeTruthy();
+    }
+    expect(view.container.querySelector('.plate-photo')).toBeNull();
+  });
 });

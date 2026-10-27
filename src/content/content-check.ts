@@ -116,6 +116,13 @@ export function checkContent(): string[] {
     'art.camp.prop.act-take',
     'art.camp.prop.act-me',
     'art.camp.prop.act-you',
+    'art.hall.far',
+    'art.hall.ground',
+    'art.hall.building',
+    'art.hall.fg',
+    'art.hall.prop.scroll-wall',
+    'art.hall.prop.stamp-rail',
+    'art.hall.prop.wrist-knot',
   ]);
   for (const sceneId of ISLAND_SCENES) {
     const kit = byId.get(sceneId);
@@ -135,7 +142,7 @@ export function checkContent(): string[] {
       if (slot.slot === 'props' && slot.parallax !== 1) errors.push(`${slot.id} prop must stay on its hotspot`);
       if (slot.asset && !(slot.asset in SLOT_ASSETS)) errors.push(`${slot.id} asset ${slot.asset} is not in the slot manifest`);
       if (delivered.has(slot.id) && slot.asset !== slot.id) errors.push(`${slot.id} is missing its delivered file`);
-      if (slot.asset && !['dba.scene.shore', 'dba.scene.camp', 'dba.scene.yard'].includes(sceneId)) {
+      if (slot.asset && !['dba.scene.shore', 'dba.scene.camp', 'dba.scene.yard', 'dba.scene.hall'].includes(sceneId)) {
         errors.push(`${sceneId} should stay on placeholders until art arrives`);
       }
     }

@@ -407,68 +407,64 @@
         "id": "art.hall.far",
         "slot": "far",
         "kind": "interior-beams",
-        "asset": null,
+        "asset": "art.hall.far",
         "parallax": 0.4
       },
       {
         "id": "art.hall.ground",
         "slot": "ground",
         "kind": "wood-aisle",
-        "asset": null,
+        "asset": "art.hall.ground",
         "parallax": 1
       },
       {
         "id": "art.hall.building",
         "slot": "building",
         "kind": "scroll-beam",
-        "asset": null,
-        "parallax": 0.72,
-        "x": 0.48,
-        "y": 0.34,
-        "w": 0.62,
-        "h": 0.2
+        "asset": "art.hall.building",
+        "parallax": 0.72
       },
       {
         "id": "art.hall.prop.scroll-wall",
         "slot": "props",
         "kind": "scroll-wall",
-        "asset": null,
+        "asset": "art.hall.prop.scroll-wall",
         "parallax": 1,
         "spot": "hall-mural",
         "x": 0.32,
         "y": 0.56,
-        "w": 0.2,
-        "h": 0.16
+        "w": 0.34,
+        "h": 0.36
       },
       {
         "id": "art.hall.prop.stamp-rail",
         "slot": "props",
         "kind": "stamp-rail",
-        "asset": null,
+        "asset": "art.hall.prop.stamp-rail",
         "parallax": 1,
         "spot": "hall-stamps",
         "x": 0.66,
         "y": 0.56,
-        "w": 0.16,
-        "h": 0.1
+        "w": 0.28,
+        "h": 0.2
       },
       {
         "id": "art.hall.prop.wrist-knot",
         "slot": "props",
         "kind": "wrist-knot",
-        "asset": null,
+        "asset": "art.hall.prop.wrist-knot",
         "parallax": 1,
         "spot": "hall-tattoo",
         "x": 0.5,
         "y": 0.66,
-        "w": 0.1,
-        "h": 0.08
+        "w": 0.22,
+        "h": 0.22
       },
       {
         "id": "art.hall.fg",
         "slot": "fg",
         "kind": "pillar",
-        "asset": null,
+        "asset": "art.hall.fg",
         "parallax": 1.18
       }
     ]
