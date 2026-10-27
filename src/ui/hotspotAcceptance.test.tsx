@@ -95,8 +95,11 @@ describe('hotspot acceptance', () => {
     expect(wood.getAttribute('data-placeholder')).toBe('art');
     expect(gourd.getAttribute('data-cue')).toBe('far');
     expect(gourd.querySelector('img')).toBeTruthy();
-    expect(screen.getByTestId('prop-art.shore.prop.east-gap').getAttribute('data-slot')).toBe('props');
-    expect(screen.getByTestId('prop-art.shore.prop.east-gap').getAttribute('data-placeholder')).toBe('block');
+    const gap = screen.getByTestId('prop-art.shore.prop.east-gap');
+    expect(gap.getAttribute('data-slot')).toBe('props');
+    expect(gap.getAttribute('data-spot')).toBe('shore-depart');
+    expect(gap.getAttribute('data-placeholder')).toBe('art');
+    expect(gap.querySelector('img')).toBeTruthy();
     expect(container.textContent).not.toContain('?');
     const sky = screen.getByTestId('slot-sky');
     expect(sky.style.transform).toMatch(/translate3d\(31\.2/);
@@ -109,6 +112,9 @@ describe('hotspot acceptance', () => {
     expect(screen.getByTestId('prop-art.camp.prop.sleep-mat').getAttribute('data-spot')).toBe('camp-sleep');
     expect(screen.getByTestId('prop-art.camp.prop.fire').getAttribute('data-spot')).toBe('camp-sleep');
     expect(screen.getByTestId('prop-art.camp.prop.north-curtain').getAttribute('data-kind')).toBe('north-curtain');
+    expect(screen.getByTestId('prop-art.camp.prop.sleep-mat').getAttribute('data-placeholder')).toBe('art');
+    expect(screen.getByTestId('prop-art.camp.prop.north-curtain').querySelector('img')).toBeTruthy();
+    expect(screen.getByTestId('slot-far').querySelector('img')).toBeTruthy();
     expect(camp.container.querySelector('.plate-photo')).toBeNull();
     expect(camp.container.textContent).not.toContain('?');
     camp.unmount();
@@ -117,6 +123,10 @@ describe('hotspot acceptance', () => {
     expect(screen.getByTestId('prop-art.yard.prop.grain-bags').getAttribute('data-kind')).toBe('grain-bags');
     expect(screen.getByTestId('prop-art.yard.prop.dried-fish').getAttribute('data-kind')).toBe('dried-fish');
     expect(screen.getByTestId('prop-art.yard.prop.more-less-boards').getAttribute('data-kind')).toBe('more-board');
+    expect(screen.getByTestId('prop-art.yard.prop.grain-bags').querySelector('img')).toBeTruthy();
+    expect(screen.getByTestId('prop-art.yard.prop.dried-fish').querySelector('img')).toBeTruthy();
+    expect(screen.getByTestId('prop-art.yard.prop.more-less-boards').querySelector('img')).toBeTruthy();
+    expect(screen.getByTestId('prop-art.yard.prop.grain-bags.grab').querySelector('img')).toBeTruthy();
     expect(yard.container.querySelector('.plate-photo')).toBeNull();
     expect(yard.container.textContent).not.toContain('?');
   });

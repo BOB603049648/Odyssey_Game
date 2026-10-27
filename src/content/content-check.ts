@@ -84,7 +84,7 @@ export function checkContent(): string[] {
   if (!markings.includes('帽兜') || !markings.includes('扁结')) errors.push('companion markings missing hood or knot');
 
   const byId = new Map(SCENE_ASSEMBLIES.map((scene) => [scene.id, scene]));
-  const shoreDelivered = [
+  const delivered = new Set([
     'art.shore.sky',
     'art.shore.ground',
     'art.shore.building',
@@ -93,7 +93,30 @@ export function checkContent(): string[] {
     'art.shore.prop.gourd',
     'art.shore.prop.break-shard',
     'art.shore.prop.mural-wall',
-  ];
+    'art.shore.prop.east-gap',
+    'art.yard.far',
+    'art.yard.ground',
+    'art.yard.building',
+    'art.yard.fg',
+    'art.yard.prop.grain-bags',
+    'art.yard.prop.dried-fish',
+    'art.yard.prop.more-less-boards',
+    'art.camp.far',
+    'art.camp.ground',
+    'art.camp.building',
+    'art.camp.fg',
+    'art.camp.prop.fire',
+    'art.camp.prop.sleep-mat',
+    'art.camp.prop.north-curtain',
+    'art.camp.prop.paper-bundles',
+    'art.camp.prop.act-home',
+    'art.camp.prop.act-eat',
+    'art.camp.prop.act-drink',
+    'art.camp.prop.act-walk',
+    'art.camp.prop.act-take',
+    'art.camp.prop.act-me',
+    'art.camp.prop.act-you',
+  ]);
   for (const sceneId of ISLAND_SCENES) {
     const kit = byId.get(sceneId);
     if (!kit) {
@@ -111,10 +134,10 @@ export function checkContent(): string[] {
       if (slot.slot === 'ground' && slot.parallax !== 1) errors.push(`${slot.id} ground must stay with the feet`);
       if (slot.slot === 'props' && slot.parallax !== 1) errors.push(`${slot.id} prop must stay on its hotspot`);
       if (slot.asset && !(slot.asset in SLOT_ASSETS)) errors.push(`${slot.id} asset ${slot.asset} is not in the slot manifest`);
-      if (!slot.asset && slot.id.startsWith('art.shore.') && shoreDelivered.includes(slot.id)) {
-        errors.push(`${slot.id} is missing its delivered file`);
+      if (delivered.has(slot.id) && slot.asset !== slot.id) errors.push(`${slot.id} is missing its delivered file`);
+      if (slot.asset && !['dba.scene.shore', 'dba.scene.camp', 'dba.scene.yard'].includes(sceneId)) {
+        errors.push(`${sceneId} should stay on placeholders until art arrives`);
       }
-      if (slot.asset && sceneId !== 'dba.scene.shore') errors.push(`${sceneId} should stay on placeholders until art arrives`);
     }
     const kinds = kit.slots.map((slot) => slot.kind);
     const slotIds = kit.slots.map((slot) => slot.id);

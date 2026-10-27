@@ -1503,6 +1503,8 @@ h1 {
   pointer-events: none;
 }
 .scene-slot.full[data-slot="sky"] .slot-asset,
+.scene-slot.full[data-slot="far"] .slot-asset,
+.scene-slot.full[data-slot="building"] .slot-asset,
 .scene-slot.full[data-slot="fg"] .slot-asset {
   object-fit: cover;
 }
