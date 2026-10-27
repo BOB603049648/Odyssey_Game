@@ -527,9 +527,35 @@ h1 {
   filter: blur(1.5px);
 }
 
-.traveler-figure { position: relative; }
+.traveler-frames { position: relative; height: 100%; }
+.traveler-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.traveler-frame[data-layer="out"] {
+  position: absolute;
+  inset: 0;
+  animation: traveler-fade-out 200ms ease forwards;
+}
+.traveler[data-pose="idle"] .traveler-bob {
+  transform-origin: 50% 100%;
+  animation: traveler-breath 3.2s ease-in-out infinite;
+}
+.traveler[data-pose="walk"] .traveler-frame[data-frame="1"] { transform: translateY(-3px) rotate(-1.4deg); }
+.traveler[data-pose="walk"] .traveler-frame[data-frame="2"] { transform: translateY(1px) rotate(0.4deg); }
+.traveler[data-pose="walk"] .traveler-frame[data-frame="3"] { transform: translateY(-2px) rotate(1.5deg); }
+.traveler[data-pose="interact"] .traveler-frame,
+.traveler[data-pose="reach"] .traveler-frame { transform: translateY(-1px); }
 
-.traveler[data-moving="yes"] .traveler-bob { animation: traveler-bob 0.42s ease-in-out infinite; }
+@keyframes traveler-breath {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.018); }
+}
+@keyframes traveler-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
 
 .hotspot.act .glyph,
 .hotspot.fish-a .glyph,
@@ -545,10 +571,6 @@ h1 {
 .shore-wrap[data-hotspots="on"] .hotspot.act .glyph,
 .shore-wrap[data-hotspots="on"] .hotspot.fish-a .glyph,
 .shore-wrap[data-hotspots="on"] .hotspot.fish-b .glyph { opacity: 1; }
-
-@keyframes traveler-bob {
-  50% { transform: translateY(-4px); }
-}
 
 .hotspot {
   position: absolute;
@@ -1317,7 +1339,8 @@ h1 {
   .shake, .purr, .nanaicha-look, .nanaicha-state, .collar-knot,
   .plate-photo, .plate-fade, .ambient, .ambient-water::after,
   .companion-sway, .hud-caption, .sheet, .enter-veil, .hotspot, .act-tray button, .hud-actions .btn,
-  .traveler-bob {
+  .traveler-bob,
+  .traveler-frame[data-layer="out"] {
     animation: none;
     transition: none;
   }

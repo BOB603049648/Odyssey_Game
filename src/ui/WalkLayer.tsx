@@ -120,6 +120,7 @@ export function WalkLayer({
   const [pos, setPos] = useState<Point>(posRef.current);
   const [facing, setFacing] = useState<TravelerFacing>('front');
   const [moving, setMoving] = useState(false);
+  const [stride, setStride] = useState(0);
   const [blocked, setBlocked] = useState(false);
   const [cat, setCat] = useState<Point>(() => companionSpot(posRef.current, hint.level, null, BANDS[scene], 0));
   const [view, setView] = useState({ w: 1280, h: 720 });
@@ -152,6 +153,7 @@ export function WalkLayer({
     entryRef.current = null;
     setPos(next);
     setMoving(false);
+    setStride(0);
     setBlocked(false);
     setCat(companionSpot(next, hint.level, hintPoint(scene, hint, spots), BANDS[scene], 0));
   }
@@ -197,7 +199,7 @@ export function WalkLayer({
     return { x: (x / len) * power, y: (y / len) * power };
   }
 
-  function apply(next: Point, isMoving: boolean, isBlocked: boolean, dx: number, dy: number) {
+  function apply(next: Point, isMoving: boolean, isBlocked: boolean, dx: number, dy: number, power = 1) {
     const gate = gateAt(sceneRef.current, next);
     if (gate) {
       pending.current = gate.arrival;
@@ -213,6 +215,7 @@ export function WalkLayer({
     setFacing((current) => facingFromMove(dx, dy, current));
     setPos(next);
     setMoving(isMoving);
+    setStride(isMoving ? Math.min(1, Math.max(0, power)) : 0);
     setBlocked(isBlocked);
     movingRef.current = isMoving;
     if (import.meta.env.MODE === 'test') {
@@ -306,7 +309,7 @@ export function WalkLayer({
             BANDS[sceneRef.current],
             WALK_SPEED * dt * power,
           );
-          apply(step.pos, step.moving, step.blocked, dir.x, dir.y);
+          apply(step.pos, step.moving, step.blocked, dir.x, dir.y, power);
         } else if (goal) {
           const step = integrate(from, goal, BANDS[sceneRef.current], WALK_SPEED * dt);
           if (distance(step.pos, goal) < 0.012 || (!step.moving && step.blocked)) targetRef.current = null;
@@ -314,6 +317,7 @@ export function WalkLayer({
         } else if (movingRef.current) {
           movingRef.current = false;
           setMoving(false);
+          setStride(0);
           setBlocked(false);
         }
         const desired = companionSpot(
@@ -439,7 +443,7 @@ export function WalkLayer({
             <span className="contact-shadow" data-testid="contact-shadow" />
             <Companion level={hint.level} anchor={hint.anchor} pose={hint.pose} purr={purr} knot={knot} onAsk={onAsk} />
           </div>
-          <TravelerMark x={pos.x} y={pos.y} facing={facing} moving={moving} />
+          <TravelerMark x={pos.x} y={pos.y} facing={facing} moving={moving} stride={stride} />
           <PlateStack
             plate={plates.current}
             previous={plates.previous}
