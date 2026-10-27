@@ -237,6 +237,9 @@ function FramePicture({ blend, layer }: { blend: FrameBlend; layer: 'out' | 'cur
       data-mirror={blend.facing === 'left' ? 'yes' : 'no'}
       style={{ ['--figure' as string]: `url("${src}")` }}
     >
+      <span className="fog-fringe" aria-hidden="true">
+        <span className="fog-fringe-mask" />
+      </span>
       <img
         className={layer === 'current' ? 'traveler-figure traveler-frame' : 'traveler-frame'}
         data-layer={layer}
@@ -247,6 +250,7 @@ function FramePicture({ blend, layer }: { blend: FrameBlend; layer: 'out' | 'cur
       />
       <span className="figure-grade grade-color" />
       <span className="figure-grade grade-soft" />
+      <span className="sole-ao" aria-hidden="true" />
     </span>
   );
 }

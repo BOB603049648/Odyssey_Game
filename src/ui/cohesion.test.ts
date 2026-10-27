@@ -10,7 +10,7 @@ describe('cohesion shadows and grades', () => {
       pr11_ground: { do_not_stack_hard_shadow_on_baked_props: boolean; fog_rule: string };
       pr12_sticker: { eng_must_not: string; fog_match_baked: boolean };
     };
-    expect(contract.version).toBe('1.3-pr16-wrap');
+    expect(contract.version).toBe('1.3-pr17-ao');
     expect(contract.pr12_sticker.fog_match_baked).toBe(true);
     expect(contract.pr12_sticker.eng_must_not).toMatch(/uniform fog alpha/);
     expect(contract.pr11_ground.do_not_stack_hard_shadow_on_baked_props).toBe(true);
@@ -58,5 +58,9 @@ describe('cohesion shadows and grades', () => {
     expect(css).not.toContain('translate(-50%, 42%)');
     expect(css).toMatch(/dba\.scene\.shore"\] \.traveler \.foot-ellipse\s*\{[^}]*background:\s*none/);
     expect(css).toMatch(/dba\.scene\.shore"\] \.traveler \.figure-grade\s*\{[^}]*mask-composite:\s*intersect/);
+    expect(css).toMatch(/dba\.scene\.shore"\] \.traveler \.sole-ao\s*\{[^}]*mix-blend-mode:\s*multiply/);
+    expect(css).toMatch(/rgb\(28,\s*22,\s*16\)/);
+    expect(css).toContain('.fog-fringe');
+    expect(css).not.toMatch(/dba\.scene\.shore"\] \.nanaicha-figure \.fog-fringe/);
   });
 });
