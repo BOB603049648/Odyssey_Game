@@ -1,4 +1,4 @@
-import type { HintAnchor } from '../core/hints';
+import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { HintLevel } from '../core/schema';
 import { CatMark } from './scenes';
 import { t } from './i18n';
@@ -6,11 +6,13 @@ import { t } from './i18n';
 export function Companion({
   level,
   anchor,
+  pose,
   purr,
   onAsk,
 }: {
   level: HintLevel;
   anchor: HintAnchor;
+  pose: CompanionPose;
   purr: boolean;
   onAsk: () => void;
 }) {
@@ -21,6 +23,7 @@ export function Companion({
       data-testid="companion"
       data-level={level}
       data-look={anchor}
+      data-pose={pose}
       onClick={onAsk}
       aria-label={t('companion.ask')}
     >

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "myp.hint.driftwood",
+    "when": "shore-driftwood",
+    "anchor": "driftwood",
+    "target": "shore-driftwood",
+    "walk": true,
+    "paw": false
+  },
+  {
+    "id": "myp.hint.water-learn",
+    "when": "shore-unlearned-water",
+    "anchor": "mural-entrance",
+    "target": "myp.word.water",
+    "walk": true,
+    "paw": true
+  },
+  {
+    "id": "myp.hint.water-use",
+    "when": "shore-water-ready",
+    "anchor": "gourd",
+    "target": "myp.word.water",
+    "walk": true,
+    "paw": true
+  },
+  {
+    "id": "myp.hint.use-word",
+    "when": "use-word",
+    "anchor": "use-word",
+    "target": "myp.word.water",
+    "walk": true,
+    "paw": true
+  },
+  {
+    "id": "myp.hint.mural",
+    "when": "mural",
+    "anchor": "mural-cell",
+    "target": "myp.word.water",
+    "walk": true,
+    "paw": true
+  },
+  {
+    "id": "myp.hint.sleep",
+    "when": "camp-sleep",
+    "anchor": "sleep",
+    "target": "camp-sleep",
+    "walk": true,
+    "paw": true
+  },
+  {
+    "id": "myp.hint.give",
+    "when": "fishery-give",
+    "anchor": "give",
+    "target": "fishery-give",
+    "walk": true,
+    "paw": true
+  },
+  {
+    "id": "myp.hint.forest",
+    "when": "forest-stop",
+    "anchor": "forest-stop",
+    "target": "forest-stop",
+    "walk": true,
+    "paw": false
+  },
+  {
+    "id": "myp.hint.night",
+    "when": "night-read",
+    "anchor": "old-layer",
+    "target": "night-read",
+    "walk": true,
+    "paw": false
+  },
+  {
+    "id": "myp.hint.depart",
+    "when": "shore-depart",
+    "anchor": "depart",
+    "target": "shore-depart",
+    "walk": true,
+    "paw": false
+  }
+]

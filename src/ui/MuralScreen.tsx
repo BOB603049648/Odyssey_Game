@@ -10,6 +10,7 @@ import { hintMark, OverlaySheet } from './IslandScreen';
 import { Glyph } from './glyphs';
 import { t } from './i18n';
 import { useFeedbackFx } from './useFeedbackFx';
+import { useIdleHint } from './useIdleHint';
 
 const LAYERS: MuralLayer[] = ['concrete', 'action', 'relation', 'abstract'];
 const BETRAY = 'myp.word.betray';
@@ -23,6 +24,7 @@ export function MuralScreen({
 }) {
   const hint = hintPresentation(save);
   const { shake, purr } = useFeedbackFx(save.feedback);
+  useIdleHint(save, dispatch);
   const reviewing = save.muralMode === 'review';
   const target = reviewTarget(save);
   const canReview = Object.values(save.words).some((word) => isLearnedState(word.state));
@@ -156,6 +158,7 @@ export function MuralScreen({
       <Companion
         level={hint.level}
         anchor={hint.anchor}
+        pose={hint.pose}
         purr={purr}
         onAsk={() => dispatch({ type: 'request-hint' })}
       />

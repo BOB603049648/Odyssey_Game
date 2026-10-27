@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { App } from './App';
+import { canDepart } from './core/island';
 import { reduce } from './core/reduce';
 import { newGameState } from './core/save';
 import { SAVE_KEY } from './platform/storage';
@@ -95,5 +96,51 @@ describe('playable slice', () => {
       />,
     );
     expect(screen.getAllByText('水').length).toBeGreaterThan(0);
+  });
+
+  it('plays the silent memory after leaving and replays it from the map, night, and case', () => {
+    let save = reduce(newGameState(), { type: 'new-game' });
+    for (let step = 0; step < 4; step += 1) save = reduce(save, { type: 'advance-prologue' });
+    for (let step = 0; step < 40 && !canDepart(save); step += 1) save = reduce(save, { type: 'debug-learn-next' });
+    save = reduce(save, { type: 'use-word', wordId: 'myp.word.water' });
+    save = reduce(save, { type: 'depart' });
+    localStorage.setItem(SAVE_KEY, JSON.stringify(save));
+    useGame.getState().resetForTests();
+
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: '继续' }));
+    expect(screen.getByTestId('depart-plate').getAttribute('data-chart')).toBe('chart.nmn');
+    expect(screen.getByTestId('companion').getAttribute('data-pose')).toBe('fetch');
+    expect(screen.queryByText('奈奈茶')).toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
+    expect(screen.getByTestId('memory-plate').getAttribute('data-frame')).toBe('rain');
+    expect(screen.getByTestId('memory-art').textContent).toBe('');
+    fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
+    expect(screen.getByTestId('memory-plate').getAttribute('data-frame')).toBe('kitten');
+    fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
+    expect(screen.getByTestId('memory-plate').getAttribute('data-frame')).toBe('cloak');
+    fireEvent.click(screen.getByRole('button', { name: '合上' }));
+    expect(screen.queryByTestId('memory-plate')).toBeNull();
+
+    const closeMemory = () => {
+      fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
+      fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
+      fireEvent.click(screen.getByRole('button', { name: '合上' }));
+    };
+
+    fireEvent.click(screen.getByRole('button', { name: '海图' }));
+    expect(screen.getByTestId('memory-plate').getAttribute('data-frame')).toBe('rain');
+    closeMemory();
+
+    fireEvent.click(screen.getByRole('button', { name: '夜营' }));
+    fireEvent.click(screen.getByRole('button', { name: '回忆' }));
+    expect(screen.getByTestId('memory-plate')).toBeTruthy();
+    closeMemory();
+
+    fireEvent.click(screen.getByRole('button', { name: '案卷' }));
+    fireEvent.click(screen.getByTestId('case-memory'));
+    expect(screen.getByTestId('memory-plate').getAttribute('data-frame')).toBe('rain');
+    expect(screen.queryByText('奈奈茶')).toBeNull();
   });
 });

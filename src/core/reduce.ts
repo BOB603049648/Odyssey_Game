@@ -1,19 +1,22 @@
 import { LEXEMES } from '../content/catalog';
 import { isLayerUnlocked, requirementsMet } from './conditions';
-import { hintTarget, type HintAnchor } from './hints';
+import { debugEvidence, debugForceEnding, debugHotspots, debugLearnNext, debugScene } from './debug';
+import { hintCap, hintTarget, type CompanionPose, type HintAnchor } from './hints';
 import {
+  advanceCutscene,
   collectTattoo,
   departEast,
   forestChoice,
   giveSharedFish,
   gotoScene,
+  openMemory,
   readOldLayer,
   reviewTap,
   sitDriftwood,
   sleepAtCamp,
 } from './island';
 import { newGameState } from './save';
-import type { HintLevel, MuralLayer, SaveData, WordProgress } from './schema';
+import type { EndingContent, HintLevel, MuralLayer, SaveData, WordProgress } from './schema';
 import { isLearnedState, transitionWord } from './words';
 
 export type Action =
@@ -39,7 +42,14 @@ export type Action =
   | { type: 'read-old-layer' }
   | { type: 'depart' }
   | { type: 'select-review' }
-  | { type: 'review-tap'; wordId: string };
+  | { type: 'review-tap'; wordId: string }
+  | { type: 'open-memory' }
+  | { type: 'advance-cutscene' }
+  | { type: 'debug-scene'; scene: string }
+  | { type: 'debug-learn-next' }
+  | { type: 'debug-evidence'; id: string }
+  | { type: 'debug-hotspots'; value: boolean }
+  | { type: 'debug-ending'; id: EndingContent['id'] };
 
 const WATER = 'myp.word.water';
 
@@ -91,6 +101,20 @@ export function reduce(state: SaveData, action: Action): SaveData {
       return selectReview(state);
     case 'review-tap':
       return touch(reviewTap(state, action.wordId));
+    case 'open-memory':
+      return touch(openMemory(state));
+    case 'advance-cutscene':
+      return touch(advanceCutscene(state));
+    case 'debug-scene':
+      return touch(debugScene(state, action.scene));
+    case 'debug-learn-next':
+      return touch(debugLearnNext(state));
+    case 'debug-evidence':
+      return touch(debugEvidence(state, action.id));
+    case 'debug-hotspots':
+      return touch(debugHotspots(state, action.value));
+    case 'debug-ending':
+      return touch(debugForceEnding(state, action.id));
     default:
       return state;
   }
@@ -241,7 +265,8 @@ function matchObject(state: SaveData, wordId: string): SaveData {
 }
 
 function requestHint(state: SaveData): SaveData {
-  if (state.companion.level >= 3) return state;
+  const cap = hintCap(state);
+  if (state.companion.level >= cap) return state;
   const level = (state.companion.level + 1) as HintLevel;
   const targetId = hintTarget(state);
   return touch({
@@ -310,4 +335,4 @@ function mark(state: SaveData, patch: Partial<SaveData>): SaveData {
   return touch({ ...state, ...patch });
 }
 
-export type { HintAnchor, WordProgress };
+export type { CompanionPose, HintAnchor, WordProgress };

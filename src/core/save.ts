@@ -25,6 +25,7 @@ export function newGameState(now = new Date().toISOString()): SaveData {
     screen: 'title',
     prologueStep: 0,
     overlay: 'none',
+    cutsceneStep: 0,
     activeLayer: 'concrete',
     muralMode: 'learn',
     selectedCellId: null,

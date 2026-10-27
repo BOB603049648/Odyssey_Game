@@ -63,6 +63,32 @@ export const endingSchema = z.object({
   status: z.literal('stub'),
 });
 
+export const memorySchema = z.object({
+  id: z.string(),
+  triggerBeat: z.string(),
+  frames: z.array(z.enum(['rain', 'kitten', 'cloak'])).min(1),
+});
+
+export const hintPlanSchema = z.object({
+  id: z.string(),
+  when: z.enum([
+    'shore-driftwood',
+    'shore-unlearned-water',
+    'shore-water-ready',
+    'use-word',
+    'mural',
+    'camp-sleep',
+    'fishery-give',
+    'forest-stop',
+    'night-read',
+    'shore-depart',
+  ]),
+  anchor: z.string(),
+  target: z.string(),
+  walk: z.boolean(),
+  paw: z.boolean(),
+});
+
 export const evidenceSchema = z.object({
   id: z.string(),
   island: islandIdSchema,
@@ -97,7 +123,8 @@ export const saveDataSchema = z.object({
   currentScene: z.string(),
   screen: z.enum(['title', 'prologue', 'island', 'mural']),
   prologueStep: z.number().int().nonnegative(),
-  overlay: z.enum(['none', 'lexicon', 'settings', 'casefile', 'use-word']),
+  overlay: z.enum(['none', 'lexicon', 'settings', 'casefile', 'use-word', 'depart', 'memory']),
+  cutsceneStep: z.number().int().nonnegative().default(0),
   activeLayer: muralLayerSchema,
   muralMode: z.enum(['learn', 'review']),
   selectedCellId: z.string().nullable(),
@@ -135,4 +162,6 @@ export type HintLevel = z.infer<typeof hintLevelSchema>;
 export type CompanionContent = z.infer<typeof companionSchema>;
 export type EndingContent = z.infer<typeof endingSchema>;
 export type EvidenceContent = z.infer<typeof evidenceSchema>;
+export type MemoryContent = z.infer<typeof memorySchema>;
+export type HintPlanContent = z.infer<typeof hintPlanSchema>;
 export type Box = WordProgress['box'];

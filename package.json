@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "content:check": "vitest run src/content/content-check.test.ts"
   },
   "dependencies": {
     "@capacitor/core": "^7.4.3",

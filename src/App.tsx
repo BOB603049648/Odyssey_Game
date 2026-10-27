@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { primeAudio } from './audio/placeholder';
 import { useGame } from './stores/gameStore';
+import { Cutscenes } from './ui/Cutscenes';
 import { t } from './ui/i18n';
 import { IslandScreen } from './ui/IslandScreen';
 import { MuralScreen } from './ui/MuralScreen';
 import { PrologueScreen } from './ui/PrologueScreen';
 import { TitleScreen } from './ui/TitleScreen';
+
+const DevTools = import.meta.env.DEV ? lazy(() => import('./dev/DevTools').then((mod) => ({ default: mod.DevTools }))) : null;
 
 export function App() {
   const save = useGame((state) => state.save);
@@ -43,7 +46,13 @@ export function App() {
         ) : (
           <IslandScreen save={save} dispatch={dispatch} onTitle={() => setAtTitle(true)} />
         )}
+        {atTitle ? null : <Cutscenes save={save} dispatch={dispatch} />}
       </main>
+      {DevTools ? (
+        <Suspense fallback={null}>
+          <DevTools save={save} dispatch={dispatch} />
+        </Suspense>
+      ) : null}
     </>
   );
 }

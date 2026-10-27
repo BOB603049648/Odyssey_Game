@@ -92,10 +92,18 @@ export function readOldLayer(state: SaveData): SaveData {
   };
 }
 
+export function canDepart(state: SaveData): boolean {
+  return (
+    state.beats['myp.beat.water'] === true &&
+    learned(state, HUNGER) &&
+    learned(state, PROMISE) &&
+    learned(state, DANGER)
+  );
+}
+
 export function departEast(state: SaveData): SaveData {
   if (state.currentScene !== 'myp.scene.shore') return deny(state);
-  if (state.beats['myp.beat.water'] !== true) return deny(state);
-  if (!learned(state, HUNGER) || !learned(state, PROMISE) || !learned(state, DANGER)) return deny(state);
+  if (!canDepart(state)) return deny(state);
   const chart = state.chart.includes('chart.nmn') ? state.chart : [...state.chart, 'chart.nmn'];
   const memories = state.memories.includes('myp.mem.rain-night')
     ? state.memories
@@ -105,8 +113,34 @@ export function departEast(state: SaveData): SaveData {
     beats: { ...state.beats, 'myp.beat.depart': true },
     chart,
     memories,
+    overlay: 'depart',
+    cutsceneStep: 0,
+    companion: { level: 0, targetId: null, pawUsed: false },
     feedback: { seq: state.feedback.seq + 1, kind: 'ok' },
   };
+}
+
+const MEMORY_FRAMES = 3;
+
+export function openMemory(state: SaveData): SaveData {
+  if (!state.memories.includes('myp.mem.rain-night')) return deny(state);
+  return {
+    ...state,
+    overlay: 'memory',
+    cutsceneStep: 0,
+    feedback: { seq: state.feedback.seq + 1, kind: 'ok' },
+  };
+}
+
+export function advanceCutscene(state: SaveData): SaveData {
+  if (state.overlay === 'depart') {
+    return { ...state, overlay: 'memory', cutsceneStep: 0 };
+  }
+  if (state.overlay !== 'memory') return state;
+  if (state.cutsceneStep >= MEMORY_FRAMES - 1) {
+    return { ...state, overlay: 'none', cutsceneStep: 0 };
+  }
+  return { ...state, cutsceneStep: state.cutsceneStep + 1 };
 }
 
 export function reviewTarget(state: SaveData): string | null {

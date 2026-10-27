@@ -10,6 +10,7 @@ import { Glyph } from './glyphs';
 import { t, type MessageKey } from './i18n';
 import { CampArt, FisheryArt, ForestArt, MemoryRain, NightArt, RockArt, ShoreArt } from './scenes';
 import { useFeedbackFx } from './useFeedbackFx';
+import { useIdleHint } from './useIdleHint';
 
 const SCENE_TITLE: Record<IslandScene, MessageKey> = {
   'myp.scene.shore': 'scene.shore',
@@ -42,6 +43,7 @@ export function IslandScreen({
 }) {
   const hint = hintPresentation(save);
   const { shake, purr } = useFeedbackFx(save.feedback);
+  useIdleHint(save, dispatch);
   const learned = LEXEMES.filter((lexeme) => isLearnedState(save.words[lexeme.id]?.state));
   const scene = isIslandSceneId(save.currentScene) ? save.currentScene : 'myp.scene.shore';
   const drank = save.beats['myp.beat.water'] === true;
@@ -94,16 +96,24 @@ export function IslandScreen({
         data-danger-beat={save.beats['myp.beat.danger'] ? 'done' : 'open'}
         data-old-layer={save.beats['myp.beat.old-layer'] ? 'done' : 'open'}
         data-depart={save.beats['myp.beat.depart'] ? 'done' : 'open'}
+        data-hotspots={save.flags['dev.hotspots'] === true ? 'on' : 'off'}
       >
         <SceneArt scene={scene} drank={drank} />
         <SceneHotspots save={save} scene={scene} dispatch={dispatch} hint={hint} />
         {save.chart.includes('chart.nmn') ? (
-          <span className="chart-corner" data-testid="chart-corner" aria-label={t('chart.mark')} />
+          <button
+            type="button"
+            className="chart-corner"
+            data-testid="chart-corner"
+            aria-label={t('chart.mark')}
+            onClick={() => dispatch({ type: 'open-memory' })}
+          />
         ) : null}
         {save.memories.includes('myp.mem.rain-night') ? <MemoryRain /> : null}
         <Companion
           level={hint.level}
           anchor={hint.anchor}
+          pose={hint.pose}
           purr={purr}
           onAsk={() => dispatch({ type: 'request-hint' })}
         />
@@ -135,14 +145,14 @@ function SceneHotspots({
 }) {
   if (scene === 'myp.scene.camp') {
     return (
-      <button type="button" className="hotspot sleep" data-testid="camp-sleep" onClick={() => dispatch({ type: 'sleep-at-camp' })}>
+      <button type="button" className={`hotspot sleep ${hintMark(hint, 'sleep')}`} data-testid="camp-sleep" onClick={() => dispatch({ type: 'sleep-at-camp' })}>
         {t('camp.sleep')}
       </button>
     );
   }
   if (scene === 'myp.scene.fishery') {
     return (
-      <button type="button" className="hotspot give" data-testid="fishery-give" onClick={() => dispatch({ type: 'give-fish' })}>
+      <button type="button" className={`hotspot give ${hintMark(hint, 'give')}`} data-testid="fishery-give" onClick={() => dispatch({ type: 'give-fish' })}>
         {t('fishery.give')}
       </button>
     );
@@ -164,7 +174,7 @@ function SceneHotspots({
   if (scene === 'myp.scene.forest') {
     return (
       <>
-        <button type="button" className="hotspot stop" data-testid="forest-stop" onClick={() => dispatch({ type: 'forest-choice', choice: 'stop' })}>
+        <button type="button" className={`hotspot stop ${hintMark(hint, 'forest-stop')}`} data-testid="forest-stop" onClick={() => dispatch({ type: 'forest-choice', choice: 'stop' })}>
           {t('forest.stop')}
         </button>
         <button type="button" className="hotspot step" data-testid="forest-step" onClick={() => dispatch({ type: 'forest-choice', choice: 'step' })}>
@@ -175,9 +185,16 @@ function SceneHotspots({
   }
   if (scene === 'myp.scene.night') {
     return (
-      <button type="button" className="hotspot read" data-testid="night-read" onClick={() => dispatch({ type: 'read-old-layer' })}>
-        {t('night.read')}
-      </button>
+      <>
+        <button type="button" className={`hotspot read ${hintMark(hint, 'old-layer')}`} data-testid="night-read" onClick={() => dispatch({ type: 'read-old-layer' })}>
+          {t('night.read')}
+        </button>
+        {save.memories.includes('myp.mem.rain-night') ? (
+          <button type="button" className="hotspot memory" data-testid="night-memory" onClick={() => dispatch({ type: 'open-memory' })}>
+            {t('menu.memory')}
+          </button>
+        ) : null}
+      </>
     );
   }
   return (
@@ -201,10 +218,10 @@ function SceneHotspots({
           <path d="M24 18h16c2 8 10 10 10 18 0 12-8 16-18 16S14 48 14 36c0-8 8-10 10-18z" />
         </svg>
       </button>
-      <button type="button" className="hotspot drift" data-testid="shore-driftwood" onClick={() => dispatch({ type: 'sit-driftwood' })}>
+      <button type="button" className={`hotspot drift ${hintMark(hint, 'driftwood')}`} data-testid="shore-driftwood" onClick={() => dispatch({ type: 'sit-driftwood' })}>
         {t('shore.driftwood')}
       </button>
-      <button type="button" className="hotspot depart" data-testid="shore-depart" onClick={() => dispatch({ type: 'depart' })}>
+      <button type="button" className={`hotspot depart ${hintMark(hint, 'depart')}`} data-testid="shore-depart" onClick={() => dispatch({ type: 'depart' })}>
         {t('shore.depart')}
       </button>
     </>
@@ -222,7 +239,7 @@ export function OverlaySheet({
   learned: typeof LEXEMES;
   hint: { level: number; anchor: string; wordId: string | null };
 }) {
-  if (save.overlay === 'none') return null;
+  if (save.overlay === 'none' || save.overlay === 'depart' || save.overlay === 'memory') return null;
   return (
     <div className="sheet" role="dialog" aria-label={sheetLabel(save.overlay)}>
       <button type="button" className="btn" onClick={() => dispatch({ type: 'close-overlay' })}>
@@ -235,7 +252,9 @@ export function OverlaySheet({
         />
       ) : null}
       {save.overlay === 'lexicon' ? <Lexicon save={save} words={learned} /> : null}
-      {save.overlay === 'casefile' ? <CaseFile save={save} /> : null}
+      {save.overlay === 'casefile' ? (
+        <CaseFile save={save} onMemory={() => dispatch({ type: 'open-memory' })} />
+      ) : null}
       {save.overlay === 'use-word' ? (
         <div data-testid="use-word">
           <div className="choices">
@@ -279,10 +298,11 @@ function Lexicon({
   );
 }
 
-function CaseFile({ save }: { save: SaveData }) {
+function CaseFile({ save, onMemory }: { save: SaveData; onMemory: () => void }) {
   const slots = EVIDENCE.filter((item) => item.island === 'myp');
   const held = slots.filter((item) => save.evidence.includes(item.id));
-  if (held.length === 0) return <p>{t('casefile.empty')}</p>;
+  const remembered = save.memories.includes('myp.mem.rain-night');
+  if (held.length === 0 && !remembered) return <p>{t('casefile.empty')}</p>;
   return (
     <div className="casefile">
       {slots.map((item) => {
@@ -295,6 +315,11 @@ function CaseFile({ save }: { save: SaveData }) {
           </figure>
         );
       })}
+      {remembered ? (
+        <button type="button" className="btn" data-testid="case-memory" onClick={onMemory}>
+          {t('menu.memory')}
+        </button>
+      ) : null}
     </div>
   );
 }

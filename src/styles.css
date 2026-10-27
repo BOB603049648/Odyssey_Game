@@ -255,11 +255,70 @@ h1 {
   position: absolute;
   right: 18px;
   top: 18px;
-  width: 42px;
-  height: 42px;
+  width: 48px;
+  height: 48px;
+  padding: 0;
   background:
     linear-gradient(135deg, transparent 46%, var(--sand) 47% 62%, transparent 63%),
     linear-gradient(45deg, transparent 40%, #8fd0c8 41% 48%, transparent 49%);
+}
+
+.hotspot.memory { left: 8%; bottom: 16%; }
+
+.shore-wrap[data-hotspots="on"] .hotspot,
+.mural[data-hotspots="on"] .cell {
+  outline: 2px dashed var(--sand);
+}
+
+.companion[data-pose="lead"] { transform: translateX(36px); }
+.companion[data-pose="curl"] { transform: scale(0.84) translateY(16px); }
+.companion[data-pose="look-back"] { transform: scaleX(-1); }
+.companion[data-pose="sit-near"] { transform: translateY(14px); }
+.companion[data-pose="paw"] { transform: translateY(10px) rotate(-6deg); }
+.companion[data-pose="fetch"]::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  top: 28px;
+  width: 22px;
+  height: 16px;
+  background: var(--sand);
+  clip-path: polygon(0 0, 100% 0, 70% 100%, 0 80%);
+}
+
+.cutscene {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 18px;
+  padding: 28px;
+  background: rgba(7, 12, 14, 0.94);
+}
+
+.cutscene .plate { width: min(880px, 100%); }
+.cutscene .cat { width: min(280px, 46vw); }
+.depart-art { display: grid; justify-items: center; }
+
+.debug-dock {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  z-index: 6;
+  display: grid;
+  gap: 8px;
+  max-width: min(520px, calc(100% - 24px));
+}
+
+.debug-panel {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(7, 14, 16, 0.94);
+  border: 1px solid rgba(243, 234, 220, 0.2);
 }
 
 .memory-rain {
