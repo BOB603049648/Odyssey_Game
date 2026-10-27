@@ -71,9 +71,8 @@ export const WALK_STRIDE = WALK_SPEED / WALK_CYCLE_HZ;
  * against the plate. 0.118 keeps the opaque body on the ground band.
  */
 export const TRAVELER_HEIGHT = 0.118;
-/** Opaque sole on the 864×1152 sheet (about 20px of clear pad under the feet). */
 /** Opaque sole on the 864×1152 sheet. Bottom of the solid contact, not the canvas. */
-export const TRAVELER_FOOT = { x: 0.5, y: 1138 / 1152 } as const;
+export const TRAVELER_FOOT = { x: 0.5, y: 1139 / 1152 } as const;
 /** Overlap between frames inside one clip, and a slightly longer blend on a turn. */
 export const FRAME_BLEND_MS = 140;
 export const TURN_BLEND_MS = 220;
@@ -319,15 +318,6 @@ export function TravelerMark({
       aria-hidden="true"
     >
       <div className="traveler-bob">
-        <span
-          className="contact-shadow foot-ellipse"
-          data-testid="contact-shadow"
-          style={{
-            width: `${contactShadowWidth(y) * 100}%`,
-            top: `${TRAVELER_FOOT.y * 100}%`,
-            bottom: 'auto',
-          }}
-        />
         <span className="traveler-frames" style={{ ['--frame-blend' as string]: `${blendMs}ms` }}>
           {outgoing ? <FramePicture blend={outgoing} layer="out" /> : null}
           <FramePicture blend={shown} layer="current" />

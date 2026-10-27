@@ -1,6 +1,6 @@
 {
-  "version": "1.3-pr18-wrap",
-  "updated": "2026-10-28T07:09:20+08:00",
+  "version": "1.3-pr19-solid",
+  "updated": "2026-10-28T07:38:07+08:00",
   "unit": "meters",
   "traveler": {
     "height_m": 1.75,
@@ -13,7 +13,7 @@
       "px_per_m": 605.7,
       "note": "idle-front-01 opaque ~95.7% H; contract uses 0.92 design target → ~1060px / 1.75m ≈ 605.7 px/m on traveler sheet"
     },
-    "foot_anchor": "bottom-center opaque. pad≤24. PR18: solid dark-brown AO is baked in the sole (rgb≈28,22,16), not a silhouette-following disc. Eng must not stack a pale pad, a multiply ellipse, or a light halo."
+    "foot_anchor": "bottom-center opaque. pad≤24. PR19: thick solid dark-brown sole AO (rgb≈28,22,16, mid-alpha raised). Eng figure-grade hard-cuts at 80% so the sole band gets zero color/soft-light, and the traveler foot ellipse is not in the DOM."
   },
   "prop_subject_height_pct_of_plate_h": {
     "hand_accessory": {
@@ -841,5 +841,36 @@
     "yard_feet": "y>=0.92",
     "camp_north": 0.8,
     "drying_rack": "terrace y=0.9, same x as the size spots, foot-anchored, not a facade sticker"
+  },
+  "pr19_solid": {
+    "updated": "2026-10-28T07:38:07+08:00",
+    "role": "auxiliary",
+    "summary": "PR19 solid：旅人靴底加厚实心暗褐 AO。工程把 figure-grade 在 80% 硬切，靴底带不再吃 color/soft-light，旅人脚椭圆从 DOM 去掉。前坪猫脚锚 x=0.47、y=0.92，阶槽中间、离开粮袋。雾岸猫不做整只染色。晾架、标石、前坪 y≥0.92、棚火猫落点未改。",
+    "zip": "art-pr19-solid-pack.zip",
+    "report": "_pr19-solid-report.json",
+    "do_not_touch": [
+      "shore/art.shore.prop.nanaicha.png",
+      "nanaicha/traj/land-shore-driftwood.png",
+      "nanaicha/traj/land-shore-east-gap.png",
+      "nanaicha/traj/land-shore-gourd.png",
+      "shore/art.shore.prop.east-gap.png",
+      "yard/art.yard.prop.more-less-boards.png",
+      "yard/art.yard.prop.grain-bags.png",
+      "camp/art.camp.prop.north-curtain.png"
+    ],
+    "verify": {
+      "pale_pad": 0,
+      "crescent_gap": 0,
+      "ao_thick_enough": true,
+      "curtain_wrote": false,
+      "boards_untouched": true,
+      "grain_untouched": true,
+      "shore_cat_modified": false,
+      "land_shore_modified": false,
+      "marker_stone_modified": false
+    },
+    "eng_must_not": "tint the sole band with figure-grade color or soft-light; paint a cool foot ellipse; wash the shore cat into a ghost; move the yard cat onto the grain; regress drying racks, marker sand line, yard y>=0.92, or camp porch paws",
+    "sole_cut": "80%",
+    "yard_cat": { "x": 0.47, "y": 0.92 }
   }
 }

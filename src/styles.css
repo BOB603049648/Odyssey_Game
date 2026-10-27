@@ -512,8 +512,11 @@ h1 {
 .walk-viewport[data-scene="dba.scene.shore"] .companion-anchor .contact-shadow {
   opacity: 1;
 }
-/* Baked sole is the contact. A wide disc behind the boots reads as side crescents. */
-.traveler .foot-ellipse,
+/* Baked sole is the contact. The traveler disc is gone from the DOM; this kills any leftover cool pad. */
+.traveler .foot-ellipse {
+  display: none;
+  background: none;
+}
 .walk-viewport[data-scene="dba.scene.yard"] .companion-anchor .foot-ellipse,
 .walk-viewport[data-scene="dba.scene.camp"] .companion-anchor .foot-ellipse {
   background: none;
@@ -1882,6 +1885,28 @@ h1 {
   pointer-events: none;
   mix-blend-mode: soft-light;
 }
+/* The post fog (soft-light grade) lifts the baked sole to a cool pad.
+   This stamp is the same frame, above that fog, and only the sole band. */
+.sole-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  overflow: hidden;
+}
+.sole-stamp {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  object-fit: contain;
+  object-position: center bottom;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 91%, #000 91%);
+  mask-image: linear-gradient(to bottom, transparent 0%, transparent 91%, #000 91%);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
 .foot-ellipse {
   background: radial-gradient(
     ellipse at 50% 50%,
@@ -1921,11 +1946,11 @@ h1 {
 .walk-viewport[data-scene="dba.scene.camp"] .figure-grade.grade-color { opacity: 0.64; }
 .walk-viewport[data-scene="dba.scene.yard"] .figure-grade.grade-color { opacity: 0.74; }
 .walk-viewport[data-scene="dba.scene.yard"] .figure-grade.grade-soft { opacity: 0.58; }
-/* Color + soft-light of the shore grade lifts the baked boot AO into a cool pad.
-   The body keeps the wrap. The sole band stays the baked brown. */
-.walk-viewport[data-scene="dba.scene.shore"] .traveler .figure-grade {
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 86%, transparent 94%), var(--figure);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 86%, transparent 94%), var(--figure);
+/* Shore light #b8ced4 (and the other scene grades) lift a baked brown sole into a cool pad.
+   Hard cut at 80%: body keeps the wrap, the sole band gets zero color and zero soft-light. */
+.traveler .figure-grade {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 80%, transparent 80%), var(--figure);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 80%, transparent 80%), var(--figure);
   -webkit-mask-size: 100% 100%, contain;
   mask-size: 100% 100%, contain;
   -webkit-mask-position: center center, center bottom;
@@ -1934,6 +1959,13 @@ h1 {
   mask-repeat: no-repeat, no-repeat;
   -webkit-mask-composite: source-in;
   mask-composite: intersect;
+}
+/* Shore cat keeps the shipped dissolve. A full color wash turns it into a ghost. */
+.walk-viewport[data-scene="dba.scene.shore"] .companion-anchor .figure-grade.grade-color {
+  opacity: 0;
+}
+.walk-viewport[data-scene="dba.scene.shore"] .companion-anchor .figure-grade.grade-soft {
+  opacity: 0.22;
 }
 /* Yard hall light and the camp wrap do the same to a dark paw contact. Shore cat stays as shipped. */
 .walk-viewport[data-scene="dba.scene.yard"] .companion-anchor .figure-grade,

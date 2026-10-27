@@ -95,8 +95,8 @@ export function companionPost(
 
   if (scene === 'dba.scene.yard') {
     if (beats['dba.beat.food'] !== true) {
-      /* Step groove, clear of the left sacks (x≈0.24) and the right pile (x≈0.80, half-width 0.15). */
-      const feet = clampToBand({ x: 0.56, y: YARD_FACADE.groundY }, BANDS[scene]);
+      /* Step groove, center of the stair. The give frame is wide to the right, so the foot sits left of 0.50 and clear of both grain piles. */
+      const feet = clampToBand({ x: 0.47, y: YARD_FACADE.groundY }, BANDS[scene]);
       const tilt = flags['dba.flag.wrong-share'] === true;
       return {
         ...feet,
