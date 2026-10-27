@@ -44,6 +44,8 @@ describe('phone layout', () => {
     expect(css).toContain('object-position: center bottom');
     expect(css).toContain('.prop-contact');
     expect(css).toContain('.world-post');
+    expect(css).not.toMatch(/\.world-ambient\s*\{[^}]*mix-blend-mode:\s*multiply/);
+    expect(css).not.toContain('height: 82%');
   });
 
   it('does not pin the traveler to fixed pixels on a phone', () => {

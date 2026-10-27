@@ -2,7 +2,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { SCENE_ASSEMBLIES } from '../content/catalog';
 import { BANDS, GATES, SPAWNS, SPOTS } from '../core/stage';
-import { PlateStack } from './Plate';
+import { PlateStack, drawsInFront } from './Plate';
 
 /**
  * 编导写死的场景验收句：
@@ -60,7 +60,7 @@ describe('hotspot acceptance', () => {
       expect(prop(`art.camp.prop.act-${id}`, 'dba.scene.camp')?.spot).toBe(`act:dba.word.${id}`);
     }
     const night = GATES.find((gate) => gate.from === 'dba.scene.camp' && gate.to === 'dba.scene.night');
-    expect(night).toMatchObject({ x: 0.5, y: 0.42, r: 0.04, edge: 'north' });
+    expect(night).toMatchObject({ x: 0.5, y: 0.68, r: 0.04, edge: 'north' });
 
     expect(SPOTS['dba.scene.yard']).toHaveLength(6);
     expect(prop('art.yard.prop.grain-bags', 'dba.scene.yard')?.spot).toBe('yard-give');
@@ -70,6 +70,9 @@ describe('hotspot acceptance', () => {
     const give = SPOTS['dba.scene.yard'].find((item) => item.id === 'yard-give');
     const grab = SPOTS['dba.scene.yard'].find((item) => item.id === 'yard-grab');
     expect(give && grab && grab.x < give.x).toBe(true);
+    for (const id of ['art.yard.prop.dried-fish', 'art.yard.prop.dried-fish.small']) {
+      expect(prop(id, 'dba.scene.yard')?.y).toBeGreaterThanOrEqual(BANDS['dba.scene.yard'].minY);
+    }
 
     for (const scene of ['dba.scene.shore', 'dba.scene.camp', 'dba.scene.yard'] as const) {
       const band = BANDS[scene];
@@ -109,8 +112,8 @@ describe('hotspot acceptance', () => {
     expect(wood.querySelector('[data-testid="prop-contact"]')).toBeNull();
     const shard = screen.getByTestId('prop-art.shore.prop.break-shard');
     expect(shard.getAttribute('data-anchor')).toBe('foot');
-    expect(shard.getAttribute('data-shadow')).toBe('ellipse');
-    expect(shard.querySelector('[data-testid="prop-contact"]')).toBeTruthy();
+    expect(shard.getAttribute('data-shadow')).toBe('none');
+    expect(shard.querySelector('[data-testid="prop-contact"]')).toBeNull();
     expect(gourd.getAttribute('data-shadow')).toBe('png');
     expect(gourd.querySelector('[data-testid="prop-contact"]')).toBeNull();
     expect(gourd.style.transform).toContain('translate(-50%, -100%)');
@@ -121,6 +124,7 @@ describe('hotspot acceptance', () => {
     expect(container.querySelector('.ground-plane')).toBeNull();
     expect(container.querySelector('.ground-walk')).toBeNull();
     expect(container.querySelector('.ambient-water')).toBeNull();
+    expect(screen.getByTestId('slot-ground').style.inset).toBe('0px');
     const props = container.querySelectorAll('[data-interactable="yes"]');
     expect(props.length).toBe(5);
   });
@@ -199,6 +203,31 @@ describe('hotspot acceptance', () => {
     }
     expect(view.container.querySelector('.plate-photo')).toBeNull();
     const night = GATES.find((gate) => gate.from === 'dba.scene.camp' && gate.to === 'dba.scene.night');
-    expect(night).toMatchObject({ x: 0.5, y: 0.42, r: 0.04, edge: 'north' });
+    expect(night).toMatchObject({ x: 0.5, y: 0.68, r: 0.04, edge: 'north' });
+  });
+
+  it('puts a curtain in front only when the traveler stands north of its hem', () => {
+    const campCurtain = prop('art.camp.prop.north-curtain', 'dba.scene.camp');
+    const nightCurtain = kit('dba.scene.night').slots.find((slot) => slot.kind === 'curtain');
+    expect(campCurtain && nightCurtain).toBeTruthy();
+    expect(drawsInFront(campCurtain!, 0.8)).toBe(false);
+    expect(drawsInFront(campCurtain!, 0.7)).toBe(true);
+    expect(drawsInFront(nightCurtain!, 0.8)).toBe(false);
+    expect(drawsInFront(nightCurtain!, 0.66)).toBe(true);
+
+    const south = render(<PlateStack plate="dba.scene.camp" previous={null} pass="near" feetY={0.8} />);
+    expect(south.container.querySelector('[data-kind="north-curtain"]')).toBeNull();
+    expect(south.container.querySelector('[data-kind="act-you"]')).toBeTruthy();
+    south.unmount();
+
+    const north = render(<PlateStack plate="dba.scene.camp" previous={null} pass="back" feetY={0.7} />);
+    expect(north.container.querySelector('[data-kind="north-curtain"]')).toBeNull();
+    north.unmount();
+    const covered = render(<PlateStack plate="dba.scene.night" previous={null} pass="fg" feetY={0.8} />);
+    expect(covered.container.querySelector('[data-kind="curtain"]')).toBeNull();
+    expect(covered.container.querySelector('[data-slot="fg"]')).toBeNull();
+    covered.unmount();
+    const behindCloth = render(<PlateStack plate="dba.scene.night" previous={null} pass="near" feetY={0.66} />);
+    expect(behindCloth.container.querySelector('[data-kind="curtain"]')).toBeTruthy();
   });
 });

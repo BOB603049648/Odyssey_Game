@@ -101,6 +101,17 @@ describe('island 1 scenes', () => {
     expect(reduce(state, { type: 'spot-far', id: 'yard-give' }).feedback.line).toBe('spot.give.far');
   });
 
+  it('clears a leftover sleep line when the scene changes', () => {
+    let state = reduce(ashore(), { type: 'goto-scene', scene: 'dba.scene.camp' });
+    state = reduce(state, { type: 'spot-far', id: 'camp-sleep' });
+    expect(state.feedback.line).toBe('spot.sleep.far');
+    expect(reduce(state, { type: 'goto-scene', scene: 'dba.scene.camp' }).feedback.line).toBe('spot.sleep.far');
+    state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.shore' });
+    expect(state.currentScene).toBe('dba.scene.shore');
+    expect(state.feedback.kind).toBe('none');
+    expect(state.feedback.line).toBeUndefined();
+  });
+
   it('opens the forest only when the player stops after learning danger', () => {
     let state = reduce(ashore(), { type: 'goto-scene', scene: 'dba.scene.path' });
     expect(reduce(state, { type: 'forest-choice', choice: 'stop' }).beats['dba.beat.danger']).toBeUndefined();

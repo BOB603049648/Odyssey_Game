@@ -29,6 +29,7 @@ export function isIslandScene(scene: string): scene is IslandScene {
 export function gotoScene(state: SaveData, scene: string): SaveData {
   if (!isIslandScene(scene)) return state;
   if (state.screen === 'title' || state.screen === 'prologue') return state;
+  const changed = state.currentScene !== scene;
   return {
     ...state,
     screen: 'island',
@@ -36,6 +37,7 @@ export function gotoScene(state: SaveData, scene: string): SaveData {
     overlay: 'none',
     selectedCellId: null,
     muralMode: 'learn',
+    feedback: changed ? { seq: state.feedback.seq, kind: 'none' } : state.feedback,
   };
 }
 

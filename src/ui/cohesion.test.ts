@@ -7,8 +7,11 @@ describe('cohesion shadows and grades', () => {
     const contract = JSON.parse(readFileSync('docs/art-scale-contract.json', 'utf8')) as {
       version: string;
       cohesion: { baked_contact_shadow_props: string[] };
+      pr11_ground: { do_not_stack_hard_shadow_on_baked_props: boolean; fog_rule: string };
     };
-    expect(contract.version).toBe('1.3-failfix');
+    expect(contract.version).toBe('1.3-pr11-ground');
+    expect(contract.pr11_ground.do_not_stack_hard_shadow_on_baked_props).toBe(true);
+    expect(contract.pr11_ground.fog_rule).toMatch(/AFTER composite/);
     expect(contract.cohesion.baked_contact_shadow_props).toContain('shore/art.shore.prop.driftwood.png');
     expect(contract.cohesion.baked_contact_shadow_props).toContain('night/art.night.prop.old-layer.png');
     expect(hasPngContact('art.shore.prop.driftwood')).toBe(true);
@@ -26,13 +29,13 @@ describe('cohesion shadows and grades', () => {
     ).toBeNull();
   });
 
-  it('gives unbaked footed props a shared ellipse that widens with depth', () => {
+  it('keeps the shared ellipse off props; depth still widens the traveler mark', () => {
     expect(
       ellipseSizeFor({ slot: 'props', id: 'art.shore.prop.break-shard', asset: 'art.shore.prop.break-shard', kind: 'break-shard', w: 0.1 }),
-    ).toBe('s');
+    ).toBeNull();
     expect(
       ellipseSizeFor({ slot: 'props', id: 'art.path.prop.step-stones', asset: 'art.path.prop.step-stones', kind: 'step-stones', w: 0.32 }),
-    ).toBe('l');
+    ).toBeNull();
     expect(
       ellipseSizeFor({ slot: 'props', id: 'art.shore.prop.east-gap', asset: 'art.shore.prop.east-gap', kind: 'light-slit', w: 0.34 }),
     ).toBeNull();

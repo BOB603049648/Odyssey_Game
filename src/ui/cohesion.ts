@@ -48,9 +48,6 @@ const PNG_CONTACT = new Set([
   'art.hall.prop.wrist-knot',
 ]);
 
-/** Not a footed sprite — an ellipse here would read as another sticker. */
-const NO_FOOT = new Set(['light-slit', 'north-curtain', 'embers', 'empty', 'door-glow']);
-
 export function hasPngContact(assetId: string | null | undefined): boolean {
   if (!assetId) return false;
   if (PNG_CONTACT.has(assetId)) return true;
@@ -58,15 +55,10 @@ export function hasPngContact(assetId: string | null | undefined): boolean {
   return false;
 }
 
+/** Shared ellipse belongs under the traveler only. Prop contact is baked into the PNG. */
 export function ellipseSizeFor(slot: Pick<SceneSlot, 'slot' | 'asset' | 'id' | 'w' | 'kind'>): EllipseSize | null {
-  if (slot.slot !== 'props') return null;
-  const id = slot.asset ?? slot.id;
-  if (hasPngContact(id) || NO_FOOT.has(slot.kind)) return null;
-  const w = slot.w ?? 0.16;
-  if (w < 0.14) return 's';
-  if (w < 0.24) return 'm';
-  if (w < 0.34) return 'l';
-  return 'xl';
+  void slot;
+  return null;
 }
 
 /** Percent of the sprite box. Lower on screen (closer) is wider. */
@@ -88,7 +80,7 @@ export function sceneGrade(scene: IslandScene): string {
   return GRADES[scene];
 }
 
-/** Contract `cohesion.scenes` — world-root multiply, not a per-sprite filter. */
+/** Contract `cohesion.scenes` — post-composite grade colors, not a per-sprite multiply. */
 export const SCENE_LOOK: Record<IslandScene, { ambient: string; shadowTint: string }> = {
   'dba.scene.shore': { ambient: '#B8CED4', shadowTint: '#3A4E55' },
   'dba.scene.camp': { ambient: '#D4B08A', shadowTint: '#4A3528' },
@@ -115,8 +107,8 @@ export function sceneStrip(scene: IslandScene): string {
   return STRIPS[scene];
 }
 
-/** Placed buildings without a baked foundation get the shared bar. */
+/** Shared foundation bar is off. Baked plates already carry their contact. */
 export function foundationFor(slot: Pick<SceneSlot, 'slot' | 'asset' | 'id' | 'x'>): boolean {
-  if (slot.slot !== 'building' || slot.x === undefined) return false;
-  return !hasPngContact(slot.asset ?? slot.id);
+  void slot;
+  return false;
 }

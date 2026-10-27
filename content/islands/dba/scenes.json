@@ -145,10 +145,10 @@
         "asset": "art.camp.prop.fire",
         "parallax": 1,
         "spot": "camp-sleep",
-        "x": 0.52,
-        "y": 0.57,
-        "w": 0.24,
-        "h": 0.24
+        "x": 0.56,
+        "y": 0.75,
+        "w": 0.18,
+        "h": 0.14
       },
       {
         "id": "art.camp.prop.sleep-mat",
@@ -157,10 +157,10 @@
         "asset": "art.camp.prop.sleep-mat",
         "parallax": 1,
         "spot": "camp-sleep",
-        "x": 0.4,
-        "y": 0.6,
-        "w": 0.34,
-        "h": 0.22
+        "x": 0.42,
+        "y": 0.745,
+        "w": 0.26,
+        "h": 0.12
       },
       {
         "id": "art.camp.prop.paper-bundles",
@@ -168,10 +168,10 @@
         "kind": "paper-bundles",
         "asset": "art.camp.prop.paper-bundles",
         "parallax": 1,
-        "x": 0.22,
-        "y": 0.58,
-        "w": 0.22,
-        "h": 0.16
+        "x": 0.18,
+        "y": 0.78,
+        "w": 0.16,
+        "h": 0.12
       },
       {
         "id": "art.camp.prop.north-curtain",
@@ -180,9 +180,9 @@
         "asset": "art.camp.prop.north-curtain",
         "parallax": 1,
         "x": 0.5,
-        "y": 0.42,
-        "w": 0.3,
-        "h": 0.4
+        "y": 0.73,
+        "w": 0.2,
+        "h": 0.32
       },
       {
         "id": "art.camp.prop.act-home",
@@ -192,7 +192,7 @@
         "parallax": 1,
         "spot": "act:dba.word.home",
         "x": 0.3,
-        "y": 0.71,
+        "y": 0.83,
         "w": 0.13,
         "h": 0.16
       },
@@ -204,7 +204,7 @@
         "parallax": 1,
         "spot": "act:dba.word.eat",
         "x": 0.39,
-        "y": 0.71,
+        "y": 0.83,
         "w": 0.13,
         "h": 0.14
       },
@@ -216,7 +216,7 @@
         "parallax": 1,
         "spot": "act:dba.word.drink",
         "x": 0.48,
-        "y": 0.71,
+        "y": 0.83,
         "w": 0.12,
         "h": 0.16
       },
@@ -228,7 +228,7 @@
         "parallax": 1,
         "spot": "act:dba.word.walk",
         "x": 0.57,
-        "y": 0.71,
+        "y": 0.83,
         "w": 0.14,
         "h": 0.12
       },
@@ -240,7 +240,7 @@
         "parallax": 1,
         "spot": "act:dba.word.take",
         "x": 0.66,
-        "y": 0.71,
+        "y": 0.83,
         "w": 0.13,
         "h": 0.14
       },
@@ -252,7 +252,7 @@
         "parallax": 1,
         "spot": "act:dba.word.me",
         "x": 0.75,
-        "y": 0.71,
+        "y": 0.83,
         "w": 0.12,
         "h": 0.16
       },
@@ -264,7 +264,7 @@
         "parallax": 1,
         "spot": "act:dba.word.you",
         "x": 0.84,
-        "y": 0.71,
+        "y": 0.83,
         "w": 0.12,
         "h": 0.16
       },
@@ -318,7 +318,7 @@
         "parallax": 1,
         "spot": "yard-give",
         "x": 0.7,
-        "y": 0.64,
+        "y": 0.8,
         "w": 0.3,
         "h": 0.24
       },
@@ -329,8 +329,8 @@
         "asset": "art.yard.prop.grain-bags",
         "parallax": 1,
         "spot": "yard-grab",
-        "x": 0.3,
-        "y": 0.66,
+        "x": 0.28,
+        "y": 0.84,
         "w": 0.26,
         "h": 0.2
       },
@@ -341,8 +341,8 @@
         "asset": "art.yard.prop.dried-fish",
         "parallax": 1,
         "spot": "act:dba.word.size:a",
-        "x": 0.22,
-        "y": 0.54,
+        "x": 0.16,
+        "y": 0.78,
         "w": 0.22,
         "h": 0.28
       },
@@ -353,8 +353,8 @@
         "asset": "art.yard.prop.dried-fish",
         "parallax": 1,
         "spot": "act:dba.word.size:b",
-        "x": 0.34,
-        "y": 0.52,
+        "x": 0.36,
+        "y": 0.76,
         "w": 0.16,
         "h": 0.22
       },
@@ -365,8 +365,8 @@
         "asset": "art.yard.prop.more-less-boards",
         "parallax": 1,
         "spot": "act:dba.word.amount:more",
-        "x": 0.46,
-        "y": 0.56,
+        "x": 0.48,
+        "y": 0.78,
         "w": 0.2,
         "h": 0.24
       },
@@ -377,8 +377,8 @@
         "asset": "art.yard.prop.more-less-boards",
         "parallax": 1,
         "spot": "act:dba.word.amount:less",
-        "x": 0.56,
-        "y": 0.56,
+        "x": 0.58,
+        "y": 0.78,
         "w": 0.16,
         "h": 0.2
       },
@@ -576,7 +576,7 @@
         "parallax": 1,
         "spot": "night-read",
         "x": 0.36,
-        "y": 0.58,
+        "y": 0.68,
         "w": 0.42,
         "h": 0.36
       },
@@ -588,7 +588,7 @@
         "parallax": 1,
         "spot": "night-ember",
         "x": 0.58,
-        "y": 0.72,
+        "y": 0.74,
         "w": 0.32,
         "h": 0.24
       },
@@ -599,8 +599,8 @@
         "asset": null,
         "parallax": 1,
         "spot": "night-memory",
-        "x": 0.64,
-        "y": 0.64,
+        "x": 0.7,
+        "y": 0.7,
         "w": 0.1,
         "h": 0.1
       },
@@ -609,7 +609,8 @@
         "slot": "fg",
         "kind": "curtain",
         "asset": "art.night.fg",
-        "parallax": 1.18
+        "parallax": 1.18,
+        "y": 0.7
       }
     ]
   }
