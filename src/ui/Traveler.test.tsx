@@ -1,16 +1,20 @@
-import { render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+import { SPAWNS } from '../core/stage';
 import {
   TRAVELER_FRAME_COUNTS,
   clipFrames,
   facingFromMove,
   frameIndex,
   nextLocomotion,
+  poseForSheet,
   sheetOf,
   stepCycle,
   stepGait,
   TravelerMark,
 } from './Traveler';
+import { WalkLayer } from './WalkLayer';
+import type { SpotView } from './spotViews';
 
 describe('traveler art', () => {
   it('uses the front sprite by default and the front silhouette only then', () => {
@@ -81,18 +85,73 @@ describe('traveler art', () => {
     expect(walkBack[0]).toMatch(/walk-back-01/);
     expect(clipFrames('idle', 'back')).toEqual([walkBack[0], walkBack[0]]);
     expect(clipFrames('interact', 'back')).toEqual([walkBack[0]]);
-    expect(clipFrames('reach', 'front')).toEqual([clipFrames('idle', 'front')[0]]);
+    const reachFront = clipFrames('reach', 'front');
+    expect(reachFront.map((src) => src.match(/reach-front-0[12]/)?.[0])).toEqual(['reach-front-01', 'reach-front-02']);
+    expect(new Set(reachFront).size).toBe(2);
+    expect(clipFrames('reach', 'side').map((src) => src.match(/reach-side-01/)?.[0])).toEqual(['reach-side-01']);
+    expect(poseForSheet('reach', 'back')).toBe('idle');
+    expect(clipFrames('reach', 'back')).toEqual(clipFrames('idle', 'back'));
   });
 
-  it('reserves interact and reach without dropping the still', () => {
+  it('reserves interact and plays reach, falling back to idle when that sheet is missing', () => {
     const view = render(<TravelerMark x={0.4} y={0.6} facing="front" moving={false} pose="interact" />);
     const mark = view.container.querySelector('[data-testid="traveler"]');
     expect(mark?.getAttribute('data-pose')).toBe('interact');
     expect(mark?.getAttribute('data-clip-frames')).toBe('1');
     expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/idle-front-01/);
+    view.rerender(<TravelerMark x={0.4} y={0.6} facing="front" moving={false} pose="reach" />);
+    expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).toBe('reach');
+    expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-clip-frames')).toBe('2');
+    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/reach-front-01/);
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="left" moving stride={0.4} pose="reach" />);
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).toBe('reach');
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-gait')).toBe('0.40');
+    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/reach-side-01/);
+    view.rerender(<TravelerMark x={0.4} y={0.6} facing="back" moving={false} pose="reach" />);
+    expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).toBe('idle');
+    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/walk-back-01/);
+  });
+
+  it('plays reach only when an interaction happens inside a hotspot', () => {
+    const spawn = SPAWNS['dba.scene.shore'];
+    const here: SpotView = {
+      id: 'shore-driftwood',
+      x: spawn.x,
+      y: spawn.y,
+      r: 0.05,
+      className: 'hotspot drift',
+      testId: 'shore-driftwood',
+      label: '漂木',
+    };
+    const away: SpotView = { ...here, x: 0.9, y: 0.8, testId: 'shore-depart', id: 'shore-depart', label: '往东' };
+    const layer = (spots: SpotView[], remembered: { x: number; y: number } | null) => (
+      <WalkLayer
+        scene="dba.scene.shore"
+        drank={false}
+        spots={spots}
+        hint={{ level: 0, anchor: 'driftwood', wordId: null, pose: 'idle' }}
+        paused={false}
+        purr={false}
+        knot="rest"
+        remembered={remembered}
+        onRemember={() => undefined}
+        onExit={() => undefined}
+        onInteract={() => undefined}
+        onAsk={() => undefined}
+        onEscape={() => undefined}
+      />
+    );
+    const near = render(layer([here], null));
+    const pose = () => near.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose');
+    expect(pose()).toBe('idle');
+    fireEvent.keyDown(window, { key: 'e' });
+    expect(pose()).toBe('reach');
+    expect(near.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/reach-front-01/);
+    near.unmount();
+    const far = render(layer([away], spawn));
+    fireEvent.click(far.getByTestId('shore-depart'));
+    expect(far.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).toBe('idle');
+    far.unmount();
   });
 
   it('shows idle at rest and the walk clip once stride is up', () => {

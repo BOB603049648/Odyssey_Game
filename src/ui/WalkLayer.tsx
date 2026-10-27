@@ -24,7 +24,7 @@ import { Glyph } from './glyphs';
 import { t } from './i18n';
 import { PlateStack } from './Plate';
 import { gateLabel, hintSpotId, type SpotView } from './spotViews';
-import { facingFromMove, TravelerMark, type TravelerFacing } from './Traveler';
+import { facingFromMove, REACH_HOLD_MS, TravelerMark, type TravelerFacing } from './Traveler';
 import { WalkStick } from './WalkStick';
 import { useCrossfade } from './useCrossfade';
 
@@ -127,6 +127,8 @@ export function WalkLayer({
   const [arrive, setArrive] = useState<string | null>(null);
   const [cam, setCam] = useState<Point>({ x: 0, y: 0 });
   const [teachLine, setTeachLine] = useState(false);
+  const [reaching, setReaching] = useState(false);
+  const reachTimer = useRef(0);
   const viewRef = useRef(view);
   const plates = useCrossfade(scene, 980);
   viewRef.current = view;
@@ -231,6 +233,12 @@ export function WalkLayer({
     }
   }
 
+  function beginReach() {
+    setReaching(true);
+    window.clearTimeout(reachTimer.current);
+    reachTimer.current = window.setTimeout(() => setReaching(false), REACH_HOLD_MS);
+  }
+
   function seek(point: Point) {
     const band = BANDS[sceneRef.current];
     targetRef.current = {
@@ -261,6 +269,7 @@ export function WalkLayer({
         const spot = nearestSpot(spotsRef.current, posRef.current);
         if (!spot) return;
         event.preventDefault();
+        beginReach();
         interactRef.current(spot.id);
         return;
       }
@@ -374,6 +383,8 @@ export function WalkLayer({
     return () => window.clearTimeout(id);
   }, [arrive]);
 
+  useEffect(() => () => window.clearTimeout(reachTimer.current), []);
+
   return (
     <div
       ref={viewportRef}
@@ -432,6 +443,7 @@ export function WalkLayer({
                     seek(spot);
                     return;
                   }
+                  beginReach();
                   interactRef.current(spot.id);
                 }}
               >
@@ -443,7 +455,7 @@ export function WalkLayer({
             <span className="contact-shadow" data-testid="contact-shadow" />
             <Companion level={hint.level} anchor={hint.anchor} pose={hint.pose} purr={purr} knot={knot} onAsk={onAsk} />
           </div>
-          <TravelerMark x={pos.x} y={pos.y} facing={facing} moving={moving} stride={stride} />
+          <TravelerMark x={pos.x} y={pos.y} facing={facing} moving={moving} stride={stride} pose={reaching ? 'reach' : 'auto'} />
           <PlateStack
             plate={plates.current}
             previous={plates.previous}

@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import reachFront01 from '../assets/traveler/reach-front-01.png';
+import reachFront02 from '../assets/traveler/reach-front-02.png';
+import reachSide01 from '../assets/traveler/reach-side-01.png';
 import idleFront01 from '../assets/traveler/idle-front-01.png';
 import idleFront02 from '../assets/traveler/idle-front-02.png';
 import idleSide01 from '../assets/traveler/idle-side-01.png';
@@ -22,13 +25,17 @@ export type TravelerSheet = 'front' | 'side' | 'back';
 export type TravelerPose = 'idle' | 'walk' | 'interact' | 'reach';
 export type TravelerLocomotion = 'idle' | 'walk';
 
-/** v3 P0: walk is 4 frames × front/side/back; idle is 2 for front and side. */
+/** v3 P0: walk is 4 × front/side/back; idle is 2 for front and side. Reach front is 2, side is 1. */
 export const TRAVELER_FRAME_COUNTS = {
   idle: 2,
   walk: 4,
   interact: 1,
-  reach: 1,
+  reach: 2,
 } as const;
+
+/** One reach cycle while a hotspot interaction is playing. */
+export const REACH_HZ = 1.4;
+export const REACH_HOLD_MS = 720;
 
 const WALK: Record<TravelerSheet, readonly string[]> = {
   front: [walkFront01, walkFront02, walkFront03, walkFront04],
@@ -41,6 +48,12 @@ const IDLE: Record<TravelerSheet, readonly string[]> = {
   front: [idleFront01, idleFront02],
   side: [idleSide01, idleSide02],
   back: [walkBack01, walkBack01],
+};
+
+/** Back reach was not delivered. Missing sheets fall back to idle. */
+const REACH: Partial<Record<TravelerSheet, readonly string[]>> = {
+  front: [reachFront01, reachFront02],
+  side: [reachSide01],
 };
 
 /** Full-speed walk cycles per second. Frame rate scales with gait, which eases toward stride. */
@@ -89,19 +102,28 @@ export function frameIndex(phase: number, count: number): number {
   return Math.min(count - 1, Math.floor(phase * count));
 }
 
+export function poseForSheet(pose: TravelerPose, sheet: TravelerSheet): TravelerPose {
+  if (pose === 'reach' && !REACH[sheet]) return 'idle';
+  return pose;
+}
+
 export function clipFrames(pose: TravelerPose, sheet: TravelerSheet): readonly string[] {
-  if (pose === 'walk') return WALK[sheet];
-  if (pose === 'idle') return IDLE[sheet];
+  const shown = poseForSheet(pose, sheet);
+  if (shown === 'walk') return WALK[sheet];
+  if (shown === 'reach') return REACH[sheet] ?? IDLE[sheet];
+  if (shown === 'idle') return IDLE[sheet];
   return [IDLE[sheet][0]];
 }
 
 type Motion = { gait: number; pose: TravelerPose; frame: number };
 
-function useTravelerMotion(stride: number, override: 'auto' | 'interact' | 'reach'): Motion {
+function useTravelerMotion(stride: number, override: 'auto' | 'interact' | 'reach', sheet: TravelerSheet): Motion {
   const strideRef = useRef(stride);
   const overrideRef = useRef(override);
+  const sheetRef = useRef(sheet);
   strideRef.current = stride;
   overrideRef.current = override;
+  sheetRef.current = sheet;
   const [motion, setMotion] = useState<Motion>({ gait: 0, pose: 'idle', frame: 0 });
 
   useEffect(() => {
@@ -111,17 +133,23 @@ function useTravelerMotion(stride: number, override: 'auto' | 'interact' | 'reac
     let gait = 0;
     let walkPhase = 0;
     let idlePhase = 0;
+    let reachPhase = 0;
+    let prevPose: TravelerPose = 'idle';
     let locomotion: TravelerLocomotion = 'idle';
     const tick = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       gait = stepGait(gait, strideRef.current, dt);
       locomotion = nextLocomotion(locomotion, gait);
-      if (locomotion === 'walk') walkPhase = stepCycle(walkPhase, gait, dt);
-      else idlePhase = stepCycle(idlePhase, 1, dt, IDLE_CYCLE_HZ);
-      const pose: TravelerPose = overrideRef.current === 'auto' ? locomotion : overrideRef.current;
-      const phase = pose === 'walk' ? walkPhase : pose === 'idle' ? idlePhase : 0;
-      setMotion({ gait, pose, frame: frameIndex(phase, TRAVELER_FRAME_COUNTS[pose]) });
+      const requested: TravelerPose = overrideRef.current === 'auto' ? locomotion : overrideRef.current;
+      const pose = poseForSheet(requested, sheetRef.current);
+      if (pose === 'walk') walkPhase = stepCycle(walkPhase, gait, dt);
+      else if (pose === 'reach') {
+        reachPhase = prevPose === 'reach' ? stepCycle(reachPhase, 1, dt, REACH_HZ) : 0;
+      } else idlePhase = stepCycle(idlePhase, 1, dt, IDLE_CYCLE_HZ);
+      prevPose = pose;
+      const phase = pose === 'walk' ? walkPhase : pose === 'reach' ? reachPhase : idlePhase;
+      setMotion({ gait, pose, frame: frameIndex(phase, clipFrames(pose, sheetRef.current).length) });
       raf = window.requestAnimationFrame(tick);
     };
     raf = window.requestAnimationFrame(tick);
@@ -130,7 +158,8 @@ function useTravelerMotion(stride: number, override: 'auto' | 'interact' | 'reac
 
   if (import.meta.env.MODE === 'test') {
     const gait = Math.min(1, Math.max(0, stride));
-    const pose: TravelerPose = override === 'auto' ? (gait > 0 ? 'walk' : 'idle') : override;
+    const requested: TravelerPose = override === 'auto' ? (gait > 0 ? 'walk' : 'idle') : override;
+    const pose = poseForSheet(requested, sheet);
     return { gait, pose, frame: 0 };
   }
   return motion;
@@ -150,12 +179,12 @@ export function TravelerMark({
   moving: boolean;
   /** 0–1 movement power. Defaults to a full step while `moving` is set. */
   stride?: number;
-  /** `interact` and `reach` stay in the state machine. Their frames are not drawn yet. */
+  /** `reach` plays on a hotspot interaction. `interact` is still reserved, with no frames of its own. */
   pose?: 'auto' | 'interact' | 'reach';
 }) {
   const sheet = sheetOf(facing);
   const power = stride ?? (moving ? 1 : 0);
-  const motion = useTravelerMotion(power, pose);
+  const motion = useTravelerMotion(power, pose, sheet);
   const frames = clipFrames(motion.pose, sheet);
   const frame = Math.min(frames.length - 1, motion.frame);
   const shownRef = useRef({ sheet, pose: motion.pose, frame });
