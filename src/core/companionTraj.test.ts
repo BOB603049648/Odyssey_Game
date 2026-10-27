@@ -22,6 +22,8 @@ describe('nanaicha trajectory frames', () => {
     expect(companionFrameId('S2', 'land')).toBe('land-shore-east-gap');
     expect(companionFrameId('C2', 'land')).toBe('land-camp-sleep-mat');
     expect(companionFrameId('C3', 'land')).toBe('land-camp-fireside');
+    expect(companionFrameId('C2', 'land')).not.toContain('curtain');
+    expect(companionFrameId('C3', 'land')).not.toContain('curtain');
     expect(companionFrameId('Y0', 'land')).toBe('land-yard-give');
     expect(companionFrameId('C1', 'land')).toBe('fallback');
     expect(companionFrameId('Y1', 'land')).toBe('fallback');

@@ -35,6 +35,17 @@ describe('phone layout', () => {
     expect(css).not.toMatch(/body\s*\{[^}]*touch-action:\s*none/);
   });
 
+  it('does not scroll hard vertical stripes across the shore', () => {
+    expect(css).not.toContain('water-shift');
+    expect(css).not.toContain('@keyframes water-shift');
+    expect(css).not.toContain('repeating-linear-gradient(90deg, transparent 0 28px');
+    expect(css).not.toContain('repeating-linear-gradient(90deg, transparent 0 22px');
+    expect(css).toContain('display: none');
+    expect(css).toContain('object-position: center bottom');
+    expect(css).toContain('.prop-contact');
+    expect(css).toContain('.world-post');
+  });
+
   it('does not pin the traveler to fixed pixels on a phone', () => {
     const phone = mediaBlock(css, '@media (max-width: 960px), (max-height: 540px)');
     expect(phone).not.toMatch(/\.traveler\s*\{[^}]*46px/);

@@ -38,12 +38,14 @@ export function Companion({
       onClick={onAsk}
       aria-label={t('companion.ask')}
     >
-      <span className="companion-sway">
-        {figure ? (
-          <img className="nanaicha-ground" data-look={anchor} data-frame={frame} src={figure} alt="" draggable={false} />
-        ) : (
-          <CatMark look={anchor} state={nanaichaState(level, pose)} knot={knot} />
-        )}
+      <span className="companion-mirror">
+        <span className="companion-sway">
+          {figure ? (
+            <img className="nanaicha-ground" data-look={anchor} data-frame={frame} src={figure} alt="" draggable={false} />
+          ) : (
+            <CatMark look={anchor} state={nanaichaState(level, pose)} knot={knot} />
+          )}
+        </span>
       </span>
     </button>
   );

@@ -5,7 +5,7 @@ import { companionFrameId, LEAP_01_MS, LEAP_02_MS, type TrajClip } from '../core
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
 import type { HintLevel } from '../core/schema';
-import { BANDS, SPAWNS, gateAt, gatesFrom, nearestSpot, type GateEdge } from '../core/stage';
+import { BANDS, SPAWNS, SPOTS, gateAt, gatesFrom, nearestSpot, type GateEdge } from '../core/stage';
 import {
   WALK_SPEED,
   WORLD_SCALE,
@@ -41,6 +41,8 @@ import leap02 from '../assets/companion/nanaicha/traj/leap-02.png';
 import driftFlash from '../assets/art/slots/art.shore.prop.driftwood.interact.png';
 import sleepFlash from '../assets/art/slots/art.camp.prop.sleep-mat.interact.png';
 import grainFlash from '../assets/art/slots/art.yard.prop.grain-bags.interact.png';
+import { sceneGrade, sceneLook, sceneStrip } from './cohesion';
+import { worldToScreen } from '../core/world';
 import { facingFromMove, REACH_HOLD_MS, TravelerMark, type TravelerFacing } from './Traveler';
 
 const TRAJ_SRC: Record<string, string> = {
@@ -396,6 +398,7 @@ export function WalkLayer({
   const worldW = view.w * WORLD_SCALE;
   const worldH = view.h * WORLD_SCALE;
   const shownCam = import.meta.env.MODE === 'test' ? cameraOffset(pos, view.w, view.h) : cam;
+  const look = sceneLook(scene);
   const near = spots.filter((spot) => inRadius(pos, spot, spot.r)).map((spot) => spot.id);
   const teachSpot = near.includes('shore-driftwood') ? 'shore-driftwood' : '';
   const onTeachRef = useRef(onTeach);
@@ -433,6 +436,7 @@ export function WalkLayer({
       data-cam-y={shownCam.y.toFixed(1)}
       data-arrive={arrive ?? 'no'}
       data-drank={drank ? 'yes' : 'no'}
+      style={{ ['--ambient' as string]: look.ambient, ['--shadow-tint' as string]: look.shadowTint }}
     >
       <div className="world-cam" data-testid="world-camera" style={{ transform: `translate3d(${-shownCam.x}px, ${-shownCam.y}px, 0)` }}>
         <div ref={worldRef} className="world-layer" style={{ width: worldW, height: worldH }}>
@@ -498,14 +502,12 @@ export function WalkLayer({
             data-traveling={Math.hypot(catPost.x - cat.x, catPost.y - cat.y) > 0.025 ? 'yes' : 'no'}
             data-traj={clip}
             data-face={catPost.x >= cat.x ? 'right' : 'left'}
+            data-sprite={companionFrameId(catPost.beat, clip)}
             style={{
-              left: pct(cat.x),
-              top: pct(cat.y - (Math.hypot(catPost.x - cat.x, catPost.y - cat.y) > 0.025 ? 0.012 : 0)),
+              ...worldToScreen({ x: cat.x, y: cat.y }, NANAICHA_FOOT),
               height: `${NANAICHA_HEIGHT * 100}%`,
-              transform: `translate(${-NANAICHA_FOOT.x * 100}%, ${-NANAICHA_FOOT.y * 100}%)`,
             }}
           >
-            <span className="contact-shadow" data-testid="contact-shadow" />
             <Companion
               frame={companionFrameId(catPost.beat, clip)}
               figure={
@@ -538,7 +540,14 @@ export function WalkLayer({
               style={{ left: pct(flash.x), top: pct(flash.y) }}
             />
           ) : null}
-          <TravelerMark x={pos.x} y={pos.y} facing={facing} moving={moving} stride={stride} pose={resting ? 'lie' : reaching ? 'reach' : 'auto'} />
+          <TravelerMark
+            x={resting ? (SPOTS[scene].find((spot) => spot.id === 'camp-sleep')?.x ?? pos.x) : pos.x}
+            y={resting ? (SPOTS[scene].find((spot) => spot.id === 'camp-sleep')?.y ?? pos.y) : pos.y}
+            facing={facing}
+            moving={moving}
+            stride={stride}
+            pose={resting ? 'lie' : reaching ? 'reach' : 'auto'}
+          />
           <PlateStack
             plate={plates.current}
             previous={plates.previous}
@@ -549,7 +558,13 @@ export function WalkLayer({
           />
         </div>
       </div>
+      <div className="world-post" data-testid="world-post" data-scene={scene}>
+        <div className="world-ambient" />
+        <div className="world-strip" style={{ backgroundImage: `url("${sceneStrip(scene)}")` }} />
+        <div className="world-vignette" />
+      </div>
       <div className="grade-veil" data-grade={sceneAssembly(plates.previous ?? scene)?.grade ?? 'mist-dawn'} data-testid="grade-veil" />
+      <img className="scene-grade" data-testid="scene-grade" src={sceneGrade(scene)} alt="" draggable={false} />
       {teachLine ? (
         <p className="approach-hint" data-testid="approach-hint">
           {t('hint.approach')}
