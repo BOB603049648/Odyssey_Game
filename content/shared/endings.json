@@ -10,8 +10,8 @@
     "status": "stub"
   },
   {
-    "id": "forget-again",
-    "labelKey": "ending.forget-again",
+    "id": "restart-echo",
+    "labelKey": "ending.restart-echo",
     "status": "stub"
   }
 ]

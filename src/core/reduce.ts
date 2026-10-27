@@ -1,6 +1,17 @@
 import { LEXEMES } from '../content/catalog';
 import { isLayerUnlocked, requirementsMet } from './conditions';
 import { hintTarget, type HintAnchor } from './hints';
+import {
+  collectTattoo,
+  departEast,
+  forestChoice,
+  giveSharedFish,
+  gotoScene,
+  readOldLayer,
+  reviewTap,
+  sitDriftwood,
+  sleepAtCamp,
+} from './island';
 import { newGameState } from './save';
 import type { HintLevel, MuralLayer, SaveData, WordProgress } from './schema';
 import { isLearnedState, transitionWord } from './words';
@@ -18,7 +29,17 @@ export type Action =
   | { type: 'use-word'; wordId: string }
   | { type: 'set-show-gloss'; value: boolean }
   | { type: 'open-overlay'; overlay: 'lexicon' | 'settings' | 'casefile' }
-  | { type: 'close-overlay' };
+  | { type: 'close-overlay' }
+  | { type: 'goto-scene'; scene: string }
+  | { type: 'sit-driftwood' }
+  | { type: 'sleep-at-camp' }
+  | { type: 'give-fish' }
+  | { type: 'forest-choice'; choice: 'step' | 'stop' }
+  | { type: 'collect-tattoo' }
+  | { type: 'read-old-layer' }
+  | { type: 'depart' }
+  | { type: 'select-review' }
+  | { type: 'review-tap'; wordId: string };
 
 const WATER = 'myp.word.water';
 
@@ -50,6 +71,26 @@ export function reduce(state: SaveData, action: Action): SaveData {
       return pokeGourd(state);
     case 'use-word':
       return useWord(state, action.wordId);
+    case 'goto-scene':
+      return touch(gotoScene(state, action.scene));
+    case 'sit-driftwood':
+      return touch(sitDriftwood(state));
+    case 'sleep-at-camp':
+      return touch(sleepAtCamp(state));
+    case 'give-fish':
+      return touch(giveSharedFish(state));
+    case 'forest-choice':
+      return touch(forestChoice(state, action.choice));
+    case 'collect-tattoo':
+      return touch(collectTattoo(state));
+    case 'read-old-layer':
+      return touch(readOldLayer(state));
+    case 'depart':
+      return touch(departEast(state));
+    case 'select-review':
+      return selectReview(state);
+    case 'review-tap':
+      return touch(reviewTap(state, action.wordId));
     default:
       return state;
   }
@@ -107,9 +148,9 @@ function openMural(state: SaveData): SaveData {
       {
         ...state,
         screen: 'mural',
-        currentScene: 'myp.scene.mural',
         overlay: 'none',
         activeLayer,
+        muralMode: 'learn',
         selectedCellId: null,
       },
       activeLayer,
@@ -122,7 +163,8 @@ function closeScreen(state: SaveData): SaveData {
     return touch({
       ...state,
       screen: 'island',
-      currentScene: 'myp.scene.shore',
+      currentScene: state.currentScene.startsWith('myp.scene.') ? state.currentScene : 'myp.scene.shore',
+      muralMode: 'learn',
       overlay: 'none',
       selectedCellId: null,
     });
@@ -133,16 +175,23 @@ function closeScreen(state: SaveData): SaveData {
 
 function selectLayer(state: SaveData, layer: MuralLayer): SaveData {
   if (!isLayerUnlocked(layer, state.words, LEXEMES)) return state;
-  return touch(
-    revealLayer(
-      {
-        ...state,
-        activeLayer: layer,
-        selectedCellId: null,
-      },
-      layer,
-    ),
+  const revealed = revealLayer(
+    {
+      ...state,
+      activeLayer: layer,
+      muralMode: 'learn',
+      selectedCellId: null,
+    },
+    layer,
   );
+  if (layer !== 'abstract') return touch(revealed);
+  return touch({ ...revealed, beats: { ...revealed.beats, 'myp.beat.abstract-open': true } });
+}
+
+function selectReview(state: SaveData): SaveData {
+  const anyLearned = Object.values(state.words).some((word) => isLearnedState(word.state));
+  if (!anyLearned) return state;
+  return touch({ ...state, muralMode: 'review', selectedCellId: null });
 }
 
 function selectCell(state: SaveData, wordId: string): SaveData {

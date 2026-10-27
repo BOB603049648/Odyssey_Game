@@ -59,8 +59,8 @@ describe('island 1 catalog', () => {
     expect(COMPANION.name).toBe('奈奈茶');
     expect(COMPANION.speaks).toBe(false);
     expect(COMPANION.teachesLanguage).toBe(false);
-    expect(EVIDENCE.map((item) => item.id)).toContain('myp.ev.a');
-    expect(ENDINGS).toHaveLength(3);
+    expect(EVIDENCE.map((item) => item.id)).toEqual(['myp.ev.a', 'myp.ev.b', 'myp.ev.main']);
+    expect(ENDINGS.map((item) => item.id)).toEqual(['false-home', 'new-interpreter', 'restart-echo']);
     expect(zh['evidence.myp.ev.a']).toBe('签署手势');
     const prologue = Object.entries(zh)
       .filter(([key]) => key.startsWith('prologue.'))

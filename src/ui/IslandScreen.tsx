@@ -1,5 +1,6 @@
 import { EVIDENCE, LEXEMES } from '../content/catalog';
 import { hintPresentation } from '../core/hints';
+import { ISLAND_SCENES, type IslandScene } from '../core/island';
 import type { Action } from '../core/reduce';
 import type { SaveData } from '../core/schema';
 import { isLearnedState } from '../core/words';
@@ -7,8 +8,28 @@ import { Companion } from './Companion';
 import { GlossSwitch } from './GlossSwitch';
 import { Glyph } from './glyphs';
 import { t, type MessageKey } from './i18n';
-import { ShoreArt } from './scenes';
+import { CampArt, FisheryArt, ForestArt, MemoryRain, NightArt, RockArt, ShoreArt } from './scenes';
 import { useFeedbackFx } from './useFeedbackFx';
+
+const SCENE_TITLE: Record<IslandScene, MessageKey> = {
+  'myp.scene.shore': 'scene.shore',
+  'myp.scene.camp': 'scene.camp',
+  'myp.scene.fishery': 'scene.fishery',
+  'myp.scene.rock': 'scene.rock',
+  'myp.scene.forest': 'scene.forest',
+  'myp.scene.night': 'scene.night',
+};
+
+const NAV_LABEL: Record<IslandScene, MessageKey> = {
+  'myp.scene.shore': 'nav.shore',
+  'myp.scene.camp': 'nav.camp',
+  'myp.scene.fishery': 'nav.fishery',
+  'myp.scene.rock': 'nav.rock',
+  'myp.scene.forest': 'nav.forest',
+  'myp.scene.night': 'nav.night',
+};
+
+const BETRAY = 'myp.word.betray';
 
 export function IslandScreen({
   save,
@@ -22,13 +43,14 @@ export function IslandScreen({
   const hint = hintPresentation(save);
   const { shake, purr } = useFeedbackFx(save.feedback);
   const learned = LEXEMES.filter((lexeme) => isLearnedState(save.words[lexeme.id]?.state));
+  const scene = isIslandSceneId(save.currentScene) ? save.currentScene : 'myp.scene.shore';
   const drank = save.beats['myp.beat.water'] === true;
 
   return (
     <section className={shake ? 'island shake' : 'island'}>
       <header className="bar">
         <div>
-          <p className="eyebrow">{t('scene.shore')}</p>
+          <p className="eyebrow">{t(SCENE_TITLE[scene])}</p>
           <p className="count" aria-label={`${learned.length}`}>
             {learned.length}/28
           </p>
@@ -48,27 +70,37 @@ export function IslandScreen({
           </button>
         </div>
       </header>
-      <div className="shore-wrap" data-testid="shore" data-water-beat={drank ? 'done' : 'open'}>
-        <ShoreArt drank={drank} />
-        <button
-          type="button"
-          className={`hotspot mural ${hintMark(hint, 'mural-entrance')}`}
-          data-testid="island-mural"
-          onClick={() => dispatch({ type: 'open-mural' })}
-        >
-          {t('island.mural')}
-        </button>
-        <button
-          type="button"
-          className={`hotspot gourd ${hintMark(hint, 'gourd')}`}
-          data-testid="island-gourd"
-          aria-label={t('island.gourd')}
-          onClick={() => dispatch({ type: 'poke-gourd' })}
-        >
-          <svg className="glyph pouch" viewBox="0 0 64 64" aria-hidden="true">
-            <path d="M24 18h16c2 8 10 10 10 18 0 12-8 16-18 16S14 48 14 36c0-8 8-10 10-18z" />
-          </svg>
-        </button>
+      <nav className="scene-nav" aria-label={t('scene.shore')}>
+        {ISLAND_SCENES.map((id) => (
+          <button
+            key={id}
+            type="button"
+            className={scene === id ? 'btn on' : 'btn'}
+            aria-current={scene === id ? 'page' : undefined}
+            data-testid={`nav-${id.split('.').at(-1)}`}
+            onClick={() => dispatch({ type: 'goto-scene', scene: id })}
+          >
+            {t(NAV_LABEL[id])}
+          </button>
+        ))}
+      </nav>
+      <div
+        className="shore-wrap"
+        data-testid={scene === 'myp.scene.shore' ? 'shore' : 'scene'}
+        data-scene={scene}
+        data-water-beat={drank ? 'done' : 'open'}
+        data-sleep-beat={save.beats['myp.beat.sleep'] ? 'done' : 'open'}
+        data-food-beat={save.beats['myp.beat.food'] ? 'done' : 'open'}
+        data-danger-beat={save.beats['myp.beat.danger'] ? 'done' : 'open'}
+        data-old-layer={save.beats['myp.beat.old-layer'] ? 'done' : 'open'}
+        data-depart={save.beats['myp.beat.depart'] ? 'done' : 'open'}
+      >
+        <SceneArt scene={scene} drank={drank} />
+        <SceneHotspots save={save} scene={scene} dispatch={dispatch} hint={hint} />
+        {save.chart.includes('chart.nmn') ? (
+          <span className="chart-corner" data-testid="chart-corner" aria-label={t('chart.mark')} />
+        ) : null}
+        {save.memories.includes('myp.mem.rain-night') ? <MemoryRain /> : null}
         <Companion
           level={hint.level}
           anchor={hint.anchor}
@@ -76,40 +108,153 @@ export function IslandScreen({
           onAsk={() => dispatch({ type: 'request-hint' })}
         />
       </div>
-      {save.overlay !== 'none' ? (
-        <div className="sheet" role="dialog" aria-label={sheetLabel(save.overlay)}>
-          <button type="button" className="btn" onClick={() => dispatch({ type: 'close-overlay' })}>
-            {t('menu.close')}
+      <OverlaySheet save={save} dispatch={dispatch} learned={learned} hint={hint} />
+    </section>
+  );
+}
+
+function SceneArt({ scene, drank }: { scene: IslandScene; drank: boolean }) {
+  if (scene === 'myp.scene.camp') return <CampArt />;
+  if (scene === 'myp.scene.fishery') return <FisheryArt />;
+  if (scene === 'myp.scene.rock') return <RockArt />;
+  if (scene === 'myp.scene.forest') return <ForestArt />;
+  if (scene === 'myp.scene.night') return <NightArt />;
+  return <ShoreArt drank={drank} />;
+}
+
+function SceneHotspots({
+  save,
+  scene,
+  dispatch,
+  hint,
+}: {
+  save: SaveData;
+  scene: IslandScene;
+  dispatch: (action: Action) => void;
+  hint: { level: number; anchor: string; wordId: string | null };
+}) {
+  if (scene === 'myp.scene.camp') {
+    return (
+      <button type="button" className="hotspot sleep" data-testid="camp-sleep" onClick={() => dispatch({ type: 'sleep-at-camp' })}>
+        {t('camp.sleep')}
+      </button>
+    );
+  }
+  if (scene === 'myp.scene.fishery') {
+    return (
+      <button type="button" className="hotspot give" data-testid="fishery-give" onClick={() => dispatch({ type: 'give-fish' })}>
+        {t('fishery.give')}
+      </button>
+    );
+  }
+  if (scene === 'myp.scene.rock') {
+    return (
+      <>
+        <button type="button" className="hotspot mural" data-testid="rock-mural" onClick={() => dispatch({ type: 'open-mural' })}>
+          {t('island.mural')}
+        </button>
+        {isLearnedState(save.words[BETRAY]?.state) ? (
+          <button type="button" className="hotspot tattoo" data-testid="rock-tattoo" onClick={() => dispatch({ type: 'collect-tattoo' })}>
+            {t('mural.tattoo')}
           </button>
-          {save.overlay === 'settings' ? (
-            <GlossSwitch
-              checked={save.settings.showGloss}
-              onChange={(value) => dispatch({ type: 'set-show-gloss', value })}
-            />
-          ) : null}
-          {save.overlay === 'lexicon' ? <Lexicon save={save} words={learned} /> : null}
-          {save.overlay === 'casefile' ? <CaseFile save={save} /> : null}
-          {save.overlay === 'use-word' ? (
-            <div data-testid="use-word">
-              <div className="choices">
-                {learned.map((lexeme) => (
-                  <button
-                    key={lexeme.id}
-                    type="button"
-                    className={`choice ${hintMark(hint, 'use-word', lexeme.id)}`}
-                    data-testid={`use-${lexeme.id}`}
-                    onClick={() => dispatch({ type: 'use-word', wordId: lexeme.id })}
-                  >
-                    <Glyph id={lexeme.id} />
-                    {save.settings.showGloss ? <span className="gloss">{lexeme.gloss}</span> : null}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : null}
+        ) : null}
+      </>
+    );
+  }
+  if (scene === 'myp.scene.forest') {
+    return (
+      <>
+        <button type="button" className="hotspot stop" data-testid="forest-stop" onClick={() => dispatch({ type: 'forest-choice', choice: 'stop' })}>
+          {t('forest.stop')}
+        </button>
+        <button type="button" className="hotspot step" data-testid="forest-step" onClick={() => dispatch({ type: 'forest-choice', choice: 'step' })}>
+          {t('forest.step')}
+        </button>
+      </>
+    );
+  }
+  if (scene === 'myp.scene.night') {
+    return (
+      <button type="button" className="hotspot read" data-testid="night-read" onClick={() => dispatch({ type: 'read-old-layer' })}>
+        {t('night.read')}
+      </button>
+    );
+  }
+  return (
+    <>
+      <button
+        type="button"
+        className={`hotspot mural ${hintMark(hint, 'mural-entrance')}`}
+        data-testid="island-mural"
+        onClick={() => dispatch({ type: 'open-mural' })}
+      >
+        {t('island.mural')}
+      </button>
+      <button
+        type="button"
+        className={`hotspot gourd ${hintMark(hint, 'gourd')}`}
+        data-testid="island-gourd"
+        aria-label={t('island.gourd')}
+        onClick={() => dispatch({ type: 'poke-gourd' })}
+      >
+        <svg className="glyph pouch" viewBox="0 0 64 64" aria-hidden="true">
+          <path d="M24 18h16c2 8 10 10 10 18 0 12-8 16-18 16S14 48 14 36c0-8 8-10 10-18z" />
+        </svg>
+      </button>
+      <button type="button" className="hotspot drift" data-testid="shore-driftwood" onClick={() => dispatch({ type: 'sit-driftwood' })}>
+        {t('shore.driftwood')}
+      </button>
+      <button type="button" className="hotspot depart" data-testid="shore-depart" onClick={() => dispatch({ type: 'depart' })}>
+        {t('shore.depart')}
+      </button>
+    </>
+  );
+}
+
+export function OverlaySheet({
+  save,
+  dispatch,
+  learned,
+  hint,
+}: {
+  save: SaveData;
+  dispatch: (action: Action) => void;
+  learned: typeof LEXEMES;
+  hint: { level: number; anchor: string; wordId: string | null };
+}) {
+  if (save.overlay === 'none') return null;
+  return (
+    <div className="sheet" role="dialog" aria-label={sheetLabel(save.overlay)}>
+      <button type="button" className="btn" onClick={() => dispatch({ type: 'close-overlay' })}>
+        {t('menu.close')}
+      </button>
+      {save.overlay === 'settings' ? (
+        <GlossSwitch
+          checked={save.settings.showGloss}
+          onChange={(value) => dispatch({ type: 'set-show-gloss', value })}
+        />
+      ) : null}
+      {save.overlay === 'lexicon' ? <Lexicon save={save} words={learned} /> : null}
+      {save.overlay === 'casefile' ? <CaseFile save={save} /> : null}
+      {save.overlay === 'use-word' ? (
+        <div data-testid="use-word">
+          <div className="choices">
+            {learned.map((lexeme) => (
+              <button
+                key={lexeme.id}
+                type="button"
+                className={`choice ${hintMark(hint, 'use-word', lexeme.id)}`}
+                data-testid={`use-${lexeme.id}`}
+                onClick={() => dispatch({ type: 'use-word', wordId: lexeme.id })}
+              >
+                <Glyph id={lexeme.id} />
+                {save.settings.showGloss ? <span className="gloss">{lexeme.gloss}</span> : null}
+              </button>
+            ))}
+          </div>
         </div>
       ) : null}
-    </section>
+    </div>
   );
 }
 
@@ -135,15 +280,17 @@ function Lexicon({
 }
 
 function CaseFile({ save }: { save: SaveData }) {
-  if (save.evidence.length === 0) return <p>{t('casefile.empty')}</p>;
+  const slots = EVIDENCE.filter((item) => item.island === 'myp');
+  const held = slots.filter((item) => save.evidence.includes(item.id));
+  if (held.length === 0) return <p>{t('casefile.empty')}</p>;
   return (
     <div className="casefile">
-      {save.evidence.map((id) => {
-        const item = EVIDENCE.find((entry) => entry.id === id);
-        const label = item ? t(item.labelKey as MessageKey) : id;
+      {slots.map((item) => {
+        const has = save.evidence.includes(item.id);
+        const label = has ? t(item.labelKey as MessageKey) : t('casefile.emptySlot');
         return (
-          <figure key={id}>
-            <BreakMark />
+          <figure key={item.id} data-testid={`case-${item.id}`} data-held={has ? 'yes' : 'no'}>
+            {has ? <BreakMark /> : <EmptyMark />}
             <figcaption>{label}</figcaption>
           </figure>
         );
@@ -161,11 +308,23 @@ function BreakMark() {
   );
 }
 
+function EmptyMark() {
+  return (
+    <svg className="glyph break" viewBox="0 0 64 64" aria-hidden="true">
+      <rect x="16" y="16" width="32" height="32" />
+    </svg>
+  );
+}
+
 function sheetLabel(overlay: SaveData['overlay']): string {
   if (overlay === 'lexicon') return t('menu.lexicon');
   if (overlay === 'settings') return t('settings.heading');
   if (overlay === 'casefile') return t('menu.casefile');
   return t('use.choose');
+}
+
+function isIslandSceneId(scene: string): scene is IslandScene {
+  return (ISLAND_SCENES as readonly string[]).includes(scene);
 }
 
 export function hintMark(

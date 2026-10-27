@@ -52,6 +52,36 @@ describe('playable slice', () => {
     expect(screen.getByTestId('prologue').getAttribute('data-prologue-step')).toBe('1');
   });
 
+  it('opens the camp, the case slots, and the review band', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: '新游戏' }));
+    fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
+    fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
+    fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
+    fireEvent.click(screen.getByRole('button', { name: '走上潮线' }));
+
+    fireEvent.click(screen.getByRole('button', { name: '案卷' }));
+    expect(screen.getByText('签署手势')).toBeTruthy();
+    expect(screen.getByTestId('case-myp.ev.b').getAttribute('data-held')).toBe('no');
+    expect(screen.getByTestId('case-myp.ev.main').getAttribute('data-held')).toBe('no');
+    expect(screen.queryByText('奈奈茶')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: '合上' }));
+
+    fireEvent.click(screen.getByRole('button', { name: '棚火' }));
+    expect(screen.getByTestId('camp-sleep')).toBeTruthy();
+    expect(screen.queryByTestId('island-gourd')).toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: '潮线' }));
+    fireEvent.click(screen.getByTestId('island-mural'));
+    expect(screen.getByTestId('mural-review').hasAttribute('disabled')).toBe(true);
+    fireEvent.click(screen.getByTestId('cell-myp.word.water'));
+    fireEvent.click(screen.getByTestId('object-myp.word.water'));
+    expect(screen.getByTestId('mural-review').hasAttribute('disabled')).toBe(false);
+    fireEvent.click(screen.getByTestId('mural-review'));
+    expect(screen.getByTestId('review-myp.word.water')).toBeTruthy();
+    expect(screen.queryByText('水')).toBeNull();
+  });
+
   it('shows the Chinese gloss only after the player turns it on', () => {
     let save = reduce(newGameState(), { type: 'new-game' });
     for (let step = 0; step < 4; step += 1) save = reduce(save, { type: 'advance-prologue' });

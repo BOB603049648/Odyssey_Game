@@ -5,5 +5,19 @@
     "kind": "side",
     "labelKey": "evidence.myp.ev.a",
     "skippable": false
+  },
+  {
+    "id": "myp.ev.b",
+    "island": "myp",
+    "kind": "side",
+    "labelKey": "evidence.myp.ev.b",
+    "skippable": true
+  },
+  {
+    "id": "myp.ev.main",
+    "island": "myp",
+    "kind": "main",
+    "labelKey": "evidence.myp.ev.main",
+    "skippable": true
   }
 ]

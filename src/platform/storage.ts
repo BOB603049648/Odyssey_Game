@@ -1,4 +1,5 @@
-import { saveDataSchema, type SaveData } from '../core/schema';
+import { parseSave } from '../core/migrate';
+import type { SaveData } from '../core/schema';
 
 export const SAVE_KEY = 'odyssey.save.v1';
 
@@ -34,8 +35,7 @@ export function createWebStorage(storage: KeyValue): StorageAdapter {
       const raw = storage.getItem(SAVE_KEY);
       if (!raw) return null;
       try {
-        const parsed = saveDataSchema.safeParse(JSON.parse(raw));
-        return parsed.success ? parsed.data : null;
+        return parseSave(JSON.parse(raw));
       } catch {
         return null;
       }

@@ -18,15 +18,15 @@ export function initialWords(): Record<string, WordProgress> {
 
 export function newGameState(now = new Date().toISOString()): SaveData {
   return saveDataSchema.parse({
-    version: 1,
+    version: 2,
     createdAt: now,
     updatedAt: now,
-    ngCount: 0,
     currentScene: 'pro.scene.title',
     screen: 'title',
     prologueStep: 0,
     overlay: 'none',
     activeLayer: 'concrete',
+    muralMode: 'learn',
     selectedCellId: null,
     beats: {},
     flags: {},

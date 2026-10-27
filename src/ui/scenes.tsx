@@ -56,6 +56,70 @@ export function PrologueArt({ step }: { step: number }) {
   );
 }
 
+export function CampArt() {
+  return (
+    <svg className="shore-art" viewBox="0 0 960 520" aria-hidden="true">
+      <path className="canopy" d="M0 160c80-40 140-20 200 10 40-50 120-40 160 0 50-30 140-10 180 20v180H0z" />
+      <path className="shelter" d="M180 250l160-70 170 74v120H180z" />
+      <path className="flame" d="M430 300c16-28 12-40 26-56 4 20 16 22 16 8 14 20 8 46-16 56-20 8-36 0-26-8z" />
+      <path d="M250 390h460M300 390v40M660 390v40" />
+    </svg>
+  );
+}
+
+export function FisheryArt() {
+  return (
+    <svg className="shore-art" viewBox="0 0 960 520" aria-hidden="true">
+      <path className="water" d="M0 280c90 30 140-30 230 0s160 36 240-10 170-24 260 14 140 20 230-18v254H0z" />
+      <path d="M220 250c40-16 70 8 90 28M300 236c30 20 20 48-8 58" />
+      <path d="M620 240c28-20 70-8 86 18M680 220c20 24 6 50-18 54" />
+      <path d="M430 210l40 70M470 210l-10 74" />
+    </svg>
+  );
+}
+
+export function RockArt() {
+  return (
+    <svg className="shore-art" viewBox="0 0 960 520" aria-hidden="true">
+      <path className="rock" d="M80 120h800v300H80z" />
+      <path d="M140 180h120v80H140zM300 180h120v80H300zM460 180h120v80H460z" />
+      <path d="M160 320h200M180 360h160M620 300c20 20 40 20 60 0" />
+    </svg>
+  );
+}
+
+export function ForestArt() {
+  return (
+    <svg className="shore-art" viewBox="0 0 960 520" aria-hidden="true">
+      <path className="canopy" d="M40 360 180 120l140 240zM280 380 460 80l180 300zM560 360 740 140l160 220z" />
+      <path d="M700 250c30 10 40 40 10 60M760 230c20 16 16 40-6 48" />
+    </svg>
+  );
+}
+
+export function NightArt() {
+  return (
+    <svg className="shore-art" viewBox="0 0 960 520" aria-hidden="true">
+      <path className="canopy" d="M0 200h960v220H0z" />
+      <circle cx="760" cy="90" r="28" />
+      <path className="rock" d="M160 250h420v150H160z" />
+      <path d="M200 290h80M200 330h140M420 300h100" />
+      <path className="flame" d="M700 340c12-20 10-32 20-42 2 14 12 16 12 6 10 14 6 32-8 38-12 6-26 2-24-2z" />
+    </svg>
+  );
+}
+
+export function MemoryRain() {
+  return (
+    <svg className="memory-rain" viewBox="0 0 220 120" data-testid="memory-rain" aria-hidden="true">
+      <path d="M10 28h200M10 28v18M210 28v18" />
+      <path d="M40 70c16-20 36-18 44 0 10-16 30-14 36 4 8 16-8 28-24 26-16 8-40 6-56-30z" />
+      <path d="M70 62l6-14 8 12M108 58l4-12 10 14" />
+      <path d="M24 20c8 16 6 8 14 20M80 8c6 14 4 8 12 18M150 16c8 12 4 10 12 16" />
+    </svg>
+  );
+}
+
 export function ShoreArt({ drank }: { drank: boolean }) {
   return (
     <svg className="shore-art" viewBox="0 0 960 520" aria-hidden="true">

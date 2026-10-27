@@ -13,7 +13,7 @@ export const layerSchema = z.enum([
   'finale',
 ]);
 export const muralLayerSchema = z.enum(['concrete', 'action', 'relation', 'abstract']);
-export const wordStateSchema = z.enum(['unseen', 'seen', 'guessed', 'learned', 'mastered', 'ghost']);
+export const wordStateSchema = z.enum(['unseen', 'seen', 'guessed', 'learned', 'mastered']);
 export const hintLevelSchema = z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]);
 
 export const lexemeSchema = z.object({
@@ -58,7 +58,7 @@ export const companionSchema = z.object({
 });
 
 export const endingSchema = z.object({
-  id: z.enum(['false-home', 'new-interpreter', 'forget-again']),
+  id: z.enum(['false-home', 'new-interpreter', 'restart-echo']),
   labelKey: z.string(),
   status: z.literal('stub'),
 });
@@ -66,7 +66,7 @@ export const endingSchema = z.object({
 export const evidenceSchema = z.object({
   id: z.string(),
   island: islandIdSchema,
-  kind: z.enum(['main', 'side', 'ng']),
+  kind: z.enum(['main', 'side']),
   labelKey: z.string(),
   skippable: z.boolean(),
 });
@@ -91,15 +91,15 @@ export const companionStateSchema = z.object({
 });
 
 export const saveDataSchema = z.object({
-  version: z.literal(1),
+  version: z.literal(2),
   createdAt: z.string(),
   updatedAt: z.string(),
-  ngCount: z.number().int().nonnegative(),
   currentScene: z.string(),
   screen: z.enum(['title', 'prologue', 'island', 'mural']),
   prologueStep: z.number().int().nonnegative(),
   overlay: z.enum(['none', 'lexicon', 'settings', 'casefile', 'use-word']),
   activeLayer: muralLayerSchema,
+  muralMode: z.enum(['learn', 'review']),
   selectedCellId: z.string().nullable(),
   beats: z.record(z.string(), z.boolean()),
   flags: z.record(z.string(), z.union([z.boolean(), z.number(), z.string()])),

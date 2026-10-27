@@ -5,7 +5,7 @@ const BOXES = [1, 2, 3, 4] as const;
 export type WordEvent = 'reveal' | 'miss' | 'learn';
 
 export function isLearnedState(state: WordState | undefined): boolean {
-  return state === 'learned' || state === 'mastered' || state === 'ghost';
+  return state === 'learned' || state === 'mastered';
 }
 
 export function transitionWord(word: WordProgress, event: WordEvent): WordProgress {
@@ -19,12 +19,12 @@ export function transitionWord(word: WordProgress, event: WordEvent): WordProgre
       wrong: word.wrong + 1,
       box: lowerBox(word.box),
     };
-    if (word.state === 'learned' || word.state === 'mastered' || word.state === 'ghost') return next;
+    if (word.state === 'learned' || word.state === 'mastered') return next;
     return { ...next, state: 'guessed' };
   }
   return {
     ...word,
-    state: word.state === 'mastered' || word.state === 'ghost' ? word.state : 'learned',
+    state: word.state === 'mastered' ? word.state : 'learned',
     correct: word.correct + 1,
     box: raiseBox(word.box),
   };
