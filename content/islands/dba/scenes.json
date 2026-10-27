@@ -1,0 +1,616 @@
+[
+  {
+    "id": "dba.scene.shore",
+    "grade": "mist-dawn",
+    "legacyPlate": "shore.jpg",
+    "slots": [
+      {
+        "id": "art.shore.sky",
+        "slot": "sky",
+        "kind": "mist-sky",
+        "asset": "art.shore.sky",
+        "parallax": 0.22
+      },
+      {
+        "id": "art.shore.far",
+        "slot": "far",
+        "kind": "empty",
+        "asset": null,
+        "parallax": 0.4
+      },
+      {
+        "id": "art.shore.ground",
+        "slot": "ground",
+        "kind": "wet-sand",
+        "asset": "art.shore.ground",
+        "parallax": 1
+      },
+      {
+        "id": "art.shore.building",
+        "slot": "building",
+        "kind": "gate-post",
+        "asset": "art.shore.building",
+        "parallax": 0.72,
+        "x": 0.5,
+        "y": 0.26,
+        "w": 0.72,
+        "h": 0.4
+      },
+      {
+        "id": "art.shore.prop.driftwood",
+        "slot": "props",
+        "kind": "driftwood",
+        "asset": "art.shore.prop.driftwood",
+        "parallax": 1,
+        "spot": "shore-driftwood",
+        "x": 0.33,
+        "y": 0.71,
+        "w": 0.24,
+        "h": 0.14
+      },
+      {
+        "id": "art.shore.prop.gourd",
+        "slot": "props",
+        "kind": "gourd",
+        "asset": "art.shore.prop.gourd",
+        "parallax": 1,
+        "spot": "island-gourd",
+        "x": 0.58,
+        "y": 0.64,
+        "w": 0.11,
+        "h": 0.13
+      },
+      {
+        "id": "art.shore.prop.break-shard",
+        "slot": "props",
+        "kind": "break-shard",
+        "asset": "art.shore.prop.break-shard",
+        "parallax": 1,
+        "spot": "shore-stone",
+        "x": 0.17,
+        "y": 0.68,
+        "w": 0.1,
+        "h": 0.08
+      },
+      {
+        "id": "art.shore.prop.mural-wall",
+        "slot": "props",
+        "kind": "mural-wall",
+        "asset": "art.shore.prop.mural-wall",
+        "parallax": 1,
+        "spot": "island-mural",
+        "x": 0.2,
+        "y": 0.56,
+        "w": 0.2,
+        "h": 0.14
+      },
+      {
+        "id": "art.shore.prop.east-gap",
+        "slot": "props",
+        "kind": "light-slit",
+        "asset": "art.shore.prop.east-gap",
+        "parallax": 1,
+        "spot": "shore-depart",
+        "x": 0.74,
+        "y": 0.54,
+        "w": 0.34,
+        "h": 0.36
+      },
+      {
+        "id": "art.shore.fg",
+        "slot": "fg",
+        "kind": "fog-corners",
+        "asset": "art.shore.fg",
+        "parallax": 1.18
+      }
+    ]
+  },
+  {
+    "id": "dba.scene.camp",
+    "grade": "hearth",
+    "legacyPlate": "camp.jpg",
+    "slots": [
+      {
+        "id": "art.camp.sky",
+        "slot": "sky",
+        "kind": "mist-sky",
+        "asset": null,
+        "parallax": 0.22
+      },
+      {
+        "id": "art.camp.far",
+        "slot": "far",
+        "kind": "far-ridge",
+        "asset": "art.camp.far",
+        "parallax": 0.4
+      },
+      {
+        "id": "art.camp.ground",
+        "slot": "ground",
+        "kind": "packed-earth",
+        "asset": "art.camp.ground",
+        "parallax": 1
+      },
+      {
+        "id": "art.camp.building",
+        "slot": "building",
+        "kind": "shed",
+        "asset": "art.camp.building",
+        "parallax": 0.72
+      },
+      {
+        "id": "art.camp.prop.fire",
+        "slot": "props",
+        "kind": "fire",
+        "asset": "art.camp.prop.fire",
+        "parallax": 1,
+        "spot": "camp-sleep",
+        "x": 0.52,
+        "y": 0.57,
+        "w": 0.24,
+        "h": 0.24
+      },
+      {
+        "id": "art.camp.prop.sleep-mat",
+        "slot": "props",
+        "kind": "sleep-mat",
+        "asset": "art.camp.prop.sleep-mat",
+        "parallax": 1,
+        "spot": "camp-sleep",
+        "x": 0.4,
+        "y": 0.6,
+        "w": 0.34,
+        "h": 0.22
+      },
+      {
+        "id": "art.camp.prop.paper-bundles",
+        "slot": "props",
+        "kind": "paper-bundles",
+        "asset": "art.camp.prop.paper-bundles",
+        "parallax": 1,
+        "x": 0.22,
+        "y": 0.58,
+        "w": 0.22,
+        "h": 0.16
+      },
+      {
+        "id": "art.camp.prop.north-curtain",
+        "slot": "props",
+        "kind": "north-curtain",
+        "asset": "art.camp.prop.north-curtain",
+        "parallax": 1,
+        "x": 0.5,
+        "y": 0.42,
+        "w": 0.3,
+        "h": 0.4
+      },
+      {
+        "id": "art.camp.prop.act-home",
+        "slot": "props",
+        "kind": "act-home",
+        "asset": "art.camp.prop.act-home",
+        "parallax": 1,
+        "spot": "act:dba.word.home",
+        "x": 0.3,
+        "y": 0.71,
+        "w": 0.13,
+        "h": 0.16
+      },
+      {
+        "id": "art.camp.prop.act-eat",
+        "slot": "props",
+        "kind": "act-eat",
+        "asset": "art.camp.prop.act-eat",
+        "parallax": 1,
+        "spot": "act:dba.word.eat",
+        "x": 0.39,
+        "y": 0.71,
+        "w": 0.13,
+        "h": 0.14
+      },
+      {
+        "id": "art.camp.prop.act-drink",
+        "slot": "props",
+        "kind": "act-drink",
+        "asset": "art.camp.prop.act-drink",
+        "parallax": 1,
+        "spot": "act:dba.word.drink",
+        "x": 0.48,
+        "y": 0.71,
+        "w": 0.12,
+        "h": 0.16
+      },
+      {
+        "id": "art.camp.prop.act-walk",
+        "slot": "props",
+        "kind": "act-walk",
+        "asset": "art.camp.prop.act-walk",
+        "parallax": 1,
+        "spot": "act:dba.word.walk",
+        "x": 0.57,
+        "y": 0.71,
+        "w": 0.14,
+        "h": 0.12
+      },
+      {
+        "id": "art.camp.prop.act-take",
+        "slot": "props",
+        "kind": "act-take",
+        "asset": "art.camp.prop.act-take",
+        "parallax": 1,
+        "spot": "act:dba.word.take",
+        "x": 0.66,
+        "y": 0.71,
+        "w": 0.13,
+        "h": 0.14
+      },
+      {
+        "id": "art.camp.prop.act-me",
+        "slot": "props",
+        "kind": "act-me",
+        "asset": "art.camp.prop.act-me",
+        "parallax": 1,
+        "spot": "act:dba.word.me",
+        "x": 0.75,
+        "y": 0.71,
+        "w": 0.12,
+        "h": 0.16
+      },
+      {
+        "id": "art.camp.prop.act-you",
+        "slot": "props",
+        "kind": "act-you",
+        "asset": "art.camp.prop.act-you",
+        "parallax": 1,
+        "spot": "act:dba.word.you",
+        "x": 0.84,
+        "y": 0.71,
+        "w": 0.12,
+        "h": 0.16
+      },
+      {
+        "id": "art.camp.fg",
+        "slot": "fg",
+        "kind": "posts",
+        "asset": "art.camp.fg",
+        "parallax": 1.18
+      }
+    ]
+  },
+  {
+    "id": "dba.scene.yard",
+    "grade": "stone-day",
+    "legacyPlate": "fishery.jpg",
+    "slots": [
+      {
+        "id": "art.yard.sky",
+        "slot": "sky",
+        "kind": "mist-sky",
+        "asset": null,
+        "parallax": 0.22
+      },
+      {
+        "id": "art.yard.far",
+        "slot": "far",
+        "kind": "far-hall",
+        "asset": "art.yard.far",
+        "parallax": 0.4
+      },
+      {
+        "id": "art.yard.ground",
+        "slot": "ground",
+        "kind": "stone-court",
+        "asset": "art.yard.ground",
+        "parallax": 1
+      },
+      {
+        "id": "art.yard.building",
+        "slot": "building",
+        "kind": "hall-face",
+        "asset": "art.yard.building",
+        "parallax": 0.72
+      },
+      {
+        "id": "art.yard.prop.grain-bags",
+        "slot": "props",
+        "kind": "grain-bags",
+        "asset": "art.yard.prop.grain-bags",
+        "parallax": 1,
+        "spot": "yard-give",
+        "x": 0.7,
+        "y": 0.64,
+        "w": 0.3,
+        "h": 0.24
+      },
+      {
+        "id": "art.yard.prop.grain-bags.grab",
+        "slot": "props",
+        "kind": "grain-bags",
+        "asset": "art.yard.prop.grain-bags",
+        "parallax": 1,
+        "spot": "yard-grab",
+        "x": 0.3,
+        "y": 0.66,
+        "w": 0.26,
+        "h": 0.2
+      },
+      {
+        "id": "art.yard.prop.dried-fish",
+        "slot": "props",
+        "kind": "dried-fish",
+        "asset": "art.yard.prop.dried-fish",
+        "parallax": 1,
+        "spot": "act:dba.word.size:a",
+        "x": 0.22,
+        "y": 0.54,
+        "w": 0.22,
+        "h": 0.28
+      },
+      {
+        "id": "art.yard.prop.dried-fish.small",
+        "slot": "props",
+        "kind": "dried-fish",
+        "asset": "art.yard.prop.dried-fish",
+        "parallax": 1,
+        "spot": "act:dba.word.size:b",
+        "x": 0.34,
+        "y": 0.52,
+        "w": 0.16,
+        "h": 0.22
+      },
+      {
+        "id": "art.yard.prop.more-less-boards",
+        "slot": "props",
+        "kind": "more-board",
+        "asset": "art.yard.prop.more-less-boards",
+        "parallax": 1,
+        "spot": "act:dba.word.amount:more",
+        "x": 0.46,
+        "y": 0.56,
+        "w": 0.2,
+        "h": 0.24
+      },
+      {
+        "id": "art.yard.prop.more-less-boards.less",
+        "slot": "props",
+        "kind": "less-board",
+        "asset": "art.yard.prop.more-less-boards",
+        "parallax": 1,
+        "spot": "act:dba.word.amount:less",
+        "x": 0.56,
+        "y": 0.56,
+        "w": 0.16,
+        "h": 0.2
+      },
+      {
+        "id": "art.yard.fg",
+        "slot": "fg",
+        "kind": "rail-corner",
+        "asset": "art.yard.fg",
+        "parallax": 1.18
+      }
+    ]
+  },
+  {
+    "id": "dba.scene.hall",
+    "grade": "mineral",
+    "legacyPlate": "rock.jpg",
+    "slots": [
+      {
+        "id": "art.hall.sky",
+        "slot": "sky",
+        "kind": "interior-dark",
+        "asset": null,
+        "parallax": 0.22
+      },
+      {
+        "id": "art.hall.far",
+        "slot": "far",
+        "kind": "interior-beams",
+        "asset": "art.hall.far",
+        "parallax": 0.4
+      },
+      {
+        "id": "art.hall.ground",
+        "slot": "ground",
+        "kind": "wood-aisle",
+        "asset": "art.hall.ground",
+        "parallax": 1
+      },
+      {
+        "id": "art.hall.building",
+        "slot": "building",
+        "kind": "scroll-beam",
+        "asset": "art.hall.building",
+        "parallax": 0.72
+      },
+      {
+        "id": "art.hall.prop.scroll-wall",
+        "slot": "props",
+        "kind": "scroll-wall",
+        "asset": "art.hall.prop.scroll-wall",
+        "parallax": 1,
+        "spot": "hall-mural",
+        "x": 0.32,
+        "y": 0.56,
+        "w": 0.34,
+        "h": 0.36
+      },
+      {
+        "id": "art.hall.prop.stamp-rail",
+        "slot": "props",
+        "kind": "stamp-rail",
+        "asset": "art.hall.prop.stamp-rail",
+        "parallax": 1,
+        "spot": "hall-stamps",
+        "x": 0.66,
+        "y": 0.56,
+        "w": 0.28,
+        "h": 0.2
+      },
+      {
+        "id": "art.hall.prop.wrist-knot",
+        "slot": "props",
+        "kind": "wrist-knot",
+        "asset": "art.hall.prop.wrist-knot",
+        "parallax": 1,
+        "spot": "hall-tattoo",
+        "x": 0.5,
+        "y": 0.66,
+        "w": 0.22,
+        "h": 0.22
+      },
+      {
+        "id": "art.hall.fg",
+        "slot": "fg",
+        "kind": "pillar",
+        "asset": "art.hall.fg",
+        "parallax": 1.18
+      }
+    ]
+  },
+  {
+    "id": "dba.scene.path",
+    "grade": "fog",
+    "legacyPlate": "forest.jpg",
+    "slots": [
+      {
+        "id": "art.path.sky",
+        "slot": "sky",
+        "kind": "mist-sky",
+        "asset": null,
+        "parallax": 0.22
+      },
+      {
+        "id": "art.path.far",
+        "slot": "far",
+        "kind": "far-fog",
+        "asset": "art.path.far",
+        "parallax": 0.4
+      },
+      {
+        "id": "art.path.ground",
+        "slot": "ground",
+        "kind": "fog-path",
+        "asset": "art.path.ground",
+        "parallax": 1
+      },
+      {
+        "id": "art.path.building",
+        "slot": "building",
+        "kind": "cliff",
+        "asset": "art.path.building",
+        "parallax": 0.72
+      },
+      {
+        "id": "art.path.prop.danger-board",
+        "slot": "props",
+        "kind": "danger-board",
+        "asset": "art.path.prop.danger-board",
+        "parallax": 1,
+        "spot": "path-stop",
+        "x": 0.3,
+        "y": 0.66,
+        "w": 0.22,
+        "h": 0.32
+      },
+      {
+        "id": "art.path.prop.step-stones",
+        "slot": "props",
+        "kind": "step-stones",
+        "asset": "art.path.prop.step-stones",
+        "parallax": 1,
+        "spot": "path-step",
+        "x": 0.66,
+        "y": 0.66,
+        "w": 0.32,
+        "h": 0.24
+      },
+      {
+        "id": "art.path.fg",
+        "slot": "fg",
+        "kind": "branches",
+        "asset": "art.path.fg",
+        "parallax": 1.18
+      }
+    ]
+  },
+  {
+    "id": "dba.scene.night",
+    "grade": "night-fire",
+    "legacyPlate": "night.jpg",
+    "slots": [
+      {
+        "id": "art.night.sky",
+        "slot": "sky",
+        "kind": "night-sky",
+        "asset": null,
+        "parallax": 0.22
+      },
+      {
+        "id": "art.night.far",
+        "slot": "far",
+        "kind": "night-fog",
+        "asset": "art.night.far",
+        "parallax": 0.4
+      },
+      {
+        "id": "art.night.ground",
+        "slot": "ground",
+        "kind": "night-hearth",
+        "asset": "art.night.ground",
+        "parallax": 1
+      },
+      {
+        "id": "art.night.building",
+        "slot": "building",
+        "kind": "shed-night",
+        "asset": "art.night.building",
+        "parallax": 0.72
+      },
+      {
+        "id": "art.night.prop.old-layer",
+        "slot": "props",
+        "kind": "old-layer",
+        "asset": "art.night.prop.old-layer",
+        "parallax": 1,
+        "spot": "night-read",
+        "x": 0.36,
+        "y": 0.58,
+        "w": 0.42,
+        "h": 0.36
+      },
+      {
+        "id": "art.night.prop.embers",
+        "slot": "props",
+        "kind": "embers",
+        "asset": "art.night.prop.embers",
+        "parallax": 1,
+        "spot": "night-ember",
+        "x": 0.58,
+        "y": 0.72,
+        "w": 0.32,
+        "h": 0.24
+      },
+      {
+        "id": "art.night.prop.memory-scrap",
+        "slot": "props",
+        "kind": "memory-scrap",
+        "asset": null,
+        "parallax": 1,
+        "spot": "night-memory",
+        "x": 0.64,
+        "y": 0.64,
+        "w": 0.1,
+        "h": 0.1
+      },
+      {
+        "id": "art.night.fg",
+        "slot": "fg",
+        "kind": "curtain",
+        "asset": "art.night.fg",
+        "parallax": 1.18
+      }
+    ]
+  }
+]

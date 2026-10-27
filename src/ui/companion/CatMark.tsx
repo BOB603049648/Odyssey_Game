@@ -9,7 +9,7 @@ export type NanaichaState = 'idle' | 'look' | 'walk' | 'tap' | 'tilt' | 'carry' 
 export type NanaichaFigure = 'adult' | 'kitten';
 export type KnotMark = 'rest' | 'glow';
 
-const ROPE_KNOT = 'myp.ev.b';
+const ROPE_KNOT = 'dba.ev.b';
 
 export function knotMark(evidence: readonly string[]): KnotMark {
   return evidence.includes(ROPE_KNOT) ? 'glow' : 'rest';

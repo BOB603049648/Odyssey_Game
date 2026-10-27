@@ -9,7 +9,7 @@ describe('hintMark', () => {
     expect(hintMark({ ...base, level: 1 }, 'driftwood')).toBe('hint-glance');
     expect(hintMark({ ...base, level: 1 }, 'gourd')).toBe('');
     expect(hintMark({ ...base, level: 2 }, 'driftwood')).toBe('hint-near');
-    expect(hintMark({ level: 3, anchor: 'mural-object', wordId: 'myp.word.water' }, 'mural-object', 'myp.word.water')).toBe('hint-near hint-paw');
-    expect(hintMark({ level: 3, anchor: 'mural-object', wordId: 'myp.word.water' }, 'mural-object', 'myp.word.fire')).toBe('');
+    expect(hintMark({ level: 3, anchor: 'mural-object', wordId: 'dba.word.water' }, 'mural-object', 'dba.word.water')).toBe('hint-near hint-paw');
+    expect(hintMark({ level: 3, anchor: 'mural-object', wordId: 'dba.word.water' }, 'mural-object', 'dba.word.fire')).toBe('');
   });
 });

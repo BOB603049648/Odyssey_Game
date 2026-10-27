@@ -16,12 +16,11 @@ export function Cutscenes({
   dispatch: (action: Action) => void;
 }) {
   const frame = FRAMES[save.cutsceneStep] ?? 'rain';
-  const plate =
-    save.overlay === 'depart' ? 'keyart' : frame === 'kitten' ? 'prologue-1' : frame === 'cloak' ? 'prologue-2' : 'myp.scene.night';
+  const plate = save.overlay === 'depart' ? 'art.depart' : `art.mem.${frame}`;
   const plates = useCrossfade(plate);
   if (save.overlay === 'depart') {
     return (
-      <section className="cutscene" data-testid="depart-plate" data-chart="chart.nmn">
+      <section className="cutscene" data-testid="depart-plate" data-chart="chart.jgw">
         <PlateStack plate={plates.current} previous={plates.previous} />
         <EnterVeil />
         <div className="plate depart-art">
@@ -46,6 +45,9 @@ export function Cutscenes({
       <PlateStack plate={plates.current} previous={plates.previous} />
       <EnterVeil />
       <MemoryFrame frame={frame} />
+      <p className="caption" data-testid="memory-line">
+        {frame === 'kitten' ? t('memory.kitten') : frame === 'cloak' ? t('memory.cloak') : t('memory.rain')}
+      </p>
       <CatMark variant="silhouette" state="idle" figure={frame === 'kitten' ? 'kitten' : 'adult'} />
       <button type="button" className="btn primary" onClick={() => dispatch({ type: 'advance-cutscene' })}>
         {last ? t('menu.close') : t('menu.next')}

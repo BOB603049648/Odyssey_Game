@@ -3,7 +3,7 @@ import type { EndingContent, SaveData } from './schema';
 export type EndingId = EndingContent['id'];
 export type EndingChoice = 'deny' | 'stay' | 'restart';
 
-const MAIN_EVIDENCE = ['myp.ev.main', 'nmn.ev.main', 'amh.ev.main', 'iku.ev.main', 'eus.ev.main'];
+const MAIN_EVIDENCE = ['dba.ev.main', 'nmn.ev.main', 'amh.ev.main', 'iku.ev.main', 'eus.ev.main'];
 
 export function caseIsFull(state: SaveData): boolean {
   return MAIN_EVIDENCE.every((id) => state.evidence.includes(id)) && state.evidence.length >= 12;

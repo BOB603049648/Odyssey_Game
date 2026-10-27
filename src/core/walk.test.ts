@@ -134,26 +134,26 @@ describe('shore and camp layout', () => {
 
   it('reaches the camp edge from any height on the tide line', () => {
     for (const y of [0.52, 0.62, 0.74]) {
-      let pos = { x: SPAWNS['myp.scene.shore'].x, y };
+      let pos = { x: SPAWNS['dba.scene.shore'].x, y };
       let found = false;
       for (let i = 0; i < 24; i += 1) {
-        pos = stepKey(pos, 'd', BANDS['myp.scene.shore']).pos;
-        if (gateAt('myp.scene.shore', pos)?.to === 'myp.scene.camp') found = true;
+        pos = stepKey(pos, 'd', BANDS['dba.scene.shore']).pos;
+        if (gateAt('dba.scene.shore', pos)?.to === 'dba.scene.camp') found = true;
       }
       expect(found).toBe(true);
-      expect(pos.x).toBeLessThanOrEqual(BANDS['myp.scene.shore'].maxX);
+      expect(pos.x).toBeLessThanOrEqual(BANDS['dba.scene.shore'].maxX);
     }
   });
 
   it('reaches the mural only after several steps from the spawn', () => {
-    const mural = SPOTS['myp.scene.shore'].find((spot) => spot.id === 'island-mural');
+    const mural = SPOTS['dba.scene.shore'].find((spot) => spot.id === 'island-mural');
     expect(mural).toBeTruthy();
-    expect(inRadius(SPAWNS['myp.scene.shore'], mural!, mural!.r)).toBe(false);
-    let pos = SPAWNS['myp.scene.shore'];
-    const keys = approachPlan(pos, mural!, BANDS['myp.scene.shore'], mural!.r);
+    expect(inRadius(SPAWNS['dba.scene.shore'], mural!, mural!.r)).toBe(false);
+    let pos = SPAWNS['dba.scene.shore'];
+    const keys = approachPlan(pos, mural!, BANDS['dba.scene.shore'], mural!.r);
     expect(keys.length).toBeGreaterThan(1);
-    for (const key of keys) pos = stepKey(pos, key, BANDS['myp.scene.shore']).pos;
+    for (const key of keys) pos = stepKey(pos, key, BANDS['dba.scene.shore']).pos;
     expect(inRadius(pos, mural!, mural!.r)).toBe(true);
-    expect(gateAt('myp.scene.shore', pos)).toBeNull();
+    expect(gateAt('dba.scene.shore', pos)).toBeNull();
   });
 });

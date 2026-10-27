@@ -32,10 +32,10 @@ describe('mural layer locks', () => {
   });
 
   it('keeps an abstract cell shut until its required words are learned', () => {
-    const hunger = LEXEMES.find((item) => item.id === 'myp.word.hunger');
-    expect(hunger?.requires).toEqual(['myp.word.person', 'myp.word.fish']);
+    const hunger = LEXEMES.find((item) => item.id === 'dba.word.hunger');
+    expect(hunger?.requires).toEqual(['dba.word.person', 'dba.word.fish']);
     const base = newGameState();
     expect(requirementsMet(hunger!, base.words)).toBe(false);
-    expect(requirementsMet(hunger!, learned(base, ['myp.word.person', 'myp.word.fish']))).toBe(true);
+    expect(requirementsMet(hunger!, learned(base, ['dba.word.person', 'dba.word.fish']))).toBe(true);
   });
 });

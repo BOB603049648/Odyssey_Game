@@ -43,6 +43,10 @@ export function debugHotspots(state: SaveData, value: boolean): SaveData {
   return { ...state, flags: { ...state.flags, 'dev.hotspots': value } };
 }
 
+export function debugWalkable(state: SaveData, value: boolean): SaveData {
+  return { ...state, flags: { ...state.flags, 'dev.walkable': value } };
+}
+
 export function debugForceEnding(state: SaveData, id: EndingContent['id']): SaveData {
   return { ...state, flags: { ...state.flags, 'dev.forceEnding': id } };
 }

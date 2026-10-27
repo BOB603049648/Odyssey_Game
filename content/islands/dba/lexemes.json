@@ -1,0 +1,505 @@
+[
+  {
+    "id": "dba.word.sun",
+    "island": "dba",
+    "layer": "concrete",
+    "gloss": "太阳",
+    "conceptId": "concept.sun",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.sun",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "dba.word.moon",
+    "island": "dba",
+    "layer": "concrete",
+    "gloss": "月亮",
+    "conceptId": "concept.moon",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.moon",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "dba.word.water",
+    "island": "dba",
+    "layer": "concrete",
+    "gloss": "水",
+    "conceptId": "concept.water",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.water",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "dba.word.fire",
+    "island": "dba",
+    "layer": "concrete",
+    "gloss": "火",
+    "conceptId": "concept.fire",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.fire",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "dba.word.fish",
+    "island": "dba",
+    "layer": "concrete",
+    "gloss": "鱼",
+    "conceptId": "concept.fish",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.fish",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "dba.word.person",
+    "island": "dba",
+    "layer": "concrete",
+    "gloss": "人",
+    "conceptId": "concept.person",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.person",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "dba.word.eat",
+    "island": "dba",
+    "layer": "action",
+    "gloss": "吃",
+    "conceptId": "concept.eat",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.eat",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "dba.word.drink",
+    "island": "dba",
+    "layer": "action",
+    "gloss": "喝",
+    "conceptId": "concept.drink",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.drink",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "dba.word.sleep",
+    "island": "dba",
+    "layer": "action",
+    "gloss": "睡",
+    "conceptId": "concept.sleep",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.sleep",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "dba.word.walk",
+    "island": "dba",
+    "layer": "action",
+    "gloss": "走",
+    "conceptId": "concept.walk",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.walk",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "dba.word.give",
+    "island": "dba",
+    "layer": "action",
+    "gloss": "给",
+    "conceptId": "concept.give",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.give",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "dba.word.take",
+    "island": "dba",
+    "layer": "action",
+    "gloss": "拿",
+    "conceptId": "concept.take",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.take",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "dba.word.me",
+    "island": "dba",
+    "layer": "relation",
+    "gloss": "我",
+    "conceptId": "concept.me",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.me",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "dba.word.you",
+    "island": "dba",
+    "layer": "relation",
+    "gloss": "你",
+    "conceptId": "concept.you",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.you",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "dba.word.size",
+    "island": "dba",
+    "layer": "relation",
+    "gloss": "大与小",
+    "conceptId": "concept.size",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.size",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "dba.word.amount",
+    "island": "dba",
+    "layer": "relation",
+    "gloss": "多与少",
+    "conceptId": "concept.amount",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.amount",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "dba.word.danger",
+    "island": "dba",
+    "layer": "relation",
+    "gloss": "危险",
+    "conceptId": "concept.danger",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.danger",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "dba.word.hunger",
+    "island": "dba",
+    "layer": "abstract",
+    "gloss": "饥饿",
+    "conceptId": "concept.hunger",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.hunger",
+    "requires": [
+      "dba.word.person",
+      "dba.word.fish"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "dba.word.share",
+    "island": "dba",
+    "layer": "abstract",
+    "gloss": "分享",
+    "conceptId": "concept.share",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.share",
+    "requires": [
+      "dba.word.fish"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "dba.word.wait",
+    "island": "dba",
+    "layer": "abstract",
+    "gloss": "等待",
+    "conceptId": "concept.wait",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.wait",
+    "requires": [
+      "dba.word.sun"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "dba.word.promise",
+    "island": "dba",
+    "layer": "abstract",
+    "gloss": "承诺",
+    "conceptId": "concept.promise",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.promise",
+    "requires": [
+      "dba.word.water"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "dba.word.trust",
+    "island": "dba",
+    "layer": "abstract",
+    "gloss": "信任",
+    "conceptId": "concept.trust",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.trust",
+    "requires": [
+      "dba.word.person"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "dba.word.protect",
+    "island": "dba",
+    "layer": "abstract",
+    "gloss": "保护",
+    "conceptId": "concept.protect",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.protect",
+    "requires": [
+      "dba.word.person",
+      "dba.word.danger"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "dba.word.betray",
+    "island": "dba",
+    "layer": "abstract",
+    "gloss": "背叛",
+    "conceptId": "concept.betray",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.betray",
+    "requires": [
+      "dba.word.give"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "dba.word.lie",
+    "island": "dba",
+    "layer": "abstract",
+    "gloss": "谎言",
+    "conceptId": "concept.lie",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.lie",
+    "requires": [
+      "dba.word.fish",
+      "dba.word.water"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "dba.word.miss",
+    "island": "dba",
+    "layer": "abstract",
+    "gloss": "想念",
+    "conceptId": "concept.miss",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.miss",
+    "requires": [
+      "dba.word.person",
+      "dba.word.water"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "dba.word.forgive",
+    "island": "dba",
+    "layer": "abstract",
+    "gloss": "原谅",
+    "conceptId": "concept.forgive",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.forgive",
+    "requires": [
+      "dba.word.give"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "dba.word.home",
+    "island": "dba",
+    "layer": "abstract",
+    "gloss": "归处",
+    "conceptId": "concept.home",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:dba.word.home",
+    "requires": [
+      "dba.word.fire",
+      "dba.word.sleep"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Dongba pictograph pending; orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  }
+]

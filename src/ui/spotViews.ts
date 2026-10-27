@@ -6,7 +6,7 @@ import { isLearnedState } from '../core/words';
 import { t, type MessageKey } from './i18n';
 import { hintMark } from './hintMark';
 
-const BETRAY = 'myp.word.betray';
+const BETRAY = 'dba.word.betray';
 
 export type SpotView = Spot & {
   className: string;
@@ -33,35 +33,36 @@ const VIEWS: Record<string, ViewSpec> = {
   'shore-driftwood': { className: 'hotspot drift', testId: 'shore-driftwood', label: 'shore.driftwood', hintAnchor: 'driftwood' },
   'shore-depart': { className: 'hotspot depart', testId: 'shore-depart', label: 'shore.depart', hintAnchor: 'depart' },
   'camp-sleep': { className: 'hotspot sleep', testId: 'camp-sleep', label: 'camp.sleep', hintAnchor: 'sleep' },
-  'fishery-give': { className: 'hotspot give', testId: 'fishery-give', label: 'fishery.give', hintAnchor: 'give' },
-  'fishery-grab': { className: 'hotspot grab', testId: 'fishery-grab', label: 'fishery.grab' },
-  'rock-mural': { className: 'hotspot mural', testId: 'rock-mural', label: 'island.mural', hintAnchor: 'mural-entrance' },
-  'rock-stamps': { className: 'hotspot stamps', testId: 'rock-stamps', label: 'rock.stamps' },
-  'rock-tattoo': { className: 'hotspot tattoo', testId: 'rock-tattoo', label: 'mural.tattoo' },
-  'forest-stop': { className: 'hotspot stop', testId: 'forest-stop', label: 'forest.stop', hintAnchor: 'forest-stop' },
-  'forest-step': { className: 'hotspot step', testId: 'forest-step', label: 'forest.step' },
+  'yard-give': { className: 'hotspot give', testId: 'yard-give', label: 'yard.give', hintAnchor: 'give' },
+  'yard-grab': { className: 'hotspot grab', testId: 'yard-grab', label: 'yard.grab' },
+  'hall-mural': { className: 'hotspot mural', testId: 'hall-mural', label: 'island.mural', hintAnchor: 'mural-entrance' },
+  'hall-stamps': { className: 'hotspot stamps', testId: 'hall-stamps', label: 'hall.stamps' },
+  'hall-tattoo': { className: 'hotspot tattoo', testId: 'hall-tattoo', label: 'mural.tattoo' },
+  'path-stop': { className: 'hotspot stop', testId: 'path-stop', label: 'path.stop', hintAnchor: 'path-stop' },
+  'path-step': { className: 'hotspot step', testId: 'path-step', label: 'path.step' },
   'night-read': { className: 'hotspot read', testId: 'night-read', label: 'night.read', hintAnchor: 'old-layer' },
+  'night-ember': { className: 'hotspot ember', testId: 'night-ember', label: 'night.ember' },
   'night-memory': { className: 'hotspot memory', testId: 'night-memory', label: 'menu.memory' },
-  'act:myp.word.eat': { className: 'hotspot act', testId: 'act-myp.word.eat', label: 'act.mark', aria: 'act.mark', glyph: 'myp.word.eat' },
-  'act:myp.word.drink': { className: 'hotspot act', testId: 'act-myp.word.drink', label: 'act.mark', aria: 'act.mark', glyph: 'myp.word.drink' },
-  'act:myp.word.walk': { className: 'hotspot act', testId: 'act-myp.word.walk', label: 'act.mark', aria: 'act.mark', glyph: 'myp.word.walk' },
-  'act:myp.word.take': { className: 'hotspot act', testId: 'act-myp.word.take', label: 'act.mark', aria: 'act.mark', glyph: 'myp.word.take' },
-  'act:myp.word.me': { className: 'hotspot act', testId: 'act-myp.word.me', label: 'act.mark', aria: 'act.mark', glyph: 'myp.word.me' },
-  'act:myp.word.you': { className: 'hotspot act', testId: 'act-myp.word.you', label: 'act.mark', aria: 'act.mark', glyph: 'myp.word.you' },
-  'act:myp.word.home': { className: 'hotspot act', testId: 'act-myp.word.home', label: 'act.mark', aria: 'act.mark', glyph: 'myp.word.home' },
-  'act:myp.word.amount:more': { className: 'hotspot pile more', testId: 'amount-more', label: 'act.mark', aria: 'act.mark' },
-  'act:myp.word.amount:less': { className: 'hotspot pile less', testId: 'amount-less', label: 'act.mark', aria: 'act.mark' },
-  'act:myp.word.size:a': { className: 'hotspot fish-a', testId: 'size-a', label: 'act.mark', aria: 'act.mark', glyph: 'myp.word.fish' },
-  'act:myp.word.size:b': { className: 'hotspot fish-b', testId: 'size-b', label: 'act.mark', aria: 'act.mark', glyph: 'myp.word.fish' },
+  'act:dba.word.eat': { className: 'hotspot act', testId: 'act-dba.word.eat', label: 'act.mark', aria: 'act.mark', glyph: 'dba.word.eat' },
+  'act:dba.word.drink': { className: 'hotspot act', testId: 'act-dba.word.drink', label: 'act.mark', aria: 'act.mark', glyph: 'dba.word.drink' },
+  'act:dba.word.walk': { className: 'hotspot act', testId: 'act-dba.word.walk', label: 'act.mark', aria: 'act.mark', glyph: 'dba.word.walk' },
+  'act:dba.word.take': { className: 'hotspot act', testId: 'act-dba.word.take', label: 'act.mark', aria: 'act.mark', glyph: 'dba.word.take' },
+  'act:dba.word.me': { className: 'hotspot act', testId: 'act-dba.word.me', label: 'act.mark', aria: 'act.mark', glyph: 'dba.word.me' },
+  'act:dba.word.you': { className: 'hotspot act', testId: 'act-dba.word.you', label: 'act.mark', aria: 'act.mark', glyph: 'dba.word.you' },
+  'act:dba.word.home': { className: 'hotspot act', testId: 'act-dba.word.home', label: 'act.mark', aria: 'act.mark', glyph: 'dba.word.home' },
+  'act:dba.word.amount:more': { className: 'hotspot pile more', testId: 'amount-more', label: 'act.mark', aria: 'act.mark' },
+  'act:dba.word.amount:less': { className: 'hotspot pile less', testId: 'amount-less', label: 'act.mark', aria: 'act.mark' },
+  'act:dba.word.size:a': { className: 'hotspot fish-a', testId: 'size-a', label: 'act.mark', aria: 'act.mark', glyph: 'dba.word.fish' },
+  'act:dba.word.size:b': { className: 'hotspot fish-b', testId: 'size-b', label: 'act.mark', aria: 'act.mark', glyph: 'dba.word.fish' },
 };
 
 const GATE_LABEL: Record<IslandScene, MessageKey> = {
-  'myp.scene.shore': 'nav.shore',
-  'myp.scene.camp': 'nav.camp',
-  'myp.scene.fishery': 'nav.fishery',
-  'myp.scene.rock': 'nav.rock',
-  'myp.scene.forest': 'nav.forest',
-  'myp.scene.night': 'nav.night',
+  'dba.scene.shore': 'nav.shore',
+  'dba.scene.camp': 'nav.camp',
+  'dba.scene.yard': 'nav.yard',
+  'dba.scene.hall': 'nav.hall',
+  'dba.scene.path': 'nav.path',
+  'dba.scene.night': 'nav.night',
 };
 
 export function gateLabel(scene: IslandScene): string {
@@ -75,8 +76,8 @@ export function visibleSpots(
 ): SpotView[] {
   return SPOTS[scene]
     .filter((spot) => {
-      if (spot.id === 'rock-tattoo') return isLearnedState(save.words[BETRAY]?.state);
-      if (spot.id === 'night-memory') return save.memories.includes('myp.mem.rain-night');
+      if (spot.id === 'hall-tattoo') return isLearnedState(save.words[BETRAY]?.state);
+      if (spot.id === 'night-memory') return save.memories.includes('dba.mem.rain-night');
       return true;
     })
     .map((spot) => {
@@ -94,12 +95,12 @@ export function visibleSpots(
 }
 
 export function hintSpotId(scene: IslandScene, anchor: HintAnchor): string | null {
-  if (anchor === 'mural-entrance') return scene === 'myp.scene.rock' ? 'rock-mural' : 'island-mural';
+  if (anchor === 'mural-entrance') return scene === 'dba.scene.hall' ? 'hall-mural' : 'island-mural';
   if (anchor === 'gourd') return 'island-gourd';
   if (anchor === 'driftwood') return 'shore-driftwood';
   if (anchor === 'sleep') return 'camp-sleep';
-  if (anchor === 'give') return 'fishery-give';
-  if (anchor === 'forest-stop') return 'forest-stop';
+  if (anchor === 'give') return 'yard-give';
+  if (anchor === 'path-stop') return 'path-stop';
   if (anchor === 'old-layer') return 'night-read';
   if (anchor === 'depart') return 'shore-depart';
   return null;

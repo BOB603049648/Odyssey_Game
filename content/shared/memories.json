@@ -1,7 +1,7 @@
 [
   {
-    "id": "myp.mem.rain-night",
-    "triggerBeat": "myp.beat.depart",
+    "id": "dba.mem.rain-night",
+    "triggerBeat": "dba.beat.depart",
     "frames": ["rain", "kitten", "cloak"]
   }
 ]

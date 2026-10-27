@@ -32,9 +32,9 @@ function learnLayer(state: SaveData, layer: MuralLayer): SaveData {
 
 function readyToLeave(state = ashore()): SaveData {
   let next = learnLayer(learnLayer(learnLayer(state, 'concrete'), 'action'), 'relation');
-  next = learn(learn(next, 'myp.word.hunger'), 'myp.word.promise');
-  next = reduce(next, { type: 'goto-scene', scene: 'myp.scene.shore' });
-  return reduce(next, { type: 'use-word', wordId: 'myp.word.water' });
+  next = learn(learn(next, 'dba.word.hunger'), 'dba.word.promise');
+  next = reduce(next, { type: 'goto-scene', scene: 'dba.scene.shore' });
+  return reduce(next, { type: 'use-word', wordId: 'dba.word.water' });
 }
 
 describe('island 1 reachability', () => {
@@ -56,68 +56,68 @@ describe('island 1 reachability', () => {
   });
 
   it('uses the camp gestures, the fishery contrast, and the shore stone', () => {
-    let state = learn(learnLayer(ashore(), 'concrete'), 'myp.word.eat');
-    expect(reduce(state, { type: 'scene-act', wordId: 'myp.word.eat' }).beats['myp.beat.eat']).toBeUndefined();
-    state = reduce(state, { type: 'goto-scene', scene: 'myp.scene.camp' });
-    state = reduce(state, { type: 'scene-act', wordId: 'myp.word.eat' });
-    expect(state.beats['myp.beat.eat']).toBe(true);
+    let state = learn(learnLayer(ashore(), 'concrete'), 'dba.word.eat');
+    expect(reduce(state, { type: 'scene-act', wordId: 'dba.word.eat' }).beats['dba.beat.eat']).toBeUndefined();
+    state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.camp' });
+    state = reduce(state, { type: 'scene-act', wordId: 'dba.word.eat' });
+    expect(state.beats['dba.beat.eat']).toBe(true);
 
-    state = reduce(state, { type: 'goto-scene', scene: 'myp.scene.fishery' });
+    state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.yard' });
     state = reduce(state, { type: 'grab-fish' });
-    expect(state.flags['myp.flag.wrong-share']).toBe(true);
+    expect(state.flags['dba.flag.wrong-share']).toBe(true);
     expect(state.feedback.kind).toBe('no');
 
     state = learnLayer(state, 'action');
     state = learnLayer(state, 'relation');
-    state = learn(state, 'myp.word.amount');
-    state = reduce(state, { type: 'goto-scene', scene: 'myp.scene.fishery' });
-    expect(reduce(state, { type: 'scene-act', wordId: 'myp.word.amount', part: 'less' }).beats['myp.beat.amount']).toBeUndefined();
-    state = reduce(state, { type: 'scene-act', wordId: 'myp.word.amount', part: 'more' });
-    expect(state.beats['myp.beat.amount']).toBe(true);
-    state = reduce(state, { type: 'scene-act', wordId: 'myp.word.size', part: 'a' });
-    expect(state.beats['myp.beat.size']).toBeUndefined();
-    state = reduce(state, { type: 'scene-act', wordId: 'myp.word.size', part: 'b' });
-    expect(state.beats['myp.beat.size']).toBe(true);
+    state = learn(state, 'dba.word.amount');
+    state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.yard' });
+    expect(reduce(state, { type: 'scene-act', wordId: 'dba.word.amount', part: 'less' }).beats['dba.beat.amount']).toBeUndefined();
+    state = reduce(state, { type: 'scene-act', wordId: 'dba.word.amount', part: 'more' });
+    expect(state.beats['dba.beat.amount']).toBe(true);
+    state = reduce(state, { type: 'scene-act', wordId: 'dba.word.size', part: 'a' });
+    expect(state.beats['dba.beat.size']).toBeUndefined();
+    state = reduce(state, { type: 'scene-act', wordId: 'dba.word.size', part: 'b' });
+    expect(state.beats['dba.beat.size']).toBe(true);
 
     const stone = reduce(ashore(), { type: 'shore-stone' });
     expect(stone.overlay).toBe('casefile');
-    expect(stone.evidence).toContain('myp.ev.a');
-    expect(stone.beats['myp.beat.stone']).toBe(true);
+    expect(stone.evidence).toContain('dba.ev.a');
+    expect(stone.beats['dba.beat.stone']).toBe(true);
   });
 
   it('adds the counted bone to the old layer without making it evidence', () => {
     let state = learnLayer(learnLayer(learnLayer(ashore(), 'concrete'), 'action'), 'relation');
-    state = learn(learn(learn(state, 'myp.word.hunger'), 'myp.word.promise'), 'myp.word.wait');
-    state = reduce(state, { type: 'goto-scene', scene: 'myp.scene.rock' });
-    state = reduce(state, { type: 'scene-act', wordId: 'myp.word.wait' });
-    expect(state.inventory).toEqual(['myp.item.bone']);
-    expect(state.evidence).not.toContain('myp.item.bone');
-    state = reduce(state, { type: 'goto-scene', scene: 'myp.scene.night' });
+    state = learn(learn(learn(state, 'dba.word.hunger'), 'dba.word.promise'), 'dba.word.wait');
+    state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.hall' });
+    state = reduce(state, { type: 'scene-act', wordId: 'dba.word.wait' });
+    expect(state.inventory).toEqual(['dba.item.token']);
+    expect(state.evidence).not.toContain('dba.item.token');
+    state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.night' });
     state = reduce(state, { type: 'read-old-layer' });
-    expect(state.evidence).toContain('myp.ev.main');
-    expect(state.flags['myp.flag.bone-cell']).toBe(true);
+    expect(state.evidence).toContain('dba.ev.main');
+    expect(state.flags['dba.flag.bone-cell']).toBe(true);
   });
 
   it('still leaves when the skippable evidence was never picked up', () => {
     const state = reduce(readyToLeave(), { type: 'depart' });
-    expect(state.beats['myp.beat.depart']).toBe(true);
-    expect(state.evidence).toEqual(['myp.ev.a']);
-    expect(state.memories).toEqual(['myp.mem.rain-night']);
-    expect(state.chart).toEqual(['chart.nmn']);
+    expect(state.beats['dba.beat.depart']).toBe(true);
+    expect(state.evidence).toEqual(['dba.ev.a']);
+    expect(state.memories).toEqual(['dba.mem.rain-night']);
+    expect(state.chart).toEqual(['chart.jgw']);
     expect(state.overlay).toBe('depart');
     expect(guidePose(state)).toBe('fetch');
   });
 
   it('can still collect every island 1 evidence before leaving', () => {
     let state = readyToLeave();
-    state = learn(state, 'myp.word.betray');
+    state = learn(state, 'dba.word.betray');
     state = reduce(state, { type: 'collect-tattoo' });
-    state = reduce(state, { type: 'goto-scene', scene: 'myp.scene.night' });
+    state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.night' });
     state = reduce(state, { type: 'read-old-layer' });
-    state = reduce(state, { type: 'goto-scene', scene: 'myp.scene.shore' });
+    state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.shore' });
     state = reduce(state, { type: 'depart' });
-    expect(state.evidence).toEqual(['myp.ev.a', 'myp.ev.b', 'myp.ev.main']);
-    expect(state.beats['myp.beat.depart']).toBe(true);
+    expect(state.evidence).toEqual(['dba.ev.a', 'dba.ev.b', 'dba.ev.main']);
+    expect(state.beats['dba.beat.depart']).toBe(true);
   });
 
   it('plays the silent memory and opens it again from the night, the case, and the map', () => {
@@ -132,9 +132,9 @@ describe('island 1 reachability', () => {
     expect(state.cutsceneStep).toBe(2);
     state = reduce(state, { type: 'advance-cutscene' });
     expect(state.overlay).toBe('none');
-    expect(state.evidence).toEqual(['myp.ev.a']);
+    expect(state.evidence).toEqual(['dba.ev.a']);
 
-    state = reduce(state, { type: 'goto-scene', scene: 'myp.scene.night' });
+    state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.night' });
     state = reduce(state, { type: 'open-memory' });
     expect(state.overlay).toBe('memory');
     state = reduce(state, { type: 'open-overlay', overlay: 'casefile' });
@@ -154,8 +154,8 @@ describe('guide hints', () => {
     expect(capped.companion.pawUsed).toBe(false);
 
     let missed = reduce(shore, { type: 'open-mural' });
-    missed = reduce(missed, { type: 'select-cell', wordId: 'myp.word.water' });
-    missed = reduce(missed, { type: 'match-object', wordId: 'myp.word.fish' });
+    missed = reduce(missed, { type: 'select-cell', wordId: 'dba.word.water' });
+    missed = reduce(missed, { type: 'match-object', wordId: 'dba.word.fish' });
     expect(missed.companion.level).toBe(0);
     expect(guidePose(missed)).toBe('look-at');
   });

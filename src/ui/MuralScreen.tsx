@@ -15,7 +15,7 @@ import { useFeedbackFx } from './useFeedbackFx';
 import { useIdleHint } from './useIdleHint';
 
 const LAYERS: MuralLayer[] = ['concrete', 'action', 'relation', 'abstract'];
-const BETRAY = 'myp.word.betray';
+const BETRAY = 'dba.word.betray';
 
 export function MuralScreen({
   save,
