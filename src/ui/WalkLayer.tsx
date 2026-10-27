@@ -23,7 +23,7 @@ import { Glyph } from './glyphs';
 import { PlateStack } from './Plate';
 import { CampArt, FisheryArt, ForestArt, NightArt, RockArt, ShoreArt } from './scenes';
 import { gateLabel, hintSpotId, type SpotView } from './spotViews';
-import { TravelerMark } from './Traveler';
+import { facingFromMove, TravelerMark, type TravelerFacing } from './Traveler';
 import { WalkStick } from './WalkStick';
 import { useCrossfade } from './useCrossfade';
 
@@ -111,7 +111,7 @@ export function WalkLayer({
   const movingRef = useRef(false);
   const posRef = useRef<Point>(remembered ?? SPAWNS[scene]);
   const [pos, setPos] = useState<Point>(posRef.current);
-  const [facing, setFacing] = useState<'left' | 'right'>('right');
+  const [facing, setFacing] = useState<TravelerFacing>('front');
   const [moving, setMoving] = useState(false);
   const [blocked, setBlocked] = useState(false);
   const [cat, setCat] = useState<Point>(() => companionSpot(posRef.current, hint.level, null, BANDS[scene], 0));
@@ -189,7 +189,7 @@ export function WalkLayer({
     return { x: (x / len) * power, y: (y / len) * power };
   }
 
-  function apply(next: Point, isMoving: boolean, isBlocked: boolean, dx: number) {
+  function apply(next: Point, isMoving: boolean, isBlocked: boolean, dx: number, dy: number) {
     const gate = gateAt(sceneRef.current, next);
     if (gate) {
       pending.current = gate.arrival;
@@ -202,8 +202,7 @@ export function WalkLayer({
       return;
     }
     posRef.current = next;
-    if (dx < -0.001) setFacing('left');
-    else if (dx > 0.001) setFacing('right');
+    setFacing((current) => facingFromMove(dx, dy, current));
     setPos(next);
     setMoving(isMoving);
     setBlocked(isBlocked);
@@ -263,7 +262,8 @@ export function WalkLayer({
         const from = posRef.current;
         const step = stepKey(from, key, BANDS[sceneRef.current]);
         const dx = key === 'a' ? -1 : key === 'd' ? 1 : 0;
-        apply(step.pos, step.moving, step.blocked, dx);
+        const dy = key === 'w' ? -1 : key === 's' ? 1 : 0;
+        apply(step.pos, step.moving, step.blocked, dx, dy);
       }
     };
     const onKeyUp = (event: KeyboardEvent) => {
@@ -298,11 +298,11 @@ export function WalkLayer({
             BANDS[sceneRef.current],
             WALK_SPEED * dt * power,
           );
-          apply(step.pos, step.moving, step.blocked, dir.x);
+          apply(step.pos, step.moving, step.blocked, dir.x, dir.y);
         } else if (goal) {
           const step = integrate(from, goal, BANDS[sceneRef.current], WALK_SPEED * dt);
           if (distance(step.pos, goal) < 0.012 || (!step.moving && step.blocked)) targetRef.current = null;
-          apply(step.pos, step.moving, step.blocked, goal.x - from.x);
+          apply(step.pos, step.moving, step.blocked, goal.x - from.x, goal.y - from.y);
         } else if (movingRef.current) {
           movingRef.current = false;
           setMoving(false);

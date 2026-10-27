@@ -195,6 +195,25 @@ describe('playable slice', () => {
     expect(screen.queryByText('奈奈茶')).toBeNull();
   });
 
+  it('faces front, side, and back while walking', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: '新游戏' }));
+    fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
+    fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
+    fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
+    fireEvent.click(screen.getByRole('button', { name: '走上潮线' }));
+    const traveler = () => screen.getByTestId('traveler');
+    expect(traveler().getAttribute('data-facing')).toBe('front');
+    fireEvent.keyDown(window, { key: 'w' });
+    expect(traveler().getAttribute('data-facing')).toBe('back');
+    fireEvent.keyDown(window, { key: 'd' });
+    expect(traveler().getAttribute('data-facing')).toBe('right');
+    fireEvent.keyDown(window, { key: 'a' });
+    expect(traveler().getAttribute('data-facing')).toBe('left');
+    fireEvent.keyDown(window, { key: 's' });
+    expect(traveler().getAttribute('data-facing')).toBe('front');
+  });
+
   it('opens a hotspot underfoot with click, E, Enter, Space, and F', () => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: '新游戏' }));
