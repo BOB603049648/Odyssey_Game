@@ -1,0 +1,9 @@
+[
+  {
+    "id": "myp.ev.a",
+    "island": "myp",
+    "kind": "side",
+    "labelKey": "evidence.myp.ev.a",
+    "skippable": false
+  }
+]

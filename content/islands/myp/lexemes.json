@@ -1,0 +1,505 @@
+[
+  {
+    "id": "myp.word.sun",
+    "island": "myp",
+    "layer": "concrete",
+    "gloss": "太阳",
+    "conceptId": "concept.sun",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.sun",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "myp.word.moon",
+    "island": "myp",
+    "layer": "concrete",
+    "gloss": "月亮",
+    "conceptId": "concept.moon",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.moon",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "myp.word.water",
+    "island": "myp",
+    "layer": "concrete",
+    "gloss": "水",
+    "conceptId": "concept.water",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.water",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "myp.word.fire",
+    "island": "myp",
+    "layer": "concrete",
+    "gloss": "火",
+    "conceptId": "concept.fire",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.fire",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "myp.word.fish",
+    "island": "myp",
+    "layer": "concrete",
+    "gloss": "鱼",
+    "conceptId": "concept.fish",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.fish",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "myp.word.person",
+    "island": "myp",
+    "layer": "concrete",
+    "gloss": "人",
+    "conceptId": "concept.person",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.person",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "myp.word.eat",
+    "island": "myp",
+    "layer": "action",
+    "gloss": "吃",
+    "conceptId": "concept.eat",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.eat",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "myp.word.drink",
+    "island": "myp",
+    "layer": "action",
+    "gloss": "喝",
+    "conceptId": "concept.drink",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.drink",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "myp.word.sleep",
+    "island": "myp",
+    "layer": "action",
+    "gloss": "睡",
+    "conceptId": "concept.sleep",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.sleep",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "myp.word.walk",
+    "island": "myp",
+    "layer": "action",
+    "gloss": "走",
+    "conceptId": "concept.walk",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.walk",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "myp.word.give",
+    "island": "myp",
+    "layer": "action",
+    "gloss": "给",
+    "conceptId": "concept.give",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.give",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "myp.word.take",
+    "island": "myp",
+    "layer": "action",
+    "gloss": "拿",
+    "conceptId": "concept.take",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.take",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "myp.word.me",
+    "island": "myp",
+    "layer": "relation",
+    "gloss": "我",
+    "conceptId": "concept.me",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.me",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "myp.word.you",
+    "island": "myp",
+    "layer": "relation",
+    "gloss": "你",
+    "conceptId": "concept.you",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.you",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "myp.word.size",
+    "island": "myp",
+    "layer": "relation",
+    "gloss": "大与小",
+    "conceptId": "concept.size",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.size",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "myp.word.amount",
+    "island": "myp",
+    "layer": "relation",
+    "gloss": "多与少",
+    "conceptId": "concept.amount",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.amount",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "myp.word.danger",
+    "island": "myp",
+    "layer": "relation",
+    "gloss": "危险",
+    "conceptId": "concept.danger",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.danger",
+    "requires": [],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached."
+    }
+  },
+  {
+    "id": "myp.word.hunger",
+    "island": "myp",
+    "layer": "abstract",
+    "gloss": "饥饿",
+    "conceptId": "concept.hunger",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.hunger",
+    "requires": [
+      "myp.word.person",
+      "myp.word.fish"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "myp.word.share",
+    "island": "myp",
+    "layer": "abstract",
+    "gloss": "分享",
+    "conceptId": "concept.share",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.share",
+    "requires": [
+      "myp.word.fish"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "myp.word.wait",
+    "island": "myp",
+    "layer": "abstract",
+    "gloss": "等待",
+    "conceptId": "concept.wait",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.wait",
+    "requires": [
+      "myp.word.sun"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "myp.word.promise",
+    "island": "myp",
+    "layer": "abstract",
+    "gloss": "承诺",
+    "conceptId": "concept.promise",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.promise",
+    "requires": [
+      "myp.word.water"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "myp.word.trust",
+    "island": "myp",
+    "layer": "abstract",
+    "gloss": "信任",
+    "conceptId": "concept.trust",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.trust",
+    "requires": [
+      "myp.word.person"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "myp.word.protect",
+    "island": "myp",
+    "layer": "abstract",
+    "gloss": "保护",
+    "conceptId": "concept.protect",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.protect",
+    "requires": [
+      "myp.word.person",
+      "myp.word.danger"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "myp.word.betray",
+    "island": "myp",
+    "layer": "abstract",
+    "gloss": "背叛",
+    "conceptId": "concept.betray",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.betray",
+    "requires": [
+      "myp.word.give"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "myp.word.lie",
+    "island": "myp",
+    "layer": "abstract",
+    "gloss": "谎言",
+    "conceptId": "concept.lie",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.lie",
+    "requires": [
+      "myp.word.fish",
+      "myp.word.water"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "myp.word.miss",
+    "island": "myp",
+    "layer": "abstract",
+    "gloss": "想念",
+    "conceptId": "concept.miss",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.miss",
+    "requires": [
+      "myp.word.person",
+      "myp.word.water"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "myp.word.forgive",
+    "island": "myp",
+    "layer": "abstract",
+    "gloss": "原谅",
+    "conceptId": "concept.forgive",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.forgive",
+    "requires": [
+      "myp.word.give"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  },
+  {
+    "id": "myp.word.home",
+    "island": "myp",
+    "layer": "abstract",
+    "gloss": "归处",
+    "conceptId": "concept.home",
+    "forms": {},
+    "audio": [],
+    "visual": "glyph:myp.word.home",
+    "requires": [
+      "myp.word.fire",
+      "myp.word.sleep"
+    ],
+    "inLexicon": true,
+    "verification": {
+      "status": "draft",
+      "sources": [],
+      "notes": "MVP placeholder. Pirahã orthography stays empty until a reviewed source is attached. If Pirahã has no single word for this teaching gloss, replace forms with a scene phrase after review."
+    }
+  }
+]

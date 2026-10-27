@@ -1,0 +1,114 @@
+[
+  {
+    "id": "concept.sun",
+    "gloss": "太阳"
+  },
+  {
+    "id": "concept.moon",
+    "gloss": "月亮"
+  },
+  {
+    "id": "concept.water",
+    "gloss": "水"
+  },
+  {
+    "id": "concept.fire",
+    "gloss": "火"
+  },
+  {
+    "id": "concept.fish",
+    "gloss": "鱼"
+  },
+  {
+    "id": "concept.person",
+    "gloss": "人"
+  },
+  {
+    "id": "concept.eat",
+    "gloss": "吃"
+  },
+  {
+    "id": "concept.drink",
+    "gloss": "喝"
+  },
+  {
+    "id": "concept.sleep",
+    "gloss": "睡"
+  },
+  {
+    "id": "concept.walk",
+    "gloss": "走"
+  },
+  {
+    "id": "concept.give",
+    "gloss": "给"
+  },
+  {
+    "id": "concept.take",
+    "gloss": "拿"
+  },
+  {
+    "id": "concept.me",
+    "gloss": "我"
+  },
+  {
+    "id": "concept.you",
+    "gloss": "你"
+  },
+  {
+    "id": "concept.size",
+    "gloss": "大与小"
+  },
+  {
+    "id": "concept.amount",
+    "gloss": "多与少"
+  },
+  {
+    "id": "concept.danger",
+    "gloss": "危险"
+  },
+  {
+    "id": "concept.hunger",
+    "gloss": "饥饿"
+  },
+  {
+    "id": "concept.share",
+    "gloss": "分享"
+  },
+  {
+    "id": "concept.wait",
+    "gloss": "等待"
+  },
+  {
+    "id": "concept.promise",
+    "gloss": "承诺"
+  },
+  {
+    "id": "concept.trust",
+    "gloss": "信任"
+  },
+  {
+    "id": "concept.protect",
+    "gloss": "保护"
+  },
+  {
+    "id": "concept.betray",
+    "gloss": "背叛"
+  },
+  {
+    "id": "concept.lie",
+    "gloss": "谎言"
+  },
+  {
+    "id": "concept.miss",
+    "gloss": "想念"
+  },
+  {
+    "id": "concept.forgive",
+    "gloss": "原谅"
+  },
+  {
+    "id": "concept.home",
+    "gloss": "归处"
+  }
+]

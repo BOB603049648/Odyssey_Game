@@ -1,0 +1,17 @@
+[
+  {
+    "id": "false-home",
+    "labelKey": "ending.false-home",
+    "status": "stub"
+  },
+  {
+    "id": "new-interpreter",
+    "labelKey": "ending.new-interpreter",
+    "status": "stub"
+  },
+  {
+    "id": "forget-again",
+    "labelKey": "ending.forget-again",
+    "status": "stub"
+  }
+]

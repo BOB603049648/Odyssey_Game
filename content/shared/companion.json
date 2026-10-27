@@ -1,0 +1,12 @@
+{
+  "id": "companion.nainaicha",
+  "name": "奈奈茶",
+  "speaks": false,
+  "teachesLanguage": false,
+  "form": {
+    "island": "myp",
+    "skin": "myp-rainforest",
+    "scale": 1.4,
+    "markings": "雨林斑纹，茶色打底，耳后一片宽叶，颈上旧绳圈"
+  }
+}
