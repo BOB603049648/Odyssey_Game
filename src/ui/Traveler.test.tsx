@@ -43,21 +43,34 @@ describe('traveler art', () => {
     }
   });
 
-  it('sizes the figure as a fraction of the world and mirrors only the right-facing sheet', () => {
+  it('sizes the figure as a fraction of the world and mirrors only the left-facing sheet', () => {
     const view = render(<TravelerMark x={0.4} y={0.6} facing="left" moving={false} />);
     const mark = view.container.querySelector('[data-testid="traveler"]') as HTMLElement;
-    expect(TRAVELER_HEIGHT).toBeGreaterThan(0.12);
-    expect(TRAVELER_HEIGHT).toBeLessThan(0.22);
+    expect(TRAVELER_HEIGHT).toBeGreaterThan(0.1);
+    expect(TRAVELER_HEIGHT).toBeLessThan(0.14);
     expect(mark.style.height).toBe(`${TRAVELER_HEIGHT * 100}%`);
     expect(mark.style.aspectRatio.replace(/\s/g, '')).toBe('3/4');
-    expect(view.container.querySelector('[data-mirror="yes"]')).toBeNull();
+    const currentMirror = () =>
+      view.container.querySelector('[data-layer="current"]')?.parentElement?.getAttribute('data-mirror');
+    expect(currentMirror()).toBe('yes');
     const shadow = view.container.querySelector('[data-testid="contact-shadow"]') as HTMLElement;
     expect(shadow.style.width.endsWith('%')).toBe(true);
     const narrow = shadow.style.width;
     view.rerender(<TravelerMark x={0.4} y={0.9} facing="right" moving />);
     const wider = view.container.querySelector('[data-testid="contact-shadow"]') as HTMLElement;
-    expect(view.container.querySelector('[data-mirror="yes"]')).toBeTruthy();
+    expect(currentMirror()).toBe('no');
     expect(parseFloat(wider.style.width)).toBeGreaterThan(parseFloat(narrow));
+    expect(mark.style.transform).toContain('translate(-50%');
+    expect(mark.style.transform).not.toContain('-50%, -50%');
+  });
+
+  it('lays the body along the mat with the sole still on the foot point', () => {
+    const view = render(<TravelerMark x={0.4} y={0.6} facing="left" moving={false} pose="lie" />);
+    const mark = view.container.querySelector('[data-testid="traveler"]') as HTMLElement;
+    expect(mark.getAttribute('data-pose')).toBe('lie');
+    expect(mark.style.top).toBe('60%');
+    expect(mark.style.transform).toContain('rotate(-86deg)');
+    expect(mark.style.transform).not.toContain('-50%, -50%');
   });
 
   it('uses the side walk sheet for both directions and a real back idle', () => {

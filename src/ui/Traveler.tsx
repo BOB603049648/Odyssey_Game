@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { WALK_SPEED } from '../core/walk';
+import { worldToScreen } from '../core/world';
+import { FOOT_ELLIPSE } from './cohesion';
 import reachFront01 from '../assets/traveler/reach-front-01.png';
 import reachFront02 from '../assets/traveler/reach-front-02.png';
 import reachSide01 from '../assets/traveler/reach-side-01.png';
@@ -64,8 +66,14 @@ const REACH: Partial<Record<TravelerSheet, readonly string[]>> = {
  */
 export const WALK_CYCLE_HZ = 1.15;
 export const WALK_STRIDE = WALK_SPEED / WALK_CYCLE_HZ;
-/** Figure box height as a fraction of the world layer — same space as prop slots. */
-export const TRAVELER_HEIGHT = 0.15;
+/**
+ * Figure box height as a fraction of the world layer.
+ * At WORLD_SCALE 1.46 a 0.15 box filled ~22% of the viewport and read as too tall
+ * against the plate. 0.118 keeps the opaque body on the ground band.
+ */
+export const TRAVELER_HEIGHT = 0.118;
+/** Opaque sole on the 864×1152 sheet (about 20px of clear pad under the feet). */
+export const TRAVELER_FOOT = { x: 0.5, y: 1132 / 1152 } as const;
 /** Overlap between frames inside one clip, and a slightly longer blend on a turn. */
 export const FRAME_BLEND_MS = 140;
 export const TURN_BLEND_MS = 220;
@@ -226,7 +234,7 @@ function FramePicture({ blend, layer }: { blend: FrameBlend; layer: 'out' | 'cur
   return (
     <span
       className={layer === 'out' ? 'traveler-frame-wrap out' : 'traveler-frame-wrap'}
-      data-mirror={blend.facing === 'right' ? 'yes' : 'no'}
+      data-mirror={blend.facing === 'left' ? 'yes' : 'no'}
     >
       <img
         className={layer === 'current' ? 'traveler-figure traveler-frame' : 'traveler-frame'}
@@ -278,6 +286,7 @@ export function TravelerMark({
   }, [outgoing, shown]);
 
   const blendMs = outgoing ? blendDuration(outgoing, shown) || FRAME_BLEND_MS : 0;
+  const planted = worldToScreen({ x, y }, TRAVELER_FOOT, motion.pose === 'lie' ? 'rotate(-86deg)' : '');
   return (
     <div
       className="traveler"
@@ -291,11 +300,14 @@ export function TravelerMark({
       data-frame={frame}
       data-clip-frames={frames.length}
       data-crossfade={outgoing ? 'yes' : 'no'}
+      data-anchor="foot"
       data-x={x}
       data-y={y}
       style={{
-        left: `${x * 100}%`,
-        top: `${y * 100}%`,
+        left: planted.left,
+        top: planted.top,
+        transform: planted.transform,
+        transformOrigin: `${TRAVELER_FOOT.x * 100}% ${TRAVELER_FOOT.y * 100}%`,
         height: `${TRAVELER_HEIGHT * 100}%`,
         width: 'auto',
         aspectRatio: '3 / 4',
@@ -304,9 +316,12 @@ export function TravelerMark({
     >
       <div className="traveler-bob">
         <span
-          className="contact-shadow"
+          className="contact-shadow foot-ellipse"
           data-testid="contact-shadow"
-          style={{ width: `${contactShadowWidth(y) * 100}%`, height: `${(12 / 156) * 100}%` }}
+          style={{
+            width: `${contactShadowWidth(y) * 100}%`,
+            ['--ellipse' as string]: `url("${FOOT_ELLIPSE.l}")`,
+          }}
         />
         <span className="traveler-frames" style={{ ['--frame-blend' as string]: `${blendMs}ms` }}>
           {outgoing ? <FramePicture blend={outgoing} layer="out" /> : null}

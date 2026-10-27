@@ -1,6 +1,6 @@
 {
-  "version": "1.2-nanaicha-traj",
-  "updated": "2026-10-28T01:03:25+08:00",
+  "version": "1.3-failfix",
+  "updated": "2026-10-28T01:44:48+08:00",
   "unit": "meters",
   "traveler": {
     "height_m": 1.75,
@@ -120,14 +120,14 @@
       },
       "camp/art.camp.prop.nanaicha.png": {
         "opaque_bbox_subject": [
-          381,
-          344,
-          898,
-          704
+          266,
+          315,
+          1011,
+          703
         ],
-        "subjH_pct": 50.0,
+        "subjH_pct": 54.0,
         "foot_pad_px": 16,
-        "world_pose": "fireside / sleep-mat side guard (after sleep) or camp→yard east hint pre-food; haunches on ground",
+        "world_pose": "C3 fireside loaf fallback; haunches on ground; strong baked contact shadow",
         "baked_contact_shadow": true
       },
       "yard/art.yard.prop.nanaicha.png": {
@@ -222,7 +222,7 @@
     "shore_props": "re-anchor feet + keep gourd 15–18%; driftwood subject smaller",
     "camp_props": "re-anchor fire/mat/bundles; fire ≤30% H; co-ground note for eng world Y",
     "yard_props": "grain bags knee–waist on ground; fish rack + boards foot-anchored",
-    "shore_fg_white_fence": "NOT in art.shore.fg.png / ground (debug grid in playtest) — eng P2",
+    "shore_fg_white_fence": "NOT in art plates — eng debug/walk grid ~60px (confirmed failfix 2026-10-28)",
     "nanaicha_ground": "new shore/camp/yard nanaicha props foot-anchored + baked contact shadow; tide still refreshed art.pro.tide.jpg=v4 ONE cat paws on wet sand; eng must place companion on Band ground Y per §5.1 (not canvas-center float)"
   },
   "still_needs_eng": [
@@ -234,7 +234,15 @@
     "Companion gaze/position state machine per §5.1 (water→food→sleep→danger); do not canvas-center float",
     "Tide: do not overlay second cat; use art.pro.tide.jpg (v4 grounded)",
     "Wire companion waypoint machine to nanaicha/traj/ landings per §5.1 (water→food→sleep→danger)",
-    "Optional leap-01/02 between landings; landings use opaque-foot pivot + baked contact shadow"
+    "Optional leap-01/02 between landings; landings use opaque-foot pivot + baked contact shadow",
+    "cohesion: wire shared shadows under traveler pivot + per-scene grade overlay (见 cohesion/README.md)；开新 PR 合 main",
+    "Cohesion PRIMARY: world-root ambient modulate per scene (contract cohesion.scenes.*.ambient); post-composite grade/vignette — not per-sprite filters",
+    "Contact shadow system: place ellipse under opaque foot Y; tint with cohesion.scenes.*.shadowTint; fade with height (leap)",
+    "Optional: sample cohesion/strips/strip.<scene>.png for depth fog; fullscreen grade.*.png is P0 DOM fallback only",
+    "FAILFIX: kill ~60px white vertical debug/walk grid (雾岸竖白线=eng)",
+    "FAILFIX: C2→land-camp-sleep-mat / C3→land-camp-fireside; NEVER north-curtain as companion",
+    "FAILFIX: leap frames already non-squash; do not apply horizontal scale in tween",
+    "FAILFIX: four props rebaked soft contact shadow — avoid stacking hard eng shadow"
   ],
   "p1_measured_after": {
     "shore.gourd_subjH%": 16.0,
@@ -346,38 +354,42 @@
         "file": "land-camp-sleep-mat.png",
         "scene": "camp",
         "beat_stage": "post-food pre-sleep / C2",
-        "pose": "crouch at sleep-mat side",
+        "pose": "crouch/sit at sleep-mat edge",
         "gaze": "mat + fire",
-        "readable": "food done → sleep",
+        "readable": "该睡了",
         "§5.1": "C2 引睡 → 睡铺侧",
         "path": "nanaicha/traj/land-camp-sleep-mat.png",
         "opaque_bbox": [
-          22,
-          272,
-          841,
-          1133
+          27,
+          312,
+          835,
+          1135
         ],
-        "subjH_pct": 74.8,
-        "foot_pad_px": 18
+        "subjH_pct": 71.5,
+        "foot_pad_px": 16,
+        "aspect_w_h": 0.982,
+        "eng_note": "Wire THIS frame for C2 — never north-curtain"
       },
       {
         "id": "land-camp-fireside",
         "file": "land-camp-fireside.png",
         "scene": "camp",
         "beat_stage": "post-sleep / C3",
-        "pose": "loaf/curl by fire, eyes half-open guard",
-        "gaze": "guard half-open; occasional north curtain / east",
+        "pose": "loaf/curl by fire, half-open guard eyes",
+        "gaze": "guard half-open",
         "readable": "守夜",
         "§5.1": "C3 守夜 → 火旁 guard 蜷",
         "path": "nanaicha/traj/land-camp-fireside.png",
         "opaque_bbox": [
-          22,
-          573,
-          841,
-          1133
+          8,
+          542,
+          855,
+          1135
         ],
-        "subjH_pct": 48.7,
-        "foot_pad_px": 18
+        "subjH_pct": 51.6,
+        "foot_pad_px": 16,
+        "aspect_w_h": 1.428,
+        "eng_note": "Wire THIS frame for C3; scene fallback camp prop nanaicha"
       },
       {
         "id": "land-yard-give",
@@ -406,13 +418,15 @@
         "note": "short mid-air arc start between landings; float OK; no target needed",
         "path": "nanaicha/traj/leap-01.png",
         "opaque_bbox": [
-          22,
-          262,
-          841,
-          808
+          142,
+          200,
+          720,
+          751
         ],
-        "subjH_pct": 47.5,
-        "foot_pad_px": 343
+        "subjH_pct": 47.9,
+        "foot_pad_px": 400,
+        "aspect_w_h": 1.049,
+        "non_squash_rule": "opaque body aspect ~0.7–1.1; do not horizontally stretch in engine"
       },
       {
         "id": "leap-02",
@@ -420,13 +434,15 @@
         "note": "short mid-air arc peak/descent; float OK",
         "path": "nanaicha/traj/leap-02.png",
         "opaque_bbox": [
-          36,
-          64,
-          827,
-          1007
+          107,
+          123,
+          756,
+          905
         ],
-        "subjH_pct": 81.9,
-        "foot_pad_px": 144
+        "subjH_pct": 68.0,
+        "foot_pad_px": 246,
+        "aspect_w_h": 0.83,
+        "non_squash_rule": "opaque body aspect ~0.7–1.1; do not horizontally stretch in engine"
       }
     ],
     "waypoint_machine_hint": "Swap companion sprite to landing id by §5.1 state; optional 1–2 leap frames on transition. Prefer traj/ sheets over single scene prop for pose variety. Scene props shore/camp/yard art.*.prop.nanaicha.png remain fallback defaults.",
@@ -434,6 +450,112 @@
       "shore/art.shore.prop.nanaicha.png": "fallback ≈ land-shore-driftwood / land-shore-gourd sit",
       "camp/art.camp.prop.nanaicha.png": "fallback ≈ land-camp-fireside loaf",
       "yard/art.yard.prop.nanaicha.png": "fallback ≈ land-yard-give sit"
+    },
+    "leap_non_squash_rule": "opaque bbox aspect_w_h target 0.7–1.1; mid-air float OK; no pancake",
+    "c2_c3_wiring": {
+      "C2": "land-camp-sleep-mat.png",
+      "C3": "land-camp-fireside.png",
+      "never": "art.camp.prop.north-curtain.png as companion"
     }
+  },
+  "cohesion": {
+    "dir": "cohesion/",
+    "readme": "cohesion/README.md",
+    "report": "_cohesion-report.json",
+    "shadows_dir": "cohesion/shadows/",
+    "grades_dir": "cohesion/grades/",
+    "spec_ref": "/workspace/odyssey-docs/research-visual-cohesion-2026-10-28.md",
+    "hang": {
+      "shadow": "under opaque-bounds bottom-center pivot at foot Y; scale with depth",
+      "grade": "fullscreen 1280x720 per scene; soft-light/overlay or normal alpha",
+      "pr": "丢开发开新 PR 合 main"
+    },
+    "baked_contact_shadow_props": [
+      "shore/art.shore.prop.driftwood.png",
+      "yard/art.yard.prop.dried-fish.png",
+      "camp/art.camp.building.png",
+      "hall/art.hall.building.png",
+      "hall/art.hall.prop.scroll-wall.png",
+      "hall/art.hall.prop.stamp-rail.png",
+      "path/art.path.prop.danger-board.png",
+      "path/art.path.building.png",
+      "night/art.night.prop.old-layer.png",
+      "night/art.night.building.png"
+    ],
+    "reanchored_foot_pad_props": [
+      "hall/art.hall.building.png",
+      "hall/art.hall.prop.scroll-wall.png",
+      "hall/art.hall.prop.stamp-rail.png",
+      "path/art.path.prop.danger-board.png",
+      "night/art.night.prop.old-layer.png",
+      "night/art.night.building.png"
+    ],
+    "note": "Auxiliary art pack only. Eng owns world ambient + foot anchors + post-composite grade. Do not treat painted overlays as finishing cohesion.",
+    "role": "auxiliary",
+    "primary_path": "engineering — world-root ambient, opaque foot pivot, post-composite grade (see research-visual-cohesion-2026-10-28.md)",
+    "art_does_not_equal_cohesion": true,
+    "strips_dir": "cohesion/strips/",
+    "scenes": {
+      "shore": {
+        "ambient": "#B8CED4",
+        "shadowTint": "#3A4E55",
+        "note": "cool cyan fog morning",
+        "strip": "cohesion/strips/strip.shore.png",
+        "grade_fullscreen_optional": "cohesion/grades/grade.shore.png"
+      },
+      "camp": {
+        "ambient": "#D4B08A",
+        "shadowTint": "#4A3528",
+        "note": "warm firelight",
+        "strip": "cohesion/strips/strip.camp.png",
+        "grade_fullscreen_optional": "cohesion/grades/grade.camp.png"
+      },
+      "yard": {
+        "ambient": "#C9BCA8",
+        "shadowTint": "#3F3A32",
+        "note": "daylight warm-neutral",
+        "strip": "cohesion/strips/strip.yard.png",
+        "grade_fullscreen_optional": "cohesion/grades/grade.yard.png"
+      },
+      "hall": {
+        "ambient": "#9AA8AC",
+        "shadowTint": "#2E383C",
+        "note": "cool interior",
+        "strip": "cohesion/strips/strip.hall.png",
+        "grade_fullscreen_optional": "cohesion/grades/grade.hall.png"
+      },
+      "path": {
+        "ambient": "#A8B4B8",
+        "shadowTint": "#353E42",
+        "note": "fog grey-blue",
+        "strip": "cohesion/strips/strip.path.png",
+        "grade_fullscreen_optional": "cohesion/grades/grade.path.png"
+      },
+      "night": {
+        "ambient": "#4A5568",
+        "shadowTint": "#1E2430",
+        "note": "deep blue; ember bias optional",
+        "strip": "cohesion/strips/strip.night.png",
+        "grade_fullscreen_optional": "cohesion/grades/grade.night.png"
+      }
+    }
+  },
+  "failfix_2026_10_28": {
+    "note": "Playtest cohesion FAIL aux pack. Primary cohesion still eng (ambient/foot pivot/grade/debug-grid).",
+    "white_lines": "eng debug/walk grid ~60px spacing in lower third; NOT in shore/camp/yard plates — eng kill overlay",
+    "props_rebaked_contact_shadow": [
+      "camp/art.camp.prop.fire.png",
+      "shore/art.shore.prop.gourd.png",
+      "yard/art.yard.prop.dried-fish.png",
+      "yard/art.yard.prop.grain-bags.png",
+      "yard/art.yard.prop.grain-bags.interact.png"
+    ],
+    "c2_c3_frames": {
+      "C2": "nanaicha/traj/land-camp-sleep-mat.png — 铺边 crouch/sit; NEVER north-curtain",
+      "C3": "nanaicha/traj/land-camp-fireside.png — 火旁蜷 loaf; camp prop nanaicha = C3 fallback",
+      "forbid_companion_sprite": "camp/art.camp.prop.north-curtain.png"
+    },
+    "leap_non_squash": "leap-01/02 opaque body aspect target ~0.7–1.1; no horizontal pancake stretch",
+    "pr": "开新 PR 合 main（勿挂 #10）"
   }
 }

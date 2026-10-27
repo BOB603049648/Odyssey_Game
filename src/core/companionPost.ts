@@ -83,10 +83,11 @@ export function companionPost(
       return { ...feet, look: 'give', pose: 'lead', targetId: 'camp-east', beat: 'C1', queue: 'food' };
     }
     if (beats['dba.beat.sleep'] !== true) {
-      const feet = plant(scene, spotAt(scene, 'camp-sleep'), 1);
+      const mat = spotAt(scene, 'camp-sleep');
+      const feet = clampToBand({ x: mat.x - 0.14, y: mat.y }, BANDS[scene]);
       return { ...feet, look: 'sleep', pose: 'sit-near', targetId: 'camp-sleep', beat: 'C2', queue: 'sleep' };
     }
-    const feet = plant(scene, { x: 0.52, y: 0.62 }, 1);
+    const feet = clampToBand({ x: 0.66, y: 0.64 }, BANDS[scene]);
     return { ...feet, look: 'sleep', pose: 'curl', targetId: 'camp-fire', beat: 'C3', queue: 'guard' };
   }
 

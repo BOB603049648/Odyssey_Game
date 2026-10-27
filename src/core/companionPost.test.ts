@@ -63,6 +63,8 @@ describe('companion feet and gaze', () => {
     expect(sleepy.targetId).toBe('camp-sleep');
     expect(sleepy.look).toBe('sleep');
     expect(sleepy.y).toBeCloseTo(mat.y);
+    expect(sleepy.x).toBeCloseTo(mat.x - 0.14);
+    expect(sleepy.x).toBeLessThan(0.35);
 
     const guard = companionPost(camp, { 'dba.beat.water': true, 'dba.beat.food': true, 'dba.beat.sleep': true }, {});
     expect(guard.pose).toBe('curl');

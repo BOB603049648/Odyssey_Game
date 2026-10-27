@@ -50,6 +50,22 @@ Base: `traveler-mythic/cloud-inspired/v3/anim/`
 ### Prologue tide
 - Still `art.pro.tide.jpg` (= `art.pro.tide-v4.jpg`; prior lock kept as `art.pro.tide-v3.jpg`): **one** oversized housecat 奈奈茶 (hood up, seal-point, flat rope knot); paws/haunches on wet sand + soft contact; **no** second small cloaked cat.
 
+### 奈奈茶 trajectory sheets (2026-10-28 §5.1)
+
+**Primary for 开发 waypoint machine:** `/workspace/odyssey-art/nanaicha/traj/` · canvas **864×1152** RGBA · pivot = opaque-bounds bottom-center · landings foot_pad ≈ **18px** · soft contact shadow baked on landings · leaps mid-frame (float OK).
+
+| File | Scene / §5.1 | Pose / gaze | Stage |
+|------|----------------|-------------|-------|
+| `land-shore-driftwood.png` | shore S0 | crouch by driftwood → wood | pre-water |
+| `land-shore-gourd.png` | shore S1 | half-step by gourd → gourd | **water** |
+| `land-shore-east-gap.png` | shore S2 | stand east gap → camp smoke | post-water |
+| `land-camp-sleep-mat.png` | camp C2 | crouch mat side → mat+fire | post-food → **sleep** |
+| `land-camp-fireside.png` | camp C3 | loaf/guard by fire | post-**sleep** |
+| `land-yard-give.png` | yard Y0 | sit give-side → bag/string | **food** |
+| `leap-01.png` / `leap-02.png` | transition | mid-air arc (optional) | between beats |
+
+Queue lock: **water → food → sleep → danger**. Float leap OK; each **landing** must make guide target readable. Scene props `art.*.prop.nanaicha.png` remain fallback aliases (see contract `nanaicha_trajectory.alias_scene_props`). Full table: `art-scale-contract.json` → `nanaicha_trajectory`.
+
 ### 奈奈茶 grounding (playtest 2026-10-28)
 | Path | Pose | §5.1 meaning |
 |------|------|----------------|
@@ -58,8 +74,58 @@ Base: `traveler-mythic/cloud-inspired/v3/anim/`
 | `yard/art.yard.prop.nanaicha.png` | sit by bags | grain-bags / give-side guide |
 Pivot: **bottom-center opaque**; place on Band ground Y like other props — **do not canvas-center float**. Gaze queue: water→food→sleep→danger. See scene cards §5.1 + hotspot §7.4 / §7.5#7.
 
+
+
+## 共光/共影（辅资产 · 2026-10-28）
+
+> **主路径 = 工程**（世界根 ambient、脚底锚、合成后 grade）。美工包只辅：椭圆影 + 场景 ambient/shadowTint + 1×256 strip。详见 `research-visual-cohesion-2026-10-28.md`。**勿当「画完就一体」。**
+
+- Pack: `/workspace/odyssey-art/cohesion/`（`shadows/` · `strips/` · `grades/` optional）
+- Contract field: `art-scale-contract.json` → `cohesion.scenes.<id>.{ambient,shadowTint,strip}`
+- Eng: tint runtime shadows with `shadowTint`; multiply world by `ambient`; grade **after** composite
+
 ## What eng still owns
 1. Opaque-bounds pivot + worldScale retune per this contract.  
 2. Scene prop Y so all co-ground with traveler feet.  
 3. Unlock walk-back-02/03/04 + idle-back; no duplicate cat overlay on tide.  
 4. **奈奈茶:** place `art.*.prop.nanaicha` with opaque foot on walkable Band; companion state machine §5.1 (身位锚点 + look 目标); baked PNG shadow OK, optional eng y-scaled shadow for traveler too.
+5. **奈奈茶 traj:** wire `nanaicha/traj/` landing ids to §5.1 state machine; optional leap-01/02 between beats; opaque-foot pivot on landings.
+6. **共光/共影:** shared shadow under traveler pivot + per-scene `grade.*.png` fullscreen; baked prop shadows already in PNGs — 开新 PR 合 main.
+
+
+---
+
+## Failfix addendum (2026-10-28 Asia/Shanghai) — cohesion FAIL pack
+
+**Role:** auxiliary art only. Eng still owns world ambient, opaque-foot pivot, post-composite grade, and debug overlays.
+
+### White vertical lines (雾岸竖白线)
+- **Source: eng** debug/walk grid — lower-third thin verticals, median spacing **~60px** (shot `pr10-pages/02-shore-s1-scale-lines.png`).
+- Shore/camp/yard `fg/ground/building/sky` plates: **0** hard white vertical seam peaks.
+- **Art action: none.** Eng must disable the grid overlay.
+
+### Props rebaked (stronger soft contact shadow, foot_pad=16)
+| Path | notes |
+|------|-------|
+| `camp/art.camp.prop.fire.png` | 火塘 ≤28%H; soft ellipse under stones |
+| `shore/art.shore.prop.gourd.png` | 碗/瓢 15–18%H |
+| `yard/art.yard.prop.dried-fish.png` | 鱼架 40–50%H |
+| `yard/art.yard.prop.grain-bags.png` + `.interact.png` | 粮袋 22–28%H; interact same pivot |
+
+Do **not** stack a hard eng drop-shadow on these; optional soft y-scaled shared ellipse OK.
+
+### C2 / C3 dedicated frames (NOT curtain)
+| Beat | Wire this | Readable |
+|------|-----------|----------|
+| **C2 铺边** | `nanaicha/traj/land-camp-sleep-mat.png` | 该睡了 — crouch/sit at mat edge |
+| **C3 火旁蜷** | `nanaicha/traj/land-camp-fireside.png` | 守夜 — loaf/curl, half-open guard eyes |
+| Fallback | `camp/art.camp.prop.nanaicha.png` | = C3 loaf, 1280×720, strong ground contact |
+
+**CRITICAL:** never hang `art.camp.prop.north-curtain.png` as the companion sprite (playtest `40-c2-curtain.png`).
+
+### Leap — no horizontal squash
+- `nanaicha/traj/leap-01.png` / `leap-02.png` regenerated.
+- Opaque body aspect target **~0.7–1.1**; mid-air float OK; **do not** apply horizontal stretch in engine tweens.
+
+### PR
+开**新 PR** 合 main（#10 已合）。合同 version `1.3-failfix`。详见 `_failfix-report.json`。

@@ -255,7 +255,6 @@ h1 {
   padding: 0;
   border-radius: 0;
   background: transparent;
-  filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.55));
   z-index: 3;
   transition: transform 560ms ease;
 }
@@ -507,12 +506,10 @@ h1 {
   z-index: 5;
   width: auto;
   aspect-ratio: 3 / 4;
-  transform: translate(-50%, -96%);
   pointer-events: none;
 }
 
-.traveler-bob { position: relative; height: 100%; }
-.traveler[data-pose="lie"] { transform: translate(-50%, -96%) rotate(-72deg); transform-origin: 50% 96%; }
+.traveler-bob { position: relative; height: 100%; isolation: isolate; }
 
 .traveler img {
   display: block;
@@ -696,19 +693,32 @@ h1 {
   pointer-events: none;
 }
 
+.companion-mirror {
+  display: block;
+  height: 100%;
+  transform-origin: 50% 100%;
+}
+.companion-anchor[data-face="left"] .companion-mirror { transform: scaleX(-1); }
+.companion-anchor .companion,
+.companion-anchor .companion[data-pose] {
+  width: 100%;
+  transform: none;
+  transition: none;
+  filter: none;
+}
+
 .nanaicha-ground {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
   object-position: center bottom;
-  transform-origin: 50% 93%;
+  transform-origin: 50% 100%;
   pointer-events: none;
 }
 
-.companion-anchor[data-face="left"] .nanaicha-ground { transform: scaleX(-1); }
 .companion-anchor[data-traveling="yes"][data-traj="land"] .nanaicha-ground { animation: nanaicha-hop 0.55s ease-in-out infinite; }
-.companion-anchor[data-traj^="leap"] .contact-shadow { opacity: 0; }
+.companion-anchor .contact-shadow { opacity: var(--shadow-opacity, 1); }
 .companion-anchor[data-look="gourd"] .nanaicha-ground,
 .companion-anchor[data-look="give"] .nanaicha-ground,
 .companion-anchor[data-look="sleep"] .nanaicha-ground,
@@ -723,7 +733,6 @@ h1 {
   left: auto;
   bottom: auto;
   width: 100%;
-  transition: transform 560ms ease;
   pointer-events: auto;
 }
 
@@ -1232,25 +1241,18 @@ h1 {
   pointer-events: none;
 }
 
-.plate-fade[data-ambient="dba.scene.shore"] .ambient-water,
 .plate-fade[data-ambient="dba.scene.camp"] .ambient-flame,
 .plate-fade[data-ambient="dba.scene.night"] .ambient-flame,
 .plate-fade[data-ambient="dba.scene.night"] .ambient-rain,
 .plate-fade[data-ambient="dba.scene.path"] .ambient-dark,
 .plate-fade[data-ambient="art.pro.dark"] .ambient-dark { display: block; }
 
+.ambient-water,
 .ambient-water::after {
-  content: "";
-  position: absolute;
-  left: -30%;
-  right: -10%;
-  bottom: 0;
-  height: 32%;
-  background:
-    linear-gradient(180deg, transparent, rgba(186, 220, 226, 0.16)),
-    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, 0.09) 28px 32px, transparent 32px 64px);
-  mix-blend-mode: screen;
-  animation: water-shift 11s linear infinite;
+  display: none;
+  content: none;
+  background-image: none;
+  animation: none;
 }
 
 .ambient-flame {
@@ -1336,11 +1338,6 @@ h1 {
 @keyframes nanaicha-tap {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   40% { transform: translateY(8px) rotate(-4deg); }
-}
-
-@keyframes water-shift {
-  from { transform: translateX(0); }
-  to { transform: translateX(-64px); }
 }
 
 @keyframes flame-flicker {
@@ -1550,9 +1547,12 @@ h1 {
 }
 .scene-slot.full[data-slot="sky"] .slot-asset,
 .scene-slot.full[data-slot="far"] .slot-asset,
-.scene-slot.full[data-slot="building"] .slot-asset,
 .scene-slot.full[data-slot="fg"] .slot-asset {
   object-fit: cover;
+}
+.scene-slot.full[data-slot="building"] .slot-asset {
+  object-fit: cover;
+  object-position: center bottom;
 }
 .scene-slot.full[data-slot="ground"] .slot-asset {
   object-fit: cover;
@@ -1568,6 +1568,17 @@ h1 {
   position: relative;
   width: 100%;
   height: 100%;
+}
+.scene-slot.placed[data-slot="props"] .prop-body { isolation: isolate; }
+.scene-slot.placed[data-slot="props"] .slot-asset {
+  object-fit: contain;
+  object-position: center bottom;
+}
+.scene-slot.placed[data-slot="props"] .prop-contact {
+  z-index: -1;
+  height: auto;
+  bottom: 0;
+  background: none;
 }
 .prop-cue {
   position: absolute;
@@ -1591,7 +1602,7 @@ h1 {
   50% { transform: translateY(-4px); }
 }
 .scene-slot.lit .slot-asset,
-.scene-slot.lit .slot-block { filter: drop-shadow(0 0 14px rgba(232, 214, 160, 0.8)); }
+.scene-slot.lit .slot-block { filter: none; }
 
 .plate-still {
   position: absolute;
@@ -1621,9 +1632,7 @@ h1 {
 }
 .ground-plane[data-ground="wet-sand"] .ground-forbid { background-color: #142026; }
 .ground-plane[data-ground="wet-sand"] .ground-walk {
-  background:
-    linear-gradient(180deg, rgba(190, 198, 176, 0.2), rgba(214, 206, 176, 0.72)),
-    repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.12) 22px 24px);
+  background: linear-gradient(180deg, rgba(190, 198, 176, 0.2), rgba(214, 206, 176, 0.72));
   border-radius: 40% 46% 12% 12%;
 }
 .ground-plane[data-ground="packed-earth"] .ground-forbid { background-color: #1a1410; }
@@ -1799,30 +1808,71 @@ h1 {
   z-index: 2;
 }
 
+.world-post {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+.world-ambient,
+.world-strip,
+.world-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.world-ambient {
+  background: var(--ambient, transparent);
+  mix-blend-mode: multiply;
+  opacity: 0.42;
+}
+.world-strip {
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  mix-blend-mode: soft-light;
+  opacity: 0.72;
+}
+.world-vignette {
+  background: radial-gradient(ellipse at 50% 46%, transparent 42%, rgba(0, 0, 0, 0.42) 100%);
+}
 .grade-veil {
   position: absolute;
   inset: 0;
   z-index: 5;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse at center, transparent 46%, rgba(0, 0, 0, 0.5) 100%);
-  mix-blend-mode: multiply;
 }
-.grade-veil[data-grade="mist-dawn"] { box-shadow: inset 0 0 80px rgba(120, 150, 160, 0.28); }
-.grade-veil[data-grade="hearth"] { box-shadow: inset 0 0 90px rgba(180, 90, 30, 0.28); }
-.grade-veil[data-grade="stone-day"] { box-shadow: inset 0 0 70px rgba(180, 170, 140, 0.2); }
-.grade-veil[data-grade="mineral"] { box-shadow: inset 0 0 90px rgba(90, 50, 30, 0.32); }
-.grade-veil[data-grade="fog"] { box-shadow: inset 0 0 100px rgba(140, 150, 150, 0.3); }
-.grade-veil[data-grade="night-fire"] { box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.45); }
+.scene-grade {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+}
+.foot-ellipse {
+  background-color: var(--shadow-tint, #3a4e55);
+  -webkit-mask-image: var(--ellipse);
+  mask-image: var(--ellipse);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-position: center;
+  mask-position: center;
+  aspect-ratio: 3.4 / 1;
+  height: auto;
+  bottom: 0;
+  transform: translate(-50%, 42%);
+  z-index: -1;
+}
 
 .contact-shadow {
   position: absolute;
   left: 50%;
   bottom: 0;
   width: 46%;
-  height: 12px;
-  transform: translateX(-50%);
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.55), transparent 70%);
   pointer-events: none;
   z-index: 0;
 }

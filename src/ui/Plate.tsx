@@ -5,6 +5,8 @@ import { isIslandScene, type IslandScene } from '../core/island';
 import type { SceneAssembly, SceneSlot, SceneSlotName } from '../core/schema';
 import { BANDS } from '../core/stage';
 import type { Point } from '../core/walk';
+import { buildingFoot, FOOT_PIVOT, parallaxBleed, worldToScreen } from '../core/world';
+import { ellipseSizeFor, ellipseWidthPct, FOOT_ELLIPSE, FOUNDATION_SHADOW, foundationFor, hasPngContact } from './cohesion';
 import { isStillId, StillFrame } from './stillFrames';
 
 const SLOT_ORDER: readonly SceneSlotName[] = ['sky', 'far', 'ground', 'building', 'props', 'fg'];
@@ -151,7 +153,6 @@ function SlotAssembly({
           showWalkMask={showWalkMask}
         />
       ))}
-      <div className="ambient ambient-water" />
       <div className="ambient ambient-flame" />
       <div className="ambient ambient-rain" />
       <div className="ambient ambient-dark" />
@@ -176,24 +177,37 @@ function SlotPiece({
 }) {
   if (hidden) return null;
   const placed = slot.x !== undefined && slot.y !== undefined;
+  const scenic = slot.slot === 'building' && !placed;
   const testId = slot.slot === 'props' ? `prop-${slot.id}` : `slot-${slot.slot}`;
   const src = resolveSlotAsset(slot.asset);
   const interactable = Boolean(slot.spot);
+  const footed = slot.slot === 'props' || slot.slot === 'building';
   return (
     <div
       className={lit ? `scene-slot ${placed ? 'placed' : 'full'} lit` : `scene-slot ${placed ? 'placed' : 'full'}`}
       data-slot={slot.slot}
       data-art-id={slot.id}
       data-kind={slot.kind}
-      data-parallax={slot.parallax}
+      data-parallax={scenic ? 1 : slot.parallax}
       data-spot={slot.spot}
       data-interactable={interactable ? 'yes' : 'no'}
       data-cue={interactable ? (lit ? 'near' : 'far') : undefined}
       data-placeholder={src ? 'art' : 'block'}
+      data-anchor={footed ? 'foot' : undefined}
+      data-coplanar={scenic ? 'yes' : undefined}
+      data-shadow={slot.slot === 'props' ? (ellipseSizeFor(slot) ? 'ellipse' : hasPngContact(slot.asset ?? slot.id) ? 'png' : 'none') : undefined}
       data-testid={testId}
-      style={slotStyle(slot, cam, placed)}
+      style={slotStyle(slot, cam)}
     >
       <div className="prop-body">
+        <PropShadow slot={slot} />
+        {slot.slot === 'building' && placed && foundationFor(slot) ? (
+          <span
+            className="contact-shadow foot-ellipse"
+            data-testid="building-contact"
+            style={{ width: '78%', ['--ellipse' as string]: `url("${FOUNDATION_SHADOW}")` }}
+          />
+        ) : null}
         {src ? <img className="slot-asset" src={src} alt="" draggable={false} /> : null}
         {!src && slot.slot === 'ground' ? <GroundPlane scene={scene} kind={slot.kind} /> : null}
         {!src && slot.slot !== 'ground' && slot.kind !== 'empty' ? (
@@ -203,6 +217,22 @@ function SlotPiece({
         {slot.slot === 'ground' && showWalkMask ? <WalkMask scene={scene} /> : null}
       </div>
     </div>
+  );
+}
+
+function PropShadow({ slot }: { slot: SceneSlot }) {
+  const size = ellipseSizeFor(slot);
+  if (!size) return null;
+  return (
+    <span
+      className="contact-shadow prop-contact foot-ellipse"
+      data-testid="prop-contact"
+      data-ellipse={size}
+      style={{
+        width: `${ellipseWidthPct(slot.y ?? 0.6)}%`,
+        ['--ellipse' as string]: `url("${FOOT_ELLIPSE[size]}")`,
+      }}
+    />
   );
 }
 
@@ -238,17 +268,23 @@ function GroundPlane({ scene, kind }: { scene: IslandScene; kind: string }) {
   );
 }
 
-function slotStyle(slot: SceneSlot, cam: Point, placed: boolean): CSSProperties {
-  const dx = cam.x * (1 - slot.parallax);
-  const dy = cam.y * (1 - slot.parallax);
+function slotStyle(slot: SceneSlot, cam: Point): CSSProperties {
+  const placed = slot.x !== undefined && slot.y !== undefined;
+  const scenic = slot.slot === 'building' && !placed;
+  const parallax = scenic ? 1 : slot.parallax;
+  const dx = cam.x * (1 - parallax);
+  const dy = cam.y * (1 - parallax);
   const shift = `translate3d(${dx}px, ${dy}px, 0)`;
-  if (!placed || slot.x === undefined || slot.y === undefined) return { transform: shift };
+  if (!placed || slot.x === undefined || slot.y === undefined) {
+    const bleed = parallaxBleed(parallax);
+    return { transform: shift, inset: `${-bleed * 100}%` };
+  }
+  const foot = slot.slot === 'building' ? buildingFoot({ x: slot.x, y: slot.y, h: slot.h }) : { x: slot.x, y: slot.y };
+  const pivot = slot.slot === 'props' || slot.slot === 'building' ? FOOT_PIVOT : { x: 0.5, y: 0.5 };
   return {
-    left: `${slot.x * 100}%`,
-    top: `${slot.y * 100}%`,
+    ...worldToScreen(foot, pivot, shift),
     width: `${(slot.w ?? 0.12) * 100}%`,
     height: `${(slot.h ?? 0.1) * 100}%`,
-    transform: `translate(-50%, -50%) ${shift}`,
   };
 }
 
