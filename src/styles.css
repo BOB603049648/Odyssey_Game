@@ -396,6 +396,120 @@ h1 {
   background: #0c1412;
 }
 
+.walk-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.world-cam,
+.world-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.walk-ground {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  cursor: crosshair;
+}
+
+.world-layer .hotspot {
+  z-index: 2;
+  transform: translate(-8px, -50%);
+}
+
+.path-exit {
+  position: absolute;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  transform: translate(-50%, -50%);
+}
+
+.path-exit i {
+  display: block;
+  width: 8px;
+  height: 8px;
+  margin: 18px auto 0;
+  border-radius: 50%;
+  border: 1px solid rgba(230, 211, 164, 0.85);
+  box-shadow: 0 0 10px rgba(230, 211, 164, 0.5);
+}
+
+.path-exit span {
+  position: absolute;
+  left: 50%;
+  top: 32px;
+  transform: translateX(-50%);
+  opacity: 0;
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+  color: var(--bone);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+}
+
+.path-exit.near span,
+.path-exit:hover span,
+.path-exit:focus-visible span {
+  opacity: 1;
+}
+
+.traveler {
+  position: absolute;
+  z-index: 5;
+  width: 46px;
+  height: 78px;
+  transform: translate(-50%, -92%);
+  pointer-events: none;
+  filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5));
+}
+
+.traveler[data-facing="left"] { transform: translate(-50%, -92%) scaleX(-1); }
+
+.traveler svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: #e6d3b4;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.traveler-fill { fill: #140e0c; }
+.traveler-shadow { fill: rgba(0, 0, 0, 0.42); stroke: none; }
+
+.traveler[data-moving="yes"] .traveler-bob { animation: traveler-bob 0.42s ease-in-out infinite; }
+
+.hotspot.act .glyph,
+.hotspot.fish-a .glyph,
+.hotspot.fish-b .glyph { opacity: 0; }
+
+.hotspot.act.near .glyph,
+.hotspot.act:hover .glyph,
+.hotspot.act:focus-visible .glyph,
+.hotspot.fish-a.near .glyph,
+.hotspot.fish-a:hover .glyph,
+.hotspot.fish-b.near .glyph,
+.hotspot.fish-b:hover .glyph,
+.shore-wrap[data-hotspots="on"] .hotspot.act .glyph,
+.shore-wrap[data-hotspots="on"] .hotspot.fish-a .glyph,
+.shore-wrap[data-hotspots="on"] .hotspot.fish-b .glyph { opacity: 1; }
+
+@keyframes traveler-bob {
+  50% { transform: translateY(-4px); }
+}
+
 .hotspot {
   position: absolute;
   z-index: 2;
@@ -428,6 +542,7 @@ h1 {
 
 .hotspot:hover,
 .hotspot:focus-visible,
+.hotspot.near,
 .hotspot.hint-near,
 .shore-wrap[data-hotspots="on"] .hotspot {
   color: var(--bone);
@@ -467,17 +582,22 @@ h1 {
 .shore-wrap[data-water-beat="done"] .hotspot.gourd:focus-visible,
 .shore-wrap[data-hotspots="on"] .hotspot.gourd { opacity: 1; }
 
-.shore-wrap .companion {
+.companion-anchor {
   position: absolute;
-  left: 34%;
-  bottom: 8%;
-  transition: left 720ms ease, bottom 720ms ease, transform 560ms ease;
+  z-index: 4;
+  width: 188px;
+  transform: translate(-50%, -100%);
+  pointer-events: none;
 }
-.shore-wrap[data-scene="myp.scene.camp"] .companion { left: 62%; bottom: 14%; }
-.shore-wrap[data-scene="myp.scene.fishery"] .companion { left: 44%; bottom: 8%; }
-.shore-wrap[data-scene="myp.scene.rock"] .companion { left: 16%; bottom: 12%; }
-.shore-wrap[data-scene="myp.scene.forest"] .companion { left: 68%; bottom: 12%; }
-.shore-wrap[data-scene="myp.scene.night"] .companion { left: 38%; bottom: 18%; }
+
+.shore-wrap .companion {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  width: 100%;
+  transition: transform 560ms ease;
+  pointer-events: auto;
+}
 
 .bands, .grid, .tray, .choices, .lexicon {
   display: grid;
@@ -1170,7 +1290,8 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
   .shake, .purr, .nanaicha-look, .nanaicha-state, .collar-knot,
   .plate-photo, .plate-fade, .ambient, .ambient-water::after,
-  .companion-sway, .hud-caption, .sheet, .enter-veil, .nav-name, .hotspot, .act-tray button, .hud-actions .btn {
+  .companion-sway, .hud-caption, .sheet, .enter-veil, .nav-name, .hotspot, .act-tray button, .hud-actions .btn,
+  .traveler-bob {
     animation: none;
     transition: none;
   }
