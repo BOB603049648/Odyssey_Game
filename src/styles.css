@@ -403,6 +403,26 @@ h1 {
   z-index: 0;
 }
 
+/* 舞台上的点按只交给点地和热区。touch-action 不继承，命中元素与祖先取交集，所以地面、热区、路口和向导也要写上。 */
+.walk-viewport,
+.world-cam,
+.world-layer,
+.walk-ground,
+.world-layer .hotspot,
+.path-exit,
+.shore-wrap .companion {
+  touch-action: none;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.walk-viewport img,
+.walk-viewport svg {
+  -webkit-user-drag: none;
+}
+
 .world-cam,
 .world-layer {
   position: absolute;
