@@ -35,7 +35,7 @@ npm run build
 
 ## 向导画面
 
-向导仍是剪影，正式形象还没接入。只改 [`src/ui/companion/CatMark.tsx`](src/ui/companion/CatMark.tsx)。请保留根元素的 class `cat`、属性 `data-look`，以及眼睛那组的 class `eyes`，现有的呼吸、视线和姿势动画才接得上。
+画面上不写向导的名字。立绘在 [`src/ui/companion/CatMark.tsx`](src/ui/companion/CatMark.tsx)，图在 `src/assets/companion/nanaicha/`（`nanaicha-hero.png` 用于场景，`nanaicha-silhouette.png` 用于回忆）。内部 id 是 `nanaicha`。颈上的结是 class `collar-knot`；以后把 `data-knot` 设成 `glow` 就会亮，现在默认 `rest`。
 
 手机壳只放了 `capacitor.config.ts`（`webDir` 为 `dist`）。还没有 iOS / Android 工程。
 

@@ -31,7 +31,7 @@ export function Cutscenes({
             <path d="M470 120h40M490 100v40" />
             <path d="M520 200l70-16" />
           </svg>
-          <CatMark look="depart" />
+          <CatMark look="depart" state="carry" />
         </div>
         <button type="button" className="btn primary" onClick={() => dispatch({ type: 'advance-cutscene' })}>
           {t('menu.next')}
@@ -46,6 +46,7 @@ export function Cutscenes({
       <PlateStack plate={plates.current} previous={plates.previous} />
       <EnterVeil />
       <MemoryFrame frame={frame} />
+      <CatMark variant="silhouette" state="idle" />
       <button type="button" className="btn primary" onClick={() => dispatch({ type: 'advance-cutscene' })}>
         {last ? t('menu.close') : t('menu.next')}
       </button>

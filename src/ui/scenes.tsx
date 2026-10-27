@@ -1,7 +1,3 @@
-import { CatMark } from './companion/CatMark';
-
-export { CatMark };
-
 export function PrologueArt({ step }: { step: number }) {
   if (step === 0) {
     return (
@@ -37,7 +33,6 @@ export function PrologueArt({ step }: { step: number }) {
       <svg viewBox="0 0 640 120" aria-hidden="true">
         <path className="wave" d="M0 40c60 20 80-20 140 0s90 24 140-6 80-16 130 8 100 16 140-8 60-8 90 6v72H0z" />
       </svg>
-      <CatMark />
     </div>
   );
 }

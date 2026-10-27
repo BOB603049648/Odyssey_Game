@@ -243,36 +243,90 @@ h1 {
 .cat .eyes { fill: #e7c27a; stroke: none; }
 
 .companion {
-  width: 128px;
+  width: 176px;
   padding: 0;
   border-radius: 0;
   background: transparent;
-  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.55));
+  filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.55));
   z-index: 3;
   transition: transform 560ms ease;
 }
 
 .companion-sway {
   display: block;
-  transform-origin: 50% 86%;
-  animation: cat-breathe 5.4s ease-in-out infinite;
+  transform-origin: 50% 42%;
+  animation: nanaicha-breath 3.6s ease-in-out infinite;
 }
 
-.companion .eyes { transition: transform 420ms ease; }
-.companion[data-level="1"] .eyes,
-.companion[data-level="2"] .eyes,
-.companion[data-level="3"] .eyes { transform-box: fill-box; }
-.companion[data-look="mural-entrance"] .eyes { transform: translate(-4px, -2px); }
-.companion[data-look="mural-cell"] .eyes { transform: translate(-5px, 1px); }
-.companion[data-look="mural-object"] .eyes { transform: translate(5px, 3px); }
-.companion[data-look="gourd"] .eyes,
-.companion[data-look="use-word"] .eyes { transform: translate(4px, 2px); }
-.companion[data-look="driftwood"] .eyes { transform: translate(-6px, 2px); }
-.companion[data-look="sleep"] .eyes { transform: translate(1px, 3px); }
-.companion[data-look="give"] .eyes { transform: translate(6px, 2px); }
-.companion[data-look="forest-stop"] .eyes { transform: translate(-4px, 1px); }
-.companion[data-look="old-layer"] .eyes { transform: translate(0, -3px); }
-.companion[data-look="depart"] .eyes { transform: translate(6px, -1px); }
+.nanaicha-look {
+  display: block;
+  transform-origin: 50% 38%;
+  transition: transform 420ms ease;
+}
+
+.nanaicha-look[data-look="driftwood"] { transform: rotate(-7deg); }
+.nanaicha-look[data-look="mural-entrance"] { transform: rotate(-5deg); }
+.nanaicha-look[data-look="mural-cell"] { transform: rotate(-4deg); }
+.nanaicha-look[data-look="forest-stop"] { transform: rotate(-4deg); }
+.nanaicha-look[data-look="old-layer"] { transform: rotate(-2deg); }
+.nanaicha-look[data-look="sleep"] { transform: rotate(3deg); }
+.nanaicha-look[data-look="gourd"],
+.nanaicha-look[data-look="use-word"] { transform: rotate(5deg); }
+.nanaicha-look[data-look="mural-object"] { transform: rotate(6deg); }
+.nanaicha-look[data-look="give"] { transform: rotate(7deg); }
+.nanaicha-look[data-look="depart"] { transform: rotate(8deg); }
+
+.nanaicha-state {
+  display: block;
+  position: relative;
+  transform-origin: 50% 72%;
+  transition: transform 560ms ease;
+}
+
+.nanaicha-state[data-state="look"] { transform: translateY(-2px); }
+.nanaicha-state[data-state="tilt"] {
+  transform: rotate(-8deg);
+  transform-origin: 50% 28%;
+}
+.nanaicha-state[data-state="walk"] { animation: nanaicha-walk 1.6s ease-in-out infinite; }
+.nanaicha-state[data-state="tap"] { animation: nanaicha-tap 0.7s ease-in-out infinite; }
+.nanaicha-state[data-state="carry"] { transform: translateY(-6px) rotate(2deg); }
+.nanaicha-state[data-state="guard"] { transform: scale(0.96) translateY(4px); }
+
+.nanaicha-hero,
+.nanaicha-silhouette {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+.collar-knot {
+  position: absolute;
+  left: 43%;
+  top: 34%;
+  width: 14%;
+  height: 8%;
+  border-radius: 40%;
+  background: transparent;
+  pointer-events: none;
+}
+
+.companion[data-knot="glow"] .collar-knot,
+.collar-knot[data-knot="glow"] {
+  background: rgba(212, 160, 23, 0.28);
+  box-shadow: 0 0 14px 5px rgba(212, 160, 23, 0.85);
+}
+
+.prologue > .nanaicha-look {
+  position: absolute;
+  right: 8vw;
+  bottom: 4vh;
+  width: min(36vh, 260px);
+  z-index: 1;
+  pointer-events: none;
+}
 
 .hud-actions {
   position: absolute;
@@ -653,7 +707,28 @@ h1 {
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 28%, rgba(0, 0, 0, 0.5));
 }
 
-.cutscene .btn { position: relative; z-index: 2; }
+.cutscene .btn { position: relative; z-index: 3; }
+
+.cutscene .nanaicha-look {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cutscene > .nanaicha-look {
+  right: 6vw;
+  bottom: 0;
+  width: min(300px, 32vw);
+}
+
+.cutscene .nanaicha-silhouette { opacity: 0.78; }
+
+.cutscene .depart-art .nanaicha-look {
+  left: 7vw;
+  right: auto;
+  bottom: 2vh;
+  width: min(320px, 34vw);
+}
 
 .cutscene .plate {
   width: min(880px, 100%);
@@ -1024,9 +1099,19 @@ h1 {
   to { opacity: 0; }
 }
 
-@keyframes cat-breathe {
-  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
-  50% { transform: translate3d(1px, -3px, 0) rotate(-0.7deg); }
+@keyframes nanaicha-breath {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.02); }
+}
+
+@keyframes nanaicha-walk {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+
+@keyframes nanaicha-tap {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  40% { transform: translateY(8px) rotate(-4deg); }
 }
 
 @keyframes water-shift {
@@ -1056,7 +1141,7 @@ h1 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .shake, .purr, .companion .eyes,
+  .shake, .purr, .nanaicha-look, .nanaicha-state,
   .plate-photo, .plate-fade, .ambient, .ambient-water::after,
   .companion-sway, .hud-caption, .sheet, .enter-veil, .nav-name, .hotspot, .act-tray button, .hud-actions .btn {
     animation: none;
