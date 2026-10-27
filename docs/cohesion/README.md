@@ -1,0 +1,89 @@
+# Odyssey cohesion pack（共光 / 共影）· **辅资产**
+
+> **编导纠偏（2026-10-28）：** 一体感**主路径是工程**（世界根 ambient、脚底锚、**合成后** grade），不是再堆贴图。  
+> 本包只作**辅**：接地影椭圆 + 场景色温条 / ambient hex 进合同；**勿当「画完就一体」**。  
+> 详见 `/workspace/odyssey-docs/research-visual-cohesion-2026-10-28.md` §0 / §3 / §6 P0。
+
+**Updated:** 2026-10-28T01:36:09+08:00  
+**Report:** `/workspace/odyssey-art/_cohesion-report.json`  
+**Contract:** `art-scale-contract.json` → `1.3-cohesion` · `cohesion`（role=`auxiliary`）
+
+## Role split
+
+| 谁 | 做啥 |
+|----|------|
+| **开发（主）** | 单一 `worldToScreen(foot)`；世界根 ambient 乘算；合成后 vignette/grade；接触影系统（高度→α） |
+| **美工（辅）** | 中性光出图；椭圆影 sprite；每景 ambient hex + shadowTint + 1×256 strip；可选全屏 grade PNG 作假一体 |
+
+## 1) Shared shadows — `cohesion/shadows/`
+
+| File | Size | Use |
+|------|------|-----|
+| `shadow.ellipse.s.png` | 256×128 | small props |
+| `shadow.ellipse.m.png` | 384×160 | knee props |
+| `shadow.ellipse.l.png` | 512×192 | traveler / nanaicha |
+| `shadow.ellipse.xl.png` | 768×256 | wide props |
+| `shadow.foundation.bar.png` | 1024×96 | building foundation |
+
+纯黑软椭圆。Eng：脚底世界坐标下绘制，**tint = 场景 `shadowTint`**，离地高度淡出。已烘影 props 勿再叠硬影。
+
+## 2) Scene color strips + ambient — `cohesion/strips/` + contract
+
+每景 **1×256** fog/grade strip（Firewatch 式深度采样）+ ambient / shadowTint hex：
+
+| Scene | ambient | shadowTint | strip |
+|-------|---------|------------|-------|
+| shore | `#B8CED4` | `#3A4E55` | `strips/strip.shore.png` |
+| camp | `#D4B08A` | `#4A3528` | `strips/strip.camp.png` |
+| yard | `#C9BCA8` | `#3F3A32` | `strips/strip.yard.png` |
+| hall | `#9AA8AC` | `#2E383C` | `strips/strip.hall.png` |
+| path | `#A8B4B8` | `#353E42` | `strips/strip.path.png` |
+| night | `#4A5568` | `#1E2430` | `strips/strip.night.png` |
+
+可选全屏假 grade（P0 DOM）：`grades/grade.<scene>.png` 1280×720 — **优先**世界根乘算 ambient + 合成后一层 strip/vignette，全屏 grade 仅权宜。
+
+## 3) Baked contact shadows（in-place，辅）
+
+备份：`<scene>/raw/pre-cohesion/`。已烘：driftwood、dried-fish、camp/hall/path/night buildings、hall scroll/stamp、danger-board、night old-layer。部分做了下锚（foot_pad→≤16）。
+
+## Eng one-liners（对齐调研）
+
+1. **主**：世界根挂场景 `ambient` 乘算全部精灵；合成后再 grade/vignette。  
+2. **辅影**：未烘影精灵用 `shadow.ellipse.*`，色用 `shadowTint`，贴 opaque 底中脚 Y。  
+3. **辅条**：深度雾可采样 `strips/strip.<scene>.png`。  
+4. 已烘影 props **勿**再叠硬影。  
+5. 开**新 PR**合 main（#10 已合）。一体感不够优先改工程，美工只补合同字段（锚 / ambient / strip / 保留色）。
+
+
+---
+
+## PR11 ground addendum (2026-10-28T02:13:46+08:00)
+
+编导复测 FAIL：道具悬空贴纸。美工辅包已就地加强 **baked contact shadows** + 雾感共光；**主路径仍是工程**。
+
+### shadowTint（与合同 cohesion.scenes 一致）
+| Scene | ambient | shadowTint | baked ellipse RGB |
+|-------|---------|------------|-------------------|
+| shore | `#B8CED4` | `#3A4E55` | 16,14,12 |
+| camp  | `#D4B08A` | `#4A3528` | 18,12,8 |
+| yard  | `#C9BCA8` | `#3F3A32` | 18,12,8 |
+
+`cohesion/shadows/shadow.ellipse.{s,m,l,xl}.png` + `shadow.foundation.bar.png` 已刷新为 warm-dark 软椭圆（α峰~200–220）。Eng tint 运行时影用 `shadowTint`。
+
+### Grade guidance（非全幅雾罩）
+1. 世界根乘算场景 `ambient`。
+2. 合成后一层 strip/vignette / `grades/grade.<scene>.png`。
+3. **勿**对精灵做 uniform fog α 乘算（会变半透抠图）。
+4. 已烘影 props：ground < baked-shadow-in-png < subject；勿叠硬影。
+
+
+---
+
+## PR12 sticker note (2026-10-28T04:24:57+08:00 Asia/Shanghai)
+
+Fog-match（降对比/饱和、2–3px 柔边、高光压、暖/冷 fringe）**已烘进** camp/yard/shore 优先道具与门帘。Eng 仍须：
+1. 世界根 ambient + 合成后 grade（主路径）；
+2. **勿**对精灵做 uniform fog α 乘算（会变半透抠图贴纸）；
+3. 已烘接触影 props 勿叠硬影；落位台面/地面 Band（粮袋/筐禁贴墙立面）。
+
+合同 `1.3-pr12-sticker` · 报告 `_pr12-sticker-report.json` · zip `art-pr12-sticker-pack.zip`。
