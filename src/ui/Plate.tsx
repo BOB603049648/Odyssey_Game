@@ -11,17 +11,6 @@ const SLOT_ORDER: readonly SceneSlotName[] = ['sky', 'far', 'ground', 'building'
 
 const BACK_SLOTS: ReadonlySet<SceneSlotName> = new Set(['sky', 'far', 'ground', 'building', 'props']);
 
-/** Provisional picture ids. night-layer still follows the night-read action until the writer locks the hotspot table. */
-const SPOT_ALSO: Record<string, readonly string[]> = {
-  'night-layer': ['night-read'],
-};
-
-function spotActive(slotSpot: string | undefined, names: readonly string[]): boolean {
-  if (!slotSpot) return false;
-  if (names.includes(slotSpot)) return true;
-  return (SPOT_ALSO[slotSpot] ?? []).some((name) => names.includes(name));
-}
-
 export function PlateStack({
   plate,
   previous,
@@ -157,8 +146,8 @@ function SlotAssembly({
           scene={scene}
           slot={slot}
           cam={cam}
-          lit={spotActive(slot.spot, near)}
-          hidden={slot.spot !== undefined && activeSpots !== null && !spotActive(slot.spot, activeSpots)}
+          lit={slot.spot ? near.includes(slot.spot) : false}
+          hidden={slot.spot !== undefined && activeSpots !== null && !activeSpots.includes(slot.spot)}
           showWalkMask={showWalkMask}
         />
       ))}

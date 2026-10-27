@@ -150,7 +150,7 @@ export function TravelerMark({
   moving: boolean;
   /** 0–1 movement power. Defaults to a full step while `moving` is set. */
   stride?: number;
-  /** `interact` and `reach` are reserved until their drawings arrive. */
+  /** `interact` and `reach` stay in the state machine. Their frames are not drawn yet. */
   pose?: 'auto' | 'interact' | 'reach';
 }) {
   const sheet = sheetOf(facing);

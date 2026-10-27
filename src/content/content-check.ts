@@ -167,7 +167,7 @@ export function checkContent(): string[] {
       errors.push(`${sceneId} uses a question-mark sticker as a prop`);
     }
     for (const spot of SPOTS[sceneId]) {
-      const anchors = kit.slots.filter((slot) => slot.slot === 'props' && anchorsSpot(slot.spot, spot.id));
+      const anchors = kit.slots.filter((slot) => slot.slot === 'props' && slot.spot === spot.id);
       if (anchors.length === 0) errors.push(`${sceneId} spot ${spot.id} is not anchored to a prop`);
     }
     if (sceneId === 'dba.scene.shore') {
@@ -207,8 +207,8 @@ export function checkContent(): string[] {
     if (sceneId === 'dba.scene.night') {
       const layer = kit.slots.find((slot) => slot.id === 'art.night.prop.old-layer');
       const embers = kit.slots.find((slot) => slot.id === 'art.night.prop.embers');
-      if (layer?.spot !== 'night-layer') errors.push('old-layer provisional hotspot is night-layer');
-      if (embers?.spot !== 'night-ember') errors.push('embers provisional hotspot is night-ember');
+      if (layer?.spot !== 'night-read') errors.push('old-layer hotspot must be night-read');
+      if (embers?.spot !== 'night-embers') errors.push('embers hotspot must be night-embers');
     }
     if (sceneId === 'dba.scene.yard') {
       for (const id of ['art.yard.prop.grain-bags', 'art.yard.prop.dried-fish', 'art.yard.prop.more-less-boards']) {
@@ -219,11 +219,4 @@ export function checkContent(): string[] {
     }
   }
   return errors;
-}
-
-/** night-layer is the provisional picture id; the read action is still night-read until the writer locks it. */
-function anchorsSpot(slotSpot: string | undefined, spotId: string): boolean {
-  if (!slotSpot) return false;
-  if (slotSpot === spotId) return true;
-  return spotId === 'night-read' && slotSpot === 'night-layer';
 }
