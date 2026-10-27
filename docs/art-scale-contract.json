@@ -1,6 +1,6 @@
 {
-  "version": "1.3-failfix",
-  "updated": "2026-10-28T01:44:48+08:00",
+  "version": "1.3-pr11-ground",
+  "updated": "2026-10-28T02:14:07+08:00",
   "unit": "meters",
   "traveler": {
     "height_m": 1.75,
@@ -108,39 +108,42 @@
     "nanaicha_props": {
       "shore/art.shore.prop.nanaicha.png": {
         "opaque_bbox_subject": [
-          457,
-          258,
-          822,
-          704
+          458,
+          260,
+          819,
+          701
         ],
-        "subjH_pct": 61.9,
-        "foot_pad_px": 16,
+        "subjH_pct": 61.4,
+        "foot_pad_px": 18,
         "world_pose": "tide-line / driftwood-side guide; default gaze toward east path or island-gourd (water→…)",
-        "baked_contact_shadow": true
+        "baked_contact_shadow": true,
+        "pr11_ground": true
       },
       "camp/art.camp.prop.nanaicha.png": {
         "opaque_bbox_subject": [
-          266,
-          315,
-          1011,
-          703
+          405,
+          332,
+          873,
+          702
         ],
-        "subjH_pct": 54.0,
-        "foot_pad_px": 16,
+        "subjH_pct": 51.5,
+        "foot_pad_px": 17,
         "world_pose": "C3 fireside loaf fallback; haunches on ground; strong baked contact shadow",
-        "baked_contact_shadow": true
+        "baked_contact_shadow": true,
+        "pr11_ground": true
       },
       "yard/art.yard.prop.nanaicha.png": {
         "opaque_bbox_subject": [
-          471,
-          272,
-          809,
-          704
+          472,
+          274,
+          806,
+          701
         ],
-        "subjH_pct": 60.0,
-        "foot_pad_px": 16,
+        "subjH_pct": 59.4,
+        "foot_pad_px": 18,
         "world_pose": "by grain-bags / yard-give companion; gaze at give-side bags not traveler face",
-        "baked_contact_shadow": true
+        "baked_contact_shadow": true,
+        "pr11_ground": true
       }
     },
     "engine": "pivot = bottom-center of opaque alpha bounds (subject feet, not canvas center). Place on ground Y like other props. Do NOT float by canvas-centering. Contact ellipse soft-shadow is baked into nanaicha prop PNGs; eng may still add y-scaled shadow for traveler.",
@@ -242,7 +245,11 @@
     "FAILFIX: kill ~60px white vertical debug/walk grid (雾岸竖白线=eng)",
     "FAILFIX: C2→land-camp-sleep-mat / C3→land-camp-fireside; NEVER north-curtain as companion",
     "FAILFIX: leap frames already non-squash; do not apply horizontal scale in tween",
-    "FAILFIX: four props rebaked soft contact shadow — avoid stacking hard eng shadow"
+    "FAILFIX: four props rebaked soft contact shadow — avoid stacking hard eng shadow",
+    "PR11: place all rebaked props with opaque-foot (solid thr~128) on walkable Band coplanar with traveler",
+    "PR11: dried-fish on roof platform or under-eave ground Band — never roof-ridge fog void",
+    "PR11: do NOT stack hard drop-shadows on baked props (act-*, fire, bags, fish, mats, nanaicha, traveler)",
+    "PR11: fog after composite; world ambient + shadowTint; traveler already has baked foot soft"
   ],
   "p1_measured_after": {
     "shore.gourd_subjH%": 16.0,
@@ -557,5 +564,97 @@
     },
     "leap_non_squash": "leap-01/02 opaque body aspect target ~0.7–1.1; no horizontal pancake stretch",
     "pr": "开新 PR 合 main（勿挂 #10）"
+  },
+  "role": "auxiliary",
+  "pr11_ground": {
+    "purpose": "cohesion FAIL — prop stickers / weak foot soft / fog cutouts",
+    "changed_summary": [
+      "camp act-* scaled to knee/plaque bands + strong warm-dark contact shadow + fog co-light",
+      "camp fire/paper-bundles/sleep-mat (+interact) strengthened shadow + fog co-light",
+      "yard dried-fish/grain-bags(+interact)/more-less-boards grounded + fog",
+      "shore gourd/driftwood(+interact) strong shadow + fog",
+      "nanaicha shore/yard/camp + traj landings stronger contact; shore cool fringe; opaque core",
+      "traveler idle/walk frames foot contact + mild fog co-light (opaque body)",
+      "cohesion/shadows/* refreshed warm-dark ellipses"
+    ],
+    "dried_fish_eng": "opaque foot on walkable Band — roof platform OR under-eave ground; NEVER float in roof-ridge fog",
+    "traveler_frames": [
+      "traveler-mythic/cloud-inspired/v3/anim/idle-front-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-front-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-side-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-side-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-back-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-back-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-front-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-front-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-front-03.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-front-04.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-side-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-side-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-side-03.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-side-04.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-back-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-back-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-back-03.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-back-04.png"
+    ],
+    "do_not_stack_hard_shadow_on_baked_props": true,
+    "fog_rule": "fog/mist as depth cue AFTER composite; do not multiply sprites by uniform fog alpha",
+    "changed_files": [
+      "camp/art.camp.prop.act-eat.png",
+      "camp/art.camp.prop.act-drink.png",
+      "camp/art.camp.prop.act-home.png",
+      "camp/art.camp.prop.act-me.png",
+      "camp/art.camp.prop.act-you.png",
+      "camp/art.camp.prop.act-walk.png",
+      "camp/art.camp.prop.act-take.png",
+      "camp/art.camp.prop.paper-bundles.png",
+      "camp/art.camp.prop.sleep-mat.png",
+      "camp/art.camp.prop.sleep-mat.interact.png",
+      "camp/art.camp.prop.fire.png",
+      "yard/art.yard.prop.dried-fish.png",
+      "yard/art.yard.prop.grain-bags.png",
+      "yard/art.yard.prop.grain-bags.interact.png",
+      "yard/art.yard.prop.more-less-boards.png",
+      "shore/art.shore.prop.gourd.png",
+      "shore/art.shore.prop.driftwood.png",
+      "shore/art.shore.prop.driftwood.interact.png",
+      "shore/art.shore.prop.nanaicha.png",
+      "yard/art.yard.prop.nanaicha.png",
+      "camp/art.camp.prop.nanaicha.png",
+      "nanaicha/traj/land-shore-driftwood.png",
+      "nanaicha/traj/land-shore-gourd.png",
+      "nanaicha/traj/land-shore-east-gap.png",
+      "nanaicha/traj/land-yard-give.png",
+      "nanaicha/traj/land-camp-sleep-mat.png",
+      "nanaicha/traj/land-camp-fireside.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-front-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-front-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-side-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-side-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-back-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-back-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-front-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-front-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-front-03.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-front-04.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-side-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-side-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-side-03.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-side-04.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-back-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-back-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-back-03.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-back-04.png",
+      "cohesion/shadows/shadow.ellipse.s.png",
+      "cohesion/shadows/shadow.ellipse.m.png",
+      "cohesion/shadows/shadow.ellipse.l.png",
+      "cohesion/shadows/shadow.ellipse.xl.png",
+      "cohesion/shadows/shadow.foundation.bar.png",
+      "art-scale-contract.json",
+      "art-scale-foot-anchors.md",
+      "cohesion/README.md",
+      "_pr11-ground-report.json"
+    ]
   }
 }

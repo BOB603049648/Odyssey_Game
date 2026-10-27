@@ -6,12 +6,33 @@ import type { SceneAssembly, SceneSlot, SceneSlotName } from '../core/schema';
 import { BANDS } from '../core/stage';
 import type { Point } from '../core/walk';
 import { buildingFoot, FOOT_PIVOT, parallaxBleed, worldToScreen } from '../core/world';
-import { ellipseSizeFor, ellipseWidthPct, FOOT_ELLIPSE, FOUNDATION_SHADOW, foundationFor, hasPngContact } from './cohesion';
+import { hasPngContact } from './cohesion';
 import { isStillId, StillFrame } from './stillFrames';
 
 const SLOT_ORDER: readonly SceneSlotName[] = ['sky', 'far', 'ground', 'building', 'props', 'fg'];
 
 const BACK_SLOTS: ReadonlySet<SceneSlotName> = new Set(['sky', 'far', 'ground', 'building', 'props']);
+
+export type PlatePass = 'all' | 'back' | 'near' | 'fg';
+
+function isCurtain(slot: SceneSlot): boolean {
+  return slot.kind === 'curtain' || slot.kind === 'north-curtain';
+}
+
+/** Closer than the traveler's feet: paint after the figure. Curtain hem is the cloth's foot. */
+export function drawsInFront(slot: SceneSlot, feetY: number): boolean {
+  if (slot.slot !== 'props' && !isCurtain(slot)) return false;
+  return slot.y !== undefined && slot.y > feetY;
+}
+
+function includeSlot(slot: SceneSlot, pass: PlatePass, feetY: number): boolean {
+  if (pass === 'all') return true;
+  const inFront = drawsInFront(slot, feetY);
+  if (pass === 'near') return inFront;
+  if (pass === 'fg') return slot.slot === 'fg' && !isCurtain(slot);
+  if (inFront || slot.slot === 'fg') return false;
+  return BACK_SLOTS.has(slot.slot) || isCurtain(slot);
+}
 
 export function PlateStack({
   plate,
@@ -21,6 +42,7 @@ export function PlateStack({
   activeSpots = null,
   showWalkMask = false,
   pass = 'all',
+  feetY = 1,
 }: {
   plate: string;
   previous: string | null;
@@ -28,10 +50,12 @@ export function PlateStack({
   near?: readonly string[];
   activeSpots?: readonly string[] | null;
   showWalkMask?: boolean;
-  pass?: 'all' | 'back' | 'fg';
+  pass?: PlatePass;
+  /** Traveler foot in world Y. Subjects south of this draw in the near pass. */
+  feetY?: number;
 }) {
   return (
-    <div className={pass === 'fg' ? 'plate-stack pass-fg' : 'plate-stack pass-back'} aria-hidden="true">
+    <div className={`plate-stack pass-${pass === 'all' ? 'back' : pass}`} aria-hidden="true">
       {previous ? (
         <PlateBody
           plate={previous}
@@ -41,6 +65,7 @@ export function PlateStack({
           activeSpots={null}
           showWalkMask={false}
           pass={pass}
+          feetY={feetY}
         />
       ) : null}
       <PlateBody
@@ -52,6 +77,7 @@ export function PlateStack({
         activeSpots={activeSpots}
         showWalkMask={showWalkMask}
         pass={pass}
+        feetY={feetY}
       />
     </div>
   );
@@ -66,6 +92,7 @@ function PlateBody({
   activeSpots,
   showWalkMask,
   pass,
+  feetY,
 }: {
   plate: string;
   leaving: boolean;
@@ -74,7 +101,8 @@ function PlateBody({
   near: readonly string[];
   activeSpots: readonly string[] | null;
   showWalkMask: boolean;
-  pass: 'all' | 'back' | 'fg';
+  pass: PlatePass;
+  feetY: number;
 }) {
   const className = leaving ? 'plate-fade out' : incoming ? 'plate-fade in' : 'plate-fade';
   if (plate === 'keyart') {
@@ -103,6 +131,7 @@ function PlateBody({
         activeSpots={activeSpots}
         showWalkMask={showWalkMask && !leaving}
         pass={pass}
+        feetY={feetY}
       />
     );
   }
@@ -121,6 +150,7 @@ function SlotAssembly({
   activeSpots,
   showWalkMask,
   pass,
+  feetY,
 }: {
   kit: SceneAssembly;
   className: string;
@@ -128,12 +158,18 @@ function SlotAssembly({
   near: readonly string[];
   activeSpots: readonly string[] | null;
   showWalkMask: boolean;
-  pass: 'all' | 'back' | 'fg';
+  pass: PlatePass;
+  feetY: number;
 }) {
   const scene = kit.id as IslandScene;
   const slots = [...kit.slots]
-    .filter((slot) => (pass === 'fg' ? slot.slot === 'fg' : pass === 'back' ? BACK_SLOTS.has(slot.slot) : true))
-    .sort((a, b) => SLOT_ORDER.indexOf(a.slot) - SLOT_ORDER.indexOf(b.slot));
+    .filter((slot) => includeSlot(slot, pass, feetY))
+    .sort((a, b) => {
+      if (pass === 'near') return (a.y ?? 0) - (b.y ?? 0);
+      const order = SLOT_ORDER.indexOf(a.slot) - SLOT_ORDER.indexOf(b.slot);
+      if (order !== 0) return order;
+      return (a.y ?? 0) - (b.y ?? 0);
+    });
   return (
     <div
       className={className}
@@ -195,19 +231,11 @@ function SlotPiece({
       data-placeholder={src ? 'art' : 'block'}
       data-anchor={footed ? 'foot' : undefined}
       data-coplanar={scenic ? 'yes' : undefined}
-      data-shadow={slot.slot === 'props' ? (ellipseSizeFor(slot) ? 'ellipse' : hasPngContact(slot.asset ?? slot.id) ? 'png' : 'none') : undefined}
+      data-shadow={slot.slot === 'props' ? (hasPngContact(slot.asset ?? slot.id) ? 'png' : 'none') : undefined}
       data-testid={testId}
       style={slotStyle(slot, cam)}
     >
       <div className="prop-body">
-        <PropShadow slot={slot} />
-        {slot.slot === 'building' && placed && foundationFor(slot) ? (
-          <span
-            className="contact-shadow foot-ellipse"
-            data-testid="building-contact"
-            style={{ width: '78%', ['--ellipse' as string]: `url("${FOUNDATION_SHADOW}")` }}
-          />
-        ) : null}
         {src ? <img className="slot-asset" src={src} alt="" draggable={false} /> : null}
         {!src && slot.slot === 'ground' ? <GroundPlane scene={scene} kind={slot.kind} /> : null}
         {!src && slot.slot !== 'ground' && slot.kind !== 'empty' ? (
@@ -217,22 +245,6 @@ function SlotPiece({
         {slot.slot === 'ground' && showWalkMask ? <WalkMask scene={scene} /> : null}
       </div>
     </div>
-  );
-}
-
-function PropShadow({ slot }: { slot: SceneSlot }) {
-  const size = ellipseSizeFor(slot);
-  if (!size) return null;
-  return (
-    <span
-      className="contact-shadow prop-contact foot-ellipse"
-      data-testid="prop-contact"
-      data-ellipse={size}
-      style={{
-        width: `${ellipseWidthPct(slot.y ?? 0.6)}%`,
-        ['--ellipse' as string]: `url("${FOOT_ELLIPSE[size]}")`,
-      }}
-    />
   );
 }
 
@@ -276,8 +288,8 @@ function slotStyle(slot: SceneSlot, cam: Point): CSSProperties {
   const dy = cam.y * (1 - parallax);
   const shift = `translate3d(${dx}px, ${dy}px, 0)`;
   if (!placed || slot.x === undefined || slot.y === undefined) {
-    const bleed = parallaxBleed(parallax);
-    return { transform: shift, inset: `${-bleed * 100}%` };
+    const bleed = parallax === 1 ? 0 : parallaxBleed(parallax);
+    return { transform: shift, inset: bleed === 0 ? '0px' : `${-bleed * 100}%` };
   }
   const foot = slot.slot === 'building' ? buildingFoot({ x: slot.x, y: slot.y, h: slot.h }) : { x: slot.x, y: slot.y };
   const pivot = slot.slot === 'props' || slot.slot === 'building' ? FOOT_PIVOT : { x: 0.5, y: 0.5 };

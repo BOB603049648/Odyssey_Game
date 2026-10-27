@@ -129,3 +129,60 @@ Do **not** stack a hard eng drop-shadow on these; optional soft y-scaled shared 
 
 ### PR
 开**新 PR** 合 main（#10 已合）。合同 version `1.3-failfix`。详见 `_failfix-report.json`。
+
+
+---
+
+## PR11 ground addendum (2026-10-28 Asia/Shanghai) — cohesion FAIL 辅包
+
+**Role:** auxiliary art only (`1.3-pr11-ground`). Eng still owns world ambient, opaque-foot pivot, post-composite grade, debug overlays.
+
+### What art fixed in-place
+1. **棚火道具 act-***（eat/drink/home/me/you/walk/take）：从 73–93%H 缩到 knee/plaque 带（~26–38% solid），底锚 foot_pad≈16，烘 **warm-dark** 椭圆接触影（RGB≈18,12,8，α峰~210），并 **雾感共光**（降对比/饱和 ~12%、1–2px 柔边、高光压到接近棚屋中段，勿比 building 更锐更亮）。
+2. **fire / paper-bundles / sleep-mat(+interact)**：强接触影 + 同雾处理。
+3. **yard dried-fish / grain-bags(+interact) / more-less-boards**：强接触影 + 雾处理。
+4. **shore gourd / driftwood(+interact)**：强接触影 + 雾处理。
+5. **奈奈茶** shore/yard/camp + `nanaicha/traj/land-*`：加强落地接触影；shore 可选冷色柔边；**body 保持 opaque**（core α≥240）。
+6. **旅人** `traveler-mythic/.../anim/` idle+walk 全套：脚底接触影 + 轻雾共光；**禁止半透明**。
+
+### Layer order
+`ground plate` < `baked soft contact shadow (in PNG)` < `prop/traveler subject`  
+Eng 共享椭圆（`cohesion/shadows/shadow.ellipse.*`）**可选**仅挂旅人；已烘影 props **勿再叠硬影**。
+
+### dried-fish eng 落位（必读）
+`yard/art.yard.prop.dried-fish.png` — opaque foot 对齐**可走面 Y**：
+- ✅ 屋面平台 **或** 檐下地面 Band
+- ❌ 禁浮在屋脊雾空 / 屋脊轮廓线上方
+- 与旅人脚同共面；已烘强接触影，勿再叠硬影。
+
+### Traveler frames touched
+- `traveler-mythic/cloud-inspired/v3/anim/idle-front-01.png`
+- `traveler-mythic/cloud-inspired/v3/anim/idle-front-02.png`
+- `traveler-mythic/cloud-inspired/v3/anim/idle-side-01.png`
+- `traveler-mythic/cloud-inspired/v3/anim/idle-side-02.png`
+- `traveler-mythic/cloud-inspired/v3/anim/idle-back-01.png`
+- `traveler-mythic/cloud-inspired/v3/anim/idle-back-02.png`
+- `traveler-mythic/cloud-inspired/v3/anim/walk-front-01.png`
+- `traveler-mythic/cloud-inspired/v3/anim/walk-front-02.png`
+- `traveler-mythic/cloud-inspired/v3/anim/walk-front-03.png`
+- `traveler-mythic/cloud-inspired/v3/anim/walk-front-04.png`
+- `traveler-mythic/cloud-inspired/v3/anim/walk-side-01.png`
+- `traveler-mythic/cloud-inspired/v3/anim/walk-side-02.png`
+- `traveler-mythic/cloud-inspired/v3/anim/walk-side-03.png`
+- `traveler-mythic/cloud-inspired/v3/anim/walk-side-04.png`
+- `traveler-mythic/cloud-inspired/v3/anim/walk-back-01.png`
+- `traveler-mythic/cloud-inspired/v3/anim/walk-back-02.png`
+- `traveler-mythic/cloud-inspired/v3/anim/walk-back-03.png`
+- `traveler-mythic/cloud-inspired/v3/anim/walk-back-04.png`
+
+### Eng checklist（handoff）
+1. Opaque-bounds **bottom-center** pivot（建议 solid thr~128 取脚；软影 α 较低勿当脚）。
+2. Prop Y 落在可走地面 Band，与旅人脚**共面**。
+3. 已烘 soft contact 的 props：**禁止**再叠硬 drop-shadow。
+4. Per-scene `ambient` / `shadowTint` + `cohesion/grades/` **合成后** grade。
+5. 雾/mist 作深度线索放在**合成后** — 勿用 uniform fog alpha 乘精灵（会变抠图贴纸）。
+6. 开新 PR 直合 main（辅包路径见 `art-pr11-ground-pack.zip`）。
+
+**Report:** `/workspace/odyssey-art/_pr11-ground-report.json`  
+**Zip:** `/workspace/odyssey-art/art-pr11-ground-pack.zip`  
+**Backup:** `<scene>/raw/pre-pr11-ground/` · traveler `.../anim/raw/pre-pr11-ground/`

@@ -406,6 +406,8 @@ export function WalkLayer({
   onTeachRef.current = onTeach;
   taughtRef.current = taught;
   const spotIds = spots.map((spot) => spot.id);
+  const sleepFoot = SPOTS[scene].find((spot) => spot.id === 'camp-sleep');
+  const feetY = resting && sleepFoot ? sleepFoot.y : pos.y;
 
   useEffect(() => {
     if (!teachSpot) {
@@ -434,6 +436,7 @@ export function WalkLayer({
       data-near={near.join(' ')}
       data-cam-x={shownCam.x.toFixed(1)}
       data-cam-y={shownCam.y.toFixed(1)}
+      data-scene={scene}
       data-arrive={arrive ?? 'no'}
       data-drank={drank ? 'yes' : 'no'}
       style={{ ['--ambient' as string]: look.ambient, ['--shadow-tint' as string]: look.shadowTint }}
@@ -448,6 +451,7 @@ export function WalkLayer({
             activeSpots={spotIds}
             showWalkMask={showWalkMask}
             pass="back"
+            feetY={feetY}
           />
           <div className="walk-ground" data-testid="walk-ground" onPointerDown={onGround} />
           {gatesFrom(scene).map((gate) => (
@@ -541,8 +545,8 @@ export function WalkLayer({
             />
           ) : null}
           <TravelerMark
-            x={resting ? (SPOTS[scene].find((spot) => spot.id === 'camp-sleep')?.x ?? pos.x) : pos.x}
-            y={resting ? (SPOTS[scene].find((spot) => spot.id === 'camp-sleep')?.y ?? pos.y) : pos.y}
+            x={resting && sleepFoot ? sleepFoot.x : pos.x}
+            y={feetY}
             facing={facing}
             moving={moving}
             stride={stride}
@@ -554,7 +558,17 @@ export function WalkLayer({
             cam={shownCam}
             near={near}
             activeSpots={spotIds}
+            pass="near"
+            feetY={feetY}
+          />
+          <PlateStack
+            plate={plates.current}
+            previous={plates.previous}
+            cam={shownCam}
+            near={near}
+            activeSpots={spotIds}
             pass="fg"
+            feetY={feetY}
           />
         </div>
       </div>

@@ -131,10 +131,10 @@ export function blendDuration(prev: FrameBlend, next: FrameBlend): number {
   return 0;
 }
 
-/** Contact shadow width as a fraction of the figure box. Wider when the figure is lower in the scene. */
+/** Contact ellipse width as a fraction of the figure box. Wider when the figure is lower in the scene. */
 export function contactShadowWidth(y: number): number {
   const depth = Math.min(1, Math.max(0, y));
-  return ((36 + depth * 22) * 0.64) / 117;
+  return 0.82 + depth * 0.28;
 }
 
 export function nextLocomotion(current: TravelerLocomotion, gait: number): TravelerLocomotion {
