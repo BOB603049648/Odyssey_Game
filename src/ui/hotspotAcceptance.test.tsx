@@ -60,7 +60,7 @@ describe('hotspot acceptance', () => {
       expect(prop(`art.camp.prop.act-${id}`, 'dba.scene.camp')?.spot).toBe(`act:dba.word.${id}`);
     }
     const night = GATES.find((gate) => gate.from === 'dba.scene.camp' && gate.to === 'dba.scene.night');
-    expect(night).toMatchObject({ x: 0.5, y: 0.68, r: 0.04, edge: 'north' });
+    expect(night).toMatchObject({ x: 0.5, y: 0.8, r: 0.04, edge: 'north' });
 
     expect(SPOTS['dba.scene.yard']).toHaveLength(6);
     expect(prop('art.yard.prop.grain-bags', 'dba.scene.yard')?.spot).toBe('yard-give');
@@ -207,7 +207,7 @@ describe('hotspot acceptance', () => {
     }
     expect(view.container.querySelector('.plate-photo')).toBeNull();
     const night = GATES.find((gate) => gate.from === 'dba.scene.camp' && gate.to === 'dba.scene.night');
-    expect(night).toMatchObject({ x: 0.5, y: 0.68, r: 0.04, edge: 'north' });
+    expect(night).toMatchObject({ x: 0.5, y: 0.8, r: 0.04, edge: 'north' });
   });
 
   it('puts a curtain in front only when the traveler stands north of its hem', () => {

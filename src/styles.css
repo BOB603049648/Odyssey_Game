@@ -1716,7 +1716,9 @@ h1 {
 }
 .slot-block[data-kind="door-glow"],
 .slot-block[data-kind="north-curtain"] {
-  background: linear-gradient(90deg, transparent 30%, rgba(70, 100, 160, 0.45) 44%, rgba(190, 214, 240, 0.9) 50%, rgba(70, 100, 160, 0.45) 56%, transparent 70%);
+  /* Warm fog, same family as the hearth grade. A cool slit here reads as a hard cyan cut. */
+  background: linear-gradient(90deg, transparent 34%, rgba(168, 132, 96, 0.28) 46%, rgba(196, 164, 124, 0.45) 50%, rgba(168, 132, 96, 0.28) 54%, transparent 66%);
+  filter: blur(6px);
 }
 .slot-block[data-kind="sleep-mat"] {
   background: linear-gradient(#d7c4a2, #6d5340);

@@ -87,7 +87,7 @@ export function companionPost(
       const feet = clampToBand({ x: mat.x - 0.14, y: mat.y }, BANDS[scene]);
       return { ...feet, look: 'sleep', pose: 'sit-near', targetId: 'camp-sleep', beat: 'C2', queue: 'sleep' };
     }
-    const feet = clampToBand({ x: 0.66, y: 0.64 }, BANDS[scene]);
+    const feet = clampToBand({ x: 0.66, y: 0.82 }, BANDS[scene]);
     return { ...feet, look: 'sleep', pose: 'curl', targetId: 'camp-fire', beat: 'C3', queue: 'guard' };
   }
 
