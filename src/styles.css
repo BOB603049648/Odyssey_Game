@@ -854,6 +854,10 @@ h1 {
   background: #070c0e;
 }
 
+.cutscene.finale-plate {
+  z-index: 6;
+}
+
 .cutscene::before {
   content: "";
   position: absolute;

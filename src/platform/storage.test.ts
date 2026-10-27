@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parseSave } from '../core/migrate';
 import { newGameState } from '../core/save';
 import { reduce } from '../core/reduce';
-import { SAVE_KEY, createMemoryStorage } from './storage';
+import { SAVE_KEY, createMemoryStorage, createWebStorage } from './storage';
 
 describe('save storage', () => {
   it('persists progress and ignores a corrupt payload', () => {
@@ -41,5 +41,25 @@ describe('save storage', () => {
     expect(loaded?.muralMode).toBe('learn');
     expect(loaded?.words['myp.word.water']?.state).toBe('learned');
     expect(loaded && 'ngCount' in loaded).toBe(false);
+  });
+
+  it('keeps the last good save when a later write throws', () => {
+    const backing = new Map<string, string>();
+    let writes = 0;
+    const storage = createWebStorage({
+      getItem: (key) => backing.get(key) ?? null,
+      setItem: (key, value) => {
+        writes += 1;
+        if (writes > 1) throw new Error('quota');
+        backing.set(key, value);
+      },
+      removeItem: (key) => {
+        backing.delete(key);
+      },
+    });
+    storage.save(newGameState());
+    expect(() => storage.save(reduce(newGameState(), { type: 'new-game' }))).not.toThrow();
+    expect(storage.load()?.screen).toBe('title');
+    expect(writes).toBe(2);
   });
 });

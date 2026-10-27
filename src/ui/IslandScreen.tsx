@@ -165,12 +165,15 @@ export function OverlaySheet({
   learned: typeof LEXEMES;
   hint: { level: number; anchor: string; wordId: string | null };
 }) {
-  const open = save.overlay !== 'none' && save.overlay !== 'depart' && save.overlay !== 'memory';
+  const open =
+    save.overlay !== 'none' && save.overlay !== 'depart' && save.overlay !== 'memory' && save.overlay !== 'finale';
   const presence = useFadePresence(open);
   const held = useRef(save.overlay);
   if (open) held.current = save.overlay;
   const overlay = held.current;
-  if (!presence.mounted || overlay === 'none' || overlay === 'depart' || overlay === 'memory') return null;
+  if (!presence.mounted || overlay === 'none' || overlay === 'depart' || overlay === 'memory' || overlay === 'finale') {
+    return null;
+  }
   return (
     <div className={`sheet ${presence.phase}`} role="dialog" aria-label={sheetLabel(overlay)}>
       <button type="button" className="btn" onClick={() => dispatch({ type: 'close-overlay' })}>
@@ -184,7 +187,11 @@ export function OverlaySheet({
       ) : null}
       {overlay === 'lexicon' ? <Lexicon save={save} words={learned} /> : null}
       {overlay === 'casefile' ? (
-        <CaseFile save={save} onMemory={() => dispatch({ type: 'open-memory' })} />
+        <CaseFile
+          save={save}
+          onMemory={() => dispatch({ type: 'open-memory' })}
+          onFinale={() => dispatch({ type: 'open-finale' })}
+        />
       ) : null}
       {overlay === 'use-word' ? (
         <div data-testid="use-word">
@@ -229,11 +236,12 @@ function Lexicon({
   );
 }
 
-function CaseFile({ save, onMemory }: { save: SaveData; onMemory: () => void }) {
+function CaseFile({ save, onMemory, onFinale }: { save: SaveData; onMemory: () => void; onFinale: () => void }) {
   const slots = EVIDENCE.filter((item) => item.island === 'myp');
   const held = slots.filter((item) => save.evidence.includes(item.id));
   const remembered = save.memories.includes('myp.mem.rain-night');
-  if (held.length === 0 && !remembered) return <p>{t('casefile.empty')}</p>;
+  const canFinale = save.beats['myp.beat.depart'] === true;
+  if (held.length === 0 && !remembered && !canFinale) return <p>{t('casefile.empty')}</p>;
   return (
     <div className="casefile">
       {slots.map((item) => {
@@ -249,6 +257,11 @@ function CaseFile({ save, onMemory }: { save: SaveData; onMemory: () => void }) 
       {remembered ? (
         <button type="button" className="btn" data-testid="case-memory" onClick={onMemory}>
           {t('menu.memory')}
+        </button>
+      ) : null}
+      {canFinale ? (
+        <button type="button" className="btn" data-testid="case-finale" onClick={onFinale}>
+          {t('menu.finale')}
         </button>
       ) : null}
     </div>

@@ -67,9 +67,9 @@ export function hintSituation(state: SaveData): HintPlanContent['when'] | null {
     return 'night-read';
   }
   if (state.currentScene === 'myp.scene.shore') {
-    if (state.flags['myp.flag.driftwood'] !== true && state.beats['myp.beat.depart'] !== true) return 'shore-driftwood';
-    if (isLearnedState(state.words[WATER]?.state) && state.beats[WATER_BEAT] !== true) return 'shore-water-ready';
     if (canDepart(state) && state.beats['myp.beat.depart'] !== true) return 'shore-depart';
+    if (isLearnedState(state.words[WATER]?.state) && state.beats[WATER_BEAT] !== true) return 'shore-water-ready';
+    if (state.flags['myp.flag.driftwood'] !== true && state.beats['myp.beat.depart'] !== true) return 'shore-driftwood';
     if (!isLearnedState(state.words[WATER]?.state)) return 'shore-unlearned-water';
   }
   return null;

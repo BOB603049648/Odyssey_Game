@@ -61,7 +61,7 @@
     "anchor": "forest-stop",
     "target": "forest-stop",
     "walk": true,
-    "paw": false
+    "paw": true
   },
   {
     "id": "myp.hint.night",
@@ -69,7 +69,7 @@
     "anchor": "old-layer",
     "target": "night-read",
     "walk": true,
-    "paw": false
+    "paw": true
   },
   {
     "id": "myp.hint.depart",
@@ -77,6 +77,6 @@
     "anchor": "depart",
     "target": "shore-depart",
     "walk": true,
-    "paw": false
+    "paw": true
   }
 ]
