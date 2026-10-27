@@ -1,9 +1,10 @@
 import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 describe('walk touch', () => {
   it('keeps pan and pinch off the walk stage and its hit targets', () => {
-    const css = readFileSync(new URL('../styles.css', import.meta.url), 'utf8');
+    const css = readFileSync(path.resolve(process.cwd(), 'src/styles.css'), 'utf8');
     const block = css.match(/\.walk-viewport,\s*\.world-cam,[\s\S]*?\{[^}]*\}/);
     expect(block).toBeTruthy();
     const rule = block?.[0] ?? '';
