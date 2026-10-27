@@ -692,7 +692,7 @@ h1 {
   position: absolute;
   z-index: 4;
   width: auto;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 3 / 4;
   pointer-events: none;
 }
 
@@ -707,7 +707,8 @@ h1 {
 }
 
 .companion-anchor[data-face="left"] .nanaicha-ground { transform: scaleX(-1); }
-.companion-anchor[data-traveling="yes"] .nanaicha-ground { animation: nanaicha-hop 0.55s ease-in-out infinite; }
+.companion-anchor[data-traveling="yes"][data-traj="land"] .nanaicha-ground { animation: nanaicha-hop 0.55s ease-in-out infinite; }
+.companion-anchor[data-traj^="leap"] .contact-shadow { opacity: 0; }
 .companion-anchor[data-look="gourd"] .nanaicha-ground,
 .companion-anchor[data-look="give"] .nanaicha-ground,
 .companion-anchor[data-look="sleep"] .nanaicha-ground,

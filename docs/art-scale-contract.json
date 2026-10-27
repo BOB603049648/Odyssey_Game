@@ -1,6 +1,6 @@
 {
-  "version": "1.1-nanaicha-ground",
-  "updated": "2026-10-28T00:57:00+08:00",
+  "version": "1.2-nanaicha-traj",
+  "updated": "2026-10-28T01:03:25+08:00",
   "unit": "meters",
   "traveler": {
     "height_m": 1.75,
@@ -232,7 +232,9 @@
     "Do not overlay second 奈奈茶 on tide still; unlock walk-back-02/03/04 + idle-back",
     "Place nanaicha scene props with opaque-bounds bottom-center pivot on walkable Band Y (same contact plane as traveler)",
     "Companion gaze/position state machine per §5.1 (water→food→sleep→danger); do not canvas-center float",
-    "Tide: do not overlay second cat; use art.pro.tide.jpg (v4 grounded)"
+    "Tide: do not overlay second cat; use art.pro.tide.jpg (v4 grounded)",
+    "Wire companion waypoint machine to nanaicha/traj/ landings per §5.1 (water→food→sleep→danger)",
+    "Optional leap-01/02 between landings; landings use opaque-foot pivot + baked contact shadow"
   ],
   "p1_measured_after": {
     "shore.gourd_subjH%": 16.0,
@@ -268,5 +270,170 @@
         "interact": "yard/art.yard.prop.grain-bags.interact.png"
       }
     ]
+  },
+  "nanaicha_trajectory": {
+    "base": "/workspace/odyssey-art/nanaicha/traj/",
+    "canvas": "864×1152 RGBA character-framed (same as traveler anim)",
+    "lock": "oversized HOUSE CAT seal-point; hood UP; rope flat knot; blue eyes in hood; NOT divine beast / leopard",
+    "pivot": "bottom-center of opaque alpha bounds; landings have soft baked contact shadow; leaps mid-air (float OK)",
+    "stage_queue": [
+      "water",
+      "food",
+      "sleep",
+      "danger"
+    ],
+    "scene_cards": "§5.1 ch1-dongba-scene-cards.md",
+    "landings": [
+      {
+        "id": "land-shore-driftwood",
+        "file": "land-shore-driftwood.png",
+        "scene": "shore",
+        "beat_stage": "pre-water / S0",
+        "pose": "crouch/sit beside driftwood",
+        "gaze": "driftwood",
+        "readable": "这里能喘",
+        "§5.1": "S0 迎人 → 漂木旁",
+        "path": "nanaicha/traj/land-shore-driftwood.png",
+        "opaque_bbox": [
+          22,
+          360,
+          841,
+          1133
+        ],
+        "subjH_pct": 67.2,
+        "foot_pad_px": 18
+      },
+      {
+        "id": "land-shore-gourd",
+        "file": "land-shore-gourd.png",
+        "scene": "shore",
+        "beat_stage": "water / S1",
+        "pose": "half-step stop by water gourd",
+        "gaze": "gourd",
+        "readable": "喝水",
+        "§5.1": "S1 引水 → 水瓢旁",
+        "path": "nanaicha/traj/land-shore-gourd.png",
+        "opaque_bbox": [
+          22,
+          326,
+          841,
+          1133
+        ],
+        "subjH_pct": 70.1,
+        "foot_pad_px": 18
+      },
+      {
+        "id": "land-shore-east-gap",
+        "file": "land-shore-east-gap.png",
+        "scene": "shore",
+        "beat_stage": "post-water / S2 → camp",
+        "pose": "stand at east door/gap, body faces east",
+        "gaze": "east / camp smoke",
+        "readable": "往有烟",
+        "§5.1": "S2 引营 → 东门→camp",
+        "path": "nanaicha/traj/land-shore-east-gap.png",
+        "opaque_bbox": [
+          22,
+          213,
+          841,
+          1133
+        ],
+        "subjH_pct": 79.9,
+        "foot_pad_px": 18
+      },
+      {
+        "id": "land-camp-sleep-mat",
+        "file": "land-camp-sleep-mat.png",
+        "scene": "camp",
+        "beat_stage": "post-food pre-sleep / C2",
+        "pose": "crouch at sleep-mat side",
+        "gaze": "mat + fire",
+        "readable": "food done → sleep",
+        "§5.1": "C2 引睡 → 睡铺侧",
+        "path": "nanaicha/traj/land-camp-sleep-mat.png",
+        "opaque_bbox": [
+          22,
+          272,
+          841,
+          1133
+        ],
+        "subjH_pct": 74.8,
+        "foot_pad_px": 18
+      },
+      {
+        "id": "land-camp-fireside",
+        "file": "land-camp-fireside.png",
+        "scene": "camp",
+        "beat_stage": "post-sleep / C3",
+        "pose": "loaf/curl by fire, eyes half-open guard",
+        "gaze": "guard half-open; occasional north curtain / east",
+        "readable": "守夜",
+        "§5.1": "C3 守夜 → 火旁 guard 蜷",
+        "path": "nanaicha/traj/land-camp-fireside.png",
+        "opaque_bbox": [
+          22,
+          573,
+          841,
+          1133
+        ],
+        "subjH_pct": 48.7,
+        "foot_pad_px": 18
+      },
+      {
+        "id": "land-yard-give",
+        "file": "land-yard-give.png",
+        "scene": "yard",
+        "beat_stage": "food / Y0",
+        "pose": "sit by grain give-side",
+        "gaze": "give bag/string",
+        "readable": "分享/给",
+        "§5.1": "Y0 引递 → yard-give 递出位旁",
+        "path": "nanaicha/traj/land-yard-give.png",
+        "opaque_bbox": [
+          22,
+          141,
+          841,
+          1133
+        ],
+        "subjH_pct": 86.2,
+        "foot_pad_px": 18
+      }
+    ],
+    "leaps": [
+      {
+        "id": "leap-01",
+        "file": "leap-01.png",
+        "note": "short mid-air arc start between landings; float OK; no target needed",
+        "path": "nanaicha/traj/leap-01.png",
+        "opaque_bbox": [
+          22,
+          262,
+          841,
+          808
+        ],
+        "subjH_pct": 47.5,
+        "foot_pad_px": 343
+      },
+      {
+        "id": "leap-02",
+        "file": "leap-02.png",
+        "note": "short mid-air arc peak/descent; float OK",
+        "path": "nanaicha/traj/leap-02.png",
+        "opaque_bbox": [
+          36,
+          64,
+          827,
+          1007
+        ],
+        "subjH_pct": 81.9,
+        "foot_pad_px": 144
+      }
+    ],
+    "waypoint_machine_hint": "Swap companion sprite to landing id by §5.1 state; optional 1–2 leap frames on transition. Prefer traj/ sheets over single scene prop for pose variety. Scene props shore/camp/yard art.*.prop.nanaicha.png remain fallback defaults.",
+    "alias_scene_props": {
+      "shore/art.shore.prop.nanaicha.png": "fallback ≈ land-shore-driftwood / land-shore-gourd sit",
+      "camp/art.camp.prop.nanaicha.png": "fallback ≈ land-camp-fireside loaf",
+      "yard/art.yard.prop.nanaicha.png": "fallback ≈ land-yard-give sit"
+    }
   }
 }

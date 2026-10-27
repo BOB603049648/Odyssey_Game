@@ -3,9 +3,9 @@ import type { IslandScene } from './island';
 import { BANDS, GATES, SPOTS } from './stage';
 import { clampToBand, type Point } from './walk';
 
-/** Opaque-bbox foot of the grounded 1280×720 plates (shore/camp/yard). Pivot is this point. */
-export const NANAICHA_FOOT = { x: 0.5, y: 0.982 } as const;
-/** Plate height as a fraction of the world layer. Subject inside the plate is about traveler-tall. */
+/** Opaque-bbox foot of the 864×1152 landing frames (18px pad on a 1152 canvas). */
+export const NANAICHA_FOOT = { x: 0.5, y: 1134 / 1152 } as const;
+/** Canvas height as a fraction of the world layer. Subject reads a little taller than the traveler. */
 export const NANAICHA_HEIGHT = 0.22;
 
 export type GazeStep = 'water' | 'food' | 'sleep' | 'danger' | 'done';

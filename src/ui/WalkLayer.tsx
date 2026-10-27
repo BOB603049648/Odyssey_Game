@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CatPost } from '../core/companionPost';
 import { NANAICHA_FOOT, NANAICHA_HEIGHT } from '../core/companionPost';
+import { companionFrameId, LEAP_01_MS, LEAP_02_MS, type TrajClip } from '../core/companionTraj';
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
 import type { HintLevel } from '../core/schema';
@@ -29,10 +30,29 @@ import { gateLabel, type SpotView } from './spotViews';
 import shoreCat from '../assets/art/slots/art.shore.prop.nanaicha.png';
 import campCat from '../assets/art/slots/art.camp.prop.nanaicha.png';
 import yardCat from '../assets/art/slots/art.yard.prop.nanaicha.png';
+import landDriftwood from '../assets/companion/nanaicha/traj/land-shore-driftwood.png';
+import landGourd from '../assets/companion/nanaicha/traj/land-shore-gourd.png';
+import landEast from '../assets/companion/nanaicha/traj/land-shore-east-gap.png';
+import landMat from '../assets/companion/nanaicha/traj/land-camp-sleep-mat.png';
+import landFire from '../assets/companion/nanaicha/traj/land-camp-fireside.png';
+import landGive from '../assets/companion/nanaicha/traj/land-yard-give.png';
+import leap01 from '../assets/companion/nanaicha/traj/leap-01.png';
+import leap02 from '../assets/companion/nanaicha/traj/leap-02.png';
 import driftFlash from '../assets/art/slots/art.shore.prop.driftwood.interact.png';
 import sleepFlash from '../assets/art/slots/art.camp.prop.sleep-mat.interact.png';
 import grainFlash from '../assets/art/slots/art.yard.prop.grain-bags.interact.png';
 import { facingFromMove, REACH_HOLD_MS, TravelerMark, type TravelerFacing } from './Traveler';
+
+const TRAJ_SRC: Record<string, string> = {
+  'land-shore-driftwood': landDriftwood,
+  'land-shore-gourd': landGourd,
+  'land-shore-east-gap': landEast,
+  'land-camp-sleep-mat': landMat,
+  'land-camp-fireside': landFire,
+  'land-yard-give': landGive,
+  'leap-01': leap01,
+  'leap-02': leap02,
+};
 import { WalkStick } from './WalkStick';
 import { useCrossfade } from './useCrossfade';
 
@@ -134,8 +154,23 @@ export function WalkLayer({
   const [stride, setStride] = useState(0);
   const [blocked, setBlocked] = useState(false);
   const [cat, setCat] = useState<Point>(posRef.current);
+  const [clip, setClip] = useState<TrajClip>('land');
   const postRef = useRef(catPost);
+  const trajBoot = useRef(true);
   postRef.current = catPost;
+  useEffect(() => {
+    if (trajBoot.current) {
+      trajBoot.current = false;
+      return undefined;
+    }
+    setClip('leap-01');
+    const toPeak = window.setTimeout(() => setClip('leap-02'), LEAP_01_MS);
+    const toLand = window.setTimeout(() => setClip('land'), LEAP_01_MS + LEAP_02_MS);
+    return () => {
+      window.clearTimeout(toPeak);
+      window.clearTimeout(toLand);
+    };
+  }, [catPost.beat]);
   const [view, setView] = useState({ w: 1280, h: 720 });
   const [arrive, setArrive] = useState<string | null>(null);
   const [cam, setCam] = useState<Point>({ x: 0, y: 0 });
@@ -461,6 +496,7 @@ export function WalkLayer({
             data-beat={catPost.beat}
             data-look={catPost.look}
             data-traveling={Math.hypot(catPost.x - cat.x, catPost.y - cat.y) > 0.025 ? 'yes' : 'no'}
+            data-traj={clip}
             data-face={catPost.x >= cat.x ? 'right' : 'left'}
             style={{
               left: pct(cat.x),
@@ -471,7 +507,11 @@ export function WalkLayer({
           >
             <span className="contact-shadow" data-testid="contact-shadow" />
             <Companion
-              figure={scene === 'dba.scene.camp' ? campCat : scene === 'dba.scene.yard' || scene === 'dba.scene.path' ? yardCat : shoreCat}
+              frame={companionFrameId(catPost.beat, clip)}
+              figure={
+                TRAJ_SRC[companionFrameId(catPost.beat, clip)] ??
+                (scene === 'dba.scene.camp' ? campCat : scene === 'dba.scene.yard' || scene === 'dba.scene.path' ? yardCat : shoreCat)
+              }
               level={hint.level}
               anchor={hint.pose === 'fetch' ? hint.anchor : catPost.look}
               pose={
