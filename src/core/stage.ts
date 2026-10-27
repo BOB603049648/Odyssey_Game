@@ -82,8 +82,8 @@ export const SPOTS: Record<IslandScene, readonly Spot[]> = {
     { id: 'yard-grab', x: 0.24, y: 0.9, r: 0.04 },
     { id: 'act:dba.word.amount:more', x: 0.48, y: 0.88, r: 0.036 },
     { id: 'act:dba.word.amount:less', x: 0.58, y: 0.88, r: 0.036 },
-    { id: 'act:dba.word.size:a', x: 0.16, y: 0.78, r: 0.036 },
-    { id: 'act:dba.word.size:b', x: 0.36, y: 0.76, r: 0.034 },
+    { id: 'act:dba.word.size:a', x: 0.16, y: 0.9, r: 0.036 },
+    { id: 'act:dba.word.size:b', x: 0.36, y: 0.9, r: 0.034 },
   ],
   'dba.scene.hall': [
     { id: 'hall-mural', x: 0.32, y: 0.56, r: 0.065 },
@@ -115,10 +115,11 @@ const YARD_APRONS = [
 ] as const;
 
 /**
- * East-gap marker stone. The plate art stays. Feet must not stand on its top;
- * they drop to the sand/rock line. The depart hotspot still reaches that line.
+ * East-gap marker stone. The plate art stays. Its opaque body runs about
+ * y 0.42–0.67, so a foot at 0.57 is still on the crown. Feet inside the
+ * footprint drop to the sand at the south lip.
  */
-export const SHORE_MARKER = { minX: 0.64, maxX: 0.82, sandY: 0.57 } as const;
+export const SHORE_MARKER = { minX: 0.66, maxX: 0.82, sandY: 0.68 } as const;
 
 export function plantOnGround(scene: IslandScene, pos: Point): Point {
   const band = BANDS[scene];
@@ -140,6 +141,14 @@ export function plantOnGround(scene: IslandScene, pos: Point): Point {
   return { x, y };
 }
 
+/** Hotspot reach. The depart stone cannot be stood on, so the sand lip in front of it still counts. */
+export function standsAt(scene: IslandScene, spot: Spot, pos: Point): boolean {
+  if (inRadius(pos, spot, spot.r)) return true;
+  if (scene !== 'dba.scene.shore' || spot.id !== 'shore-depart') return false;
+  const sand = plantOnGround(scene, spot);
+  return Math.hypot(pos.x - sand.x, pos.y - sand.y) <= 0.045;
+}
+
 export function gatesFrom(scene: IslandScene): readonly Gate[] {
   return GATES.filter((gate) => gate.from === scene);
 }
@@ -156,11 +165,11 @@ export function gateAt(scene: IslandScene, pos: Point): Gate | null {
   return gatesFrom(scene).find((gate) => crossed(gate, pos)) ?? null;
 }
 
-export function nearestSpot(spots: readonly Spot[], pos: Point): Spot | null {
+export function nearestSpot(spots: readonly Spot[], pos: Point, scene: IslandScene): Spot | null {
   let best: Spot | null = null;
   let bestDist = Infinity;
   for (const spot of spots) {
-    if (!inRadius(pos, spot, spot.r)) continue;
+    if (!standsAt(scene, spot, pos)) continue;
     const dist = Math.hypot(spot.x - pos.x, spot.y - pos.y);
     if (dist < bestDist) {
       best = spot;

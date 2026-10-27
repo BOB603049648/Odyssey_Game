@@ -1,0 +1,3054 @@
+{
+  "version": "1.3-pr18-wrap",
+  "updated": "2026-10-28T07:09:20+08:00",
+  "role": "auxiliary",
+  "timezone": "Asia/Shanghai",
+  "priority_note": "PR18 wrap：①旅人靴底实心暗褐AO清亮芯+双新月+溶雾轻软边；②前坪猫杀亮硬贴纸描边溶雾+爪贴阶槽离粮袋；③棚火猫轻软边+廊板共影。锁：雾岸猫姿态/land-shore/门帘/扁板/粮袋/标石勿动。",
+  "do_not_touch": [
+    "shore/art.shore.prop.nanaicha.png",
+    "nanaicha/traj/land-shore-driftwood.png",
+    "nanaicha/traj/land-shore-east-gap.png",
+    "nanaicha/traj/land-shore-gourd.png",
+    "shore/art.shore.prop.east-gap.png",
+    "yard/art.yard.prop.more-less-boards.png",
+    "yard/art.yard.prop.grain-bags.png",
+    "yard/art.yard.prop.grain-bags.interact.png",
+    "camp/art.camp.prop.north-curtain.png",
+    "marker-stone (locked; eng walkable not art knife)"
+  ],
+  "files": {
+    "traveler-mythic/cloud-inspired/v3/anim/idle-back-01.png": {
+      "before": {
+        "opaque_bbox": [
+          153,
+          66,
+          709,
+          1138
+        ],
+        "subjH_pct": 93.1,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.519,
+        "opaque_wh": [
+          557,
+          1073
+        ],
+        "solid_bbox": [
+          155,
+          66,
+          707,
+          1138
+        ],
+        "solidH_pct": 93.1,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          553,
+          1073
+        ],
+        "soft_shadow_px": 5342,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 28996,
+        "knife_edges": 855,
+        "core_mean_alpha": 253.8,
+        "soft_shadow_rgb": [
+          26.2,
+          20.9,
+          15.3
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          154,
+          67,
+          708,
+          1138
+        ],
+        "subjH_pct": 93.1,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.518,
+        "opaque_wh": [
+          555,
+          1072
+        ],
+        "solid_bbox": [
+          156,
+          67,
+          706,
+          1138
+        ],
+        "solidH_pct": 93.1,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          551,
+          1072
+        ],
+        "soft_shadow_px": 3003,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 1,
+        "dark_rim_px": 28947,
+        "knife_edges": 919,
+        "core_mean_alpha": 253.9,
+        "soft_shadow_rgb": [
+          24.4,
+          19.5,
+          14.1
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-back-02.png": {
+      "before": {
+        "opaque_bbox": [
+          131,
+          70,
+          732,
+          1138
+        ],
+        "subjH_pct": 92.8,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.563,
+        "opaque_wh": [
+          602,
+          1069
+        ],
+        "solid_bbox": [
+          134,
+          71,
+          730,
+          1138
+        ],
+        "solidH_pct": 92.7,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          597,
+          1068
+        ],
+        "soft_shadow_px": 6023,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 29063,
+        "knife_edges": 794,
+        "core_mean_alpha": 253.8,
+        "soft_shadow_rgb": [
+          26.5,
+          21.0,
+          15.3
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          133,
+          72,
+          730,
+          1138
+        ],
+        "subjH_pct": 92.6,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.56,
+        "opaque_wh": [
+          598,
+          1067
+        ],
+        "solid_bbox": [
+          135,
+          75,
+          728,
+          1138
+        ],
+        "solidH_pct": 92.4,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          594,
+          1064
+        ],
+        "soft_shadow_px": 3260,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 3,
+        "dark_rim_px": 29308,
+        "knife_edges": 837,
+        "core_mean_alpha": 253.9,
+        "soft_shadow_rgb": [
+          25.2,
+          19.9,
+          14.2
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-front-01.png": {
+      "before": {
+        "opaque_bbox": [
+          204,
+          6,
+          659,
+          1138
+        ],
+        "subjH_pct": 98.4,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.402,
+        "opaque_wh": [
+          456,
+          1133
+        ],
+        "solid_bbox": [
+          206,
+          6,
+          657,
+          1138
+        ],
+        "solidH_pct": 98.4,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          452,
+          1133
+        ],
+        "soft_shadow_px": 5956,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 15669,
+        "knife_edges": 453,
+        "core_mean_alpha": 254.2,
+        "soft_shadow_rgb": [
+          27.1,
+          21.5,
+          15.7
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          204,
+          6,
+          658,
+          1138
+        ],
+        "subjH_pct": 98.4,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.402,
+        "opaque_wh": [
+          455,
+          1133
+        ],
+        "solid_bbox": [
+          206,
+          10,
+          655,
+          1138
+        ],
+        "solidH_pct": 98.0,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          450,
+          1129
+        ],
+        "soft_shadow_px": 2814,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 14166,
+        "knife_edges": 689,
+        "core_mean_alpha": 254.6,
+        "soft_shadow_rgb": [
+          25.8,
+          20.4,
+          14.9
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-front-02.png": {
+      "before": {
+        "opaque_bbox": [
+          204,
+          4,
+          658,
+          1138
+        ],
+        "subjH_pct": 98.5,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.401,
+        "opaque_wh": [
+          455,
+          1135
+        ],
+        "solid_bbox": [
+          206,
+          4,
+          655,
+          1138
+        ],
+        "solidH_pct": 98.5,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          450,
+          1135
+        ],
+        "soft_shadow_px": 5932,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 15526,
+        "knife_edges": 474,
+        "core_mean_alpha": 254.1,
+        "soft_shadow_rgb": [
+          27.1,
+          21.5,
+          15.7
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          205,
+          5,
+          657,
+          1138
+        ],
+        "subjH_pct": 98.4,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.399,
+        "opaque_wh": [
+          453,
+          1134
+        ],
+        "solid_bbox": [
+          207,
+          7,
+          654,
+          1138
+        ],
+        "solidH_pct": 98.3,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          448,
+          1132
+        ],
+        "soft_shadow_px": 2507,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 13947,
+        "knife_edges": 460,
+        "core_mean_alpha": 254.6,
+        "soft_shadow_rgb": [
+          25.7,
+          20.3,
+          14.8
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-side-01.png": {
+      "before": {
+        "opaque_bbox": [
+          253,
+          44,
+          610,
+          1138
+        ],
+        "subjH_pct": 95.1,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.327,
+        "opaque_wh": [
+          358,
+          1095
+        ],
+        "solid_bbox": [
+          256,
+          44,
+          607,
+          1138
+        ],
+        "solidH_pct": 95.1,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          352,
+          1095
+        ],
+        "soft_shadow_px": 2914,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 9581,
+        "knife_edges": 326,
+        "core_mean_alpha": 254.3,
+        "soft_shadow_rgb": [
+          26.8,
+          21.1,
+          15.5
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          254,
+          44,
+          609,
+          1138
+        ],
+        "subjH_pct": 95.1,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.325,
+        "opaque_wh": [
+          356,
+          1095
+        ],
+        "solid_bbox": [
+          256,
+          47,
+          606,
+          1138
+        ],
+        "solidH_pct": 94.8,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          351,
+          1092
+        ],
+        "soft_shadow_px": 1105,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 9127,
+        "knife_edges": 424,
+        "core_mean_alpha": 254.7,
+        "soft_shadow_rgb": [
+          24.8,
+          19.6,
+          14.4
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-side-02.png": {
+      "before": {
+        "opaque_bbox": [
+          228,
+          27,
+          634,
+          1138
+        ],
+        "subjH_pct": 96.5,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.366,
+        "opaque_wh": [
+          407,
+          1112
+        ],
+        "solid_bbox": [
+          231,
+          28,
+          631,
+          1138
+        ],
+        "solidH_pct": 96.4,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          401,
+          1111
+        ],
+        "soft_shadow_px": 3493,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 10212,
+        "knife_edges": 472,
+        "core_mean_alpha": 254.3,
+        "soft_shadow_rgb": [
+          26.8,
+          21.2,
+          15.5
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          229,
+          30,
+          633,
+          1138
+        ],
+        "subjH_pct": 96.3,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.365,
+        "opaque_wh": [
+          405,
+          1109
+        ],
+        "solid_bbox": [
+          232,
+          31,
+          630,
+          1138
+        ],
+        "solidH_pct": 96.2,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          399,
+          1108
+        ],
+        "soft_shadow_px": 1526,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 9948,
+        "knife_edges": 307,
+        "core_mean_alpha": 254.6,
+        "soft_shadow_rgb": [
+          25.0,
+          19.7,
+          14.3
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/reach-front-01.png": {
+      "before": {
+        "opaque_bbox": [
+          169,
+          15,
+          693,
+          1138
+        ],
+        "subjH_pct": 97.6,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.467,
+        "opaque_wh": [
+          525,
+          1124
+        ],
+        "solid_bbox": [
+          171,
+          20,
+          691,
+          1138
+        ],
+        "solidH_pct": 97.1,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          521,
+          1119
+        ],
+        "soft_shadow_px": 10473,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 21816,
+        "knife_edges": 538,
+        "core_mean_alpha": 254.0,
+        "soft_shadow_rgb": [
+          27.8,
+          21.9,
+          16.0
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          170,
+          16,
+          693,
+          1138
+        ],
+        "subjH_pct": 97.5,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.467,
+        "opaque_wh": [
+          524,
+          1123
+        ],
+        "solid_bbox": [
+          172,
+          22,
+          691,
+          1138
+        ],
+        "solidH_pct": 97.0,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          520,
+          1117
+        ],
+        "soft_shadow_px": 3454,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 1,
+        "dark_rim_px": 15669,
+        "knife_edges": 469,
+        "core_mean_alpha": 254.5,
+        "soft_shadow_rgb": [
+          27.0,
+          21.2,
+          15.5
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/reach-front-02.png": {
+      "before": {
+        "opaque_bbox": [
+          156,
+          12,
+          707,
+          1138
+        ],
+        "subjH_pct": 97.8,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.49,
+        "opaque_wh": [
+          552,
+          1127
+        ],
+        "solid_bbox": [
+          158,
+          20,
+          705,
+          1138
+        ],
+        "solidH_pct": 97.1,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          548,
+          1119
+        ],
+        "soft_shadow_px": 10823,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 2,
+        "dark_rim_px": 25604,
+        "knife_edges": 769,
+        "core_mean_alpha": 253.8,
+        "soft_shadow_rgb": [
+          27.7,
+          21.9,
+          16.0
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          157,
+          13,
+          706,
+          1138
+        ],
+        "subjH_pct": 97.7,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.488,
+        "opaque_wh": [
+          550,
+          1126
+        ],
+        "solid_bbox": [
+          159,
+          22,
+          704,
+          1138
+        ],
+        "solidH_pct": 97.0,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          546,
+          1117
+        ],
+        "soft_shadow_px": 3395,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 2,
+        "dark_rim_px": 18916,
+        "knife_edges": 741,
+        "core_mean_alpha": 254.4,
+        "soft_shadow_rgb": [
+          27.0,
+          21.2,
+          15.5
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/reach-side-01.png": {
+      "before": {
+        "opaque_bbox": [
+          95,
+          81,
+          768,
+          1138
+        ],
+        "subjH_pct": 91.8,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.637,
+        "opaque_wh": [
+          674,
+          1058
+        ],
+        "solid_bbox": [
+          98,
+          81,
+          766,
+          1138
+        ],
+        "solidH_pct": 91.8,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          669,
+          1058
+        ],
+        "soft_shadow_px": 8558,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 17702,
+        "knife_edges": 451,
+        "core_mean_alpha": 254.1,
+        "soft_shadow_rgb": [
+          27.5,
+          21.7,
+          15.8
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          96,
+          82,
+          766,
+          1138
+        ],
+        "subjH_pct": 91.8,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.635,
+        "opaque_wh": [
+          671,
+          1057
+        ],
+        "solid_bbox": [
+          98,
+          82,
+          764,
+          1138
+        ],
+        "solidH_pct": 91.8,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          667,
+          1057
+        ],
+        "soft_shadow_px": 2953,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 14703,
+        "knife_edges": 525,
+        "core_mean_alpha": 254.4,
+        "soft_shadow_rgb": [
+          26.5,
+          20.8,
+          15.2
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-01.png": {
+      "before": {
+        "opaque_bbox": [
+          144,
+          65,
+          719,
+          1138
+        ],
+        "subjH_pct": 93.2,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.536,
+        "opaque_wh": [
+          576,
+          1074
+        ],
+        "solid_bbox": [
+          146,
+          66,
+          717,
+          1138
+        ],
+        "solidH_pct": 93.1,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          572,
+          1073
+        ],
+        "soft_shadow_px": 5639,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 3,
+        "dark_rim_px": 16101,
+        "knife_edges": 499,
+        "core_mean_alpha": 254.4,
+        "soft_shadow_rgb": [
+          26.4,
+          20.9,
+          15.3
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          145,
+          68,
+          717,
+          1138
+        ],
+        "subjH_pct": 93.0,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.535,
+        "opaque_wh": [
+          573,
+          1071
+        ],
+        "solid_bbox": [
+          147,
+          68,
+          715,
+          1138
+        ],
+        "solidH_pct": 93.0,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          569,
+          1071
+        ],
+        "soft_shadow_px": 3183,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 1,
+        "dark_rim_px": 16008,
+        "knife_edges": 727,
+        "core_mean_alpha": 254.5,
+        "soft_shadow_rgb": [
+          25.0,
+          19.8,
+          14.2
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-02.png": {
+      "before": {
+        "opaque_bbox": [
+          179,
+          51,
+          683,
+          1138
+        ],
+        "subjH_pct": 94.4,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.464,
+        "opaque_wh": [
+          505,
+          1088
+        ],
+        "solid_bbox": [
+          181,
+          52,
+          680,
+          1138
+        ],
+        "solidH_pct": 94.4,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          500,
+          1087
+        ],
+        "soft_shadow_px": 5147,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 16281,
+        "knife_edges": 447,
+        "core_mean_alpha": 254.4,
+        "soft_shadow_rgb": [
+          26.8,
+          21.3,
+          15.5
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          180,
+          53,
+          682,
+          1138
+        ],
+        "subjH_pct": 94.3,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.463,
+        "opaque_wh": [
+          503,
+          1086
+        ],
+        "solid_bbox": [
+          182,
+          54,
+          679,
+          1138
+        ],
+        "solidH_pct": 94.2,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          498,
+          1085
+        ],
+        "soft_shadow_px": 2596,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 15326,
+        "knife_edges": 557,
+        "core_mean_alpha": 254.5,
+        "soft_shadow_rgb": [
+          25.3,
+          20.0,
+          14.5
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-03.png": {
+      "before": {
+        "opaque_bbox": [
+          113,
+          74,
+          750,
+          1138
+        ],
+        "subjH_pct": 92.4,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.599,
+        "opaque_wh": [
+          638,
+          1065
+        ],
+        "solid_bbox": [
+          115,
+          76,
+          748,
+          1138
+        ],
+        "solidH_pct": 92.3,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          634,
+          1063
+        ],
+        "soft_shadow_px": 6154,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 17060,
+        "knife_edges": 376,
+        "core_mean_alpha": 254.4,
+        "soft_shadow_rgb": [
+          26.5,
+          21.1,
+          15.4
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          114,
+          77,
+          748,
+          1138
+        ],
+        "subjH_pct": 92.2,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.598,
+        "opaque_wh": [
+          635,
+          1062
+        ],
+        "solid_bbox": [
+          116,
+          78,
+          746,
+          1138
+        ],
+        "solidH_pct": 92.1,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          631,
+          1061
+        ],
+        "soft_shadow_px": 3298,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 1,
+        "dark_rim_px": 15653,
+        "knife_edges": 714,
+        "core_mean_alpha": 254.5,
+        "soft_shadow_rgb": [
+          25.3,
+          20.0,
+          14.4
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-04.png": {
+      "before": {
+        "opaque_bbox": [
+          135,
+          51,
+          728,
+          1138
+        ],
+        "subjH_pct": 94.4,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.546,
+        "opaque_wh": [
+          594,
+          1088
+        ],
+        "solid_bbox": [
+          137,
+          51,
+          725,
+          1138
+        ],
+        "solidH_pct": 94.4,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          589,
+          1088
+        ],
+        "soft_shadow_px": 6176,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 17537,
+        "knife_edges": 401,
+        "core_mean_alpha": 254.3,
+        "soft_shadow_rgb": [
+          26.6,
+          21.1,
+          15.5
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          136,
+          52,
+          727,
+          1138
+        ],
+        "subjH_pct": 94.4,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.545,
+        "opaque_wh": [
+          592,
+          1087
+        ],
+        "solid_bbox": [
+          138,
+          52,
+          724,
+          1138
+        ],
+        "solidH_pct": 94.4,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          587,
+          1087
+        ],
+        "soft_shadow_px": 3311,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 16583,
+        "knife_edges": 492,
+        "core_mean_alpha": 254.5,
+        "soft_shadow_rgb": [
+          25.1,
+          19.9,
+          14.4
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-01.png": {
+      "before": {
+        "opaque_bbox": [
+          209,
+          58,
+          654,
+          1138
+        ],
+        "subjH_pct": 93.8,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.413,
+        "opaque_wh": [
+          446,
+          1081
+        ],
+        "solid_bbox": [
+          212,
+          61,
+          651,
+          1138
+        ],
+        "solidH_pct": 93.6,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          440,
+          1078
+        ],
+        "soft_shadow_px": 4753,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 1,
+        "dark_rim_px": 13409,
+        "knife_edges": 427,
+        "core_mean_alpha": 254.3,
+        "soft_shadow_rgb": [
+          26.8,
+          21.3,
+          15.6
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          210,
+          59,
+          652,
+          1138
+        ],
+        "subjH_pct": 93.8,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.41,
+        "opaque_wh": [
+          443,
+          1080
+        ],
+        "solid_bbox": [
+          212,
+          63,
+          649,
+          1138
+        ],
+        "solidH_pct": 93.4,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          438,
+          1076
+        ],
+        "soft_shadow_px": 2358,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 13326,
+        "knife_edges": 537,
+        "core_mean_alpha": 254.6,
+        "soft_shadow_rgb": [
+          25.1,
+          19.9,
+          14.5
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-02.png": {
+      "before": {
+        "opaque_bbox": [
+          217,
+          51,
+          646,
+          1138
+        ],
+        "subjH_pct": 94.4,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.395,
+        "opaque_wh": [
+          430,
+          1088
+        ],
+        "solid_bbox": [
+          220,
+          51,
+          644,
+          1138
+        ],
+        "solidH_pct": 94.4,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          425,
+          1088
+        ],
+        "soft_shadow_px": 4753,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 13461,
+        "knife_edges": 407,
+        "core_mean_alpha": 254.3,
+        "soft_shadow_rgb": [
+          27.0,
+          21.5,
+          15.7
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          218,
+          52,
+          645,
+          1138
+        ],
+        "subjH_pct": 94.4,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.394,
+        "opaque_wh": [
+          428,
+          1087
+        ],
+        "solid_bbox": [
+          221,
+          52,
+          643,
+          1138
+        ],
+        "solidH_pct": 94.4,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          423,
+          1087
+        ],
+        "soft_shadow_px": 2242,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 12869,
+        "knife_edges": 465,
+        "core_mean_alpha": 254.6,
+        "soft_shadow_rgb": [
+          25.5,
+          20.2,
+          14.7
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-03.png": {
+      "before": {
+        "opaque_bbox": [
+          169,
+          36,
+          694,
+          1138
+        ],
+        "subjH_pct": 95.7,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.477,
+        "opaque_wh": [
+          526,
+          1103
+        ],
+        "solid_bbox": [
+          171,
+          39,
+          692,
+          1138
+        ],
+        "solidH_pct": 95.5,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          522,
+          1100
+        ],
+        "soft_shadow_px": 5922,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 15935,
+        "knife_edges": 458,
+        "core_mean_alpha": 254.4,
+        "soft_shadow_rgb": [
+          26.6,
+          21.0,
+          15.3
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          170,
+          37,
+          693,
+          1138
+        ],
+        "subjH_pct": 95.7,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.475,
+        "opaque_wh": [
+          524,
+          1102
+        ],
+        "solid_bbox": [
+          172,
+          40,
+          691,
+          1138
+        ],
+        "solidH_pct": 95.4,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          520,
+          1099
+        ],
+        "soft_shadow_px": 3305,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 14288,
+        "knife_edges": 648,
+        "core_mean_alpha": 254.6,
+        "soft_shadow_rgb": [
+          25.1,
+          19.8,
+          14.3
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-04.png": {
+      "before": {
+        "opaque_bbox": [
+          209,
+          51,
+          653,
+          1138
+        ],
+        "subjH_pct": 94.4,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.409,
+        "opaque_wh": [
+          445,
+          1088
+        ],
+        "solid_bbox": [
+          211,
+          51,
+          651,
+          1138
+        ],
+        "solidH_pct": 94.4,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          441,
+          1088
+        ],
+        "soft_shadow_px": 4899,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 13514,
+        "knife_edges": 430,
+        "core_mean_alpha": 254.4,
+        "soft_shadow_rgb": [
+          26.9,
+          21.4,
+          15.8
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          210,
+          52,
+          652,
+          1138
+        ],
+        "subjH_pct": 94.4,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.408,
+        "opaque_wh": [
+          443,
+          1087
+        ],
+        "solid_bbox": [
+          212,
+          52,
+          650,
+          1138
+        ],
+        "solidH_pct": 94.4,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          439,
+          1087
+        ],
+        "soft_shadow_px": 2435,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 13212,
+        "knife_edges": 497,
+        "core_mean_alpha": 254.6,
+        "soft_shadow_rgb": [
+          25.4,
+          20.1,
+          14.6
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-01.png": {
+      "before": {
+        "opaque_bbox": [
+          149,
+          77,
+          714,
+          1138
+        ],
+        "subjH_pct": 92.2,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.533,
+        "opaque_wh": [
+          566,
+          1062
+        ],
+        "solid_bbox": [
+          151,
+          77,
+          712,
+          1138
+        ],
+        "solidH_pct": 92.2,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          562,
+          1062
+        ],
+        "soft_shadow_px": 6310,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 15072,
+        "knife_edges": 349,
+        "core_mean_alpha": 254.3,
+        "soft_shadow_rgb": [
+          26.2,
+          20.8,
+          15.1
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          150,
+          78,
+          712,
+          1138
+        ],
+        "subjH_pct": 92.1,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.531,
+        "opaque_wh": [
+          563,
+          1061
+        ],
+        "solid_bbox": [
+          152,
+          81,
+          710,
+          1138
+        ],
+        "solidH_pct": 91.8,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          559,
+          1058
+        ],
+        "soft_shadow_px": 3536,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 2,
+        "dark_rim_px": 13580,
+        "knife_edges": 526,
+        "core_mean_alpha": 254.5,
+        "soft_shadow_rgb": [
+          24.8,
+          19.5,
+          14.2
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-02.png": {
+      "before": {
+        "opaque_bbox": [
+          148,
+          88,
+          714,
+          1138
+        ],
+        "subjH_pct": 91.2,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.539,
+        "opaque_wh": [
+          567,
+          1051
+        ],
+        "solid_bbox": [
+          150,
+          88,
+          714,
+          1138
+        ],
+        "solidH_pct": 91.2,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          565,
+          1051
+        ],
+        "soft_shadow_px": 6117,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 14653,
+        "knife_edges": 435,
+        "core_mean_alpha": 254.3,
+        "soft_shadow_rgb": [
+          26.2,
+          20.8,
+          15.1
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          149,
+          89,
+          713,
+          1138
+        ],
+        "subjH_pct": 91.1,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.538,
+        "opaque_wh": [
+          565,
+          1050
+        ],
+        "solid_bbox": [
+          151,
+          89,
+          713,
+          1138
+        ],
+        "solidH_pct": 91.1,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          563,
+          1050
+        ],
+        "soft_shadow_px": 3395,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 1,
+        "dark_rim_px": 13268,
+        "knife_edges": 538,
+        "core_mean_alpha": 254.5,
+        "soft_shadow_rgb": [
+          24.7,
+          19.4,
+          14.1
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-03.png": {
+      "before": {
+        "opaque_bbox": [
+          85,
+          90,
+          777,
+          1138
+        ],
+        "subjH_pct": 91.1,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.661,
+        "opaque_wh": [
+          693,
+          1049
+        ],
+        "solid_bbox": [
+          88,
+          93,
+          777,
+          1138
+        ],
+        "solidH_pct": 90.8,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          690,
+          1046
+        ],
+        "soft_shadow_px": 6114,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 14842,
+        "knife_edges": 322,
+        "core_mean_alpha": 254.4,
+        "soft_shadow_rgb": [
+          25.9,
+          20.5,
+          14.8
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          86,
+          90,
+          776,
+          1138
+        ],
+        "subjH_pct": 91.1,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.659,
+        "opaque_wh": [
+          691,
+          1049
+        ],
+        "solid_bbox": [
+          89,
+          93,
+          776,
+          1138
+        ],
+        "solidH_pct": 90.8,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          688,
+          1046
+        ],
+        "soft_shadow_px": 3420,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 3,
+        "dark_rim_px": 13355,
+        "knife_edges": 649,
+        "core_mean_alpha": 254.5,
+        "soft_shadow_rgb": [
+          24.6,
+          19.3,
+          13.8
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-04.png": {
+      "before": {
+        "opaque_bbox": [
+          115,
+          83,
+          748,
+          1138
+        ],
+        "subjH_pct": 91.7,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.6,
+        "opaque_wh": [
+          634,
+          1056
+        ],
+        "solid_bbox": [
+          118,
+          83,
+          746,
+          1138
+        ],
+        "solidH_pct": 91.7,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          629,
+          1056
+        ],
+        "soft_shadow_px": 6159,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 1,
+        "dark_rim_px": 14472,
+        "knife_edges": 415,
+        "core_mean_alpha": 254.4,
+        "soft_shadow_rgb": [
+          26.2,
+          20.7,
+          15.0
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          117,
+          83,
+          745,
+          1138
+        ],
+        "subjH_pct": 91.7,
+        "foot_pad_px": 13,
+        "aspect_w_h": 0.596,
+        "opaque_wh": [
+          629,
+          1056
+        ],
+        "solid_bbox": [
+          119,
+          88,
+          745,
+          1138
+        ],
+        "solidH_pct": 91.2,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          627,
+          1051
+        ],
+        "soft_shadow_px": 3416,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 13235,
+        "knife_edges": 612,
+        "core_mean_alpha": 254.5,
+        "soft_shadow_rgb": [
+          24.6,
+          19.4,
+          13.9
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traveler_p0",
+      "wrote": true,
+      "note": "solid dark AO rgb(28,22,16) kill dual-crescent+bright-core; fog-melt soft rim; pale_pad stay 0"
+    },
+    "yard/art.yard.prop.nanaicha.png": {
+      "before": {
+        "opaque_bbox": [
+          492,
+          307,
+          787,
+          710
+        ],
+        "subjH_pct": 56.1,
+        "foot_pad_px": 9,
+        "aspect_w_h": 0.733,
+        "opaque_wh": [
+          296,
+          404
+        ],
+        "solid_bbox": [
+          494,
+          310,
+          785,
+          710
+        ],
+        "solidH_pct": 55.7,
+        "solid_foot_pad_px": 9,
+        "solid_wh": [
+          292,
+          401
+        ],
+        "soft_shadow_px": 5282,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 13165,
+        "knife_edges": 385,
+        "core_mean_alpha": 250.6,
+        "soft_shadow_rgb": [
+          21.9,
+          15.3,
+          10.0
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          496,
+          315,
+          783,
+          710
+        ],
+        "subjH_pct": 55.0,
+        "foot_pad_px": 9,
+        "aspect_w_h": 0.727,
+        "opaque_wh": [
+          288,
+          396
+        ],
+        "solid_bbox": [
+          498,
+          318,
+          781,
+          710
+        ],
+        "solidH_pct": 54.6,
+        "solid_foot_pad_px": 9,
+        "solid_wh": [
+          284,
+          393
+        ],
+        "soft_shadow_px": 2757,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 11845,
+        "knife_edges": 438,
+        "core_mean_alpha": 252.2,
+        "soft_shadow_rgb": [
+          19.1,
+          14.2,
+          9.9
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "yard_cat_p0",
+      "wrote": true,
+      "note": "PRIORITY kill bright hard sticker rim→fog-melt; paws flush step slots away from grain; dark AO"
+    },
+    "camp/art.camp.prop.nanaicha.png": {
+      "before": {
+        "opaque_bbox": [
+          426,
+          350,
+          853,
+          710
+        ],
+        "subjH_pct": 50.1,
+        "foot_pad_px": 9,
+        "aspect_w_h": 1.186,
+        "opaque_wh": [
+          428,
+          361
+        ],
+        "solid_bbox": [
+          428,
+          353,
+          851,
+          710
+        ],
+        "solidH_pct": 49.7,
+        "solid_foot_pad_px": 9,
+        "solid_wh": [
+          424,
+          358
+        ],
+        "soft_shadow_px": 6422,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 13872,
+        "knife_edges": 1264,
+        "core_mean_alpha": 253.7,
+        "soft_shadow_rgb": [
+          21.3,
+          15.6,
+          11.0
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          428,
+          351,
+          851,
+          710
+        ],
+        "subjH_pct": 50.0,
+        "foot_pad_px": 9,
+        "aspect_w_h": 1.178,
+        "opaque_wh": [
+          424,
+          360
+        ],
+        "solid_bbox": [
+          430,
+          354,
+          849,
+          710
+        ],
+        "solidH_pct": 49.6,
+        "solid_foot_pad_px": 9,
+        "solid_wh": [
+          420,
+          357
+        ],
+        "soft_shadow_px": 5649,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 13154,
+        "knife_edges": 292,
+        "core_mean_alpha": 253.5,
+        "soft_shadow_rgb": [
+          18.2,
+          14.1,
+          9.8
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "camp_cat_p0",
+      "wrote": true,
+      "note": "light soft rim + shared contact shadow on porch deck; no pose redesign"
+    },
+    "nanaicha/traj/land-camp-fireside.png": {
+      "before": {
+        "opaque_bbox": [
+          89,
+          566,
+          773,
+          1143
+        ],
+        "subjH_pct": 50.2,
+        "foot_pad_px": 8,
+        "aspect_w_h": 1.185,
+        "opaque_wh": [
+          685,
+          578
+        ],
+        "solid_bbox": [
+          91,
+          569,
+          771,
+          1143
+        ],
+        "solidH_pct": 49.9,
+        "solid_foot_pad_px": 8,
+        "solid_wh": [
+          681,
+          575
+        ],
+        "soft_shadow_px": 6094,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 8503,
+        "knife_edges": 634,
+        "core_mean_alpha": 254.7,
+        "soft_shadow_rgb": [
+          22.6,
+          16.0,
+          10.7
+        ],
+        "crescent_gap": 73,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          91,
+          567,
+          772,
+          1143
+        ],
+        "subjH_pct": 50.1,
+        "foot_pad_px": 8,
+        "aspect_w_h": 1.182,
+        "opaque_wh": [
+          682,
+          577
+        ],
+        "solid_bbox": [
+          95,
+          570,
+          769,
+          1143
+        ],
+        "solidH_pct": 49.8,
+        "solid_foot_pad_px": 8,
+        "solid_wh": [
+          675,
+          574
+        ],
+        "soft_shadow_px": 3901,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 7252,
+        "knife_edges": 188,
+        "core_mean_alpha": 254.9,
+        "soft_shadow_rgb": [
+          20.0,
+          15.2,
+          10.7
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traj_cat_p0",
+      "wrote": true,
+      "note": "camp fireside soft rim + porch co-shadow"
+    },
+    "nanaicha/traj/land-camp-sleep-mat.png": {
+      "before": {
+        "opaque_bbox": [
+          151,
+          336,
+          711,
+          1143
+        ],
+        "subjH_pct": 70.1,
+        "foot_pad_px": 8,
+        "aspect_w_h": 0.694,
+        "opaque_wh": [
+          561,
+          808
+        ],
+        "solid_bbox": [
+          153,
+          338,
+          709,
+          1143
+        ],
+        "solidH_pct": 70.0,
+        "solid_foot_pad_px": 8,
+        "solid_wh": [
+          557,
+          806
+        ],
+        "soft_shadow_px": 6653,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 10205,
+        "knife_edges": 576,
+        "core_mean_alpha": 254.5,
+        "soft_shadow_rgb": [
+          23.2,
+          15.9,
+          10.2
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          153,
+          337,
+          710,
+          1143
+        ],
+        "subjH_pct": 70.1,
+        "foot_pad_px": 8,
+        "aspect_w_h": 0.691,
+        "opaque_wh": [
+          558,
+          807
+        ],
+        "solid_bbox": [
+          155,
+          339,
+          708,
+          1143
+        ],
+        "solidH_pct": 69.9,
+        "solid_foot_pad_px": 8,
+        "solid_wh": [
+          554,
+          805
+        ],
+        "soft_shadow_px": 2517,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 7089,
+        "knife_edges": 252,
+        "core_mean_alpha": 254.8,
+        "soft_shadow_rgb": [
+          20.3,
+          15.1,
+          10.7
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traj_cat_p0",
+      "wrote": true,
+      "note": "camp sleep-mat soft rim + flush"
+    },
+    "nanaicha/traj/land-yard-give.png": {
+      "before": {
+        "opaque_bbox": [
+          59,
+          175,
+          803,
+          1144
+        ],
+        "subjH_pct": 84.2,
+        "foot_pad_px": 7,
+        "aspect_w_h": 0.768,
+        "opaque_wh": [
+          745,
+          970
+        ],
+        "solid_bbox": [
+          61,
+          178,
+          801,
+          1144
+        ],
+        "solidH_pct": 83.9,
+        "solid_foot_pad_px": 7,
+        "solid_wh": [
+          741,
+          967
+        ],
+        "soft_shadow_px": 11580,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 53755,
+        "knife_edges": 5107,
+        "core_mean_alpha": 253.0,
+        "soft_shadow_rgb": [
+          23.3,
+          16.0,
+          10.2
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          61,
+          176,
+          801,
+          1144
+        ],
+        "subjH_pct": 84.1,
+        "foot_pad_px": 7,
+        "aspect_w_h": 0.765,
+        "opaque_wh": [
+          741,
+          969
+        ],
+        "solid_bbox": [
+          63,
+          179,
+          799,
+          1144
+        ],
+        "solidH_pct": 83.9,
+        "solid_foot_pad_px": 7,
+        "solid_wh": [
+          737,
+          966
+        ],
+        "soft_shadow_px": 3872,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 46036,
+        "knife_edges": 1949,
+        "core_mean_alpha": 253.2,
+        "soft_shadow_rgb": [
+          20.3,
+          14.9,
+          10.1
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traj_cat_p0",
+      "wrote": true,
+      "note": "yard give soft rim + paws flush steps away from grain"
+    },
+    "nanaicha/traj/leap-01.png": {
+      "before": {
+        "opaque_bbox": [
+          142,
+          200,
+          720,
+          751
+        ],
+        "subjH_pct": 47.9,
+        "foot_pad_px": 400,
+        "aspect_w_h": 1.049,
+        "opaque_wh": [
+          579,
+          552
+        ],
+        "solid_bbox": [
+          142,
+          200,
+          720,
+          751
+        ],
+        "solidH_pct": 47.9,
+        "solid_foot_pad_px": 400,
+        "solid_wh": [
+          579,
+          552
+        ],
+        "soft_shadow_px": 267,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 647,
+        "dark_rim_px": 1064,
+        "knife_edges": 510,
+        "core_mean_alpha": 254.8,
+        "soft_shadow_rgb": [
+          20.3,
+          21.3,
+          6.7
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 162,
+        "cyanish_px": 293,
+        "hi_sat_cyan_px": 328,
+        "bright_cool_px": 74
+      },
+      "after": {
+        "opaque_bbox": [
+          39,
+          393,
+          824,
+          1143
+        ],
+        "subjH_pct": 65.2,
+        "foot_pad_px": 8,
+        "aspect_w_h": 1.047,
+        "opaque_wh": [
+          786,
+          751
+        ],
+        "solid_bbox": [
+          41,
+          397,
+          820,
+          1143
+        ],
+        "solidH_pct": 64.8,
+        "solid_foot_pad_px": 8,
+        "solid_wh": [
+          780,
+          747
+        ],
+        "soft_shadow_px": 5037,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 1,
+        "dark_rim_px": 17510,
+        "knife_edges": 226,
+        "core_mean_alpha": 254.6,
+        "soft_shadow_rgb": [
+          22.1,
+          15.2,
+          9.9
+        ],
+        "crescent_gap": 1,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traj_cat_p0",
+      "wrote": true,
+      "note": "leap soft rim fog-melt (had bright rim)"
+    },
+    "nanaicha/traj/leap-02.png": {
+      "before": {
+        "opaque_bbox": [
+          107,
+          123,
+          756,
+          905
+        ],
+        "subjH_pct": 68.0,
+        "foot_pad_px": 246,
+        "aspect_w_h": 0.83,
+        "opaque_wh": [
+          650,
+          783
+        ],
+        "solid_bbox": [
+          107,
+          123,
+          756,
+          905
+        ],
+        "solidH_pct": 68.0,
+        "solid_foot_pad_px": 246,
+        "solid_wh": [
+          650,
+          783
+        ],
+        "soft_shadow_px": 108,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 489,
+        "dark_rim_px": 1498,
+        "knife_edges": 1107,
+        "core_mean_alpha": 254.8,
+        "soft_shadow_rgb": [
+          27.5,
+          30.1,
+          15.4
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 177,
+        "cyanish_px": 363,
+        "hi_sat_cyan_px": 434,
+        "bright_cool_px": 90
+      },
+      "after": {
+        "opaque_bbox": [
+          88,
+          314,
+          775,
+          1143
+        ],
+        "subjH_pct": 72.0,
+        "foot_pad_px": 8,
+        "aspect_w_h": 0.829,
+        "opaque_wh": [
+          688,
+          830
+        ],
+        "solid_bbox": [
+          91,
+          317,
+          772,
+          1143
+        ],
+        "solidH_pct": 71.8,
+        "solid_foot_pad_px": 8,
+        "solid_wh": [
+          682,
+          827
+        ],
+        "soft_shadow_px": 4779,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 1,
+        "dark_rim_px": 16418,
+        "knife_edges": 322,
+        "core_mean_alpha": 254.5,
+        "soft_shadow_rgb": [
+          23.3,
+          15.9,
+          10.2
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "traj_cat_p0",
+      "wrote": true,
+      "note": "leap soft rim fog-melt (had bright rim)"
+    },
+    "yard/art.yard.prop.dried-fish.png": {
+      "before": {
+        "opaque_bbox": [
+          465,
+          392,
+          813,
+          707
+        ],
+        "subjH_pct": 43.9,
+        "foot_pad_px": 12,
+        "aspect_w_h": 1.104,
+        "opaque_wh": [
+          349,
+          316
+        ],
+        "solid_bbox": [
+          467,
+          394,
+          811,
+          707
+        ],
+        "solidH_pct": 43.6,
+        "solid_foot_pad_px": 12,
+        "solid_wh": [
+          345,
+          314
+        ],
+        "soft_shadow_px": 2857,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 1,
+        "dark_rim_px": 8211,
+        "knife_edges": 284,
+        "core_mean_alpha": 253.0,
+        "soft_shadow_rgb": [
+          25.1,
+          17.1,
+          12.4
+        ],
+        "crescent_gap": 915,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          467,
+          392,
+          812,
+          708
+        ],
+        "subjH_pct": 44.0,
+        "foot_pad_px": 11,
+        "aspect_w_h": 1.091,
+        "opaque_wh": [
+          346,
+          317
+        ],
+        "solid_bbox": [
+          469,
+          395,
+          810,
+          708
+        ],
+        "solidH_pct": 43.6,
+        "solid_foot_pad_px": 11,
+        "solid_wh": [
+          342,
+          314
+        ],
+        "soft_shadow_px": 2494,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 6626,
+        "knife_edges": 386,
+        "core_mean_alpha": 253.0,
+        "soft_shadow_rgb": [
+          24.7,
+          17.5,
+          12.1
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "yard_rack_p1",
+      "wrote": true,
+      "note": "顺手 clear soft elliptical foot pads; dark contact; soft edge"
+    },
+    "camp/art.camp.prop.north-curtain.png": {
+      "before": {
+        "opaque_bbox": [
+          311,
+          22,
+          1010,
+          690
+        ],
+        "subjH_pct": 92.9,
+        "foot_pad_px": 29,
+        "aspect_w_h": 1.046,
+        "opaque_wh": [
+          700,
+          669
+        ],
+        "solid_bbox": [
+          317,
+          32,
+          1003,
+          681
+        ],
+        "solidH_pct": 90.3,
+        "solid_foot_pad_px": 38,
+        "solid_wh": [
+          687,
+          650
+        ],
+        "soft_shadow_px": 10079,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 26457,
+        "knife_edges": 0,
+        "core_mean_alpha": 255.0,
+        "soft_shadow_rgb": [
+          31.1,
+          26.6,
+          21.2
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          311,
+          22,
+          1010,
+          690
+        ],
+        "subjH_pct": 92.9,
+        "foot_pad_px": 29,
+        "aspect_w_h": 1.046,
+        "opaque_wh": [
+          700,
+          669
+        ],
+        "solid_bbox": [
+          317,
+          32,
+          1003,
+          681
+        ],
+        "solidH_pct": 90.3,
+        "solid_foot_pad_px": 38,
+        "solid_wh": [
+          687,
+          650
+        ],
+        "soft_shadow_px": 10079,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 26457,
+        "knife_edges": 0,
+        "core_mean_alpha": 255.0,
+        "soft_shadow_rgb": [
+          31.1,
+          26.6,
+          21.2
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "locked_evidence",
+      "wrote": false,
+      "note": "门帘暖奶油已过 — wrote=False; no main edit"
+    },
+    "yard/art.yard.prop.more-less-boards.png": {
+      "before": {
+        "opaque_bbox": [
+          523,
+          505,
+          755,
+          707
+        ],
+        "subjH_pct": 28.2,
+        "foot_pad_px": 12,
+        "aspect_w_h": 1.148,
+        "opaque_wh": [
+          233,
+          203
+        ],
+        "solid_bbox": [
+          525,
+          507,
+          752,
+          702
+        ],
+        "solidH_pct": 27.2,
+        "solid_foot_pad_px": 17,
+        "solid_wh": [
+          228,
+          196
+        ],
+        "soft_shadow_px": 1487,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 2130,
+        "knife_edges": 3,
+        "core_mean_alpha": 254.5,
+        "soft_shadow_rgb": [
+          26.2,
+          18.2,
+          12.3
+        ],
+        "crescent_gap": 468,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          523,
+          505,
+          755,
+          707
+        ],
+        "subjH_pct": 28.2,
+        "foot_pad_px": 12,
+        "aspect_w_h": 1.148,
+        "opaque_wh": [
+          233,
+          203
+        ],
+        "solid_bbox": [
+          525,
+          507,
+          752,
+          702
+        ],
+        "solidH_pct": 27.2,
+        "solid_foot_pad_px": 17,
+        "solid_wh": [
+          228,
+          196
+        ],
+        "soft_shadow_px": 1487,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 2130,
+        "knife_edges": 3,
+        "core_mean_alpha": 254.5,
+        "soft_shadow_rgb": [
+          26.2,
+          18.2,
+          12.3
+        ],
+        "crescent_gap": 468,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "locked_evidence",
+      "wrote": false,
+      "note": "扁板主造型已过 — 勿动; evidence only"
+    },
+    "yard/art.yard.prop.grain-bags.png": {
+      "before": {
+        "opaque_bbox": [
+          555,
+          581,
+          723,
+          709
+        ],
+        "subjH_pct": 17.9,
+        "foot_pad_px": 10,
+        "aspect_w_h": 1.31,
+        "opaque_wh": [
+          169,
+          129
+        ],
+        "solid_bbox": [
+          556,
+          583,
+          722,
+          709
+        ],
+        "solidH_pct": 17.6,
+        "solid_foot_pad_px": 10,
+        "solid_wh": [
+          167,
+          127
+        ],
+        "soft_shadow_px": 869,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 889,
+        "knife_edges": 65,
+        "core_mean_alpha": 253.7,
+        "soft_shadow_rgb": [
+          36.8,
+          27.2,
+          18.4
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          555,
+          581,
+          723,
+          709
+        ],
+        "subjH_pct": 17.9,
+        "foot_pad_px": 10,
+        "aspect_w_h": 1.31,
+        "opaque_wh": [
+          169,
+          129
+        ],
+        "solid_bbox": [
+          556,
+          583,
+          722,
+          709
+        ],
+        "solidH_pct": 17.6,
+        "solid_foot_pad_px": 10,
+        "solid_wh": [
+          167,
+          127
+        ],
+        "soft_shadow_px": 869,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 889,
+        "knife_edges": 65,
+        "core_mean_alpha": 253.7,
+        "soft_shadow_rgb": [
+          36.8,
+          27.2,
+          18.4
+        ],
+        "crescent_gap": 0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "locked_evidence",
+      "wrote": false,
+      "note": "粮袋勿动本包 — evidence only; no plinth reintro"
+    }
+  },
+  "eng_bullets": [
+    "勿 uniform fog α 叠在已共光烘焙精灵上；雾在合成后做。",
+    "勿叠青白亮描边/白晕（美工已溶雾软边）。",
+    "靴影暗褐AO已过勿回退亮垫；本包已清双新月+亮芯，实心暗褐AO rgb≈(28,22,16) 贴靴底。",
+    "前坪猫贴阶槽离粮袋；脚锚Y归eng（opaque-bounds底心作pivot）；棚火猫贴廊板。",
+    "门帘/扁板/粮袋/雾岸猫姿态锁；land-shore-*锁；标石锁；北界0.80/脚y≥0.92归eng。"
+  ],
+  "shore_cat_untouched": {
+    "path": "shore/art.shore.prop.nanaicha.png",
+    "mtime": 1793136007.329053,
+    "backed_up": false,
+    "modified": false,
+    "shore_cat_modified": false,
+    "note": "LOCKED — 溶雾已过; 勿大改姿态; 本包完全不动"
+  },
+  "land_shore_locked": {
+    "files": [
+      "nanaicha/traj/land-shore-driftwood.png",
+      "nanaicha/traj/land-shore-east-gap.png",
+      "nanaicha/traj/land-shore-gourd.png"
+    ],
+    "modified": false,
+    "note": "land-shore-* LOCKED"
+  },
+  "boards_locked": true,
+  "curtain_wrote": false,
+  "grain_wrote": false,
+  "marker_stone_locked": true,
+  "verify": {
+    "traveler_pale_pad_px_max": 0,
+    "traveler_crescent_gap_max": 0,
+    "traveler_soft_shadow_rgb": [
+      24.4,
+      19.5,
+      14.1
+    ],
+    "traveler_bright_rim_px_max": 3,
+    "traveler_knife_edges": 919,
+    "traveler_foot_pad_px": 13,
+    "yard_cat_bright_rim_before": 0,
+    "yard_cat_bright_rim_after": 0,
+    "yard_cat_knife_before": 385,
+    "yard_cat_knife_after": 438,
+    "yard_cat_pale_pad_px": 0,
+    "yard_cat_foot_pad_px": 9,
+    "camp_cat_bright_rim_px": 0,
+    "camp_cat_knife_edges": 292,
+    "camp_cat_pale_pad_px": 0,
+    "curtain_wrote": false,
+    "boards_untouched": true,
+    "grain_untouched": true,
+    "shore_cat_modified": false,
+    "land_shore_modified": false,
+    "marker_stone_modified": false,
+    "pale_pad": 0,
+    "yard_bright_rim_down": true
+  }
+}

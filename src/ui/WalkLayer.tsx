@@ -5,7 +5,7 @@ import { companionFrameId, LEAP_01_MS, LEAP_02_MS, type TrajClip } from '../core
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
 import type { HintLevel } from '../core/schema';
-import { BANDS, SPAWNS, SPOTS, gateAt, gatesFrom, nearestSpot, plantOnGround, type GateEdge } from '../core/stage';
+import { BANDS, SPAWNS, SPOTS, gateAt, gatesFrom, nearestSpot, plantOnGround, standsAt, type GateEdge } from '../core/stage';
 import {
   WALK_SPEED,
   WORLD_SCALE,
@@ -316,7 +316,7 @@ export function WalkLayer({
       if (pausedRef.current) return;
       if (isInteractKey(event)) {
         if (event.repeat) return;
-        const spot = nearestSpot(spotsRef.current, posRef.current);
+        const spot = nearestSpot(spotsRef.current, posRef.current, sceneRef.current);
         if (!spot) return;
         event.preventDefault();
         beginReach();
@@ -401,7 +401,7 @@ export function WalkLayer({
   const worldH = view.h * WORLD_SCALE;
   const shownCam = import.meta.env.MODE === 'test' ? cameraOffset(pos, view.w, view.h) : cam;
   const look = sceneLook(scene);
-  const near = spots.filter((spot) => inRadius(pos, spot, spot.r)).map((spot) => spot.id);
+  const near = spots.filter((spot) => standsAt(scene, spot, pos)).map((spot) => spot.id);
   const teachSpot = near.includes('shore-driftwood') ? 'shore-driftwood' : '';
   const onTeachRef = useRef(onTeach);
   const taughtRef = useRef(taught);
@@ -487,7 +487,7 @@ export function WalkLayer({
                 onClick={(event) => {
                   event.stopPropagation();
                   if (pausedRef.current) return;
-                  if (!inRadius(posRef.current, spot, spot.r)) {
+                  if (!standsAt(sceneRef.current, spot, posRef.current)) {
                     seek(spot);
                     onFar?.(spot.id);
                     return;

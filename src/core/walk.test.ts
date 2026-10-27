@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ISLAND_SCENES } from './island';
-import { BANDS, GATES, SHORE_MARKER, SPAWNS, SPOTS, crossed, gateAt, plantOnGround } from './stage';
+import { BANDS, GATES, SHORE_MARKER, SPAWNS, SPOTS, crossed, gateAt, plantOnGround, standsAt } from './stage';
 import {
   KEY_STEP,
   WALK_SPEED,
@@ -128,8 +128,22 @@ describe('shore and camp layout', () => {
     expect(plantOnGround('dba.scene.yard', { x: 0.16, y: 0.78 }).y).toBeCloseTo(0.78);
     expect(plantOnGround('dba.scene.yard', { x: 0.36, y: 0.76 }).y).toBeCloseTo(0.76);
     expect(plantOnGround('dba.scene.shore', { x: 0.74, y: 0.48 }).y).toBe(SHORE_MARKER.sandY);
+    expect(plantOnGround('dba.scene.shore', { x: 0.74, y: 0.57 }).y).toBe(SHORE_MARKER.sandY);
     expect(plantOnGround('dba.scene.shore', { x: 0.42, y: 0.5 }).y).toBeCloseTo(0.5);
+    expect(plantOnGround('dba.scene.shore', { x: 0.5, y: 0.5 }).y).toBeCloseTo(0.5);
     expect(plantOnGround('dba.scene.shore', { x: 0.74, y: 0.7 }).y).toBeCloseTo(0.7);
+    expect(plantOnGround('dba.scene.shore', { x: 0.74, y: 0.75 }).y).toBeCloseTo(0.75);
+    const depart = SPOTS['dba.scene.shore'].find((spot) => spot.id === 'shore-depart');
+    expect(depart?.x).toBeCloseTo(0.74);
+    expect(depart?.y).toBeCloseTo(0.54);
+    expect(depart && standsAt('dba.scene.shore', depart, { x: 0.74, y: SHORE_MARKER.sandY })).toBe(true);
+    expect(depart && standsAt('dba.scene.shore', depart, { x: 0.4, y: SHORE_MARKER.sandY })).toBe(false);
+    const fishA = SPOTS['dba.scene.yard'].find((spot) => spot.id === 'act:dba.word.size:a');
+    const fishB = SPOTS['dba.scene.yard'].find((spot) => spot.id === 'act:dba.word.size:b');
+    expect(fishA?.y).toBeCloseTo(0.9);
+    expect(fishB?.y).toBeCloseTo(0.9);
+    expect(fishA && plantOnGround('dba.scene.yard', fishA).y).toBeCloseTo(0.9);
+    expect(fishB && plantOnGround('dba.scene.yard', fishB).y).toBeCloseTo(0.9);
     expect(plantOnGround('dba.scene.camp', { x: 0.5, y: 0.84 }).y).toBeCloseTo(0.84);
     for (const gate of GATES.filter((item) => item.to === 'dba.scene.yard')) {
       expect(gate.arrival.y).toBeGreaterThanOrEqual(0.92);
