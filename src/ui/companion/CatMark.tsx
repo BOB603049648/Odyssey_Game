@@ -57,7 +57,7 @@ export function CatMark({
             {figure === 'adult' ? (
               <>
                 <i className="cloak" data-cloak="worn" aria-hidden="true" />
-                <i className="cloak-hood" data-hood="down" aria-hidden="true" />
+                <i className="cloak-hood" data-hood="up" aria-hidden="true" />
               </>
             ) : null}
             <i className="collar-knot" data-knot={knot} aria-hidden="true" />

@@ -35,7 +35,7 @@ npm run build
 
 ## 向导画面
 
-画面上不写向导的名字。立绘是披着旅行披风的暹罗色点家猫，组件在 [`src/ui/companion/CatMark.tsx`](src/ui/companion/CatMark.tsx)，图在 `src/assets/companion/nanaicha/`（`nanaicha-hero.png` 与 `nanaicha-silhouette.png` 是披风版主线，`kitten/` 是不披风的幼年回忆）。内部 id 是 `nanaicha`。披风钩子是 class `cloak` / `cloak-hood`（`data-cloak="worn"`，`data-hood="down"`）。颈上扁结是 class `collar-knot`；案卷持有绳结纹身时 `data-knot` 为 `glow`，否则 `rest`。造型说明在 [`docs/characters/奈奈茶.md`](docs/characters/奈奈茶.md)，氛围和姿势参考在 `docs/assets/nanaicha/`。
+画面上不写向导的名字。立绘是披着旅行披风的暹罗色点家猫，组件在 [`src/ui/companion/CatMark.tsx`](src/ui/companion/CatMark.tsx)，图在 `src/assets/companion/nanaicha/`（`nanaicha-hero.png` 与 `nanaicha-silhouette.png` 是披风版主线，`kitten/` 是不披风的幼年回忆）。内部 id 是 `nanaicha`。披风钩子是 class `cloak` / `cloak-hood`（`data-cloak="worn"`，`data-hood="up"`，主线默认戴兜）。颈上扁结是 class `collar-knot`；案卷持有绳结纹身时 `data-knot` 为 `glow`，否则 `rest`。造型说明在 [`docs/characters/奈奈茶.md`](docs/characters/奈奈茶.md)，氛围和姿势参考在 `docs/assets/nanaicha/`。
 
 手机壳只放了 `capacitor.config.ts`（`webDir` 为 `dist`）。还没有 iOS / Android 工程。
 
