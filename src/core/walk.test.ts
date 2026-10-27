@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { ISLAND_SCENES } from './island';
-import { BANDS, GATES, SPAWNS, SPOTS, gateAt } from './stage';
+import { BANDS, GATES, SPAWNS, SPOTS, crossed, gateAt } from './stage';
 import {
   KEY_STEP,
   approachPlan,
   cameraOffset,
   companionSpot,
+  contains,
   distance,
   inRadius,
   integrate,
@@ -104,35 +105,38 @@ describe('shore and camp layout', () => {
     for (const gate of GATES) {
       const from = BANDS[gate.from];
       const to = BANDS[gate.to];
-      expect(gate.x).toBeGreaterThanOrEqual(from.minX);
-      expect(gate.x).toBeLessThanOrEqual(from.maxX);
-      expect(gate.y).toBeGreaterThanOrEqual(from.minY);
-      expect(gate.y).toBeLessThanOrEqual(from.maxY);
-      expect(gate.arrival.x).toBeGreaterThan(to.minX);
-      expect(gate.arrival.x).toBeLessThan(to.maxX);
-      expect(gate.arrival.y).toBeGreaterThan(to.minY);
-      expect(gate.arrival.y).toBeLessThan(to.maxY);
+      expect(contains(gate, from)).toBe(true);
+      expect(contains(gate.arrival, to)).toBe(true);
+      expect(crossed(gate, SPAWNS[gate.from])).toBe(false);
       for (const other of GATES.filter((item) => item.from === gate.to)) {
-        expect(distance(gate.arrival, other)).toBeGreaterThan(other.r + KEY_STEP);
+        expect(crossed(other, gate.arrival)).toBe(false);
+        const nudged = {
+          x: gate.arrival.x + (other.edge === 'east' ? KEY_STEP : other.edge === 'west' ? -KEY_STEP : 0),
+          y: gate.arrival.y + (other.edge === 'south' ? KEY_STEP : other.edge === 'north' ? -KEY_STEP : 0),
+        };
+        if (contains(nudged, to)) expect(crossed(other, nudged)).toBe(false);
       }
       for (const spot of SPOTS[gate.from]) {
-        expect(distance(spot, gate)).toBeGreaterThan(spot.r + gate.r - 0.001);
+        const toward = {
+          x: spot.x + (gate.edge === 'east' ? spot.r : gate.edge === 'west' ? -spot.r : 0),
+          y: spot.y + (gate.edge === 'south' ? spot.r : gate.edge === 'north' ? -spot.r : 0),
+        };
+        expect(crossed(gate, toward)).toBe(false);
       }
     }
   });
 
-  it('reaches the camp gate from the tide line without opening a hotspot', () => {
-    const gate = GATES.find((item) => item.from === 'myp.scene.shore' && item.to === 'myp.scene.camp');
-    expect(gate).toBeTruthy();
-    let pos = SPAWNS['myp.scene.shore'];
-    const keys = approachPlan(pos, gate!, BANDS['myp.scene.shore'], gate!.r);
-    expect(keys.length).toBeGreaterThan(2);
-    for (const key of keys) {
-      pos = stepKey(pos, key, BANDS['myp.scene.shore']).pos;
-      expect(SPOTS['myp.scene.shore'].some((spot) => inRadius(pos, spot, spot.r) && spot.id === 'island-mural')).toBe(false);
+  it('reaches the camp edge from any height on the tide line', () => {
+    for (const y of [0.52, 0.62, 0.74]) {
+      let pos = { x: SPAWNS['myp.scene.shore'].x, y };
+      let found = false;
+      for (let i = 0; i < 24; i += 1) {
+        pos = stepKey(pos, 'd', BANDS['myp.scene.shore']).pos;
+        if (gateAt('myp.scene.shore', pos)?.to === 'myp.scene.camp') found = true;
+      }
+      expect(found).toBe(true);
+      expect(pos.x).toBeLessThanOrEqual(BANDS['myp.scene.shore'].maxX);
     }
-    expect(gateAt('myp.scene.shore', pos)?.to).toBe('myp.scene.camp');
-    expect(gateAt('myp.scene.camp', gate!.arrival)).toBeNull();
   });
 
   it('reaches the mural only after several steps from the spawn', () => {

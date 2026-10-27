@@ -3,6 +3,8 @@ import { inRadius, type Band, type Point } from './walk';
 
 export type Spot = { id: string; x: number; y: number; r: number };
 
+export type GateEdge = 'east' | 'west' | 'north' | 'south';
+
 export type Gate = {
   from: IslandScene;
   to: IslandScene;
@@ -10,6 +12,8 @@ export type Gate = {
   y: number;
   r: number;
   arrival: Point;
+  /** The whole band edge, so a traveler on any part of the path still crosses. */
+  edge?: GateEdge;
 };
 
 const shoreBand: Band = { minX: 0.07, maxX: 0.94, minY: 0.5, maxY: 0.76 };
@@ -35,16 +39,16 @@ export const SPAWNS: Record<IslandScene, Point> = {
 };
 
 export const GATES: readonly Gate[] = [
-  { from: 'myp.scene.shore', to: 'myp.scene.camp', x: 0.9, y: 0.62, r: 0.055, arrival: { x: 0.28, y: 0.64 } },
-  { from: 'myp.scene.shore', to: 'myp.scene.rock', x: 0.08, y: 0.74, r: 0.04, arrival: { x: 0.48, y: 0.56 } },
-  { from: 'myp.scene.camp', to: 'myp.scene.shore', x: 0.12, y: 0.68, r: 0.05, arrival: { x: 0.78, y: 0.62 } },
-  { from: 'myp.scene.camp', to: 'myp.scene.fishery', x: 0.88, y: 0.56, r: 0.048, arrival: { x: 0.24, y: 0.64 } },
-  { from: 'myp.scene.camp', to: 'myp.scene.night', x: 0.52, y: 0.49, r: 0.046, arrival: { x: 0.7, y: 0.56 } },
-  { from: 'myp.scene.fishery', to: 'myp.scene.camp', x: 0.12, y: 0.66, r: 0.048, arrival: { x: 0.74, y: 0.6 } },
-  { from: 'myp.scene.fishery', to: 'myp.scene.forest', x: 0.88, y: 0.52, r: 0.046, arrival: { x: 0.26, y: 0.64 } },
-  { from: 'myp.scene.rock', to: 'myp.scene.shore', x: 0.22, y: 0.74, r: 0.046, arrival: { x: 0.24, y: 0.66 } },
-  { from: 'myp.scene.forest', to: 'myp.scene.fishery', x: 0.14, y: 0.62, r: 0.048, arrival: { x: 0.74, y: 0.58 } },
-  { from: 'myp.scene.night', to: 'myp.scene.camp', x: 0.5, y: 0.74, r: 0.048, arrival: { x: 0.5, y: 0.6 } },
+  { from: 'myp.scene.shore', to: 'myp.scene.camp', x: 0.86, y: 0.63, r: 0.04, edge: 'east', arrival: { x: 0.34, y: 0.64 } },
+  { from: 'myp.scene.shore', to: 'myp.scene.rock', x: 0.1, y: 0.7, r: 0.04, edge: 'west', arrival: { x: 0.48, y: 0.6 } },
+  { from: 'myp.scene.camp', to: 'myp.scene.shore', x: 0.16, y: 0.66, r: 0.04, edge: 'west', arrival: { x: 0.7, y: 0.62 } },
+  { from: 'myp.scene.camp', to: 'myp.scene.fishery', x: 0.9, y: 0.6, r: 0.04, edge: 'east', arrival: { x: 0.28, y: 0.64 } },
+  { from: 'myp.scene.camp', to: 'myp.scene.night', x: 0.5, y: 0.5, r: 0.04, edge: 'north', arrival: { x: 0.55, y: 0.66 } },
+  { from: 'myp.scene.fishery', to: 'myp.scene.camp', x: 0.16, y: 0.64, r: 0.04, edge: 'west', arrival: { x: 0.72, y: 0.62 } },
+  { from: 'myp.scene.fishery', to: 'myp.scene.forest', x: 0.9, y: 0.56, r: 0.04, edge: 'east', arrival: { x: 0.3, y: 0.64 } },
+  { from: 'myp.scene.rock', to: 'myp.scene.shore', x: 0.5, y: 0.72, r: 0.04, edge: 'south', arrival: { x: 0.28, y: 0.62 } },
+  { from: 'myp.scene.forest', to: 'myp.scene.fishery', x: 0.16, y: 0.64, r: 0.04, edge: 'west', arrival: { x: 0.72, y: 0.6 } },
+  { from: 'myp.scene.night', to: 'myp.scene.camp', x: 0.5, y: 0.72, r: 0.04, edge: 'south', arrival: { x: 0.5, y: 0.62 } },
 ];
 
 export const SPOTS: Record<IslandScene, readonly Spot[]> = {
@@ -56,7 +60,7 @@ export const SPOTS: Record<IslandScene, readonly Spot[]> = {
     { id: 'shore-depart', x: 0.74, y: 0.54, r: 0.05 },
   ],
   'myp.scene.camp': [
-    { id: 'camp-sleep', x: 0.4, y: 0.55, r: 0.06 },
+    { id: 'camp-sleep', x: 0.4, y: 0.6, r: 0.055 },
     { id: 'act:myp.word.home', x: 0.3, y: 0.71, r: 0.04 },
     { id: 'act:myp.word.eat', x: 0.39, y: 0.71, r: 0.04 },
     { id: 'act:myp.word.drink', x: 0.48, y: 0.71, r: 0.04 },
@@ -92,17 +96,16 @@ export function gatesFrom(scene: IslandScene): readonly Gate[] {
   return GATES.filter((gate) => gate.from === scene);
 }
 
+export function crossed(gate: Gate, pos: Point): boolean {
+  if (gate.edge === 'east') return pos.x >= gate.x;
+  if (gate.edge === 'west') return pos.x <= gate.x;
+  if (gate.edge === 'north') return pos.y <= gate.y;
+  if (gate.edge === 'south') return pos.y >= gate.y;
+  return Math.hypot(gate.x - pos.x, gate.y - pos.y) <= gate.r;
+}
+
 export function gateAt(scene: IslandScene, pos: Point): Gate | null {
-  let best: Gate | null = null;
-  let bestDist = Infinity;
-  for (const gate of gatesFrom(scene)) {
-    const dist = Math.hypot(gate.x - pos.x, gate.y - pos.y);
-    if (dist <= gate.r && dist < bestDist) {
-      best = gate;
-      bestDist = dist;
-    }
-  }
-  return best;
+  return gatesFrom(scene).find((gate) => crossed(gate, pos)) ?? null;
 }
 
 export function nearestSpot(spots: readonly Spot[], pos: Point): Spot | null {

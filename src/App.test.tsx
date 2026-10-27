@@ -4,7 +4,7 @@ import { App } from './App';
 import { canDepart, type IslandScene } from './core/island';
 import { reduce } from './core/reduce';
 import { newGameState } from './core/save';
-import { BANDS, GATES, SPOTS } from './core/stage';
+import { BANDS, SPOTS } from './core/stage';
 import { approachPlan, type Point } from './core/walk';
 import { SAVE_KEY } from './platform/storage';
 import { useGame } from './stores/gameStore';
@@ -38,10 +38,13 @@ function spot(scene: IslandScene, id: string): Point & { r: number } {
   return found;
 }
 
-function gate(from: IslandScene, to: IslandScene): Point & { r: number } {
-  const found = GATES.find((item) => item.from === from && item.to === to);
-  if (!found) throw new Error(`${from}->${to}`);
-  return found;
+function cross(to: IslandScene, key: 'a' | 'd' | 'w' | 's') {
+  for (let i = 0; i < 48; i += 1) {
+    if (document.querySelector('[data-scene]')?.getAttribute('data-scene') === to) return;
+    fireEvent.keyDown(window, { key });
+  }
+  const scene = document.querySelector('[data-scene]')?.getAttribute('data-scene');
+  throw new Error(`did not enter ${to} from ${scene} at ${here().x},${here().y}`);
 }
 
 describe('playable slice', () => {
@@ -106,16 +109,14 @@ describe('playable slice', () => {
     expect(screen.queryByText('奈奈茶')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: '合上' }));
 
-    const camp = gate('myp.scene.shore', 'myp.scene.camp');
-    walkTo('myp.scene.shore', camp, camp.r);
+    cross('myp.scene.camp', 'd');
     expect(screen.getByTestId('scene').getAttribute('data-scene')).toBe('myp.scene.camp');
     expect(screen.getByTestId('traveler')).toBeTruthy();
     expect(screen.getByTestId('camp-sleep')).toBeTruthy();
     expect(screen.queryByTestId('island-gourd')).toBeNull();
     expect(screen.queryByTestId('nav-camp')).toBeNull();
 
-    const shore = gate('myp.scene.camp', 'myp.scene.shore');
-    walkTo('myp.scene.camp', shore, shore.r);
+    cross('myp.scene.shore', 'a');
     const mural = spot('myp.scene.shore', 'island-mural');
     walkTo('myp.scene.shore', mural, mural.r);
     fireEvent.click(screen.getByTestId('island-mural'));
@@ -180,10 +181,8 @@ describe('playable slice', () => {
     expect(screen.getByTestId('memory-plate').getAttribute('data-frame')).toBe('rain');
     closeMemory();
 
-    const camp = gate('myp.scene.shore', 'myp.scene.camp');
-    walkTo('myp.scene.shore', camp, camp.r);
-    const night = gate('myp.scene.camp', 'myp.scene.night');
-    walkTo('myp.scene.camp', night, night.r);
+    cross('myp.scene.camp', 'd');
+    cross('myp.scene.night', 'w');
     const memory = spot('myp.scene.night', 'night-memory');
     walkTo('myp.scene.night', memory, memory.r);
     fireEvent.click(screen.getByTestId('night-memory'));
