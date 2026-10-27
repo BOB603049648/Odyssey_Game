@@ -495,28 +495,36 @@ h1 {
 .traveler {
   position: absolute;
   z-index: 5;
-  width: 58px;
-  height: 96px;
-  transform: translate(-50%, -92%);
+  width: 64px;
+  height: 156px;
+  transform: translate(-50%, -96%);
   pointer-events: none;
-  filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5));
 }
 
-.traveler[data-facing="left"] { transform: translate(-50%, -92%) scaleX(-1); }
+.traveler[data-facing="left"] { transform: translate(-50%, -96%) scaleX(-1); }
 
-.traveler svg {
+.traveler-bob { position: relative; height: 100%; }
+
+.traveler img {
   display: block;
   width: 100%;
   height: 100%;
-  fill: none;
-  stroke: #e6d3b4;
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  object-fit: cover;
+  object-position: center bottom;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
-.traveler-fill { fill: #140e0c; }
-.traveler-shadow { fill: rgba(0, 0, 0, 0.42); stroke: none; }
+.traveler-shade {
+  position: absolute;
+  left: 0;
+  top: 7%;
+  opacity: 0.38;
+  filter: blur(1.5px);
+}
+
+.traveler-figure { position: relative; }
 
 .traveler[data-moving="yes"] .traveler-bob { animation: traveler-bob 0.42s ease-in-out infinite; }
 
@@ -1395,8 +1403,8 @@ h1 {
   }
 
   .traveler {
-    width: clamp(36px, 8vmin, 48px);
-    height: clamp(60px, 13vmin, 80px);
+    width: 46px;
+    height: 112px;
   }
 
   .world-layer .hotspot,
