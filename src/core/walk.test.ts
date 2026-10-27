@@ -5,6 +5,7 @@ import {
   KEY_STEP,
   approachPlan,
   cameraOffset,
+  followCamera,
   companionSpot,
   contains,
   distance,
@@ -54,6 +55,11 @@ describe('walk', () => {
     expect(cameraOffset({ x: 0.5, y: 0 }, 1000, 500, 1.5).y).toBe(0);
     expect(cameraOffset({ x: 0.5, y: 1 }, 1000, 500, 1.5).y).toBe(250);
     expect(cameraOffset({ x: 0.5, y: 0.5 }, 1000, 500, 1.5)).toEqual({ x: 250, y: 125 });
+  });
+
+  it('eases the camera toward the traveler instead of jumping', () => {
+    expect(followCamera({ x: 0, y: 0 }, { x: 100, y: 40 }, 0.25)).toEqual({ x: 25, y: 10 });
+    expect(followCamera({ x: 10, y: 10 }, { x: 10, y: 30 }, 1)).toEqual({ x: 10, y: 30 });
   });
 
   it('reads a ground click as a world point', () => {

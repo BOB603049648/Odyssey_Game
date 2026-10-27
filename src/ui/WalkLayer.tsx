@@ -2,13 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
 import type { HintLevel } from '../core/schema';
-import { BANDS, SPAWNS, gateAt, gatesFrom, nearestSpot } from '../core/stage';
+import { BANDS, SPAWNS, gateAt, gatesFrom, nearestSpot, type GateEdge } from '../core/stage';
 import {
   WALK_SPEED,
   WORLD_SCALE,
   cameraOffset,
   companionSpot,
   distance,
+  followCamera,
   inRadius,
   integrate,
   pointerToWorld,
@@ -23,6 +24,7 @@ import { PlateStack } from './Plate';
 import { CampArt, FisheryArt, ForestArt, NightArt, RockArt, ShoreArt } from './scenes';
 import { gateLabel, hintSpotId, type SpotView } from './spotViews';
 import { TravelerMark } from './Traveler';
+import { WalkStick } from './WalkStick';
 import { useCrossfade } from './useCrossfade';
 
 type Hint = { level: HintLevel; anchor: HintAnchor; wordId: string | null; pose: CompanionPose };
@@ -39,6 +41,14 @@ function keyOf(event: KeyboardEvent): WalkKey | null {
 
 function pct(value: number): string {
   return `${value * 100}%`;
+}
+
+function entrySide(edge: GateEdge | undefined): string | null {
+  if (edge === 'east') return 'from-left';
+  if (edge === 'west') return 'from-right';
+  if (edge === 'north') return 'from-down';
+  if (edge === 'south') return 'from-up';
+  return null;
 }
 
 function hintPoint(scene: IslandScene, hint: Hint, spots: readonly SpotView[]): Point | null {
@@ -88,6 +98,9 @@ export function WalkLayer({
   const interactRef = useRef(onInteract);
   const escapeRef = useRef(onEscape);
   const targetRef = useRef<Point | null>(null);
+  const stickRef = useRef<Point | null>(null);
+  const smoothRef = useRef<Point | null>(null);
+  const entryRef = useRef<string | null>(null);
   const held = useRef(new Set<WalkKey>());
   const movingRef = useRef(false);
   const posRef = useRef<Point>(remembered ?? SPAWNS[scene]);
@@ -97,7 +110,11 @@ export function WalkLayer({
   const [blocked, setBlocked] = useState(false);
   const [cat, setCat] = useState<Point>(() => companionSpot(posRef.current, hint.level, null, BANDS[scene], 0));
   const [view, setView] = useState({ w: 1280, h: 720 });
-  const plates = useCrossfade(scene);
+  const [arrive, setArrive] = useState<string | null>(null);
+  const [cam, setCam] = useState<Point>({ x: 0, y: 0 });
+  const viewRef = useRef(view);
+  const plates = useCrossfade(scene, 980);
+  viewRef.current = view;
 
   spotsRef.current = spots;
   hintRef.current = hint;
@@ -114,7 +131,11 @@ export function WalkLayer({
     sceneRef.current = scene;
     posRef.current = next;
     targetRef.current = null;
+    stickRef.current = null;
+    smoothRef.current = null;
     held.current.clear();
+    setArrive(entryRef.current);
+    entryRef.current = null;
     setPos(next);
     setMoving(false);
     setBlocked(false);
@@ -134,6 +155,10 @@ export function WalkLayer({
       if (w > 1 && h > 1) setView({ w, h });
     };
     read();
+    if (import.meta.env.MODE !== 'test' && !smoothRef.current && el.clientWidth > 1) {
+      smoothRef.current = cameraOffset(posRef.current, el.clientWidth, el.clientHeight);
+      setCam(smoothRef.current);
+    }
     if (typeof ResizeObserver === 'undefined') return undefined;
     const observer = new ResizeObserver(read);
     observer.observe(el);
@@ -147,16 +172,24 @@ export function WalkLayer({
     if (held.current.has('d')) x += 1;
     if (held.current.has('w')) y -= 1;
     if (held.current.has('s')) y += 1;
-    if (x === 0 && y === 0) return null;
+    const stick = stickRef.current;
+    if (stick) {
+      x += stick.x;
+      y += stick.y;
+    }
     const len = Math.hypot(x, y);
-    return { x: x / len, y: y / len };
+    if (len < 0.12) return null;
+    const power = Math.min(1, len);
+    return { x: (x / len) * power, y: (y / len) * power };
   }
 
   function apply(next: Point, isMoving: boolean, isBlocked: boolean, dx: number) {
     const gate = gateAt(sceneRef.current, next);
     if (gate) {
       pending.current = gate.arrival;
+      entryRef.current = entrySide(gate.edge);
       targetRef.current = null;
+      stickRef.current = null;
       held.current.clear();
       rememberRef.current(gate.to, gate.arrival);
       exitRef.current(gate.to);
@@ -250,7 +283,13 @@ export function WalkLayer({
         const goal = targetRef.current;
         const from = posRef.current;
         if (dir) {
-          const step = integrate(from, { x: from.x + dir.x, y: from.y + dir.y }, BANDS[sceneRef.current], WALK_SPEED * dt);
+          const power = Math.hypot(dir.x, dir.y);
+          const step = integrate(
+            from,
+            { x: from.x + dir.x, y: from.y + dir.y },
+            BANDS[sceneRef.current],
+            WALK_SPEED * dt * power,
+          );
           apply(step.pos, step.moving, step.blocked, dir.x);
         } else if (goal) {
           const step = integrate(from, goal, BANDS[sceneRef.current], WALK_SPEED * dt);
@@ -272,6 +311,14 @@ export function WalkLayer({
           x: prev.x + (desired.x - prev.x) * 0.14,
           y: prev.y + (desired.y - prev.y) * 0.14,
         }));
+        const frameView = viewRef.current;
+        const goalCam = cameraOffset(posRef.current, frameView.w, frameView.h);
+        const prevCam = smoothRef.current ?? goalCam;
+        const nextCam = smoothRef.current
+          ? followCamera(prevCam, goalCam, 1 - Math.exp(-3.4 * dt))
+          : goalCam;
+        smoothRef.current = nextCam;
+        setCam(nextCam);
       }
       frame = window.requestAnimationFrame(tick);
     };
@@ -281,8 +328,14 @@ export function WalkLayer({
 
   const worldW = view.w * WORLD_SCALE;
   const worldH = view.h * WORLD_SCALE;
-  const cam = cameraOffset(pos, view.w, view.h);
+  const shownCam = import.meta.env.MODE === 'test' ? cameraOffset(pos, view.w, view.h) : cam;
   const near = spots.filter((spot) => inRadius(pos, spot, spot.r)).map((spot) => spot.id);
+
+  useEffect(() => {
+    if (!arrive) return undefined;
+    const id = window.setTimeout(() => setArrive(null), 980);
+    return () => window.clearTimeout(id);
+  }, [arrive]);
 
   return (
     <div
@@ -291,10 +344,11 @@ export function WalkLayer({
       data-testid="walk-stage"
       data-blocked={blocked ? 'yes' : 'no'}
       data-near={near.join(' ')}
-      data-cam-x={cam.x.toFixed(1)}
-      data-cam-y={cam.y.toFixed(1)}
+      data-cam-x={shownCam.x.toFixed(1)}
+      data-cam-y={shownCam.y.toFixed(1)}
+      data-arrive={arrive ?? 'no'}
     >
-      <div className="world-cam" data-testid="world-camera" style={{ transform: `translate3d(${-cam.x}px, ${-cam.y}px, 0)` }}>
+      <div className="world-cam" data-testid="world-camera" style={{ transform: `translate3d(${-shownCam.x}px, ${-shownCam.y}px, 0)` }}>
         <div ref={worldRef} className="world-layer" style={{ width: worldW, height: worldH }}>
           <PlateStack plate={plates.current} previous={plates.previous} />
           <ScenePlate scene={scene} drank={drank} />
@@ -347,6 +401,12 @@ export function WalkLayer({
           <TravelerMark x={pos.x} y={pos.y} facing={facing} moving={moving} />
         </div>
       </div>
+      <WalkStick
+        onVector={(vector) => {
+          stickRef.current = vector;
+          if (vector) targetRef.current = null;
+        }}
+      />
     </div>
   );
 }

@@ -16,9 +16,9 @@ export type Gate = {
   edge?: GateEdge;
 };
 
-const shoreBand: Band = { minX: 0.07, maxX: 0.94, minY: 0.5, maxY: 0.76 };
-const campBand: Band = { minX: 0.07, maxX: 0.94, minY: 0.47, maxY: 0.77 };
-const pathBand: Band = { minX: 0.07, maxX: 0.94, minY: 0.48, maxY: 0.76 };
+const shoreBand: Band = { minX: 0.05, maxX: 0.96, minY: 0.4, maxY: 0.84 };
+const campBand: Band = { minX: 0.05, maxX: 0.96, minY: 0.38, maxY: 0.84 };
+const pathBand: Band = { minX: 0.05, maxX: 0.96, minY: 0.4, maxY: 0.84 };
 
 export const BANDS: Record<IslandScene, Band> = {
   'myp.scene.shore': shoreBand,
@@ -39,16 +39,16 @@ export const SPAWNS: Record<IslandScene, Point> = {
 };
 
 export const GATES: readonly Gate[] = [
-  { from: 'myp.scene.shore', to: 'myp.scene.camp', x: 0.86, y: 0.63, r: 0.04, edge: 'east', arrival: { x: 0.34, y: 0.64 } },
-  { from: 'myp.scene.shore', to: 'myp.scene.rock', x: 0.1, y: 0.7, r: 0.04, edge: 'west', arrival: { x: 0.48, y: 0.6 } },
-  { from: 'myp.scene.camp', to: 'myp.scene.shore', x: 0.16, y: 0.66, r: 0.04, edge: 'west', arrival: { x: 0.7, y: 0.62 } },
+  { from: 'myp.scene.shore', to: 'myp.scene.camp', x: 0.9, y: 0.63, r: 0.04, edge: 'east', arrival: { x: 0.34, y: 0.64 } },
+  { from: 'myp.scene.shore', to: 'myp.scene.rock', x: 0.11, y: 0.7, r: 0.04, edge: 'west', arrival: { x: 0.48, y: 0.6 } },
+  { from: 'myp.scene.camp', to: 'myp.scene.shore', x: 0.11, y: 0.66, r: 0.04, edge: 'west', arrival: { x: 0.7, y: 0.62 } },
   { from: 'myp.scene.camp', to: 'myp.scene.fishery', x: 0.9, y: 0.6, r: 0.04, edge: 'east', arrival: { x: 0.28, y: 0.64 } },
-  { from: 'myp.scene.camp', to: 'myp.scene.night', x: 0.5, y: 0.5, r: 0.04, edge: 'north', arrival: { x: 0.55, y: 0.66 } },
-  { from: 'myp.scene.fishery', to: 'myp.scene.camp', x: 0.16, y: 0.64, r: 0.04, edge: 'west', arrival: { x: 0.72, y: 0.62 } },
+  { from: 'myp.scene.camp', to: 'myp.scene.night', x: 0.5, y: 0.42, r: 0.04, edge: 'north', arrival: { x: 0.55, y: 0.66 } },
+  { from: 'myp.scene.fishery', to: 'myp.scene.camp', x: 0.11, y: 0.64, r: 0.04, edge: 'west', arrival: { x: 0.72, y: 0.62 } },
   { from: 'myp.scene.fishery', to: 'myp.scene.forest', x: 0.9, y: 0.56, r: 0.04, edge: 'east', arrival: { x: 0.3, y: 0.64 } },
-  { from: 'myp.scene.rock', to: 'myp.scene.shore', x: 0.5, y: 0.72, r: 0.04, edge: 'south', arrival: { x: 0.28, y: 0.62 } },
-  { from: 'myp.scene.forest', to: 'myp.scene.fishery', x: 0.16, y: 0.64, r: 0.04, edge: 'west', arrival: { x: 0.72, y: 0.6 } },
-  { from: 'myp.scene.night', to: 'myp.scene.camp', x: 0.5, y: 0.72, r: 0.04, edge: 'south', arrival: { x: 0.5, y: 0.62 } },
+  { from: 'myp.scene.rock', to: 'myp.scene.shore', x: 0.5, y: 0.8, r: 0.04, edge: 'south', arrival: { x: 0.28, y: 0.62 } },
+  { from: 'myp.scene.forest', to: 'myp.scene.fishery', x: 0.11, y: 0.64, r: 0.04, edge: 'west', arrival: { x: 0.72, y: 0.6 } },
+  { from: 'myp.scene.night', to: 'myp.scene.camp', x: 0.5, y: 0.8, r: 0.04, edge: 'south', arrival: { x: 0.5, y: 0.62 } },
 ];
 
 export const SPOTS: Record<IslandScene, readonly Spot[]> = {
