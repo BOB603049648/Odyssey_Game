@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hintMark } from './IslandScreen';
+import { hintMark } from './hintMark';
 
 const base = { level: 0, anchor: 'driftwood', wordId: null };
 

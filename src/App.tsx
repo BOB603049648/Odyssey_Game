@@ -2,7 +2,6 @@ import { lazy, Suspense, useState } from 'react';
 import { primeAudio } from './audio/placeholder';
 import { useGame } from './stores/gameStore';
 import { Cutscenes } from './ui/Cutscenes';
-import { t } from './ui/i18n';
 import { IslandScreen } from './ui/IslandScreen';
 import { MuralScreen } from './ui/MuralScreen';
 import { PrologueScreen } from './ui/PrologueScreen';
@@ -17,9 +16,6 @@ export function App() {
 
   return (
     <>
-      <div className="rotate-hint" role="note">
-        {t('rotate.hint')}
-      </div>
       <main className="stage">
         {atTitle ? (
           <TitleScreen
