@@ -717,6 +717,10 @@ h1 {
   transform-origin: 50% 100%;
 }
 .companion-anchor[data-face="left"] .companion-mirror { transform: scaleX(-1); }
+/* Give paw sits right of center. If this frame is ever flipped, flip around the foot pivot so the claw stays on the tread. */
+.companion-anchor[data-sprite="land-yard-give"] .companion-mirror {
+  transform-origin: var(--foot-x, 63.5%) var(--foot-y, 99.9132%);
+}
 .companion-anchor .companion,
 .companion-anchor .companion[data-pose] {
   position: relative;

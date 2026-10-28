@@ -15,6 +15,16 @@ export const YARD_GIVE_FOOT = { x: 0.635, y: 1151 / 1152 } as const;
 export function companionFoot(frameId: string): { readonly x: number; readonly y: number } {
   return frameId === 'land-yard-give' ? YARD_GIVE_FOOT : NANAICHA_FOOT;
 }
+
+/**
+ * Give is authored with the paw on the right of the sheet.
+ * A left-face mirror is taken around the box center, which slides that paw
+ * off the foot pivot and leaves a scrap on the other tread. Keep this frame unmirrored.
+ */
+export function companionFace(frameId: string, postX: number, catX: number): 'left' | 'right' {
+  if (frameId === 'land-yard-give') return 'right';
+  return postX >= catX ? 'right' : 'left';
+}
 /** Canvas height as a fraction of the world layer. Subject reads a little taller than the traveler. */
 export const NANAICHA_HEIGHT = 0.22;
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { companionFoot, companionPost, gazeQueue, NANAICHA_FOOT, YARD_GIVE_FOOT } from './companionPost';
+import { companionFace, companionFoot, companionPost, gazeQueue, NANAICHA_FOOT, YARD_GIVE_FOOT } from './companionPost';
 import { BANDS, GATES, SPOTS, YARD_FACADE, YARD_RIGHT_STEP } from './stage';
 
 const shore = 'dba.scene.shore' as const;
@@ -25,6 +25,9 @@ describe('companion feet and gaze', () => {
     expect(companionFoot('land-yard-give')).toEqual(YARD_GIVE_FOOT);
     expect(companionFoot('land-shore-driftwood')).toEqual(NANAICHA_FOOT);
     expect(companionFoot('land-camp-fireside')).toEqual(NANAICHA_FOOT);
+    expect(companionFace('land-yard-give', 0.62, 0.9)).toBe('right');
+    expect(companionFace('land-shore-driftwood', 0.3, 0.5)).toBe('left');
+    expect(companionFace('land-camp-fireside', 0.7, 0.4)).toBe('right');
   });
 
   it('queues water, then food, then sleep, then danger', () => {
