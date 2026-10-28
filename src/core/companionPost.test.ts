@@ -20,7 +20,8 @@ describe('companion feet and gaze', () => {
     /* Give claws sit on the last canvas row. Locked landings keep the higher pad. */
     expect(YARD_GIVE_FOOT.y).toBeCloseTo(1151 / 1152);
     expect(YARD_GIVE_FOOT.y).toBeGreaterThan(NANAICHA_FOOT.y);
-    expect(YARD_GIVE_FOOT.x).toBeCloseTo(0.5);
+    expect(YARD_GIVE_FOOT.x).toBeGreaterThan(0.55);
+    expect(YARD_GIVE_FOOT.x).toBeCloseTo(0.619);
     expect(companionFoot('land-yard-give')).toEqual(YARD_GIVE_FOOT);
     expect(companionFoot('land-shore-driftwood')).toEqual(NANAICHA_FOOT);
     expect(companionFoot('land-camp-fireside')).toEqual(NANAICHA_FOOT);

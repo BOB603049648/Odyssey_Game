@@ -135,3 +135,9 @@ Fog-match（降对比/饱和、2–3px 柔边、高光压、暖/冷 fringe）**�
 ## PR21 step note
 
 合同 `1.3-pr21-step`。只换 `land-yard-give`：去掉精灵里的粮袋，爪在画布底心，软接触留在爪下。Y0 站到右阶槽最低一级（x=0.61，y=0.94，仍 ≥0.92），不再落在西侧石台上。靴底、`sole-soft`、`foot-ellipse`、门帘、标石、晾架、棚火爪未改。报告 `docs/_pr21-step-report.json`。
+
+---
+
+## PR22 step-r note
+
+合同 `1.3-pr22-step-r`。`land-yard-give` 爪墨改到画布底行偏右（x≈0.62），无袋保持。脚锚跟这处爪尖，Y0 把爪尖放在右阶最低一级（x=0.60，y=0.94，仍 ≥0.92）。靴底、`sole-soft`、`foot-ellipse`、门帘、标石、晾架、棚火爪、粮袋道具未改。报告 `docs/_pr22-step-r-report.json`。
