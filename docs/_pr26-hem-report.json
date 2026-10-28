@@ -1,0 +1,866 @@
+{
+  "version": "1.3-pr26-hem",
+  "key": "pr26_hem",
+  "updated": "2026-10-28T10:15:47+08:00",
+  "role": "auxiliary",
+  "timezone": "Asia/Shanghai",
+  "priority_note": "PR26 hem：①旅人衣摆纯黑横条杀掉；②雾岸猫接地板去掉；③旅人+猫+葫芦三场景雾溶边；sole锁；give爪冻结。",
+  "do_not_touch": [
+    "nanaicha/traj/land-yard-give.png",
+    "camp/art.camp.prop.north-curtain.png",
+    "yard/art.yard.prop.grain-bags.png",
+    "yard/art.yard.prop.grain-bags.interact.png",
+    "marker-stone"
+  ],
+  "files": {
+    "traveler-mythic/cloud-inspired/v3/anim/idle-back-01.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 5591,
+        "knife_edges": 59,
+        "fringe_rgb": [
+          44.0,
+          37.0,
+          29.1
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 214,
+        "fringe_rgb": [
+          42.1,
+          38.6,
+          33.9
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-back-02.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 6661,
+        "knife_edges": 55,
+        "fringe_rgb": [
+          43.8,
+          37.1,
+          29.3
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 207,
+        "fringe_rgb": [
+          42.0,
+          38.8,
+          34.1
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-front-01.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 3142,
+        "knife_edges": 3,
+        "fringe_rgb": [
+          42.0,
+          35.7,
+          28.4
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 138,
+        "fringe_rgb": [
+          40.8,
+          37.5,
+          32.7
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-front-02.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 3109,
+        "knife_edges": 5,
+        "fringe_rgb": [
+          42.3,
+          36.0,
+          28.8
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 75,
+        "fringe_rgb": [
+          41.3,
+          38.0,
+          33.3
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-side-01.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 3251,
+        "knife_edges": 2,
+        "fringe_rgb": [
+          43.7,
+          37.4,
+          30.1
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 41,
+        "fringe_rgb": [
+          42.1,
+          39.0,
+          34.5
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-side-02.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 4565,
+        "knife_edges": 2,
+        "fringe_rgb": [
+          43.9,
+          37.7,
+          30.4
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 124,
+        "fringe_rgb": [
+          42.2,
+          39.2,
+          34.7
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/reach-front-01.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 2998,
+        "knife_edges": 25,
+        "fringe_rgb": [
+          42.0,
+          35.3,
+          27.9
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 112,
+        "fringe_rgb": [
+          41.0,
+          37.2,
+          32.3
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/reach-front-02.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 3316,
+        "knife_edges": 66,
+        "fringe_rgb": [
+          41.6,
+          34.8,
+          27.3
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 133,
+        "fringe_rgb": [
+          40.4,
+          36.6,
+          31.7
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/reach-side-01.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 4914,
+        "knife_edges": 21,
+        "fringe_rgb": [
+          42.4,
+          36.0,
+          28.9
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 224,
+        "fringe_rgb": [
+          41.5,
+          38.2,
+          33.6
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-01.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 4447,
+        "knife_edges": 4,
+        "fringe_rgb": [
+          43.5,
+          36.6,
+          28.9
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 159,
+        "fringe_rgb": [
+          41.2,
+          37.8,
+          33.2
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-02.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 4620,
+        "knife_edges": 4,
+        "fringe_rgb": [
+          42.9,
+          36.2,
+          28.7
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 37,
+        "fringe_rgb": [
+          40.8,
+          37.4,
+          32.9
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-03.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 4279,
+        "knife_edges": 3,
+        "fringe_rgb": [
+          42.8,
+          36.1,
+          28.5
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 172,
+        "fringe_rgb": [
+          41.1,
+          37.6,
+          32.9
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-04.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 3700,
+        "knife_edges": 4,
+        "fringe_rgb": [
+          42.0,
+          35.7,
+          28.5
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 143,
+        "fringe_rgb": [
+          41.5,
+          38.0,
+          33.2
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-01.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 3678,
+        "knife_edges": 3,
+        "fringe_rgb": [
+          44.3,
+          37.8,
+          30.3
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 64,
+        "fringe_rgb": [
+          42.1,
+          39.0,
+          34.4
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-02.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 3998,
+        "knife_edges": 2,
+        "fringe_rgb": [
+          44.4,
+          38.0,
+          30.5
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 71,
+        "fringe_rgb": [
+          42.4,
+          39.3,
+          34.7
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-03.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 4263,
+        "knife_edges": 3,
+        "fringe_rgb": [
+          43.1,
+          36.5,
+          29.1
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 167,
+        "fringe_rgb": [
+          41.1,
+          37.9,
+          33.2
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-04.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 3676,
+        "knife_edges": 0,
+        "fringe_rgb": [
+          44.4,
+          38.0,
+          30.5
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 56,
+        "fringe_rgb": [
+          42.5,
+          39.4,
+          34.8
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-01.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 4658,
+        "knife_edges": 5,
+        "fringe_rgb": [
+          41.9,
+          35.6,
+          28.3
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 233,
+        "fringe_rgb": [
+          40.1,
+          36.9,
+          32.3
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-02.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 4456,
+        "knife_edges": 8,
+        "fringe_rgb": [
+          42.1,
+          35.6,
+          28.2
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 241,
+        "fringe_rgb": [
+          40.2,
+          36.9,
+          32.4
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-03.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 4125,
+        "knife_edges": 1,
+        "fringe_rgb": [
+          41.6,
+          35.1,
+          28.0
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 235,
+        "fringe_rgb": [
+          40.1,
+          36.9,
+          32.3
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-04.png": {
+      "group": "traveler_hem_fog",
+      "wrote": true,
+      "note": "hem black kill + fog melt; sole byte-locked",
+      "before": {
+        "hem_black": 4700,
+        "knife_edges": 2,
+        "fringe_rgb": [
+          41.7,
+          35.2,
+          28.1
+        ]
+      },
+      "after": {
+        "hem_black": 0,
+        "knife_edges": 254,
+        "fringe_rgb": [
+          40.1,
+          36.9,
+          32.3
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "sole_untouched": true
+    },
+    "shore/art.shore.prop.nanaicha.png": {
+      "group": "shore_plate_fog",
+      "wrote": true,
+      "note": "ground plate cleared + shore fog melt",
+      "before": {
+        "knife_edges": 177,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "after": {
+        "plate_semi_after": 0,
+        "plate_solid_after": 0,
+        "plate_from_y": 570,
+        "knife_edges": 648,
+        "fringe_rgb": [
+          52.2,
+          55.7,
+          57.1
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      }
+    },
+    "nanaicha/traj/land-shore-driftwood.png": {
+      "group": "shore_plate_fog",
+      "wrote": true,
+      "note": "ground plate cleared + shore fog melt",
+      "before": {
+        "knife_edges": 177,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      },
+      "after": {
+        "plate_semi_after": 0,
+        "plate_solid_after": 0,
+        "plate_from_y": 898,
+        "knife_edges": 2626,
+        "fringe_rgb": [
+          52.7,
+          56.3,
+          57.9
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      }
+    },
+    "nanaicha/traj/land-shore-gourd.png": {
+      "group": "shore_plate_fog",
+      "wrote": true,
+      "note": "ground plate cleared + shore fog melt",
+      "before": {
+        "knife_edges": 487,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 1
+      },
+      "after": {
+        "plate_semi_after": 0,
+        "plate_solid_after": 0,
+        "plate_from_y": 898,
+        "knife_edges": 3643,
+        "fringe_rgb": [
+          50.6,
+          54.3,
+          56.0
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 1
+      }
+    },
+    "nanaicha/traj/land-shore-east-gap.png": {
+      "group": "shore_plate_fog",
+      "wrote": true,
+      "note": "ground plate cleared + shore fog melt",
+      "before": {
+        "knife_edges": 658,
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 1
+      },
+      "after": {
+        "plate_semi_after": 0,
+        "plate_solid_after": 0,
+        "plate_from_y": 898,
+        "knife_edges": 3500,
+        "fringe_rgb": [
+          53.7,
+          57.5,
+          59.2
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 1
+      }
+    },
+    "shore/art.shore.prop.gourd.png": {
+      "group": "shore_fog",
+      "wrote": true,
+      "note": "shore_fog melt into scene",
+      "before": {
+        "knife_edges": 3,
+        "fringe_rgb": [
+          17.9,
+          15.2,
+          14.4
+        ]
+      },
+      "after": {
+        "knife_edges": 0,
+        "fringe_rgb": [
+          30.6,
+          32.4,
+          32.1
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      }
+    },
+    "camp/art.camp.prop.nanaicha.png": {
+      "group": "camp_fog",
+      "wrote": true,
+      "note": "camp_fog melt into scene",
+      "before": {
+        "knife_edges": 342,
+        "fringe_rgb": [
+          36.9,
+          30.7,
+          23.6
+        ]
+      },
+      "after": {
+        "knife_edges": 276,
+        "fringe_rgb": [
+          45.2,
+          38.3,
+          30.0
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      }
+    },
+    "nanaicha/traj/land-camp-fireside.png": {
+      "group": "camp_fog",
+      "wrote": true,
+      "note": "camp_fog melt into scene",
+      "before": {
+        "knife_edges": 193,
+        "fringe_rgb": [
+          39.9,
+          33.5,
+          25.9
+        ]
+      },
+      "after": {
+        "knife_edges": 193,
+        "fringe_rgb": [
+          46.8,
+          39.9,
+          31.3
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      }
+    },
+    "nanaicha/traj/land-camp-sleep-mat.png": {
+      "group": "camp_fog",
+      "wrote": true,
+      "note": "camp_fog melt into scene",
+      "before": {
+        "knife_edges": 296,
+        "fringe_rgb": [
+          42.0,
+          35.2,
+          27.1
+        ]
+      },
+      "after": {
+        "knife_edges": 294,
+        "fringe_rgb": [
+          49.2,
+          41.9,
+          32.8
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      }
+    },
+    "yard/art.yard.prop.nanaicha.png": {
+      "group": "yard_fog",
+      "wrote": true,
+      "note": "yard_fog melt into scene",
+      "before": {
+        "knife_edges": 74,
+        "fringe_rgb": [
+          32.4,
+          27.4,
+          21.3
+        ]
+      },
+      "after": {
+        "knife_edges": 107,
+        "fringe_rgb": [
+          37.1,
+          34.0,
+          29.4
+        ],
+        "hard_cyan_px": 0,
+        "hi_sat_cyan_px": 0
+      }
+    },
+    "nanaicha/traj/land-yard-give.png": {
+      "group": "locked",
+      "wrote": false,
+      "note": "give locked",
+      "sha": "1b8b222f87459031"
+    },
+    "camp/art.camp.prop.north-curtain.png": {
+      "group": "locked",
+      "wrote": false,
+      "note": "curtain locked",
+      "sha": "fa418f59e4dc779e"
+    },
+    "yard/art.yard.prop.grain-bags.png": {
+      "group": "locked",
+      "wrote": false,
+      "note": "grain locked",
+      "sha": "403e786376425118"
+    }
+  },
+  "eng_bullets": [
+    "sole-soft 锁勿动；give 爪冻结未改",
+    "旅人衣摆黑条已杀；雾岸猫接地板已去；旅人/猫/葫芦三雾溶边",
+    "工程同批挂 #27"
+  ],
+  "verify": {
+    "sole_untouched": true,
+    "give_untouched": true,
+    "hem_black_bars_gone": true,
+    "shore_cat_ground_plate_gone": true,
+    "no_cyan_hard_edge_return": true,
+    "fog_melt_applied": true,
+    "traveler_hem_black_before": 88147,
+    "traveler_hem_black_after": 0,
+    "files_wrote_count": 30
+  },
+  "preview_paths": [
+    "/tmp/pr26-hem-traveler-side.png",
+    "/tmp/pr26-hem-shore-cat.png",
+    "/tmp/pr26-hem-gourd.png",
+    "/tmp/pr26-hem-camp-cat.png",
+    "/tmp/pr26-hem-yard-cat.png"
+  ],
+  "wrote_list": [
+    "traveler-mythic/cloud-inspired/v3/anim/idle-back-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/idle-back-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/idle-front-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/idle-front-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/idle-side-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/idle-side-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/reach-front-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/reach-front-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/reach-side-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-03.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-04.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-03.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-04.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-03.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-04.png",
+    "shore/art.shore.prop.nanaicha.png",
+    "shore/art.shore.prop.gourd.png",
+    "nanaicha/traj/land-shore-driftwood.png",
+    "nanaicha/traj/land-shore-gourd.png",
+    "nanaicha/traj/land-shore-east-gap.png",
+    "camp/art.camp.prop.nanaicha.png",
+    "nanaicha/traj/land-camp-fireside.png",
+    "nanaicha/traj/land-camp-sleep-mat.png",
+    "yard/art.yard.prop.nanaicha.png"
+  ],
+  "backup_tag": "pre-pr26-hem",
+  "fog_temps": {
+    "shore": [
+      122,
+      132,
+      136
+    ],
+    "camp": [
+      132,
+      110,
+      84
+    ],
+    "yard": [
+      96,
+      90,
+      80
+    ],
+    "traveler": [
+      108,
+      104,
+      96
+    ]
+  }
+}
