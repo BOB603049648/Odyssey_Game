@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { ellipseSizeFor, ellipseWidthPct, hasPngContact, sceneGrade } from './cohesion';
+import { ellipseSizeFor, ellipseWidthPct, hasPngContact, sceneGrade, sceneLook } from './cohesion';
 
 describe('cohesion shadows and grades', () => {
   it('records contract 1.3 and does not stack an ellipse on baked contact', () => {
@@ -81,5 +81,16 @@ describe('cohesion shadows and grades', () => {
     expect(companion).not.toContain('companion-contact');
     expect(walk).not.toContain('sole-stamp');
     expect(walk).not.toContain('foot-ellipse');
+    expect(walk).toContain('world-root');
+    expect(walk).toContain('scene-ambient');
+    expect(css).toMatch(/\.world-root\s*\{[^}]*isolation:\s*isolate/);
+    expect(css).toMatch(/\.scene-ambient\s*\{[^}]*mix-blend-mode:\s*multiply/);
+    expect(css).toMatch(/\.scene-ambient\s*\{[^}]*var\(--ambient/);
+    expect(css).toMatch(/\.scene-grain\s*\{[^}]*opacity:\s*0\.055/);
+    expect(css).not.toMatch(/\.traveler\s*\{[^}]*filter:\s*drop-shadow/);
+    expect(css).not.toMatch(/\.nanaicha-figure\s*\{[^}]*filter:\s*drop-shadow/);
+    expect(sceneLook('dba.scene.shore')).toEqual({ ambient: '#B8CED4', shadowTint: '#3A4E55' });
+    expect(sceneLook('dba.scene.camp')).toEqual({ ambient: '#D4B08A', shadowTint: '#4A3528' });
+    expect(sceneLook('dba.scene.yard')).toEqual({ ambient: '#C9BCA8', shadowTint: '#3F3A32' });
   });
 });

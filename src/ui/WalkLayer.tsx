@@ -523,8 +523,9 @@ export function WalkLayer({
       data-drank={drank ? 'yes' : 'no'}
       style={{ ['--ambient' as string]: look.ambient, ['--shadow-tint' as string]: look.shadowTint }}
     >
-      {groundPlate ? <img className="ground-fill" src={groundPlate} alt="" draggable={false} /> : null}
-      <div className="world-cam" data-testid="world-camera" style={{ transform: `translate3d(${-shownCam.x}px, ${-shownCam.y}px, 0)`, zIndex: 1 }}>
+      <div className="world-root" data-testid="world-root" data-ambient={look.ambient}>
+        {groundPlate ? <img className="ground-fill" src={groundPlate} alt="" draggable={false} /> : null}
+        <div className="world-cam" data-testid="world-camera" style={{ transform: `translate3d(${-shownCam.x}px, ${-shownCam.y}px, 0)`, zIndex: 1 }}>
         <div ref={worldRef} className="world-layer" style={{ width: worldW, height: worldH }}>
           <PlateStack
             plate={plates.current}
@@ -687,11 +688,14 @@ export function WalkLayer({
             beat={beat}
           />
         </div>
+        </div>
+        <div className="scene-ambient" data-testid="scene-ambient" />
       </div>
       <div className="world-post" data-testid="world-post" data-scene={scene}>
         <div className="world-ambient" />
         <div className="world-strip" style={{ backgroundImage: `url("${sceneStrip(scene)}")` }} />
         <div className="world-vignette" />
+        <div className="scene-grain" data-testid="scene-grain" />
       </div>
       <div className="grade-veil" data-grade={sceneAssembly(plates.previous ?? scene)?.grade ?? 'mist-dawn'} data-testid="grade-veil" />
       <img className="scene-grade" data-testid="scene-grade" src={sceneGrade(scene)} alt="" draggable={false} />
