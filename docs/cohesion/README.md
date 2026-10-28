@@ -168,9 +168,13 @@ Fog-match（降对比/饱和、2–3px 柔边、高光压、暖/冷 fringe）**�
 
 ---
 
+## PR31 solid note
+
+合同 `1.3-pr28-solid`。旅人 21 帧把第 1092–1122 行的不透明近黑收到透明，靴底第 1148–1151 行字节未改，仍是 `rgb(28,22,16)`。雾岸三张 land-shore、棚火猫和两张 land-camp、前坪猫道具换成实心雾色溶边。`land-yard-give`、门帘、粮袋、标石未覆盖。#30 的全屏色温罩和角色 opacity 1 保持。报告 `docs/_pr28-solid-report.json`。
+
 ## PR30 film note
 
-撤掉旅人和奈奈茶身上的 color / multiply / 半透明染色，角色 opacity 为 1。共雾改成盖在场景和角色之上的一层轻色温（`.grade-veil`），前坪更轻，台阶留得住。`sole-soft` 仍是暗褐软边，衣摆硬条遮罩留着。贴图、give 爪锚、门帘、粮袋、标石未改。等 `1.3-pr28-solid` 再补挂近黑行。
+撤掉旅人和奈奈茶身上的 color / multiply / 半透明染色，角色 opacity 为 1。共雾改成盖在场景和角色之上的一层轻色温（`.grade-veil`），前坪更轻，台阶留得住。`sole-soft` 仍是暗褐软边，衣摆硬条遮罩留着。贴图、give 爪锚、门帘、粮袋、标石未改。
 
 ## PR29 solid note
 
