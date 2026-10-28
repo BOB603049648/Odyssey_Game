@@ -3,8 +3,17 @@ import type { IslandScene } from './island';
 import { BANDS, GATES, SPOTS, YARD_FACADE } from './stage';
 import { clampToBand, type Point } from './walk';
 
-/** Opaque-bounds bottom center of the 864×1152 landing frames. */
+/** Locked landings: opaque foot sits 8px above the 1152 canvas bottom. */
 export const NANAICHA_FOOT = { x: 0.5, y: 1144 / 1152 } as const;
+/**
+ * land-yard-give only. Claws and the soft contact reach the last row (x center of the paw, not the wide shadow).
+ * Other beats keep NANAICHA_FOOT so shore and camp paws do not shift.
+ */
+export const YARD_GIVE_FOOT = { x: 0.5, y: 1151 / 1152 } as const;
+
+export function companionFoot(frameId: string): { readonly x: number; readonly y: number } {
+  return frameId === 'land-yard-give' ? YARD_GIVE_FOOT : NANAICHA_FOOT;
+}
 /** Canvas height as a fraction of the world layer. Subject reads a little taller than the traveler. */
 export const NANAICHA_HEIGHT = 0.22;
 

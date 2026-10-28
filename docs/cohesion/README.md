@@ -123,3 +123,9 @@ Fog-match（降对比/饱和、2–3px 柔边、高光压、暖/冷 fringe）**�
 ## PR19 solid note
 
 合同 `1.3-pr19-solid`。旅人帧加厚实心暗褐靴底（约 rgb 28,22,16，半透明中段抬高）。figure-grade 在旅人身上 80% 硬切，靴底带不再吃 color / soft-light。旅人 `foot-ellipse` 从 DOM 去掉。合成后的 soft-light 雾会把靴底抬成冷色，所以同一帧只把靴底带再盖在雾层之上。前坪猫改到阶槽 x=0.47、y=0.92，离开左右粮袋。雾岸猫不再整只染色，只留很轻的 soft-light。晾架、标石可走面、前坪 y≥0.92、棚火猫落点、门帘、扁板、粮袋、land-shore、标石图未改。报告 `docs/_pr19-solid-report.json`。
+
+---
+
+## PR20 soft note
+
+合同 `1.3-pr20-soft`。旅人 21 帧的靴底接触改成暗褐（约 rgb 28,22,16），清掉近黑实心。雾上不再盖硬椭圆，也不再用 91% 硬切；只把靴底带以软遮罩叠回雾上，避免雾把褐底抬成冷灰。旅人和向导的 `foot-ellipse` 都从 DOM 去掉。脚锚改到不透明底（1151/1152）。前坪 `land-yard-give` 单独用爪底锚，落点仍是阶槽 x=0.47、y=0.92；雾岸、棚火落点不动。门帘、标石、晾架、扁板、粮袋、棚火猫、雾岸猫、land-shore 未改。报告 `docs/_pr20-soft-report.json`。

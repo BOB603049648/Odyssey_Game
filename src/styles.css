@@ -512,13 +512,10 @@ h1 {
 .walk-viewport[data-scene="dba.scene.shore"] .companion-anchor .contact-shadow {
   opacity: 1;
 }
-/* Baked sole is the contact. The traveler disc is gone from the DOM; this kills any leftover cool pad. */
-.traveler .foot-ellipse {
+/* Baked soft contact is the sole. No DOM ellipse, and no shore cool radial if one is left behind. */
+.traveler .foot-ellipse,
+.companion-anchor .foot-ellipse {
   display: none;
-  background: none;
-}
-.walk-viewport[data-scene="dba.scene.yard"] .companion-anchor .foot-ellipse,
-.walk-viewport[data-scene="dba.scene.camp"] .companion-anchor .foot-ellipse {
   background: none;
 }
 
@@ -1885,8 +1882,8 @@ h1 {
   pointer-events: none;
   mix-blend-mode: soft-light;
 }
-/* The post fog (soft-light grade) lifts the baked sole to a cool pad.
-   This stamp is the same frame, above that fog, and only the sole band. */
+/* Fog lifts a dark sole to a cool gray. This copy sits above that fog, but only the
+   bottom contact, and the mask fades in — there is no hard 91% cut and no ellipse. */
 .sole-layer {
   position: absolute;
   inset: 0;
@@ -1894,31 +1891,25 @@ h1 {
   pointer-events: none;
   overflow: hidden;
 }
-.sole-stamp {
+.sole-soft {
   position: absolute;
   visibility: hidden;
   pointer-events: none;
   object-fit: contain;
   object-position: center bottom;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 91%, #000 91%);
-  mask-image: linear-gradient(to bottom, transparent 0%, transparent 91%, #000 91%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 94.6%, rgba(0, 0, 0, 0.55) 95.4%, #000 96.2%, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, transparent 94.6%, rgba(0, 0, 0, 0.55) 95.4%, #000 96.2%, #000 100%);
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
 }
 .foot-ellipse {
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    color-mix(in srgb, var(--shadow-tint, #3a4e55) 90%, transparent) 0%,
-    color-mix(in srgb, var(--shadow-tint, #3a4e55) 48%, transparent) 42%,
-    transparent 70%
-  );
+  background: none;
   aspect-ratio: 2.4 / 1;
   height: auto;
   transform: translate(-50%, -50%);
   z-index: -1;
-  filter: blur(0.8px);
 }
 /* Scene light sampled onto the sprite's own alpha. Not a uniform fog multiply. */
 .walk-viewport[data-scene="dba.scene.shore"] { --figure-light: #b8ced4; }

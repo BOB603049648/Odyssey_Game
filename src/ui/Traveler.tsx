@@ -71,8 +71,12 @@ export const WALK_STRIDE = WALK_SPEED / WALK_CYCLE_HZ;
  * against the plate. 0.118 keeps the opaque body on the ground band.
  */
 export const TRAVELER_HEIGHT = 0.118;
-/** Opaque sole on the 864×1152 sheet. Bottom of the solid contact, not the canvas. */
-export const TRAVELER_FOOT = { x: 0.5, y: 1139 / 1152 } as const;
+/**
+ * Opaque-bounds bottom center on the 864×1152 sheet.
+ * The soft contact (rgb ≈ 28,22,16, gaussian edge) reaches the last row.
+ * Planting that row keeps the melt on the sand instead of hanging south of the sole.
+ */
+export const TRAVELER_FOOT = { x: 0.5, y: 1151 / 1152 } as const;
 /** Overlap between frames inside one clip, and a slightly longer blend on a turn. */
 export const FRAME_BLEND_MS = 140;
 export const TURN_BLEND_MS = 220;
