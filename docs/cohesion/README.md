@@ -141,3 +141,9 @@ Fog-match（降对比/饱和、2–3px 柔边、高光压、暖/冷 fringe）**�
 ## PR22 step-r note
 
 合同 `1.3-pr22-step-r`。`land-yard-give` 爪墨改到画布底行偏右（x≈0.62），无袋保持。脚锚跟这处爪尖，Y0 把爪尖放在右阶最低一级（x=0.60，y=0.94，仍 ≥0.92）。靴底、`sole-soft`、`foot-ellipse`、门帘、标石、晾架、棚火爪、粮袋道具未改。报告 `docs/_pr22-step-r-report.json`。
+
+---
+
+## PR23 seat note
+
+合同 `1.3-pr23-seat`。`land-yard-give` 换成爪坐右踏槽的一帧：底行连续，三角碎和挂腿滴线已清，去袋和右偏还在。脚锚是底行爪墨（x≈0.635），Y0 把这处爪尖放在右阶最低一级（x=0.62，y=0.94，仍 ≥0.92）。靴底、`sole-soft`、`foot-ellipse`、门帘、标石、晾架、棚火爪、粮袋道具、雾岸猫未改。报告 `docs/_pr23-seat-report.json`。
