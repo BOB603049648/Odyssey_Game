@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CatPost } from '../core/companionPost';
 import { companionFace, companionFoot, NANAICHA_HEIGHT } from '../core/companionPost';
-import { companionFrameId, LEAP_01_MS, LEAP_02_MS, type TrajClip } from '../core/companionTraj';
+import { companionFrameId, nextGuide, trajClip, type GuidePhase, type TrajClip } from '../core/companionTraj';
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
 import type { HintLevel } from '../core/schema';
@@ -160,24 +160,17 @@ export function WalkLayer({
   const [moving, setMoving] = useState(false);
   const [stride, setStride] = useState(0);
   const [blocked, setBlocked] = useState(false);
-  const [cat, setCat] = useState<Point>(posRef.current);
+  const [cat, setCat] = useState<Point>({ x: catPost.x, y: catPost.y });
   const [clip, setClip] = useState<TrajClip>('land');
+  const [guide, setGuide] = useState<GuidePhase>('hold');
   const postRef = useRef(catPost);
-  const trajBoot = useRef(true);
+  const catRef = useRef(cat);
+  const beatRef = useRef(catPost.beat);
+  const guideRef = useRef<GuidePhase>('hold');
+  const guideElapsed = useRef(0);
+  const clipRef = useRef<TrajClip>('land');
   postRef.current = catPost;
-  useEffect(() => {
-    if (trajBoot.current) {
-      trajBoot.current = false;
-      return undefined;
-    }
-    setClip('leap-01');
-    const toPeak = window.setTimeout(() => setClip('leap-02'), LEAP_01_MS);
-    const toLand = window.setTimeout(() => setClip('land'), LEAP_01_MS + LEAP_02_MS);
-    return () => {
-      window.clearTimeout(toPeak);
-      window.clearTimeout(toLand);
-    };
-  }, [catPost.beat]);
+  catRef.current = cat;
   const [view, setView] = useState({ w: 1280, h: 720 });
   const [arrive, setArrive] = useState<string | null>(null);
   const [cam, setCam] = useState<Point>({ x: 0, y: 0 });
@@ -215,9 +208,24 @@ export function WalkLayer({
     setMoving(false);
     setStride(0);
     setBlocked(false);
-    setCat(next);
+    const plantedCat = { x: catPost.x, y: catPost.y };
+    catRef.current = plantedCat;
+    beatRef.current = catPost.beat;
+    guideRef.current = 'hold';
+    guideElapsed.current = 0;
+    clipRef.current = 'land';
+    setCat(plantedCat);
+    setGuide('hold');
+    setClip('land');
     setTeachLine(false);
     window.clearTimeout(driftSeek.current);
+  } else if (beatRef.current !== catPost.beat) {
+    beatRef.current = catPost.beat;
+    guideRef.current = 'gaze';
+    guideElapsed.current = 0;
+    clipRef.current = 'land';
+    setGuide('gaze');
+    setClip('land');
   }
 
   useEffect(() => {
@@ -283,13 +291,6 @@ export function WalkLayer({
     setStride(isMoving ? Math.min(1, Math.max(0, power)) : 0);
     setBlocked(isBlocked);
     movingRef.current = isMoving;
-    if (import.meta.env.MODE === 'test') {
-      const post = postRef.current;
-      setCat((prev) => ({
-        x: prev.x + (post.x - prev.x) * 0.35,
-        y: prev.y + (post.y - prev.y) * 0.35,
-      }));
-    }
   }
 
   function beginReach() {
@@ -392,10 +393,28 @@ export function WalkLayer({
           setBlocked(false);
         }
         const desired = postRef.current;
-        setCat((prev) => ({
-          x: prev.x + (desired.x - prev.x) * 0.07,
-          y: prev.y + (desired.y - prev.y) * 0.07,
-        }));
+        const prevCat = catRef.current;
+        const stepped = nextGuide({
+          phase: guideRef.current,
+          elapsed: guideElapsed.current,
+          cat: prevCat,
+          post: { x: desired.x, y: desired.y },
+          dt,
+          retarget: false,
+          sceneChanged: false,
+        });
+        guideElapsed.current = stepped.elapsed;
+        catRef.current = stepped.cat;
+        const clipNow = stepped.phase === 'move' ? trajClip(stepped.elapsed) : 'land';
+        if (stepped.phase !== guideRef.current) {
+          guideRef.current = stepped.phase;
+          setGuide(stepped.phase);
+        }
+        if (clipNow !== clipRef.current) {
+          clipRef.current = clipNow;
+          setClip(clipNow);
+        }
+        if (stepped.cat.x !== prevCat.x || stepped.cat.y !== prevCat.y) setCat(stepped.cat);
         const frameEl = viewportRef.current;
         if (frameEl && frameEl.clientWidth > 1 && (frameEl.clientWidth !== viewRef.current.w || frameEl.clientHeight !== viewRef.current.h)) {
           const nextView = { w: frameEl.clientWidth, h: frameEl.clientHeight };
@@ -568,7 +587,8 @@ export function WalkLayer({
             data-testid="companion-anchor"
             data-beat={catPost.beat}
             data-look={catPost.look}
-            data-traveling={Math.hypot(catPost.x - cat.x, catPost.y - cat.y) > 0.025 ? 'yes' : 'no'}
+            data-traveling={guide === 'move' ? 'yes' : 'no'}
+            data-guide={guide}
             data-traj={clip}
             data-face={companionFace(catSprite, catPost.x, cat.x)}
             data-sprite={catSprite}
@@ -597,11 +617,13 @@ export function WalkLayer({
               pose={
                 hint.pose === 'fetch' || hint.pose === 'look-at'
                   ? hint.pose
-                  : scene === 'dba.scene.yard' && spots.some((spot) => spot.id === 'yard-grab' && inRadius(pos, spot, spot.r)) && catPost.beat === 'Y0'
+                  : guide === 'gaze'
                     ? 'look-at'
-                    : Math.hypot(catPost.x - cat.x, catPost.y - cat.y) > 0.025
+                    : guide === 'move'
                       ? 'lead'
-                      : catPost.pose
+                      : scene === 'dba.scene.yard' && spots.some((spot) => spot.id === 'yard-grab' && inRadius(pos, spot, spot.r)) && catPost.beat === 'Y0'
+                        ? 'look-at'
+                        : catPost.pose
               }
               purr={purr}
               knot={knot}

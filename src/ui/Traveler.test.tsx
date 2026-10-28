@@ -276,6 +276,63 @@ describe('traveler art', () => {
     view.unmount();
   });
 
+  it('looks at the next mark before moving, and a scene change plants her', () => {
+    const shore = companionPost('dba.scene.shore', {}, {});
+    const gourd = companionPost('dba.scene.shore', {}, { 'dba.flag.driftwood': true });
+    const camp = companionPost('dba.scene.camp', { 'dba.beat.water': true }, {});
+    const mat = companionPost('dba.scene.camp', { 'dba.beat.water': true, 'dba.beat.food': true }, {});
+    const yard = companionPost('dba.scene.yard', { 'dba.beat.water': true }, {});
+    const shell = {
+      drank: false,
+      spots: [],
+      hint: { level: 0 as const, anchor: 'driftwood' as const, wordId: null, pose: 'idle' as const },
+      paused: false,
+      purr: false,
+      knot: 'rest' as const,
+      remembered: null,
+      onRemember: () => undefined,
+      onExit: () => undefined,
+      onInteract: () => undefined,
+      onAsk: () => undefined,
+      onEscape: () => undefined,
+      taught: true,
+    };
+    const view = render(
+      <WalkLayer scene="dba.scene.shore" catPost={shore} {...shell} />,
+    );
+    const anchor = () => view.container.querySelector('[data-testid="companion-anchor"]');
+    const pose = () => view.container.querySelector('[data-testid="companion"]')?.getAttribute('data-pose');
+    expect(anchor()?.getAttribute('data-guide')).toBe('hold');
+    expect(anchor()?.getAttribute('data-traveling')).toBe('no');
+    expect(anchor()?.getAttribute('data-look')).toBe('driftwood');
+    expect(pose()).toBe('sit-near');
+
+    view.rerender(<WalkLayer scene="dba.scene.shore" catPost={gourd} {...shell} />);
+    expect(anchor()?.getAttribute('data-guide')).toBe('gaze');
+    expect(anchor()?.getAttribute('data-traveling')).toBe('no');
+    expect(anchor()?.getAttribute('data-traj')).toBe('land');
+    expect(anchor()?.getAttribute('data-look')).toBe('gourd');
+    expect(pose()).toBe('look-at');
+
+    view.rerender(<WalkLayer scene="dba.scene.camp" catPost={camp} {...shell} />);
+    expect(anchor()?.getAttribute('data-guide')).toBe('hold');
+    expect(anchor()?.getAttribute('data-traveling')).toBe('no');
+    expect(anchor()?.getAttribute('data-traj')).toBe('land');
+    expect(anchor()?.getAttribute('data-look')).toBe('give');
+    expect(anchor()?.getAttribute('style')).toContain('left: 70%');
+
+    view.rerender(<WalkLayer scene="dba.scene.camp" catPost={mat} {...shell} />);
+    expect(anchor()?.getAttribute('data-guide')).toBe('gaze');
+    expect(anchor()?.getAttribute('data-look')).toBe('sleep');
+    expect(anchor()?.getAttribute('data-traveling')).toBe('no');
+
+    view.rerender(<WalkLayer scene="dba.scene.yard" catPost={yard} {...shell} />);
+    expect(anchor()?.getAttribute('data-guide')).toBe('hold');
+    expect(anchor()?.getAttribute('data-look')).toBe('give');
+    expect(anchor()?.getAttribute('data-traveling')).toBe('no');
+    view.unmount();
+  });
+
   it('shows idle at rest and the walk clip once stride is up', () => {
     const view = render(<TravelerMark x={0.4} y={0.6} facing="front" moving={false} />);
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).toBe('idle');
