@@ -55,4 +55,11 @@ describe('phone layout', () => {
     expect(css).not.toMatch(/\.traveler\s*\{[^}]*width:\s*117px/);
     expect(css).not.toMatch(/\.traveler\s*\{[^}]*height:\s*156px/);
   });
+
+  it('fades the camp and yard building plates into the ground on the east', () => {
+    expect(css).toContain('.walk-viewport[data-scene="dba.scene.camp"] .scene-slot[data-slot="building"] .slot-asset');
+    expect(css).toContain('.walk-viewport[data-scene="dba.scene.yard"] .scene-slot[data-slot="building"] .slot-asset');
+    expect(css).toContain('linear-gradient(90deg, #000 0 62%, transparent 80%)');
+    expect(css).not.toMatch(/dba\.scene\.shore"\] \.scene-slot\[data-slot="building"\]/);
+  });
 });

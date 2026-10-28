@@ -1629,6 +1629,17 @@ h1 {
   width: 100%;
   height: 100%;
 }
+/* Camp and yard building plates end in a hard vertical cut on the east.
+   Fade that edge into the ground plate so the modules meet. */
+.walk-viewport[data-scene="dba.scene.camp"] .scene-slot[data-slot="building"] .slot-asset,
+.walk-viewport[data-scene="dba.scene.yard"] .scene-slot[data-slot="building"] .slot-asset {
+  -webkit-mask-image: linear-gradient(90deg, #000 0 62%, transparent 80%);
+  mask-image: linear-gradient(90deg, #000 0 62%, transparent 80%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
 .prop-body {
   position: relative;
   width: 100%;
