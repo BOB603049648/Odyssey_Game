@@ -42,7 +42,7 @@ import driftFlash from '../assets/art/slots/art.shore.prop.driftwood.interact.pn
 import sleepFlash from '../assets/art/slots/art.camp.prop.sleep-mat.interact.png';
 import grainFlash from '../assets/art/slots/art.yard.prop.grain-bags.interact.png';
 import { sceneGrade, sceneLook, sceneStrip } from './cohesion';
-import { worldToScreen } from '../core/world';
+import { depthScale, worldToScreen } from '../core/world';
 import { facingFromMove, REACH_HOLD_MS, TravelerMark, type TravelerFacing } from './Traveler';
 
 const TRAJ_SRC: Record<string, string> = {
@@ -452,6 +452,8 @@ export function WalkLayer({
 
   const catSprite = companionFrameId(catPost.beat, clip);
   const catFoot = companionFoot(catSprite);
+  const catScreen = worldToScreen({ x: cat.x, y: cat.y }, catFoot);
+  const catInFront = cat.y > feetY + 0.012;
 
   return (
     <div
@@ -534,7 +536,10 @@ export function WalkLayer({
             data-face={companionFace(catSprite, catPost.x, cat.x)}
             data-sprite={catSprite}
             style={{
-              ...worldToScreen({ x: cat.x, y: cat.y }, catFoot),
+              ...catScreen,
+              transform: `${catScreen.transform} scale(${depthScale(cat.y).toFixed(3)})`,
+              transformOrigin: `${catFoot.x * 100}% ${catFoot.y * 100}%`,
+              zIndex: catInFront ? 6 : 4,
               ['--foot-x' as string]: `${catFoot.x * 100}%`,
               ['--foot-y' as string]: `${catFoot.y * 100}%`,
               height: `${NANAICHA_HEIGHT * 100}%`,
@@ -583,6 +588,7 @@ export function WalkLayer({
             moving={moving}
             stride={stride}
             pose={resting ? 'lie' : reaching ? 'reach' : 'auto'}
+            depthZ={catInFront ? 4 : 6}
           />
           <PlateStack
             plate={plates.current}

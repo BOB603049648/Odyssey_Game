@@ -34,6 +34,15 @@ export function contactOpacity(lift = 0): number {
 }
 
 /**
+ * Nearer feet (larger y) read slightly larger. The range stays small so a
+ * planted foot, including the yard give claw, does not leave its anchor.
+ */
+export function depthScale(y: number): number {
+  const t = Math.min(1, Math.max(0, (y - 0.42) / 0.52));
+  return 0.95 + t * 0.08;
+}
+
+/**
  * How far a full-bleed plate must extend, as a fraction of the world,
  * so a camera parked on either edge does not reveal a hard vertical seam.
  */
