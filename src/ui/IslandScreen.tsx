@@ -25,8 +25,10 @@ import { WalkLayer } from './WalkLayer';
 
 export { hintMark } from './hintMark';
 
-/** Success rest. The line may clear; the body stays down at least this long. */
+/** Success rest. The body stays down at least this long, then stands. */
 export const SLEEP_LIE_MS = 1200;
+/** Short settle after the lie before the feet unlock. */
+export const SLEEP_RISE_MS = 400;
 
 const SCENE_TITLE: Record<IslandScene, MessageKey> = {
   'dba.scene.shore': 'scene.shore',
@@ -66,20 +68,15 @@ export function IslandScreen({
   const catPost = companionPost(scene, save.beats, save.flags, { skipWelcome });
   const line = save.feedback.line;
   const sleepOk = scene === 'dba.scene.camp' && line === 'spot.sleep.ok';
-  const [lieHold, setLieHold] = useState(false);
+  const [lieUntil, setLieUntil] = useState(0);
   useEffect(() => {
     if (!sleepOk) return undefined;
-    const started = Date.now();
-    setLieHold(true);
-    const id = window.setTimeout(() => setLieHold(false), SLEEP_LIE_MS);
-    return () => {
-      window.clearTimeout(id);
-      const left = SLEEP_LIE_MS - (Date.now() - started);
-      if (left <= 0) setLieHold(false);
-      else window.setTimeout(() => setLieHold(false), left);
-    };
+    const until = Date.now() + SLEEP_LIE_MS + SLEEP_RISE_MS;
+    setLieUntil(until);
+    const id = window.setTimeout(() => setLieUntil(0), until - Date.now());
+    return () => window.clearTimeout(id);
   }, [sleepOk, save.feedback.seq]);
-  const resting = scene === 'dba.scene.camp' && (sleepOk || lieHold);
+  const resting = scene === 'dba.scene.camp' && lieUntil > Date.now();
   const spoken = line?.startsWith('spot.') ? t(line as MessageKey) : null;
   const flashKind = line === 'spot.driftwood.ok' || line === 'spot.driftwood.again'
     ? 'driftwood'

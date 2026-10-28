@@ -1,6 +1,9 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import { companionPost } from '../core/companionPost';
+import { reduce } from '../core/reduce';
+import { newGameState } from '../core/save';
+import type { SaveData } from '../core/schema';
 import { SPAWNS } from '../core/stage';
 import { WALK_SPEED } from '../core/walk';
 import {
@@ -26,9 +29,25 @@ import {
   TravelerMark,
   type TravelerFacing,
 } from './Traveler';
-import { SLEEP_LIE_MS } from './IslandScreen';
+import { IslandScreen, SLEEP_LIE_MS, SLEEP_RISE_MS } from './IslandScreen';
 import { WalkLayer } from './WalkLayer';
 import type { SpotView } from './spotViews';
+
+function campSleepSave(line: 'spot.sleep.ok' | 'spot.sleep.no' | 'spot.sleep.far'): SaveData {
+  let state = reduce(newGameState(), { type: 'new-game' });
+  for (let step = 0; step < 4; step += 1) state = reduce(state, { type: 'advance-prologue' });
+  state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.camp' });
+  return {
+    ...state,
+    beats: line === 'spot.sleep.ok' ? { ...state.beats, 'dba.beat.sleep': true } : state.beats,
+    feedback: {
+      seq: state.feedback.seq + 1,
+      kind: line === 'spot.sleep.ok' ? 'ok' : 'no',
+      line,
+      spot: 'camp-sleep',
+    },
+  };
+}
 
 describe('traveler art', () => {
   it('uses the front idle frame and the same contact shadow on every facing', () => {
@@ -87,6 +106,8 @@ describe('traveler art', () => {
 
   it('puts the traveler on the camp mat while resting, and stays upright otherwise', () => {
     expect(SLEEP_LIE_MS).toBeGreaterThanOrEqual(1200);
+    expect(SLEEP_RISE_MS).toBeGreaterThanOrEqual(300);
+    expect(SLEEP_RISE_MS).toBeLessThanOrEqual(500);
     const shell = {
       drank: false,
       spots: [],
@@ -115,6 +136,39 @@ describe('traveler art', () => {
     expect(stood.getAttribute('data-pose')).not.toBe('lie');
     expect(stood.style.transform).not.toContain('rotate(-86deg)');
     expect(view.container.querySelector('[data-testid="approach-hint"]')).toBeNull();
+  });
+
+  it('stands and unlocks the feet after the rest, and a refusal never lies', () => {
+    vi.useFakeTimers();
+    try {
+      const view = render(<IslandScreen save={campSleepSave('spot.sleep.ok')} dispatch={() => undefined} onTitle={() => undefined} />);
+      const stage = () => view.container.querySelector('[data-testid="walk-stage"]');
+      const mark = () => view.container.querySelector('[data-testid="traveler"]') as HTMLElement;
+      expect(stage()?.getAttribute('data-resting')).toBe('yes');
+      expect(mark().getAttribute('data-pose')).toBe('lie');
+      expect(mark().getAttribute('data-x')).toBe('0.42');
+      act(() => {
+        vi.advanceTimersByTime(SLEEP_LIE_MS + SLEEP_RISE_MS - 1);
+      });
+      expect(stage()?.getAttribute('data-resting')).toBe('yes');
+      act(() => {
+        vi.advanceTimersByTime(1);
+      });
+      expect(stage()?.getAttribute('data-resting')).toBe('no');
+      expect(mark().getAttribute('data-pose')).not.toBe('lie');
+      expect(mark().getAttribute('data-x')).not.toBe('0.42');
+      view.unmount();
+      const refused = render(<IslandScreen save={campSleepSave('spot.sleep.no')} dispatch={() => undefined} onTitle={() => undefined} />);
+      expect(refused.container.querySelector('[data-testid="walk-stage"]')?.getAttribute('data-resting')).toBe('no');
+      expect(refused.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).not.toBe('lie');
+      refused.unmount();
+      const far = render(<IslandScreen save={campSleepSave('spot.sleep.far')} dispatch={() => undefined} onTitle={() => undefined} />);
+      expect(far.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).not.toBe('lie');
+      expect(far.container.querySelector('[data-testid="spot-line"]')?.getAttribute('data-line')).toBe('spot.sleep.far');
+      far.unmount();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('uses the side walk sheet for both directions and a real back idle', () => {
