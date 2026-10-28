@@ -20,6 +20,7 @@ import { useGame } from '../stores/gameStore';
 import { useFadePresence } from './useCrossfade';
 import { useFeedbackFx } from './useFeedbackFx';
 import { useIdleHint } from './useIdleHint';
+import { sceneLook } from './cohesion';
 import { WalkLayer } from './WalkLayer';
 
 export { hintMark } from './hintMark';
@@ -52,6 +53,7 @@ export function IslandScreen({
   const setPlace = useGame((state) => state.setPlace);
   const learned = LEXEMES.filter((lexeme) => isLearnedState(save.words[lexeme.id]?.state));
   const scene = isIslandScene(save.currentScene) ? save.currentScene : 'dba.scene.shore';
+  const look = sceneLook(scene);
   const drank = save.beats['dba.beat.water'] === true;
   const remembered = place?.scene === scene ? { x: place.x, y: place.y } : null;
   const paused = save.overlay !== 'none';
@@ -112,6 +114,7 @@ export function IslandScreen({
         className="shore-wrap"
         data-testid={scene === 'dba.scene.shore' ? 'shore' : 'scene'}
         data-scene={scene}
+        style={{ ['--ambient' as string]: look.ambient }}
         data-water-beat={drank ? 'done' : 'open'}
         data-sleep-beat={save.beats['dba.beat.sleep'] ? 'done' : 'open'}
         data-food-beat={save.beats['dba.beat.food'] ? 'done' : 'open'}

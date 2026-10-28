@@ -400,8 +400,8 @@ h1 {
 .hud-actions .btn:hover,
 .hud-actions .btn:focus-visible {
   opacity: 1;
-  border-color: var(--gold-line);
-  background: var(--glass);
+  border-color: transparent;
+  background: transparent;
 }
 
 .hud-place {
@@ -411,6 +411,7 @@ h1 {
   bottom: calc(86px + var(--safe-bottom));
   text-align: right;
   pointer-events: none;
+  color: color-mix(in srgb, var(--ambient, #b8ced4) 46%, var(--bone));
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.85);
 }
 
@@ -1479,9 +1480,10 @@ h1 {
     min-height: 44px;
     min-width: 44px;
     padding: 0 12px;
-    opacity: 0.94;
-    border-color: var(--gold-line);
-    background: var(--glass);
+    opacity: 0.78;
+    border-color: transparent;
+    background: transparent;
+    backdrop-filter: none;
     letter-spacing: 0.08em;
     font-size: 0.95rem;
   }
@@ -2083,10 +2085,14 @@ h1 {
   transform: translateX(-50%);
   z-index: 12;
   margin: 0;
-  padding: 8px 14px;
-  color: var(--bone);
+  padding: 0;
+  max-width: 18em;
+  color: color-mix(in srgb, var(--ambient, #b8ced4) 64%, var(--bone));
   letter-spacing: 0.06em;
   background: none;
+  border: 0;
+  backdrop-filter: none;
+  box-shadow: none;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
   pointer-events: none;
 }
@@ -2136,6 +2142,7 @@ h1 {
   color: transparent;
   background: transparent;
   border-color: transparent;
+  backdrop-filter: none;
 }
 .world-layer .hotspot::before,
 .world-layer .hotspot.near::before,
