@@ -10,7 +10,7 @@ describe('cohesion shadows and grades', () => {
       pr11_ground: { do_not_stack_hard_shadow_on_baked_props: boolean; fog_rule: string };
       pr12_sticker: { eng_must_not: string; fog_match_baked: boolean };
     };
-    expect(contract.version).toBe('1.3-pr25-fog');
+    expect(contract.version).toBe('1.3-pr26-hem');
     expect(contract.pr12_sticker.fog_match_baked).toBe(true);
     expect(contract.pr12_sticker.eng_must_not).toMatch(/uniform fog alpha/);
     expect(contract.pr11_ground.do_not_stack_hard_shadow_on_baked_props).toBe(true);
