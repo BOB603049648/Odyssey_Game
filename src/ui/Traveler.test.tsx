@@ -6,6 +6,7 @@ import { WALK_SPEED } from '../core/walk';
 import {
   FRAME_BLEND_MS,
   TRAVELER_FOOT,
+  TRAVELER_SOLE,
   TRAVELER_FRAME_COUNTS,
   TRAVELER_HEIGHT,
   TURN_BLEND_MS,
@@ -68,6 +69,9 @@ describe('traveler art', () => {
     expect(mark.style.transform).not.toContain('-50%, -50%');
     expect(TRAVELER_FOOT.y).toBeCloseTo(1151 / 1152);
     expect(TRAVELER_FOOT.x).toBeCloseTo(0.5);
+    expect(TRAVELER_SOLE).toBeCloseTo(995 / 1152);
+    expect(TRAVELER_SOLE).toBeLessThan(TRAVELER_FOOT.y);
+    expect(mark.style.getPropertyValue('--sole-y')).toBe(`${TRAVELER_SOLE * 100}%`);
   });
 
   it('lays the body along the mat with the sole still on the foot point', () => {
@@ -77,6 +81,7 @@ describe('traveler art', () => {
     expect(mark.style.top).toBe('60%');
     expect(mark.style.transform).toContain('rotate(-86deg)');
     expect(mark.style.transform).not.toContain('-50%, -50%');
+    expect(mark.style.getPropertyValue('--sole-y')).toBe(`${TRAVELER_FOOT.y * 100}%`);
   });
 
   it('uses the side walk sheet for both directions and a real back idle', () => {

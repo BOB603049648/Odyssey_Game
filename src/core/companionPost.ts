@@ -18,6 +18,26 @@ export function companionFoot(frameId: string): { readonly x: number; readonly y
 }
 
 /**
+ * Visible paw row on the 1152 sheet. The plant pivot stays near the canvas
+ * bottom; several landings keep the claws higher, so the contact ellipse
+ * uses this row instead of the box edge.
+ */
+const COMPANION_SOLE: Record<string, number> = {
+  'land-shore-driftwood': 897 / 1152,
+  'land-shore-east-gap': 1117 / 1152,
+  'land-shore-gourd': 1108 / 1152,
+  'land-yard-give': 1128 / 1152,
+  'land-camp-fireside': 1143 / 1152,
+  'land-camp-sleep-mat': 1143 / 1152,
+  'leap-01': 1143 / 1152,
+  'leap-02': 1143 / 1152,
+};
+
+export function companionSole(frameId: string): number {
+  return COMPANION_SOLE[frameId] ?? NANAICHA_FOOT.y;
+}
+
+/**
  * Give is authored with the paw on the right of the sheet.
  * A left-face mirror is taken around the box center, which slides that paw
  * off the foot pivot and leaves a scrap on the other tread. Keep this frame unmirrored.

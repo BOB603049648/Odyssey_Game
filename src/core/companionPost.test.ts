@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { companionFace, companionFoot, companionPost, gazeQueue, NANAICHA_FOOT, YARD_GIVE_FOOT } from './companionPost';
+import { companionFace, companionFoot, companionPost, companionSole, gazeQueue, NANAICHA_FOOT, YARD_GIVE_FOOT } from './companionPost';
 import { BANDS, GATES, SPOTS, YARD_FACADE, YARD_RIGHT_STEP } from './stage';
 
 const shore = 'dba.scene.shore' as const;
@@ -28,6 +28,18 @@ describe('companion feet and gaze', () => {
     expect(companionFace('land-yard-give', 0.62, 0.9)).toBe('right');
     expect(companionFace('land-shore-driftwood', 0.3, 0.5)).toBe('left');
     expect(companionFace('land-camp-fireside', 0.7, 0.4)).toBe('right');
+  });
+
+  it('puts the contact ellipse on the visible paw, above the canvas lip', () => {
+    expect(companionSole('land-shore-driftwood')).toBeCloseTo(897 / 1152);
+    expect(companionSole('land-shore-driftwood')).toBeLessThan(0.82);
+    expect(companionSole('land-shore-east-gap')).toBeCloseTo(1117 / 1152);
+    expect(companionSole('land-shore-gourd')).toBeCloseTo(1108 / 1152);
+    expect(companionSole('land-yard-give')).toBeCloseTo(1128 / 1152);
+    expect(companionSole('land-camp-fireside')).toBeCloseTo(1143 / 1152);
+    expect(companionSole('land-camp-sleep-mat')).toBeCloseTo(1143 / 1152);
+    expect(companionSole('leap-02')).toBeGreaterThan(companionSole('land-shore-driftwood'));
+    expect(companionSole('unknown-frame')).toBe(NANAICHA_FOOT.y);
   });
 
   it('queues water, then food, then sleep, then danger', () => {
