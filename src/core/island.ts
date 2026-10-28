@@ -172,7 +172,7 @@ export function shoreStone(state: SaveData): SaveData {
     evidence,
     beats: { ...state.beats, 'dba.beat.stone': true },
     overlay: 'casefile',
-    feedback: { seq: state.feedback.seq + 1, kind: 'ok' },
+    feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: 'spot.stone.ok', spot: 'shore-stone' },
   };
 }
 

@@ -85,6 +85,11 @@ describe('island 1 reachability', () => {
     expect(stone.overlay).toBe('casefile');
     expect(stone.evidence).toContain('dba.ev.a');
     expect(stone.beats['dba.beat.stone']).toBe(true);
+    expect(stone.feedback).toMatchObject({ kind: 'ok', line: 'spot.stone.ok', spot: 'shore-stone' });
+    const again = reduce(stone, { type: 'shore-stone' });
+    expect(again.evidence.filter((id) => id === 'dba.ev.a')).toHaveLength(1);
+    expect(again.feedback.line).toBe('spot.stone.ok');
+    expect(reduce(ashore(), { type: 'spot-far', id: 'shore-stone' }).feedback.line).toBe('spot.stone.far');
   });
 
   it('adds the counted bone to the old layer without making it evidence', () => {
