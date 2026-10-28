@@ -164,4 +164,4 @@ Fog-match（降对比/饱和、2–3px 柔边、高光压、暖/冷 fringe）**�
 
 ## PR26 hem note
 
-合同 `1.3-pr26-hem`。旅人 21 帧清掉衣摆纯黑硬条（约第 1123–1134 行），靴底第 1148–1151 行按原字节锁回。雾岸猫道具和三张 land-shore 去掉整幅接地板，并跟雾岸雾溶边。葫芦、棚火猫、两张 land-camp、前坪猫道具同样溶进各自场景雾，没有青硬边。雾染色仍走 #26 的 `.figure-grade`（雾岸 `#b8ced4`，旅人 color/soft 0.32/0.24，雾岸猫 color 为 0）。`sole-soft`、`foot-ellipse`、`land-yard-give` 爪帧和脚锚、门帘、粮袋厚盘未改。报告 `docs/_pr26-hem-report.json`。
+合同 `1.3-pr26-hem`。旅人 21 帧清掉衣摆纯黑硬条（约第 1123–1134 行），靴底第 1148–1151 行按原字节锁回。包内溶边停在 1123，上面第 1092–1122 行仍是不透明近黑，会被 `sole-soft` 原样盖回雾上，所以这 31 行只把近黑像素的 alpha 收到 0，颜色和靴底行不动。雾岸猫道具和三张 land-shore 去掉整幅接地板，并跟雾岸雾溶边。葫芦、棚火猫、两张 land-camp、前坪猫道具同样溶进各自场景雾，没有青硬边。雾染色仍走 #26 的 `.figure-grade`（雾岸 `#b8ced4`，旅人 color/soft 0.32/0.24，雾岸猫 color 为 0）。`sole-soft`、`foot-ellipse`、`land-yard-give` 爪帧和脚锚、门帘、粮袋厚盘未改。报告 `docs/_pr26-hem-report.json`。
