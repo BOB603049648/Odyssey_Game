@@ -1866,25 +1866,32 @@ h1 {
     transparent 40%
   );
   mix-blend-mode: soft-light;
-  opacity: 0.62;
+  opacity: 0.36;
 }
 .world-strip {
   background-repeat: no-repeat;
   background-size: 100% 100%;
   mix-blend-mode: soft-light;
-  opacity: 0.5;
+  opacity: 0.26;
 }
-.walk-viewport[data-scene="dba.scene.yard"] .world-ambient { opacity: 0.4; }
-.walk-viewport[data-scene="dba.scene.yard"] .world-strip { opacity: 0.34; }
+.walk-viewport[data-scene="dba.scene.yard"] .world-ambient { opacity: 0.22; }
+.walk-viewport[data-scene="dba.scene.yard"] .world-strip { opacity: 0.16; }
 .world-vignette {
   background: radial-gradient(ellipse at 50% 46%, transparent 42%, rgba(0, 0, 0, 0.42) 100%);
 }
+/* One light color-temperature sheet over the scene and the solid figures. */
 .grade-veil {
   position: absolute;
   inset: 0;
-  z-index: 5;
+  z-index: 6;
   pointer-events: none;
+  background: var(--figure-light, var(--ambient, #c5d0d4));
+  mix-blend-mode: soft-light;
+  opacity: 0.2;
 }
+.walk-viewport[data-scene="dba.scene.shore"] .grade-veil { opacity: 0.22; }
+.walk-viewport[data-scene="dba.scene.camp"] .grade-veil { opacity: 0.18; }
+.walk-viewport[data-scene="dba.scene.yard"] .grade-veil { opacity: 0.12; }
 .scene-grade {
   position: absolute;
   inset: 0;
@@ -1894,9 +1901,9 @@ h1 {
   object-fit: cover;
   pointer-events: none;
   mix-blend-mode: soft-light;
-  opacity: 0.68;
+  opacity: 0.36;
 }
-.walk-viewport[data-scene="dba.scene.yard"] .scene-grade { opacity: 0.46; }
+.walk-viewport[data-scene="dba.scene.yard"] .scene-grade { opacity: 0.22; }
 /* Fog lifts a dark sole to a cool gray. This copy sits above that fog, but only the
    bottom contact, and the mask fades in — there is no hard 91% cut and no ellipse. */
 .sole-layer {
@@ -1947,55 +1954,20 @@ h1 {
   -webkit-mask-position: center bottom;
   mask-position: center bottom;
 }
-.figure-grade.grade-color { mix-blend-mode: color; opacity: 0.4; }
-.figure-grade.grade-soft { mix-blend-mode: soft-light; opacity: 0.2; }
-/* Colorize onto the solid sprite. The figure itself stays opaque. */
-.walk-viewport[data-scene="dba.scene.shore"] .figure-grade.grade-color { opacity: 0.38; }
-.walk-viewport[data-scene="dba.scene.shore"] .figure-grade.grade-soft { opacity: 0.16; }
-.walk-viewport[data-scene="dba.scene.camp"] .figure-grade.grade-color { opacity: 0.36; }
-.walk-viewport[data-scene="dba.scene.camp"] .figure-grade.grade-soft { opacity: 0.18; }
-.walk-viewport[data-scene="dba.scene.yard"] .figure-grade.grade-color { opacity: 0.34; }
-.walk-viewport[data-scene="dba.scene.yard"] .figure-grade.grade-soft { opacity: 0.16; }
+.figure-grade.grade-color { mix-blend-mode: normal; opacity: 0; }
+.figure-grade.grade-soft { mix-blend-mode: normal; opacity: 0; }
+/* No per-sprite fog tint. A silhouette-shaped wash reads as a ghost cutout. */
+.walk-viewport .traveler .figure-grade,
+.walk-viewport .companion-anchor .figure-grade {
+  opacity: 0;
+  mix-blend-mode: normal;
+}
 .walk-viewport .traveler-bob,
 .walk-viewport .nanaicha-figure {
   opacity: 1;
 }
-/* Tint the body. Leave the sole rows out so they are not lifted into a pale pad. */
-.traveler .figure-grade {
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 90%, transparent 96%), var(--figure);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 90%, transparent 96%), var(--figure);
-  -webkit-mask-size: 100% 100%, contain;
-  mask-size: 100% 100%, contain;
-  -webkit-mask-position: center center, center bottom;
-  mask-position: center center, center bottom;
-  -webkit-mask-repeat: no-repeat, no-repeat;
-  mask-repeat: no-repeat, no-repeat;
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
-}
-/* Shore cat stays solid. A light colorize only; no blur halo and no see-through head. */
-.walk-viewport[data-scene="dba.scene.shore"] .companion-anchor .figure-grade.grade-color {
-  opacity: 0.32;
-}
-.walk-viewport[data-scene="dba.scene.shore"] .companion-anchor .figure-grade.grade-soft {
-  opacity: 0.1;
-}
 .walk-viewport[data-scene="dba.scene.yard"] .scene-slot[data-kind="dried-fish"] .slot-asset {
   opacity: 0.82;
-}
-/* Yard hall light and the camp wrap do the same to a dark paw contact. Shore cat stays as shipped. */
-.walk-viewport[data-scene="dba.scene.yard"] .companion-anchor .figure-grade,
-.walk-viewport[data-scene="dba.scene.camp"] .companion-anchor .figure-grade {
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 88%, transparent 96%), var(--figure);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 88%, transparent 96%), var(--figure);
-  -webkit-mask-size: 100% 100%, contain;
-  mask-size: 100% 100%, contain;
-  -webkit-mask-position: center center, center bottom;
-  mask-position: center center, center bottom;
-  -webkit-mask-repeat: no-repeat, no-repeat;
-  mask-repeat: no-repeat, no-repeat;
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
 }
 
 .contact-shadow {

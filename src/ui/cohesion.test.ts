@@ -51,22 +51,23 @@ describe('cohesion shadows and grades', () => {
   it('grades sprites by their own alpha and keeps the foot ellipse off the rectangular mask', () => {
     const css = readFileSync('src/styles.css', 'utf8');
     expect(css).toContain('.figure-grade');
-    expect(css).toMatch(/\.figure-grade\.grade-color\s*\{[^}]*mix-blend-mode:\s*color/);
+    expect(css).toMatch(/\.figure-grade\.grade-color\s*\{[^}]*opacity:\s*0/);
+    expect(css).toMatch(/\.walk-viewport \.traveler \.figure-grade[\s\S]*?opacity:\s*0/);
     expect(css).not.toContain('opacity: 0.84');
     expect(css).not.toMatch(/\.figure-grade\s*\{[^}]*mix-blend-mode:\s*multiply/);
+    expect(css).toMatch(/\.grade-veil\s*\{[^}]*mix-blend-mode:\s*soft-light/);
     expect(css).not.toContain('mask-image: var(--ellipse)');
     expect(css).not.toContain('translate(-50%, 46%)');
     expect(css).not.toContain('translate(-50%, 42%)');
     expect(css).toMatch(/\.traveler \.foot-ellipse[\s\S]*?background:\s*none/);
     expect(css).toMatch(/\.companion-anchor \.foot-ellipse[\s\S]*?background:\s*none/);
-    expect(css).toMatch(/\.traveler \.figure-grade\s*\{[^}]*#000 90%[^}]*transparent 96%[^}]*mask-composite:\s*intersect/);
     expect(css).toMatch(/\.traveler img\s*\{[^}]*transparent 95\.2%[^}]*#000 99\.35%/);
     expect(css).not.toContain('.sole-stamp');
     expect(css).not.toContain('transparent 91%');
     expect(css).toMatch(/\.sole-soft\s*\{[^}]*transparent 99%[^}]*#000 99\.7%/);
     expect(css).toMatch(/\.sole-soft\s*\{[^}]*filter:\s*blur\(0\.45px\)/);
     expect(css).not.toContain('shadow-tint');
-    expect(css).toMatch(/dba\.scene\.shore"\] \.companion-anchor \.figure-grade\.grade-color\s*\{[^}]*opacity:\s*0\.32/);
+    expect(css).toMatch(/\.companion-anchor \.figure-grade\s*\{[^}]*opacity:\s*0/);
     expect(css).not.toContain('.sole-ao');
     expect(css).not.toContain('.fog-fringe');
     const companion = readFileSync('src/ui/Companion.tsx', 'utf8');
