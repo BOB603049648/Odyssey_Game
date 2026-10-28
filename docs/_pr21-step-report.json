@@ -1,0 +1,705 @@
+{
+  "version": "1.3-pr21-step",
+  "updated": "2026-10-28T08:34:51+08:00",
+  "role": "auxiliary",
+  "timezone": "Asia/Shanghai",
+  "priority_note": "PR21 step：只改 land-yard-give — 去自带粮袋；爪贴右阶槽踏面；软接触AO。靴底软溶已过勿动旅人 sole。锁：雾岸猫/门帘/棚火猫/扁板/粮袋道具形/标石/晾架/land-shore。",
+  "knives": [
+    "land-yard-give bag-free pose (erase baked grain bags)",
+    "land-yard-give paws on RIGHT step-slot tread (eng anchors)",
+    "soft contact AO under paws melt into stone"
+  ],
+  "locked": [
+    "traveler all anim frames / soles (soft-contact PASSED)",
+    "shore cat / land-shore",
+    "curtain",
+    "camp cat / land-camp",
+    "boards / grain bag SHAPE props",
+    "marker stone / drying rack"
+  ],
+  "do_not_touch": [
+    "traveler-mythic/cloud-inspired/v3/anim/* (sole PASSED)",
+    "shore/art.shore.prop.nanaicha.png",
+    "nanaicha/traj/land-shore-driftwood.png",
+    "nanaicha/traj/land-shore-east-gap.png",
+    "nanaicha/traj/land-shore-gourd.png",
+    "shore/art.shore.prop.east-gap.png",
+    "yard/art.yard.prop.more-less-boards.png",
+    "yard/art.yard.prop.grain-bags.png",
+    "yard/art.yard.prop.grain-bags.interact.png",
+    "yard/art.yard.prop.dried-fish.png",
+    "camp/art.camp.prop.north-curtain.png",
+    "camp/art.camp.prop.nanaicha.png",
+    "nanaicha/traj/land-camp-fireside.png",
+    "nanaicha/traj/land-camp-sleep-mat.png",
+    "yard/art.yard.prop.nanaicha.png (prefer leave; only if paws still wrong)",
+    "marker-stone / drying-rack"
+  ],
+  "files": {
+    "nanaicha/traj/land-yard-give.png": {
+      "before": {
+        "opaque_bbox": [
+          0,
+          181,
+          863,
+          1151
+        ],
+        "subjH_pct": 84.3,
+        "foot_pad_px": 0,
+        "aspect_w_h": 0.89,
+        "opaque_wh": [
+          864,
+          971
+        ],
+        "solid_bbox": [
+          0,
+          185,
+          863,
+          1138
+        ],
+        "solidH_pct": 82.8,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          864,
+          954
+        ],
+        "soft_shadow_px": 12288,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 1,
+        "dark_rim_px": 61822,
+        "knife_edges": 166,
+        "core_mean_alpha": 253.2,
+        "soft_shadow_rgb": [
+          24.8,
+          18.1,
+          12.4
+        ],
+        "soft_shadow_alpha": 89.3,
+        "crescent_gap": 332,
+        "hard_plate_px": 0,
+        "hard_plate_edge": 0,
+        "soft_contact_ratio": 1.0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0,
+        "left_third_opaque": 60662,
+        "left_of_subject_opaque": 0,
+        "bottom15_width": 864
+      },
+      "after": {
+        "opaque_bbox": [
+          197,
+          200,
+          665,
+          1151
+        ],
+        "subjH_pct": 82.6,
+        "foot_pad_px": 0,
+        "aspect_w_h": 0.493,
+        "opaque_wh": [
+          469,
+          952
+        ],
+        "solid_bbox": [
+          199,
+          202,
+          662,
+          1143
+        ],
+        "solidH_pct": 81.8,
+        "solid_foot_pad_px": 8,
+        "solid_wh": [
+          464,
+          942
+        ],
+        "soft_shadow_px": 11592,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 42259,
+        "knife_edges": 1283,
+        "core_mean_alpha": 253.5,
+        "soft_shadow_rgb": [
+          24.1,
+          16.2,
+          10.3
+        ],
+        "soft_shadow_alpha": 72.4,
+        "crescent_gap": 0,
+        "hard_plate_px": 1,
+        "hard_plate_edge": 3,
+        "soft_contact_ratio": 1.0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0,
+        "left_third_opaque": 8673,
+        "left_of_subject_opaque": 0,
+        "bottom15_width": 318
+      },
+      "group": "yard_traj_p0",
+      "wrote": true,
+      "note": "bag-free pose from pre-softfix strip; recentred cat-only; paws near bottom + soft contact AO rgb(24,16,10); eng anchors right step groove",
+      "source": "nanaicha/traj/raw/pre-softfix/land-yard-give.png"
+    },
+    "yard/art.yard.prop.nanaicha.png": {
+      "before": {
+        "opaque_bbox": [
+          492,
+          328,
+          788,
+          719
+        ],
+        "subjH_pct": 54.4,
+        "foot_pad_px": 0,
+        "aspect_w_h": 0.758,
+        "opaque_wh": [
+          297,
+          392
+        ],
+        "solid_bbox": [
+          496,
+          331,
+          788,
+          706
+        ],
+        "solidH_pct": 52.2,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          293,
+          376
+        ],
+        "soft_shadow_px": 3981,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 14111,
+        "knife_edges": 85,
+        "core_mean_alpha": 252.4,
+        "soft_shadow_rgb": [
+          27.4,
+          20.2,
+          13.4
+        ],
+        "soft_shadow_alpha": 69.4,
+        "crescent_gap": 82,
+        "hard_plate_px": 0,
+        "hard_plate_edge": 0,
+        "soft_contact_ratio": 1.0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0,
+        "left_third_opaque": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          492,
+          328,
+          788,
+          719
+        ],
+        "subjH_pct": 54.4,
+        "foot_pad_px": 0,
+        "aspect_w_h": 0.758,
+        "opaque_wh": [
+          297,
+          392
+        ],
+        "solid_bbox": [
+          496,
+          331,
+          788,
+          706
+        ],
+        "solidH_pct": 52.2,
+        "solid_foot_pad_px": 13,
+        "solid_wh": [
+          293,
+          376
+        ],
+        "soft_shadow_px": 3981,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 14111,
+        "knife_edges": 85,
+        "core_mean_alpha": 252.4,
+        "soft_shadow_rgb": [
+          27.4,
+          20.2,
+          13.4
+        ],
+        "soft_shadow_alpha": 69.4,
+        "crescent_gap": 82,
+        "hard_plate_px": 0,
+        "hard_plate_edge": 0,
+        "soft_contact_ratio": 1.0,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0,
+        "left_third_opaque": 0
+      },
+      "group": "yard_cat_evidence",
+      "wrote": false,
+      "note": "prefer leave alone; paws already bag-free mid-plate; no write this pack"
+    },
+    "camp/art.camp.prop.north-curtain.png": {
+      "before": {
+        "opaque_bbox": [
+          311,
+          22,
+          1010,
+          690
+        ],
+        "subjH_pct": 92.9,
+        "foot_pad_px": 29,
+        "aspect_w_h": 1.046,
+        "opaque_wh": [
+          700,
+          669
+        ],
+        "solid_bbox": [
+          317,
+          32,
+          1003,
+          681
+        ],
+        "solidH_pct": 90.3,
+        "solid_foot_pad_px": 38,
+        "solid_wh": [
+          687,
+          650
+        ],
+        "soft_shadow_px": 10079,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 26457,
+        "knife_edges": 0,
+        "core_mean_alpha": 255.0,
+        "soft_shadow_rgb": [
+          31.1,
+          26.6,
+          21.2
+        ],
+        "soft_shadow_alpha": 74.1,
+        "crescent_gap": 0,
+        "hard_plate_px": 12,
+        "hard_plate_edge": 0,
+        "soft_contact_ratio": 0.988,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          311,
+          22,
+          1010,
+          690
+        ],
+        "subjH_pct": 92.9,
+        "foot_pad_px": 29,
+        "aspect_w_h": 1.046,
+        "opaque_wh": [
+          700,
+          669
+        ],
+        "solid_bbox": [
+          317,
+          32,
+          1003,
+          681
+        ],
+        "solidH_pct": 90.3,
+        "solid_foot_pad_px": 38,
+        "solid_wh": [
+          687,
+          650
+        ],
+        "soft_shadow_px": 10079,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 26457,
+        "knife_edges": 0,
+        "core_mean_alpha": 255.0,
+        "soft_shadow_rgb": [
+          31.1,
+          26.6,
+          21.2
+        ],
+        "soft_shadow_alpha": 74.1,
+        "crescent_gap": 0,
+        "hard_plate_px": 12,
+        "hard_plate_edge": 0,
+        "soft_contact_ratio": 0.988,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "locked_evidence",
+      "wrote": false,
+      "note": "门帘锁 — wrote=False"
+    },
+    "camp/art.camp.prop.nanaicha.png": {
+      "before": {
+        "opaque_bbox": [
+          429,
+          352,
+          849,
+          711
+        ],
+        "subjH_pct": 50.0,
+        "foot_pad_px": 8,
+        "aspect_w_h": 1.169,
+        "opaque_wh": [
+          421,
+          360
+        ],
+        "solid_bbox": [
+          432,
+          355,
+          847,
+          711
+        ],
+        "solidH_pct": 49.6,
+        "solid_foot_pad_px": 8,
+        "solid_wh": [
+          416,
+          357
+        ],
+        "soft_shadow_px": 5017,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 12498,
+        "knife_edges": 371,
+        "core_mean_alpha": 253.3,
+        "soft_shadow_rgb": [
+          17.9,
+          13.7,
+          9.9
+        ],
+        "soft_shadow_alpha": 61.4,
+        "crescent_gap": 0,
+        "hard_plate_px": 974,
+        "hard_plate_edge": 182,
+        "soft_contact_ratio": 0.037,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          429,
+          352,
+          849,
+          711
+        ],
+        "subjH_pct": 50.0,
+        "foot_pad_px": 8,
+        "aspect_w_h": 1.169,
+        "opaque_wh": [
+          421,
+          360
+        ],
+        "solid_bbox": [
+          432,
+          355,
+          847,
+          711
+        ],
+        "solidH_pct": 49.6,
+        "solid_foot_pad_px": 8,
+        "solid_wh": [
+          416,
+          357
+        ],
+        "soft_shadow_px": 5017,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 12498,
+        "knife_edges": 371,
+        "core_mean_alpha": 253.3,
+        "soft_shadow_rgb": [
+          17.9,
+          13.7,
+          9.9
+        ],
+        "soft_shadow_alpha": 61.4,
+        "crescent_gap": 0,
+        "hard_plate_px": 974,
+        "hard_plate_edge": 182,
+        "soft_contact_ratio": 0.037,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "locked_evidence",
+      "wrote": false,
+      "note": "棚火猫锁 — wrote=False"
+    },
+    "yard/art.yard.prop.grain-bags.png": {
+      "before": {
+        "opaque_bbox": [
+          555,
+          581,
+          723,
+          709
+        ],
+        "subjH_pct": 17.9,
+        "foot_pad_px": 10,
+        "aspect_w_h": 1.31,
+        "opaque_wh": [
+          169,
+          129
+        ],
+        "solid_bbox": [
+          556,
+          583,
+          722,
+          709
+        ],
+        "solidH_pct": 17.6,
+        "solid_foot_pad_px": 10,
+        "solid_wh": [
+          167,
+          127
+        ],
+        "soft_shadow_px": 869,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 889,
+        "knife_edges": 65,
+        "core_mean_alpha": 253.7,
+        "soft_shadow_rgb": [
+          36.8,
+          27.2,
+          18.4
+        ],
+        "soft_shadow_alpha": 91.6,
+        "crescent_gap": 0,
+        "hard_plate_px": 1372,
+        "hard_plate_edge": 61,
+        "soft_contact_ratio": 0.242,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          555,
+          581,
+          723,
+          709
+        ],
+        "subjH_pct": 17.9,
+        "foot_pad_px": 10,
+        "aspect_w_h": 1.31,
+        "opaque_wh": [
+          169,
+          129
+        ],
+        "solid_bbox": [
+          556,
+          583,
+          722,
+          709
+        ],
+        "solidH_pct": 17.6,
+        "solid_foot_pad_px": 10,
+        "solid_wh": [
+          167,
+          127
+        ],
+        "soft_shadow_px": 869,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 889,
+        "knife_edges": 65,
+        "core_mean_alpha": 253.7,
+        "soft_shadow_rgb": [
+          36.8,
+          27.2,
+          18.4
+        ],
+        "soft_shadow_alpha": 91.6,
+        "crescent_gap": 0,
+        "hard_plate_px": 1372,
+        "hard_plate_edge": 61,
+        "soft_contact_ratio": 0.242,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "locked_evidence",
+      "wrote": false,
+      "note": "粮袋道具形锁 — wrote=False"
+    },
+    "yard/art.yard.prop.more-less-boards.png": {
+      "before": {
+        "opaque_bbox": [
+          523,
+          505,
+          755,
+          707
+        ],
+        "subjH_pct": 28.2,
+        "foot_pad_px": 12,
+        "aspect_w_h": 1.148,
+        "opaque_wh": [
+          233,
+          203
+        ],
+        "solid_bbox": [
+          525,
+          507,
+          752,
+          702
+        ],
+        "solidH_pct": 27.2,
+        "solid_foot_pad_px": 17,
+        "solid_wh": [
+          228,
+          196
+        ],
+        "soft_shadow_px": 1487,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 2130,
+        "knife_edges": 3,
+        "core_mean_alpha": 254.5,
+        "soft_shadow_rgb": [
+          26.2,
+          18.2,
+          12.3
+        ],
+        "soft_shadow_alpha": 112.9,
+        "crescent_gap": 468,
+        "hard_plate_px": 1132,
+        "hard_plate_edge": 61,
+        "soft_contact_ratio": 0.487,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "after": {
+        "opaque_bbox": [
+          523,
+          505,
+          755,
+          707
+        ],
+        "subjH_pct": 28.2,
+        "foot_pad_px": 12,
+        "aspect_w_h": 1.148,
+        "opaque_wh": [
+          233,
+          203
+        ],
+        "solid_bbox": [
+          525,
+          507,
+          752,
+          702
+        ],
+        "solidH_pct": 27.2,
+        "solid_foot_pad_px": 17,
+        "solid_wh": [
+          228,
+          196
+        ],
+        "soft_shadow_px": 1487,
+        "pale_rect_px": 0,
+        "pale_pad_px": 0,
+        "bright_rim_px": 0,
+        "dark_rim_px": 2130,
+        "knife_edges": 3,
+        "core_mean_alpha": 254.5,
+        "soft_shadow_rgb": [
+          26.2,
+          18.2,
+          12.3
+        ],
+        "soft_shadow_alpha": 112.9,
+        "crescent_gap": 468,
+        "hard_plate_px": 1132,
+        "hard_plate_edge": 61,
+        "soft_contact_ratio": 0.487,
+        "hard_cyan_px": 0,
+        "cyanish_px": 0,
+        "hi_sat_cyan_px": 0,
+        "bright_cool_px": 0
+      },
+      "group": "locked_evidence",
+      "wrote": false,
+      "note": "扁板锁 — wrote=False"
+    }
+  },
+  "eng_bullets": [
+    "靴底软溶已过勿动旅人 sole",
+    "land-yard-give 已去自带粮袋；爪贴右阶槽踏面归 eng 锚（建议右阶≈0.55–0.62 X / 阶踏面 Y）",
+    "门帘/棚火/雾岸猫/粮袋道具形锁"
+  ],
+  "traveler_untouched": true,
+  "traveler_wrote": false,
+  "curtain_wrote": false,
+  "camp_cat_wrote": false,
+  "shore_cat_modified": false,
+  "land_shore_locked": true,
+  "grain_wrote": false,
+  "boards_locked": true,
+  "yard_prop_wrote": false,
+  "marker_stone_locked": true,
+  "rack_locked": true,
+  "verify": {
+    "bags_removed": true,
+    "paws_bottom_ok": true,
+    "traveler_untouched": true,
+    "traveler_wrote": false,
+    "curtain_untouched": true,
+    "shore_untouched": true,
+    "camp_untouched": true,
+    "grain_prop_untouched": true,
+    "boards_untouched": true,
+    "yard_prop_untouched": true,
+    "locked_assets_ok": true,
+    "left_third_opaque_before": 60662,
+    "left_third_opaque_after": 8673,
+    "left_of_subject_opaque_after": 0,
+    "aspect_before": 0.89,
+    "aspect_after": 0.493,
+    "bottom15_width_before": 864,
+    "bottom15_width_after": 318,
+    "foot_pad_px": 0,
+    "soft_contact_ratio": 1.0,
+    "pale_pad_px": 0,
+    "hard_plate_px": 1,
+    "bright_rim_px": 0,
+    "opaque_bbox_after": [
+      197,
+      200,
+      665,
+      1151
+    ],
+    "subjH_pct_after": 82.6,
+    "pale_pad_ok": true,
+    "soft_contact_ok": true
+  }
+}

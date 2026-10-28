@@ -1,6 +1,6 @@
 import type { CompanionPose, HintAnchor } from './hints';
 import type { IslandScene } from './island';
-import { BANDS, GATES, SPOTS, YARD_FACADE } from './stage';
+import { BANDS, GATES, SPOTS, YARD_RIGHT_STEP } from './stage';
 import { clampToBand, type Point } from './walk';
 
 /** Locked landings: opaque foot sits 8px above the 1152 canvas bottom. */
@@ -104,8 +104,8 @@ export function companionPost(
 
   if (scene === 'dba.scene.yard') {
     if (beats['dba.beat.food'] !== true) {
-      /* Step groove, center of the stair. The give frame is wide to the right, so the foot sits left of 0.50 and clear of both grain piles. */
-      const feet = clampToBand({ x: 0.47, y: YARD_FACADE.groundY }, BANDS[scene]);
+      /* Right stair groove, lowest tread. Not the west stone plinth, and not beside the grain pile. */
+      const feet = clampToBand({ x: YARD_RIGHT_STEP.x, y: YARD_RIGHT_STEP.y }, BANDS[scene]);
       const tilt = flags['dba.flag.wrong-share'] === true;
       return {
         ...feet,
