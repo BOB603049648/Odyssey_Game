@@ -472,6 +472,22 @@ h1 {
 }
 .world-cam { z-index: 1; }
 
+/* One multiply for the plate, props, traveler, and cat. Not a per-sprite wash. */
+.world-root {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  isolation: isolate;
+}
+.scene-ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--ambient, #b8ced4) 46%, #fff);
+  mix-blend-mode: multiply;
+}
+
 .walk-ground {
   position: absolute;
   inset: 0;
@@ -1917,6 +1933,15 @@ h1 {
 .walk-viewport[data-scene="dba.scene.yard"] .world-strip { opacity: 0.16; }
 .world-vignette {
   background: radial-gradient(ellipse at 50% 46%, transparent 42%, rgba(0, 0, 0, 0.42) 100%);
+}
+.scene-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.055;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 160px 160px;
 }
 /* One light color-temperature sheet over the scene and the solid figures. */
 .grade-veil {
