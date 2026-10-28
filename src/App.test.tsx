@@ -9,6 +9,7 @@ import { approachPlan, type Point } from './core/walk';
 import { SAVE_KEY } from './platform/storage';
 import { useGame } from './stores/gameStore';
 import { MuralScreen } from './ui/MuralScreen';
+import { PrologueScreen } from './ui/PrologueScreen';
 
 afterEach(() => {
   cleanup();
@@ -318,5 +319,30 @@ describe('playable slice', () => {
     expect(screen.queryByTestId('approach-hint')).toBeNull();
     walkTo('dba.scene.shore', wood, wood.r);
     expect(screen.queryByTestId('approach-hint')).toBeNull();
+  });
+
+  it('steps the four prologue stills with the caption and no second cat', () => {
+    const frames = [
+      ['art.pro.storm', '船翻了。你是唯一浮上的人。', '下一幕'],
+      ['art.pro.dark', '黑水里，有一声猫叫。你的手自己伸了出去。', '下一幕'],
+      ['art.pro.break', '闪回抢进来：一只手对着长卷上裂开的符，做了「断」。你认得这个手势——像认得自己的手。', '下一幕'],
+      ['art.pro.tide', '潮线上伏着那只猫——比人还大。颈上旧绳还在。她回头看你半秒，朝雾岸迈了一步：跟过来。', '走上潮线'],
+    ] as const;
+    const view = render(<PrologueScreen step={0} onAdvance={() => undefined} />);
+    for (const [art, caption, button] of frames) {
+      const step = frames.findIndex((item) => item[0] === art);
+      view.rerender(<PrologueScreen step={step} onAdvance={() => undefined} />);
+      const prologue = screen.getByTestId('prologue');
+      expect(prologue.getAttribute('data-still')).toBe(art);
+      expect(screen.getByTestId('still-frame').getAttribute('data-art-id')).toBe(art);
+      expect(prologue.querySelectorAll('[data-testid="still-frame"]')).toHaveLength(1);
+      expect(prologue.querySelector('.nanaicha-look')).toBeNull();
+      expect(prologue.querySelector('[data-caption]')?.getAttribute('data-caption')).toBe(
+        art === 'art.pro.storm' ? 'prologue.0' : art === 'art.pro.dark' ? 'prologue.1' : art === 'art.pro.break' ? 'prologue.2' : 'prologue.3',
+      );
+      expect(screen.getByText(caption)).toBeTruthy();
+      expect(screen.getByRole('button', { name: button })).toBeTruthy();
+    }
+    view.unmount();
   });
 });

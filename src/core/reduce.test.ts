@@ -42,11 +42,18 @@ describe('prologue', () => {
     expect(state.prologueStep).toBe(3);
     expect(state.screen).toBe('prologue');
 
+    state = {
+      ...state,
+      feedback: { seq: 3, kind: 'no', line: 'spot.driftwood.far', spot: 'shore-driftwood' },
+    };
     state = reduce(state, { type: 'advance-prologue' });
     expect(state.screen).toBe('island');
     expect(state.currentScene).toBe('dba.scene.shore');
     expect(state.flags['pro.flag.met-companion']).toBe(true);
     expect(state.beats['dba.beat.meet']).toBe(true);
+    expect(state.feedback.kind).toBe('none');
+    expect(state.feedback.line).toBeUndefined();
+    expect(state.feedback.spot).toBeUndefined();
     state = reduce(state, { type: 'teach-approach' });
     expect(state.flags['dba.flag.taught-approach']).toBe(true);
     expect(reduce(state, { type: 'teach-approach' }).feedback.seq).toBe(state.feedback.seq);

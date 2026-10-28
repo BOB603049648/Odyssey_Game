@@ -12,6 +12,7 @@ export function debugScene(state: SaveData, scene: string): SaveData {
     currentScene: scene,
     overlay: 'none',
     selectedCellId: null,
+    feedback: state.currentScene === scene ? state.feedback : { seq: state.feedback.seq, kind: 'none' },
   };
 }
 
