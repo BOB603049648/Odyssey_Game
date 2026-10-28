@@ -41,7 +41,7 @@ import driftFlash from '../assets/art/slots/art.shore.prop.driftwood.interact.pn
 import sleepFlash from '../assets/art/slots/art.camp.prop.sleep-mat.interact.png';
 import grainFlash from '../assets/art/slots/art.yard.prop.grain-bags.interact.png';
 import { sceneGrade, sceneLook, sceneStrip } from './cohesion';
-import { depthScale, worldToScreen } from '../core/world';
+import { contactLift, contactOpacity, depthScale, worldToScreen } from '../core/world';
 import { facingFromMove, REACH_HOLD_MS, TravelerMark, type TravelerFacing } from './Traveler';
 
 const TRAJ_SRC: Record<string, string> = {
@@ -161,6 +161,8 @@ export function WalkLayer({
   const [cat, setCat] = useState<Point>({ x: catPost.x, y: catPost.y });
   const [clip, setClip] = useState<TrajClip>('land');
   const [guide, setGuide] = useState<GuidePhase>('hold');
+  const [land, setLand] = useState(false);
+  const landTimer = useRef(0);
   const postRef = useRef(catPost);
   const catRef = useRef(cat);
   const beatRef = useRef(catPost.beat);
@@ -215,6 +217,7 @@ export function WalkLayer({
     setCat(plantedCat);
     setGuide('hold');
     setClip('land');
+    setLand(false);
     setTeachLine(false);
     window.clearTimeout(driftSeek.current);
   } else if (beatRef.current !== catPost.beat) {
@@ -407,6 +410,11 @@ export function WalkLayer({
         guideElapsed.current = stepped.guide.elapsed;
         catRef.current = stepped.guide.cat;
         const clipNow = stepped.guide.phase === 'move' ? trajClip(stepped.guide.elapsed) : 'land';
+        if (guideRef.current === 'move' && stepped.guide.phase === 'hold') {
+          setLand(true);
+          window.clearTimeout(landTimer.current);
+          landTimer.current = window.setTimeout(() => setLand(false), 280);
+        }
         if (stepped.guide.phase !== guideRef.current) {
           guideRef.current = stepped.guide.phase;
           setGuide(stepped.guide.phase);
@@ -493,6 +501,7 @@ export function WalkLayer({
   useEffect(() => () => {
     window.clearTimeout(reachTimer.current);
     window.clearTimeout(driftSeek.current);
+    window.clearTimeout(landTimer.current);
   }, []);
 
   const catSprite = companionFrameId(catPost.beat, clip);
@@ -603,6 +612,12 @@ export function WalkLayer({
               height: `${NANAICHA_HEIGHT * 100}%`,
             }}
           >
+            <span
+              className="contact-shadow"
+              data-testid="contact-shadow"
+              data-land={land ? 'yes' : 'no'}
+              style={{ ['--shadow-opacity' as string]: contactOpacity(contactLift(guide, clip)).toFixed(2) }}
+            />
             <Companion
               frame={catSprite}
               figure={

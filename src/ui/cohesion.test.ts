@@ -66,7 +66,9 @@ describe('cohesion shadows and grades', () => {
     expect(css).not.toContain('transparent 91%');
     expect(css).toMatch(/\.sole-soft\s*\{[^}]*transparent 99%[^}]*#000 99\.7%/);
     expect(css).toMatch(/\.sole-soft\s*\{[^}]*filter:\s*blur\(0\.45px\)/);
-    expect(css).not.toContain('shadow-tint');
+    expect(css).toMatch(/\.contact-shadow\s*\{[^}]*var\(--shadow-tint/);
+    expect(css).not.toMatch(/\.figure-grade\s*\{[^}]*shadow-tint/);
+    expect(css).not.toMatch(/\.sole-soft\s*\{[^}]*shadow-tint/);
     expect(css).toMatch(/\.companion-anchor \.figure-grade\s*\{[^}]*opacity:\s*0/);
     expect(css).not.toContain('.sole-ao');
     expect(css).not.toContain('.fog-fringe');

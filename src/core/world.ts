@@ -33,6 +33,14 @@ export function contactOpacity(lift = 0): number {
   return 1 - t;
 }
 
+/** How far the guide is off the ground during a beat change. Landed clips sit at 0. */
+export function contactLift(phase: 'hold' | 'gaze' | 'move', clip: 'leap-01' | 'leap-02' | 'land'): number {
+  if (phase !== 'move') return 0;
+  if (clip === 'leap-02') return 1;
+  if (clip === 'leap-01') return 0.42;
+  return 0;
+}
+
 /**
  * Nearer feet (larger y) read slightly larger. The range stays small so a
  * planted foot, including the yard give claw, does not leave its anchor.
