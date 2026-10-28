@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CatPost } from '../core/companionPost';
-import { companionFoot, NANAICHA_HEIGHT } from '../core/companionPost';
+import { companionFace, companionFoot, NANAICHA_HEIGHT } from '../core/companionPost';
 import { companionFrameId, LEAP_01_MS, LEAP_02_MS, type TrajClip } from '../core/companionTraj';
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
@@ -451,6 +451,7 @@ export function WalkLayer({
   useEffect(() => () => window.clearTimeout(reachTimer.current), []);
 
   const catSprite = companionFrameId(catPost.beat, clip);
+  const catFoot = companionFoot(catSprite);
 
   return (
     <div
@@ -530,10 +531,12 @@ export function WalkLayer({
             data-look={catPost.look}
             data-traveling={Math.hypot(catPost.x - cat.x, catPost.y - cat.y) > 0.025 ? 'yes' : 'no'}
             data-traj={clip}
-            data-face={catPost.x >= cat.x ? 'right' : 'left'}
+            data-face={companionFace(catSprite, catPost.x, cat.x)}
             data-sprite={catSprite}
             style={{
-              ...worldToScreen({ x: cat.x, y: cat.y }, companionFoot(catSprite)),
+              ...worldToScreen({ x: cat.x, y: cat.y }, catFoot),
+              ['--foot-x' as string]: `${catFoot.x * 100}%`,
+              ['--foot-y' as string]: `${catFoot.y * 100}%`,
               height: `${NANAICHA_HEIGHT * 100}%`,
             }}
           >

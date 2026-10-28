@@ -6,14 +6,25 @@ import { clampToBand, type Point } from './walk';
 /** Locked landings: opaque foot sits 8px above the 1152 canvas bottom. */
 export const NANAICHA_FOOT = { x: 0.5, y: 1144 / 1152 } as const;
 /**
- * land-yard-give only. Pivot is the seated paw ink (bottom-row mean of the
- * continuous foot), not the canvas center and not a detached pad.
+ * land-yard-give only. The one bottom paw blob sits left of center
+ * (authored for the old face=left mirror). This frame stays unmirrored,
+ * so the pivot is that blob, not the canvas center.
  * Other beats keep NANAICHA_FOOT so shore and camp paws do not shift.
  */
-export const YARD_GIVE_FOOT = { x: 0.635, y: 1151 / 1152 } as const;
+export const YARD_GIVE_FOOT = { x: 0.259, y: 1129 / 1152 } as const;
 
 export function companionFoot(frameId: string): { readonly x: number; readonly y: number } {
   return frameId === 'land-yard-give' ? YARD_GIVE_FOOT : NANAICHA_FOOT;
+}
+
+/**
+ * Give is authored with the paw on the right of the sheet.
+ * A left-face mirror is taken around the box center, which slides that paw
+ * off the foot pivot and leaves a scrap on the other tread. Keep this frame unmirrored.
+ */
+export function companionFace(frameId: string, postX: number, catX: number): 'left' | 'right' {
+  if (frameId === 'land-yard-give') return 'right';
+  return postX >= catX ? 'right' : 'left';
 }
 /** Canvas height as a fraction of the world layer. Subject reads a little taller than the traveler. */
 export const NANAICHA_HEIGHT = 0.22;
