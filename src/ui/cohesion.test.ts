@@ -92,5 +92,9 @@ describe('cohesion shadows and grades', () => {
     expect(sceneLook('dba.scene.shore')).toEqual({ ambient: '#B8CED4', shadowTint: '#3A4E55' });
     expect(sceneLook('dba.scene.camp')).toEqual({ ambient: '#D4B08A', shadowTint: '#4A3528' });
     expect(sceneLook('dba.scene.yard')).toEqual({ ambient: '#C9BCA8', shadowTint: '#3F3A32' });
+    expect(css).toMatch(/\.diegetic-line,\s*\.approach-hint\s*\{[^}]*var\(--ambient/);
+    expect(css).toMatch(/\.diegetic-line,\s*\.approach-hint\s*\{[^}]*backdrop-filter:\s*none/);
+    expect(css).toMatch(/\.world-layer \.hotspot\[data-result="ok"\]\s*\{[^}]*box-shadow/);
+    expect(css).not.toMatch(/\.diegetic-line,\s*\.approach-hint\s*\{[^}]*backdrop-filter:\s*blur/);
   });
 });
