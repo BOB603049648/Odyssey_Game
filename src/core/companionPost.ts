@@ -25,7 +25,8 @@ export function companionFoot(frameId: string): { readonly x: number; readonly y
 const COMPANION_SOLE: Record<string, number> = {
   'land-shore-driftwood': 897 / 1152,
   'land-shore-east-gap': 1117 / 1152,
-  'land-shore-gourd': 1108 / 1152,
+  /* Cloak hem. Edge scraps below it are not the center paw. */
+  'land-shore-gourd': 897 / 1152,
   'land-yard-give': 1128 / 1152,
   'land-camp-fireside': 1143 / 1152,
   'land-camp-sleep-mat': 1143 / 1152,
