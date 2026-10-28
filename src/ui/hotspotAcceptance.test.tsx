@@ -128,7 +128,7 @@ describe('hotspot acceptance', () => {
     expect(container.querySelector('.ground-plane')).toBeNull();
     expect(container.querySelector('.ground-walk')).toBeNull();
     expect(container.querySelector('.ambient-water')).toBeNull();
-    expect(screen.getByTestId('slot-ground').style.inset).toBe('0px');
+    expect(screen.getByTestId('slot-ground').style.bottom).toBe('-22%');
     const props = container.querySelectorAll('[data-interactable="yes"]');
     expect(props.length).toBe(5);
   });

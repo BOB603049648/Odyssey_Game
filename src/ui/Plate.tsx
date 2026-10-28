@@ -295,6 +295,11 @@ function slotStyle(slot: SceneSlot, cam: Point): CSSProperties {
   const shift = `translate3d(${dx}px, ${dy}px, 0)`;
   if (!placed || slot.x === undefined || slot.y === undefined) {
     const bleed = parallax === 1 ? 0 : parallaxBleed(parallax);
+    if (slot.slot === 'ground') {
+      // Hang the textured floor past the south edge so a parked camera
+      // does not reveal empty grade fog under the feet.
+      return { transform: shift, top: '0px', right: '0px', bottom: '-22%', left: '0px' };
+    }
     return { transform: shift, inset: bleed === 0 ? '0px' : `${-bleed * 100}%` };
   }
   const foot = slot.slot === 'building' ? buildingFoot({ x: slot.x, y: slot.y, h: slot.h }) : { x: slot.x, y: slot.y };
