@@ -1,0 +1,35 @@
+import { describe, expect, it } from 'vitest';
+import { BANDS } from './stage';
+import { stepWorld } from './worldLoop';
+
+describe('world loop', () => {
+  const band = BANDS['dba.scene.shore'];
+
+  it('keeps a settled foot still when nothing is asked', () => {
+    const stepped = stepWorld({
+      walker: { pos: { x: 0.42, y: 0.62 }, velocity: { x: 0, y: 0 }, seek: null },
+      intent: { move: null, seek: null },
+      band,
+      dt: 1 / 60,
+      guide: { phase: 'hold', elapsed: 0, cat: { x: 0.38, y: 0.71 }, post: { x: 0.38, y: 0.71 } },
+    });
+    expect(stepped.walker.pos).toEqual({ x: 0.42, y: 0.62 });
+    expect(stepped.walker.moving).toBe(false);
+    expect(stepped.guide.moving).toBe(false);
+    expect(stepped.guide.cat).toEqual({ x: 0.38, y: 0.71 });
+  });
+
+  it('walks a seek toward its point instead of jumping there', () => {
+    const stepped = stepWorld({
+      walker: { pos: { x: 0.42, y: 0.62 }, velocity: { x: 0, y: 0 }, seek: null },
+      intent: { move: null, seek: { x: 0.7, y: 0.62 } },
+      band,
+      dt: 1 / 60,
+      guide: { phase: 'hold', elapsed: 0, cat: { x: 0.4, y: 0.7 }, post: { x: 0.4, y: 0.7 } },
+    });
+    expect(stepped.walker.moving).toBe(true);
+    expect(stepped.walker.pos.x).toBeGreaterThan(0.42);
+    expect(stepped.walker.pos.x).toBeLessThan(0.7);
+    expect(stepped.walker.seek).toEqual({ x: 0.7, y: 0.62 });
+  });
+});

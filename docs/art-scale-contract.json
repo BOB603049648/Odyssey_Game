@@ -15,6 +15,23 @@
     },
     "foot_anchor": "bottom-center opaque. pad≤24. PR20: SOFT contact AO rgb(28,22,16) filled soles + gaussian melt into sand; NO hard ellipse plate / crescent knife; pale_pad=0."
   },
+  "engine_scale": {
+    "role": "runtime",
+    "same_world": "shore, camp, and yard share one traveler height. Props are not given a second scale.",
+    "traveler_height_m": 1.75,
+    "traveler_world_h": 0.118,
+    "guide_world_h": 0.22,
+    "samples": [
+      { "scene": "dba.scene.shore", "id": "art.shore.prop.driftwood", "h": 0.14, "max_h": 0.3 },
+      { "scene": "dba.scene.shore", "id": "art.shore.prop.gourd", "h": 0.13, "max_h": 0.18 },
+      { "scene": "dba.scene.camp", "id": "art.camp.prop.fire", "h": 0.14, "max_h": 0.3 },
+      { "scene": "dba.scene.yard", "id": "art.yard.prop.grain-bags", "h": 0.24, "max_h": 0.3 }
+    ],
+    "not_enforced_yet": [
+      "opaque alpha height versus meters on every sheet (the slot box is what the engine locks)",
+      "interact dispatch still resolves on the click; only locomotion and the guide step run in the frame loop"
+    ]
+  },
   "prop_subject_height_pct_of_plate_h": {
     "hand_accessory": {
       "min": 0.15,
