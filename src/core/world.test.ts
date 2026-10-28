@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { WORLD_SCALE } from './walk';
-import { buildingFoot, contactOpacity, parallaxBleed, worldToScreen } from './world';
+import { buildingFoot, contactOpacity, depthScale, parallaxBleed, worldToScreen } from './world';
 
 describe('world foot projection', () => {
   it('pins the opaque foot and never the canvas center', () => {
@@ -13,6 +13,14 @@ describe('world foot projection', () => {
 
   it('turns a center-authored building box into a foundation foot', () => {
     expect(buildingFoot({ x: 0.5, y: 0.26, h: 0.4 })).toEqual({ x: 0.5, y: 0.46 });
+  });
+
+  it('grows a little as the foot comes south', () => {
+    expect(depthScale(0.42)).toBeCloseTo(0.95);
+    expect(depthScale(0.94)).toBeCloseTo(1.03);
+    expect(depthScale(0.2)).toBe(depthScale(0.42));
+    expect(depthScale(0.7)).toBeGreaterThan(depthScale(0.5));
+    expect(depthScale(1)).toBeLessThanOrEqual(1.03);
   });
 
   it('fades the contact shadow as a leap rises', () => {

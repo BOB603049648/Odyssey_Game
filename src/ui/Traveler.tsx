@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { WALK_SPEED } from '../core/walk';
-import { worldToScreen } from '../core/world';
+import { depthScale, worldToScreen } from '../core/world';
 import reachFront01 from '../assets/traveler/reach-front-01.png';
 import reachFront02 from '../assets/traveler/reach-front-02.png';
 import reachSide01 from '../assets/traveler/reach-side-01.png';
@@ -262,6 +262,7 @@ export function TravelerMark({
   moving,
   stride,
   pose = 'auto',
+  depthZ = 5,
 }: {
   x: number;
   y: number;
@@ -271,6 +272,8 @@ export function TravelerMark({
   stride?: number;
   /** `reach` plays on a hotspot interaction. `interact` is still reserved, with no frames of its own. */
   pose?: 'auto' | 'interact' | 'reach' | 'lie';
+  /** Paint order against the guide. Near props stay above both. */
+  depthZ?: number;
 }) {
   const sheet = sheetOf(facing);
   const power = stride ?? (moving ? 1 : 0);
@@ -313,8 +316,9 @@ export function TravelerMark({
       style={{
         left: planted.left,
         top: planted.top,
-        transform: planted.transform,
+        transform: `${planted.transform} scale(${depthScale(y).toFixed(3)})`,
         transformOrigin: `${TRAVELER_FOOT.x * 100}% ${TRAVELER_FOOT.y * 100}%`,
+        zIndex: depthZ,
         height: `${TRAVELER_HEIGHT * 100}%`,
         width: 'auto',
         aspectRatio: '3 / 4',
