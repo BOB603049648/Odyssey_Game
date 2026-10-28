@@ -32,11 +32,15 @@ export function stepWorld(input: { walker: WalkerSim; intent: MoveIntent; band: 
   const wish = desiredVelocity(input.intent.move, input.intent.move ? null : seek, input.walker.pos);
   const step = coastStep(input.walker.pos, input.walker.velocity, wish, input.band, input.dt);
   const arrived = !!seek && (distance(step.pos, seek) < 0.01 || (!step.moving && step.blocked));
+  // The last ease stops a hair short of the point. A north-edge seek is the
+  // night trip itself, so plant the foot on the point instead of abandoning it.
+  const planted = arrived ? seek : step.pos;
+  const committed = arrived && distance(step.pos, planted) > 1e-6;
   return {
     walker: {
-      pos: step.pos,
+      pos: planted,
       velocity: arrived ? { x: 0, y: 0 } : step.velocity,
-      moving: step.moving,
+      moving: step.moving || committed,
       blocked: step.blocked,
       seek: arrived ? null : seek,
     },
