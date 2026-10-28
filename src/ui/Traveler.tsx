@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { WALK_SPEED } from '../core/walk';
 import { depthScale, worldToScreen } from '../core/world';
+import { punchHemUrl } from './hemPunch';
 import reachFront01 from '../assets/traveler/reach-front-01.png';
 import reachFront02 from '../assets/traveler/reach-front-02.png';
 import reachSide01 from '../assets/traveler/reach-side-01.png';
@@ -235,6 +236,17 @@ function FramePicture({ blend, layer }: { blend: FrameBlend; layer: 'out' | 'cur
   const frames = clipFrames(blend.pose, blend.sheet);
   const index = Math.min(frames.length - 1, Math.max(0, blend.frame));
   const src = frames[index] ?? frames[0];
+  const [shown, setShown] = useState(src);
+  useEffect(() => {
+    let live = true;
+    setShown(src);
+    punchHemUrl(src).then((next) => {
+      if (live) setShown(next);
+    });
+    return () => {
+      live = false;
+    };
+  }, [src]);
   return (
     <span
       className={layer === 'out' ? 'traveler-frame-wrap out' : 'traveler-frame-wrap'}
@@ -245,7 +257,7 @@ function FramePicture({ blend, layer }: { blend: FrameBlend; layer: 'out' | 'cur
         className={layer === 'current' ? 'traveler-figure traveler-frame' : 'traveler-frame'}
         data-layer={layer}
         data-frame={index}
-        src={src}
+        src={shown}
         alt=""
         draggable={false}
       />
