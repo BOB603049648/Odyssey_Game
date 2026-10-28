@@ -109,11 +109,11 @@ export const SPOTS: Record<IslandScene, readonly Spot[]> = {
 export const YARD_FACADE = { minX: 0.4, maxX: 0.66, groundY: 0.92 } as const;
 
 /**
- * Right flight of the hall stair. The stone plinth is west of x≈0.50.
- * The treads run about x 0.50–0.68; this is the right groove, on the lowest step.
- * South of the locked ground line, still inside the yard band.
+ * Right flight of the hall stair, lowest tread.
+ * The paw pivot (not the canvas center) is planted here, east of the left flight
+ * and still clear of the grain pile at x=0.80. South of the locked ground line.
  */
-export const YARD_RIGHT_STEP = { x: 0.61, y: 0.94 } as const;
+export const YARD_RIGHT_STEP = { x: 0.6, y: 0.94 } as const;
 
 /** West mouth (camp arrival) and east mouth (path arrival). Fish racks at x 0.16 and 0.36 stay outside. */
 const YARD_APRONS = [
