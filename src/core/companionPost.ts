@@ -6,11 +6,11 @@ import { clampToBand, type Point } from './walk';
 /** Locked landings: opaque foot sits 8px above the 1152 canvas bottom. */
 export const NANAICHA_FOOT = { x: 0.5, y: 1144 / 1152 } as const;
 /**
- * land-yard-give only. Pivot is the seated leg hem after the detached
- * pad and the hanging drip tips are cut away — not the canvas bottom.
+ * land-yard-give only. Pivot is the seated paw ink (bottom-row mean of the
+ * continuous foot), not the canvas center and not a detached pad.
  * Other beats keep NANAICHA_FOOT so shore and camp paws do not shift.
  */
-export const YARD_GIVE_FOOT = { x: 0.678, y: 949 / 1152 } as const;
+export const YARD_GIVE_FOOT = { x: 0.635, y: 1151 / 1152 } as const;
 
 export function companionFoot(frameId: string): { readonly x: number; readonly y: number } {
   return frameId === 'land-yard-give' ? YARD_GIVE_FOOT : NANAICHA_FOOT;
