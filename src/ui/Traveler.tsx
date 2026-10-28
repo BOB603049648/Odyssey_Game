@@ -313,7 +313,8 @@ export function TravelerMark({
   }, [outgoing, shown]);
 
   const blendMs = outgoing ? blendDuration(outgoing, shown) || FRAME_BLEND_MS : 0;
-  const planted = worldToScreen({ x, y }, TRAVELER_FOOT, motion.pose === 'lie' ? 'rotate(-86deg)' : '');
+  const poseNow = pose === 'lie' ? 'lie' : motion.pose;
+  const planted = worldToScreen({ x, y }, TRAVELER_FOOT, poseNow === 'lie' ? 'rotate(-86deg)' : '');
   return (
     <div
       className="traveler"
@@ -322,7 +323,7 @@ export function TravelerMark({
       data-facing={facing}
       data-sheet={sheet}
       data-moving={moving ? 'yes' : 'no'}
-      data-pose={motion.pose}
+      data-pose={poseNow}
       data-gait={motion.gait.toFixed(2)}
       data-frame={frame}
       data-clip-frames={frames.length}
@@ -336,7 +337,7 @@ export function TravelerMark({
         transform: `${planted.transform} scale(${depthScale(y).toFixed(3)})`,
         transformOrigin: `${TRAVELER_FOOT.x * 100}% ${TRAVELER_FOOT.y * 100}%`,
         zIndex: depthZ,
-        ['--sole-y' as string]: `${(motion.pose === 'lie' ? TRAVELER_FOOT.y : TRAVELER_SOLE) * 100}%`,
+        ['--sole-y' as string]: `${(poseNow === 'lie' ? TRAVELER_FOOT.y : TRAVELER_SOLE) * 100}%`,
         height: `${TRAVELER_HEIGHT * 100}%`,
         width: 'auto',
         aspectRatio: '3 / 4',
