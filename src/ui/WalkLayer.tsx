@@ -21,6 +21,7 @@ import {
   type WalkKey,
 } from '../core/walk';
 import { sceneAssembly } from '../content/catalog';
+import { resolveSlotAsset } from '../content/slotAssets';
 import { Companion } from './Companion';
 import type { KnotMark } from './companion/CatMark';
 import { Glyph } from './glyphs';
@@ -382,6 +383,12 @@ export function WalkLayer({
           x: prev.x + (desired.x - prev.x) * 0.07,
           y: prev.y + (desired.y - prev.y) * 0.07,
         }));
+        const frameEl = viewportRef.current;
+        if (frameEl && frameEl.clientWidth > 1 && (frameEl.clientWidth !== viewRef.current.w || frameEl.clientHeight !== viewRef.current.h)) {
+          const nextView = { w: frameEl.clientWidth, h: frameEl.clientHeight };
+          viewRef.current = nextView;
+          setView(nextView);
+        }
         const frameView = viewRef.current;
         const goalCam = cameraOffset(posRef.current, frameView.w, frameView.h);
         const prevCam = smoothRef.current ?? goalCam;
@@ -420,6 +427,8 @@ export function WalkLayer({
 
   const worldW = view.w * WORLD_SCALE;
   const worldH = view.h * WORLD_SCALE;
+  const groundAsset = sceneAssembly(scene)?.slots.find((slot) => slot.slot === 'ground')?.asset ?? null;
+  const groundPlate = resolveSlotAsset(groundAsset);
   const shownCam = import.meta.env.MODE === 'test' ? cameraOffset(pos, view.w, view.h) : cam;
   const look = sceneLook(scene);
   const near = spots.filter((spot) => standsAt(scene, spot, pos)).map((spot) => spot.id);
@@ -469,7 +478,8 @@ export function WalkLayer({
       data-drank={drank ? 'yes' : 'no'}
       style={{ ['--ambient' as string]: look.ambient, ['--shadow-tint' as string]: look.shadowTint }}
     >
-      <div className="world-cam" data-testid="world-camera" style={{ transform: `translate3d(${-shownCam.x}px, ${-shownCam.y}px, 0)` }}>
+      {groundPlate ? <img className="ground-fill" src={groundPlate} alt="" draggable={false} /> : null}
+      <div className="world-cam" data-testid="world-camera" style={{ transform: `translate3d(${-shownCam.x}px, ${-shownCam.y}px, 0)`, zIndex: 1 }}>
         <div ref={worldRef} className="world-layer" style={{ width: worldW, height: worldH }}>
           <PlateStack
             plate={plates.current}

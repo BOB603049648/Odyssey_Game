@@ -58,7 +58,7 @@ describe('walk', () => {
     expect(cameraOffset({ x: 1, y: 0.5 }, 1000, 500, 1.5).x).toBe(500);
     expect(cameraOffset({ x: 0.5, y: 0 }, 1000, 500, 1.5).y).toBe(0);
     expect(cameraOffset({ x: 0.5, y: 1 }, 1000, 500, 1.5).y).toBe(250);
-    expect(cameraOffset({ x: 0.5, y: 0.5 }, 1000, 500, 1.5)).toEqual({ x: 250, y: 125 });
+    expect(cameraOffset({ x: 0.5, y: 0.5 }, 1000, 500, 1.5)).toEqual({ x: 250, y: 65 });
   });
 
   it('eases the camera toward the traveler instead of jumping', () => {

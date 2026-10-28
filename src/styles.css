@@ -415,6 +415,18 @@ h1 {
   z-index: 0;
 }
 
+/* The floor plate, not the color veil. Fills any gap south of the world. */
+.ground-fill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  pointer-events: none;
+}
+
 /* 舞台上的点按只交给点地和热区。touch-action 不继承，命中元素与祖先取交集，所以地面、热区、路口和向导也要写上。 */
 .walk-viewport,
 .world-cam,
@@ -441,6 +453,7 @@ h1 {
   left: 0;
   top: 0;
 }
+.world-cam { z-index: 1; }
 
 .walk-ground {
   position: absolute;
@@ -1231,6 +1244,7 @@ h1 {
 .plate-fade.in { z-index: 1; animation: dissolve-in 520ms ease; }
 .plate-fade.out { z-index: 2; animation: dissolve-out 520ms ease forwards; }
 
+.walk-viewport .plate-stack { overflow: visible; }
 .walk-viewport .plate-fade.out { z-index: 1; animation: none; opacity: 1; }
 .walk-viewport .plate-fade.in { z-index: 2; animation-duration: 980ms; }
 .prologue .plate-fade.in { z-index: 2; animation: none; opacity: 1; }
@@ -1593,7 +1607,7 @@ h1 {
 .scene-slot.full[data-slot="building"] .slot-asset,
 .scene-slot.full[data-slot="ground"] .slot-asset {
   object-fit: cover;
-  object-position: center;
+  object-position: center bottom;
   position: absolute;
   inset: 0;
   width: 100%;

@@ -144,9 +144,12 @@ export function cameraOffset(focus: Point, viewW: number, viewH: number, scale =
   const worldH = viewH * scale;
   const maxX = Math.max(0, worldW - viewW);
   const maxY = Math.max(0, worldH - viewH);
+  // Feet sit below center so the textured plate continues under them.
+  // The south edge of the world stays available; we do not park the view on it.
+  const focusY = viewH * 0.62;
   return {
     x: Math.min(maxX, Math.max(0, focus.x * worldW - viewW / 2)),
-    y: Math.min(maxY, Math.max(0, focus.y * worldH - viewH / 2)),
+    y: Math.min(maxY, Math.max(0, focus.y * worldH - focusY)),
   };
 }
 
