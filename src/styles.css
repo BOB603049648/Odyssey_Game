@@ -2012,10 +2012,10 @@ h1 {
 .contact-shadow {
   position: absolute;
   left: var(--foot-x, 50%);
-  bottom: 0;
+  top: var(--sole-y, 86.37%);
   width: 46%;
   height: 9%;
-  transform: translate(-50%, 40%);
+  transform: translate(-50%, -50%);
   opacity: var(--shadow-opacity, 0.82);
   background: radial-gradient(ellipse at center, var(--shadow-tint, #3a2a22) 0%, transparent 70%);
   filter: blur(2.5px);
@@ -2028,9 +2028,9 @@ h1 {
   animation: contact-land 280ms ease-out;
 }
 @keyframes contact-land {
-  0% { transform: translate(-50%, 40%) scale(0.7); opacity: 0.28; }
-  58% { transform: translate(-50%, 40%) scale(1.14); opacity: var(--shadow-opacity, 0.82); }
-  100% { transform: translate(-50%, 40%) scale(1); opacity: var(--shadow-opacity, 0.82); }
+  0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0.28; }
+  58% { transform: translate(-50%, -50%) scale(1.14); opacity: var(--shadow-opacity, 0.82); }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: var(--shadow-opacity, 0.82); }
 }
 
 /* Soft ground AO under the planted foot. Blurred, not a hard ellipse. */
@@ -2039,10 +2039,10 @@ h1 {
   content: "";
   position: absolute;
   left: var(--foot-x, 50%);
-  bottom: 0.6%;
+  top: var(--sole-y, 86.37%);
   width: 26%;
   height: 1.5%;
-  transform: translate(-50%, 20%);
+  transform: translate(-50%, -50%);
   background: rgba(22, 16, 12, 0.55);
   filter: blur(3.5px);
   border-radius: 50%;

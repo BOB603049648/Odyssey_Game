@@ -78,6 +78,11 @@ export const TRAVELER_HEIGHT = 0.118;
  * Planting that row keeps the melt on the sand instead of hanging south of the sole.
  */
 export const TRAVELER_FOOT = { x: 0.5, y: 1151 / 1152 } as const;
+/**
+ * Last standing row before the hem punch (HEM_Y0). The box bottom is the
+ * punched lip, so a shadow parked there floats a sole below the coat.
+ */
+export const TRAVELER_SOLE = 995 / 1152;
 /** Overlap between frames inside one clip, and a slightly longer blend on a turn. */
 export const FRAME_BLEND_MS = 140;
 export const TURN_BLEND_MS = 220;
@@ -331,6 +336,7 @@ export function TravelerMark({
         transform: `${planted.transform} scale(${depthScale(y).toFixed(3)})`,
         transformOrigin: `${TRAVELER_FOOT.x * 100}% ${TRAVELER_FOOT.y * 100}%`,
         zIndex: depthZ,
+        ['--sole-y' as string]: `${(motion.pose === 'lie' ? TRAVELER_FOOT.y : TRAVELER_SOLE) * 100}%`,
         height: `${TRAVELER_HEIGHT * 100}%`,
         width: 'auto',
         aspectRatio: '3 / 4',

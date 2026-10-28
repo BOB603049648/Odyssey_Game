@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CatPost } from '../core/companionPost';
-import { companionFace, companionFoot, NANAICHA_HEIGHT } from '../core/companionPost';
+import { companionFace, companionFoot, companionSole, NANAICHA_HEIGHT } from '../core/companionPost';
 import { companionFrameId, trajClip, type GuidePhase, type TrajClip } from '../core/companionTraj';
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
@@ -609,6 +609,7 @@ export function WalkLayer({
               zIndex: catInFront ? 6 : 4,
               ['--foot-x' as string]: `${catFoot.x * 100}%`,
               ['--foot-y' as string]: `${catFoot.y * 100}%`,
+              ['--sole-y' as string]: `${companionSole(catSprite) * 100}%`,
               height: `${NANAICHA_HEIGHT * 100}%`,
             }}
           >
