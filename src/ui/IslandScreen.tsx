@@ -91,7 +91,7 @@ export function IslandScreen({
     : null;
 
   return (
-    <section className={shake ? 'island shake' : 'island'}>
+    <section className={shake ? 'island shake' : 'island'} style={{ ['--ambient' as string]: look.ambient }}>
       <EnterVeil />
       <div className="hud-actions row">
         <button type="button" className="btn" onClick={onTitle}>
@@ -158,11 +158,6 @@ export function IslandScreen({
           />
         ) : null}
         {save.memories.includes('dba.mem.rain-night') ? <MemoryRain /> : null}
-        {spoken ? (
-          <p key={scene} className="diegetic-line" data-testid="spot-line" data-line={line}>
-            {spoken}
-          </p>
-        ) : null}
         <div className="hud-place">
           <p className="eyebrow">{t(SCENE_TITLE[scene])}</p>
           <p className="count" aria-label={`${learned.length}`}>
@@ -178,6 +173,11 @@ export function IslandScreen({
       </div>
       {save.overlay === 'chart' ? <ChartSealed onClose={() => dispatch({ type: 'close-overlay' })} /> : null}
       <OverlaySheet save={save} dispatch={dispatch} learned={learned} hint={hint} />
+      {spoken ? (
+        <p key={scene} className="diegetic-line" data-testid="spot-line" data-line={line}>
+          {spoken}
+        </p>
+      ) : null}
     </section>
   );
 }
