@@ -24,6 +24,9 @@ import { WalkLayer } from './WalkLayer';
 
 export { hintMark } from './hintMark';
 
+/** Success rest. The line may clear; the body stays down at least this long. */
+export const SLEEP_LIE_MS = 1200;
+
 const SCENE_TITLE: Record<IslandScene, MessageKey> = {
   'dba.scene.shore': 'scene.shore',
   'dba.scene.camp': 'scene.camp',
@@ -60,6 +63,21 @@ export function IslandScreen({
   }, [save.flags['dba.flag.driftwood']]);
   const catPost = companionPost(scene, save.beats, save.flags, { skipWelcome });
   const line = save.feedback.line;
+  const sleepOk = scene === 'dba.scene.camp' && line === 'spot.sleep.ok';
+  const [lieHold, setLieHold] = useState(false);
+  useEffect(() => {
+    if (!sleepOk) return undefined;
+    const started = Date.now();
+    setLieHold(true);
+    const id = window.setTimeout(() => setLieHold(false), SLEEP_LIE_MS);
+    return () => {
+      window.clearTimeout(id);
+      const left = SLEEP_LIE_MS - (Date.now() - started);
+      if (left <= 0) setLieHold(false);
+      else window.setTimeout(() => setLieHold(false), left);
+    };
+  }, [sleepOk, save.feedback.seq]);
+  const resting = scene === 'dba.scene.camp' && (sleepOk || lieHold);
   const spoken = line?.startsWith('spot.') ? t(line as MessageKey) : null;
   const flashKind = line === 'spot.driftwood.ok' || line === 'spot.driftwood.again'
     ? 'driftwood'
@@ -120,7 +138,7 @@ export function IslandScreen({
           onTeach={() => dispatch({ type: 'teach-approach' })}
           showWalkMask={import.meta.env.DEV && save.flags['dev.walkable'] === true}
           catPost={catPost}
-          resting={line === 'spot.sleep.ok'}
+          resting={resting}
           onFar={(id) => dispatch({ type: 'spot-far', id })}
           beat={save.feedback.kind === 'none' || !save.feedback.spot ? null : { spot: save.feedback.spot, kind: save.feedback.kind }}
           flash={flashSpot && flashKind ? { kind: flashKind, seq: save.feedback.seq, x: flashSpot.x, y: flashSpot.y } : null}

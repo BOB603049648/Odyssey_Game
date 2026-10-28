@@ -178,6 +178,8 @@ export function WalkLayer({
   const [reaching, setReaching] = useState(false);
   const reachTimer = useRef(0);
   const driftSeek = useRef(0);
+  const restingRef = useRef(resting);
+  restingRef.current = resting;
   const viewRef = useRef(view);
   const plates = useCrossfade(scene, 980);
   viewRef.current = view;
@@ -374,12 +376,22 @@ export function WalkLayer({
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       if (!pausedRef.current) {
+        const lying = restingRef.current;
+        if (lying) {
+          velocityRef.current = { x: 0, y: 0 };
+          targetRef.current = null;
+          if (movingRef.current) {
+            movingRef.current = false;
+            setMoving(false);
+            setStride(0);
+          }
+        }
         const from = posRef.current;
         const prevCat = catRef.current;
         const desired = postRef.current;
         const stepped = stepWorld({
-          walker: { pos: from, velocity: velocityRef.current, seek: targetRef.current },
-          intent: { move: heldDirection(), seek: targetRef.current },
+          walker: { pos: from, velocity: lying ? { x: 0, y: 0 } : velocityRef.current, seek: lying ? null : targetRef.current },
+          intent: { move: lying ? null : heldDirection(), seek: lying ? null : targetRef.current },
           band: BANDS[sceneRef.current],
           dt,
           guide: {
@@ -520,6 +532,7 @@ export function WalkLayer({
       data-cam-y={shownCam.y.toFixed(1)}
       data-scene={scene}
       data-arrive={arrive ?? 'no'}
+      data-resting={resting ? 'yes' : 'no'}
       data-drank={drank ? 'yes' : 'no'}
       style={{ ['--ambient' as string]: look.ambient, ['--shadow-tint' as string]: look.shadowTint }}
     >

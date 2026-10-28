@@ -82,6 +82,7 @@ describe('island 1 scenes', () => {
     state = reduce(state, { type: 'sleep-at-camp' });
     expect(state.beats['dba.beat.sleep']).toBe(true);
     expect(state.feedback.line).toBe('spot.sleep.ok');
+    expect(state.flags['dba.flag.taught-approach']).toBeUndefined();
 
     state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.yard' });
     const refused = reduce(state, { type: 'give-fish' });

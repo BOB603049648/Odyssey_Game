@@ -26,6 +26,7 @@ import {
   TravelerMark,
   type TravelerFacing,
 } from './Traveler';
+import { SLEEP_LIE_MS } from './IslandScreen';
 import { WalkLayer } from './WalkLayer';
 import type { SpotView } from './spotViews';
 
@@ -82,6 +83,38 @@ describe('traveler art', () => {
     expect(mark.style.transform).toContain('rotate(-86deg)');
     expect(mark.style.transform).not.toContain('-50%, -50%');
     expect(mark.style.getPropertyValue('--sole-y')).toBe(`${TRAVELER_FOOT.y * 100}%`);
+  });
+
+  it('puts the traveler on the camp mat while resting, and stays upright otherwise', () => {
+    expect(SLEEP_LIE_MS).toBeGreaterThanOrEqual(1200);
+    const shell = {
+      drank: false,
+      spots: [],
+      hint: { level: 0 as const, anchor: 'sleep' as const, wordId: null, pose: 'idle' as const },
+      paused: false,
+      purr: false,
+      knot: 'rest' as const,
+      remembered: null,
+      onRemember: () => undefined,
+      onExit: () => undefined,
+      onInteract: () => undefined,
+      onAsk: () => undefined,
+      onEscape: () => undefined,
+      taught: true,
+      catPost: companionPost('dba.scene.camp', { 'dba.beat.water': true, 'dba.beat.food': true }, {}),
+    };
+    const view = render(<WalkLayer scene="dba.scene.camp" resting {...shell} />);
+    const mark = view.container.querySelector('[data-testid="traveler"]') as HTMLElement;
+    expect(view.container.querySelector('[data-testid="walk-stage"]')?.getAttribute('data-resting')).toBe('yes');
+    expect(mark.getAttribute('data-pose')).toBe('lie');
+    expect(mark.style.transform).toContain('rotate(-86deg)');
+    expect(mark.getAttribute('data-x')).toBe('0.42');
+    expect(mark.getAttribute('data-y')).toBe('0.82');
+    view.rerender(<WalkLayer scene="dba.scene.camp" resting={false} {...shell} />);
+    const stood = view.container.querySelector('[data-testid="traveler"]') as HTMLElement;
+    expect(stood.getAttribute('data-pose')).not.toBe('lie');
+    expect(stood.style.transform).not.toContain('rotate(-86deg)');
+    expect(view.container.querySelector('[data-testid="approach-hint"]')).toBeNull();
   });
 
   it('uses the side walk sheet for both directions and a real back idle', () => {
