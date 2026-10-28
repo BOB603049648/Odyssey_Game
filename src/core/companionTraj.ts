@@ -13,6 +13,8 @@ export const LAND_BY_BEAT: Partial<Record<CatBeat, string>> = {
   S0: 'land-shore-driftwood',
   S1: 'land-shore-gourd',
   S2: 'land-shore-east-gap',
+  /* Default porch beat. The wide camp prop is a fallback and reads empty in the foot box. */
+  C1: 'land-camp-fireside',
   C2: 'land-camp-sleep-mat',
   C3: 'land-camp-fireside',
   /* Bag-free give pose. Paws are the canvas bottom-center; the sack is gone. */

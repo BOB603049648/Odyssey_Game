@@ -168,6 +168,10 @@ Fog-match（降对比/饱和、2–3px 柔边、高光压、暖/冷 fringe）**�
 
 ---
 
+## PR32 hem load note
+
+角色层染色和 `.grade-veil`（岸 0.22 / 棚 0.18 / 坪 0.12）未改。旅人画面在运行时把第 995–1091 行的近黑收到透明，贴图和第 1148–1151 行不动。棚火默认拍改用 `land-camp-fireside`，猫图经 fetch 再进画面，避免落地帧空载。`1.3-pr31-hemcat` 未到。
+
 ## PR31 solid note
 
 合同 `1.3-pr28-solid`。旅人 21 帧把第 1092–1122 行的不透明近黑收到透明，靴底第 1148–1151 行字节未改，仍是 `rgb(28,22,16)`。雾岸三张 land-shore、棚火猫和两张 land-camp、前坪猫道具换成实心雾色溶边。`land-yard-give`、门帘、粮袋、标石未覆盖。#30 的全屏色温罩和角色 opacity 1 保持。报告 `docs/_pr28-solid-report.json`。

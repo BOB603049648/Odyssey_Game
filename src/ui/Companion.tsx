@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react';
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { HintLevel } from '../core/schema';
+import { loadCatSrc } from './catImage';
 import { CatMark, nanaichaState, type KnotMark } from './companion/CatMark';
 import { t } from './i18n';
 
@@ -23,6 +25,21 @@ export function Companion({
   figure?: string;
   frame?: string;
 }) {
+  const [src, setSrc] = useState(figure);
+  useEffect(() => {
+    if (!figure) {
+      setSrc(undefined);
+      return undefined;
+    }
+    let live = true;
+    setSrc(figure);
+    loadCatSrc(figure).then((next) => {
+      if (live) setSrc(next);
+    });
+    return () => {
+      live = false;
+    };
+  }, [figure]);
   return (
     <button
       type="button"
@@ -41,8 +58,8 @@ export function Companion({
       <span className="companion-mirror">
         <span className="companion-sway">
           {figure ? (
-            <span className="nanaicha-figure" style={{ ['--figure' as string]: `url("${figure}")` }}>
-              <img className="nanaicha-ground" data-look={anchor} data-frame={frame} src={figure} alt="" draggable={false} />
+            <span className="nanaicha-figure" style={{ ['--figure' as string]: `url("${src ?? figure}")` }}>
+              <img className="nanaicha-ground" data-look={anchor} data-frame={frame} src={src ?? figure} alt="" draggable={false} />
               <span className="figure-grade grade-color" />
               <span className="figure-grade grade-soft" />
             </span>
