@@ -47,27 +47,32 @@ export function sitDriftwood(state: SaveData): SaveData {
   return {
     ...state,
     flags: { ...state.flags, 'dba.flag.driftwood': true },
-    feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: again ? 'spot.driftwood.again' : 'spot.driftwood.ok' },
+    feedback: {
+      seq: state.feedback.seq + 1,
+      kind: 'ok',
+      line: again ? 'spot.driftwood.again' : 'spot.driftwood.ok',
+      spot: 'shore-driftwood',
+    },
   };
 }
 
 export function sleepAtCamp(state: SaveData): SaveData {
   if (state.currentScene !== 'dba.scene.camp') return deny(state);
-  if (!learned(state, SLEEP) || !learned(state, FIRE)) return deny(state, 'spot.sleep.no');
+  if (!learned(state, SLEEP) || !learned(state, FIRE)) return deny(state, 'spot.sleep.no', 'camp-sleep');
   return {
     ...state,
     beats: { ...state.beats, 'dba.beat.sleep': true },
-    feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: 'spot.sleep.ok' },
+    feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: 'spot.sleep.ok', spot: 'camp-sleep' },
   };
 }
 
 export function giveSharedFish(state: SaveData): SaveData {
   if (state.currentScene !== 'dba.scene.yard') return deny(state);
-  if (!learned(state, SHARE) || !learned(state, GIVE)) return deny(state, 'spot.give.no');
+  if (!learned(state, SHARE) || !learned(state, GIVE)) return deny(state, 'spot.give.no', 'yard-give');
   return {
     ...state,
     beats: { ...state.beats, 'dba.beat.food': true },
-    feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: 'spot.give.ok' },
+    feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: 'spot.give.ok', spot: 'yard-give' },
   };
 }
 
@@ -114,14 +119,18 @@ const SCENE_ACTS: Record<string, { scene: IslandScene; beat: string }> = {
 export function sceneAct(state: SaveData, wordId: string, part?: 'a' | 'b' | 'more' | 'less'): SaveData {
   if (wordId === 'dba.word.size') return sizeAct(state, part);
   if (wordId === 'dba.word.amount') {
-    if (state.currentScene !== 'dba.scene.yard' || part !== 'more') return deny(state);
+    if (state.currentScene !== 'dba.scene.yard' || part !== 'more') {
+      return deny(state, 'spot.act.no', part === 'less' ? 'act:dba.word.amount:less' : 'act:dba.word.amount:more');
+    }
   }
   const spec = SCENE_ACTS[wordId] ?? (wordId === 'dba.word.amount'
     ? { scene: 'dba.scene.yard' as const, beat: 'dba.beat.amount' }
     : undefined);
+  const spot = `act:${wordId}`;
   if (!spec || state.currentScene !== spec.scene) return deny(state);
-  if (!learned(state, wordId)) return deny(state);
-  const marked = markBeat(state, spec.beat);
+  if (!learned(state, wordId)) return deny(state, 'spot.act.no', spot);
+  const line = spec.scene === 'dba.scene.camp' ? 'spot.act.ok' : undefined;
+  const marked = markBeat(state, spec.beat, line, spot);
   return wordId === 'dba.word.wait' ? giveBone(marked) : marked;
 }
 
@@ -130,23 +139,28 @@ export function grabFish(state: SaveData): SaveData {
   return {
     ...state,
     flags: { ...state.flags, 'dba.flag.wrong-share': true },
-    feedback: { seq: state.feedback.seq + 1, kind: 'no', line: 'spot.give.wrong' },
+    feedback: { seq: state.feedback.seq + 1, kind: 'no', line: 'spot.give.wrong', spot: 'yard-grab' },
   };
 }
 
 const FAR_LINES: Record<string, string> = {
   'shore-driftwood': 'spot.driftwood.far',
+  'shore-stone': 'spot.stone.far',
+  'island-gourd': 'spot.gourd.far',
+  'island-mural': 'spot.mural.far',
+  'shore-depart': 'spot.depart.far',
   'camp-sleep': 'spot.sleep.far',
   'yard-give': 'spot.give.far',
+  'yard-grab': 'spot.grab.far',
 };
 
 /** Out of radius: a line only. No sit, no beat, no taught-approach, no word. */
 export function farSpot(state: SaveData, id: string): SaveData {
-  const line = FAR_LINES[id];
+  const line = FAR_LINES[id] ?? (id.startsWith('act:') ? 'spot.act.far' : undefined);
   if (!line) return state;
   return {
     ...state,
-    feedback: { seq: state.feedback.seq + 1, kind: 'no', line },
+    feedback: { seq: state.feedback.seq + 1, kind: 'no', line, spot: id },
   };
 }
 
@@ -173,7 +187,7 @@ export function canDepart(state: SaveData): boolean {
 
 export function departEast(state: SaveData): SaveData {
   if (state.currentScene !== 'dba.scene.shore') return deny(state);
-  if (!canDepart(state)) return deny(state);
+  if (!canDepart(state)) return deny(state, 'spot.depart.no', 'shore-depart');
   const chart = state.chart.includes('chart.jgw') ? state.chart : [...state.chart, 'chart.jgw'];
   const memories = state.memories.includes('dba.mem.rain-night')
     ? state.memories
@@ -238,11 +252,16 @@ function learned(state: SaveData, id: string): boolean {
   return isLearnedState(state.words[id]?.state);
 }
 
-function markBeat(state: SaveData, beat: string): SaveData {
+function markBeat(state: SaveData, beat: string, line?: string, spot?: string): SaveData {
   return {
     ...state,
     beats: { ...state.beats, [beat]: true },
-    feedback: { seq: state.feedback.seq + 1, kind: 'ok' },
+    feedback: {
+      seq: state.feedback.seq + 1,
+      kind: 'ok',
+      ...(line ? { line } : {}),
+      ...(spot ? { spot } : {}),
+    },
   };
 }
 
@@ -270,8 +289,16 @@ function withBoneCell(state: SaveData): SaveData {
   return { ...state, flags: { ...state.flags, 'dba.flag.bone-cell': true } };
 }
 
-function deny(state: SaveData, line?: string): SaveData {
-  return { ...state, feedback: { seq: state.feedback.seq + 1, kind: 'no', ...(line ? { line } : {}) } };
+function deny(state: SaveData, line?: string, spot?: string): SaveData {
+  return {
+    ...state,
+    feedback: {
+      seq: state.feedback.seq + 1,
+      kind: 'no',
+      ...(line ? { line } : {}),
+      ...(spot ? { spot } : {}),
+    },
+  };
 }
 
 function addEvidence(state: SaveData, id: string): SaveData {

@@ -5,7 +5,7 @@ import { companionFrameId, LEAP_01_MS, LEAP_02_MS, type TrajClip } from '../core
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
 import type { HintLevel } from '../core/schema';
-import { BANDS, SPAWNS, SPOTS, gateAt, gatesFrom, nearestSpot, plantOnGround, standsAt, type GateEdge } from '../core/stage';
+import { BANDS, SPAWNS, SPOTS, closestSpot, gateAt, gatesFrom, nearestSpot, plantOnGround, standsAt, type GateEdge } from '../core/stage';
 import {
   WALK_SPEED,
   WORLD_SCALE,
@@ -26,7 +26,7 @@ import { Companion } from './Companion';
 import type { KnotMark } from './companion/CatMark';
 import { Glyph } from './glyphs';
 import { t } from './i18n';
-import { PlateStack } from './Plate';
+import { PlateStack, type SpotBeat } from './Plate';
 import { gateLabel, type SpotView } from './spotViews';
 import shoreCat from '../assets/art/slots/art.shore.prop.nanaicha.png';
 import campCat from '../assets/art/slots/art.camp.prop.nanaicha.png';
@@ -110,6 +110,7 @@ export function WalkLayer({
   onFar,
   resting = false,
   flash = null,
+  beat = null,
 }: {
   scene: IslandScene;
   drank: boolean;
@@ -131,6 +132,7 @@ export function WalkLayer({
   onFar?: (id: string) => void;
   resting?: boolean;
   flash?: { kind: 'driftwood' | 'sleep' | 'give'; seq: number; x: number; y: number } | null;
+  beat?: SpotBeat | null;
 }) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const soleRef = useRef<HTMLImageElement>(null);
@@ -143,6 +145,7 @@ export function WalkLayer({
   const rememberRef = useRef(onRemember);
   const exitRef = useRef(onExit);
   const interactRef = useRef(onInteract);
+  const farRef = useRef(onFar);
   const escapeRef = useRef(onEscape);
   const targetRef = useRef<Point | null>(null);
   const stickRef = useRef<Point | null>(null);
@@ -191,6 +194,7 @@ export function WalkLayer({
   rememberRef.current = onRemember;
   exitRef.current = onExit;
   interactRef.current = onInteract;
+  farRef.current = onFar;
   escapeRef.current = onEscape;
   movingRef.current = moving;
 
@@ -318,11 +322,17 @@ export function WalkLayer({
       if (pausedRef.current) return;
       if (isInteractKey(event)) {
         if (event.repeat) return;
-        const spot = nearestSpot(spotsRef.current, posRef.current, sceneRef.current);
-        if (!spot) return;
+        const standing = nearestSpot(spotsRef.current, posRef.current, sceneRef.current);
+        if (standing) {
+          event.preventDefault();
+          beginReach();
+          interactRef.current(standing.id);
+          return;
+        }
+        const aimed = closestSpot(spotsRef.current, posRef.current);
+        if (!aimed) return;
         event.preventDefault();
-        beginReach();
-        interactRef.current(spot.id);
+        farRef.current?.(aimed.id);
         return;
       }
       const key = keyOf(event);
@@ -490,6 +500,7 @@ export function WalkLayer({
             showWalkMask={showWalkMask}
             pass="back"
             feetY={feetY}
+            beat={beat}
           />
           <div className="walk-ground" data-testid="walk-ground" onPointerDown={onGround} />
           {gatesFrom(scene).map((gate) => (
@@ -518,6 +529,7 @@ export function WalkLayer({
                 type="button"
                 className={inside ? `${spot.className} near` : spot.className}
                 data-testid={spot.testId}
+                data-result={beat && beat.spot === spot.id ? beat.kind : undefined}
                 style={{ left: pct(spot.x), top: pct(spot.y), right: 'auto', bottom: 'auto' }}
                 aria-label={spot.ariaLabel}
                 onClick={(event) => {
@@ -608,6 +620,7 @@ export function WalkLayer({
             activeSpots={spotIds}
             pass="near"
             feetY={feetY}
+            beat={beat}
           />
           <PlateStack
             plate={plates.current}
@@ -617,6 +630,7 @@ export function WalkLayer({
             activeSpots={spotIds}
             pass="fg"
             feetY={feetY}
+            beat={beat}
           />
         </div>
       </div>

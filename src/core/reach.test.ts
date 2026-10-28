@@ -61,6 +61,8 @@ describe('island 1 reachability', () => {
     state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.camp' });
     state = reduce(state, { type: 'scene-act', wordId: 'dba.word.eat' });
     expect(state.beats['dba.beat.eat']).toBe(true);
+    expect(state.feedback.line).toBe('spot.act.ok');
+    expect(state.feedback.spot).toBe('act:dba.word.eat');
 
     state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.yard' });
     state = reduce(state, { type: 'grab-fish' });

@@ -208,6 +208,31 @@ describe('traveler art', () => {
     fireEvent.click(far.getByTestId('shore-depart'));
     expect(far.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).toBe('idle');
     far.unmount();
+
+    const heard: string[] = [];
+    const keyed = render(
+      <WalkLayer
+        scene="dba.scene.shore"
+        drank={false}
+        spots={[away]}
+        hint={{ level: 0, anchor: 'driftwood', wordId: null, pose: 'idle' }}
+        paused={false}
+        purr={false}
+        knot="rest"
+        remembered={spawn}
+        onRemember={() => undefined}
+        onExit={() => undefined}
+        onInteract={(id) => heard.push(`in:${id}`)}
+        onFar={(id) => heard.push(`far:${id}`)}
+        onAsk={() => undefined}
+        onEscape={() => undefined}
+        catPost={companionPost('dba.scene.shore', {}, {})}
+      />,
+    );
+    fireEvent.keyDown(window, { key: 'e' });
+    expect(heard).toEqual(['far:shore-depart']);
+    expect(keyed.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).toBe('idle');
+    keyed.unmount();
   });
 
   it('shows idle at rest and the walk clip once stride is up', () => {

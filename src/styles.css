@@ -1652,6 +1652,8 @@ h1 {
 }
 .scene-slot.lit .slot-asset,
 .scene-slot.lit .slot-block { filter: none; }
+.scene-slot[data-result="ok"] .prop-body { filter: brightness(1.28); }
+.scene-slot[data-result="no"] .prop-body { filter: brightness(0.62); }
 
 .plate-still {
   position: absolute;
@@ -2076,6 +2078,8 @@ h1 {
   opacity: 0;
   box-shadow: none;
 }
+.world-layer .hotspot[data-result="ok"] { box-shadow: 0 0 18px rgba(232, 214, 160, 0.72); }
+.world-layer .hotspot[data-result="no"] { filter: brightness(0.55); }
 .shore-wrap[data-hotspots="on"] .world-layer .hotspot,
 .shore-wrap[data-hotspots="on"] .world-layer .hotspot.near {
   color: var(--bone);

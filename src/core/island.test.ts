@@ -99,6 +99,10 @@ describe('island 1 scenes', () => {
     expect(wrong.flags['dba.flag.wrong-share']).toBe(true);
     expect(wrong.beats['dba.beat.food']).toBe(true);
     expect(reduce(state, { type: 'spot-far', id: 'yard-give' }).feedback.line).toBe('spot.give.far');
+    const grabFar = reduce(state, { type: 'spot-far', id: 'yard-grab' });
+    expect(grabFar.feedback.line).toBe('spot.grab.far');
+    expect(grabFar.feedback.kind).toBe('no');
+    expect(grabFar.flags['dba.flag.wrong-share']).toBeUndefined();
   });
 
   it('clears a leftover sleep line when the scene changes', () => {
@@ -110,6 +114,33 @@ describe('island 1 scenes', () => {
     expect(state.currentScene).toBe('dba.scene.shore');
     expect(state.feedback.kind).toBe('none');
     expect(state.feedback.line).toBeUndefined();
+  });
+
+  it('answers every shore, camp, and yard reach with a line', () => {
+    const shore = ashore();
+    for (const [id, line] of [
+      ['shore-stone', 'spot.stone.far'],
+      ['island-gourd', 'spot.gourd.far'],
+      ['island-mural', 'spot.mural.far'],
+      ['shore-depart', 'spot.depart.far'],
+      ['act:dba.word.eat', 'spot.act.far'],
+    ] as const) {
+      const far = reduce(shore, { type: 'spot-far', id });
+      expect(far.feedback).toMatchObject({ kind: 'no', line, spot: id });
+      expect(far.flags['dba.flag.taught-approach']).toBeUndefined();
+      expect(far.feedback.seq).toBe(shore.feedback.seq + 1);
+    }
+    const empty = reduce(shore, { type: 'poke-gourd' });
+    expect(empty.feedback.line).toBe('spot.gourd.no');
+    expect(empty.beats['dba.beat.water']).toBeUndefined();
+    const held = reduce(shore, { type: 'depart' });
+    expect(held.feedback.line).toBe('spot.depart.no');
+    expect(held.beats['dba.beat.depart']).toBeUndefined();
+
+    const camp = reduce(shore, { type: 'goto-scene', scene: 'dba.scene.camp' });
+    const missed = reduce(camp, { type: 'scene-act', wordId: 'dba.word.eat' });
+    expect(missed.feedback.line).toBe('spot.act.no');
+    expect(missed.beats['dba.beat.eat']).toBeUndefined();
   });
 
   it('opens the forest only when the player stops after learning danger', () => {

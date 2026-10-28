@@ -133,6 +133,13 @@ describe('hotspot acceptance', () => {
     expect(props.length).toBe(5);
   });
 
+  it('lights the prop that just answered and leaves the others dark', () => {
+    render(<PlateStack plate="dba.scene.shore" previous={null} beat={{ spot: 'shore-driftwood', kind: 'ok' }} />);
+    expect(screen.getByTestId('prop-art.shore.prop.driftwood').getAttribute('data-result')).toBe('ok');
+    expect(screen.getByTestId('prop-art.shore.prop.gourd').hasAttribute('data-result')).toBe(false);
+    expect(screen.getByTestId('prop-art.shore.prop.driftwood').textContent).not.toContain('?');
+  });
+
   it('shows the camp mat and the yard trio as separate props', () => {
     const camp = render(<PlateStack plate="dba.scene.camp" previous={null} />);
     expect(screen.getByTestId('prop-art.camp.prop.sleep-mat').getAttribute('data-spot')).toBe('camp-sleep');

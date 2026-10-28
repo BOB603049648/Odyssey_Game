@@ -40,6 +40,8 @@ function includeSlot(slot: SceneSlot, pass: PlatePass, feetY: number): boolean {
   return BACK_SLOTS.has(slot.slot) || isCurtain(slot);
 }
 
+export type SpotBeat = { spot: string; kind: 'ok' | 'no' };
+
 export function PlateStack({
   plate,
   previous,
@@ -49,6 +51,7 @@ export function PlateStack({
   showWalkMask = false,
   pass = 'all',
   feetY = 1,
+  beat = null,
 }: {
   plate: string;
   previous: string | null;
@@ -59,6 +62,8 @@ export function PlateStack({
   pass?: PlatePass;
   /** Traveler foot in world Y. Subjects south of this draw in the near pass. */
   feetY?: number;
+  /** The hotspot that just succeeded or refused. */
+  beat?: SpotBeat | null;
 }) {
   return (
     <div className={`plate-stack pass-${pass === 'all' ? 'back' : pass}`} aria-hidden="true">
@@ -72,6 +77,7 @@ export function PlateStack({
           showWalkMask={false}
           pass={pass}
           feetY={feetY}
+          beat={null}
         />
       ) : null}
       <PlateBody
@@ -84,6 +90,7 @@ export function PlateStack({
         showWalkMask={showWalkMask}
         pass={pass}
         feetY={feetY}
+        beat={beat}
       />
     </div>
   );
@@ -99,6 +106,7 @@ function PlateBody({
   showWalkMask,
   pass,
   feetY,
+  beat = null,
 }: {
   plate: string;
   leaving: boolean;
@@ -109,6 +117,7 @@ function PlateBody({
   showWalkMask: boolean;
   pass: PlatePass;
   feetY: number;
+  beat?: SpotBeat | null;
 }) {
   const className = leaving ? 'plate-fade out' : incoming ? 'plate-fade in' : 'plate-fade';
   if (plate === 'keyart') {
@@ -138,6 +147,7 @@ function PlateBody({
         showWalkMask={showWalkMask && !leaving}
         pass={pass}
         feetY={feetY}
+        beat={leaving ? null : beat}
       />
     );
   }
@@ -157,6 +167,7 @@ function SlotAssembly({
   showWalkMask,
   pass,
   feetY,
+  beat = null,
 }: {
   kit: SceneAssembly;
   className: string;
@@ -166,6 +177,7 @@ function SlotAssembly({
   showWalkMask: boolean;
   pass: PlatePass;
   feetY: number;
+  beat?: SpotBeat | null;
 }) {
   const scene = kit.id as IslandScene;
   const slots = [...kit.slots]
@@ -193,6 +205,7 @@ function SlotAssembly({
           lit={slot.spot ? near.includes(slot.spot) : false}
           hidden={slot.spot !== undefined && activeSpots !== null && !activeSpots.includes(slot.spot)}
           showWalkMask={showWalkMask}
+          beat={beat}
         />
       ))}
       <div className="ambient ambient-flame" />
@@ -209,6 +222,7 @@ function SlotPiece({
   lit,
   hidden,
   showWalkMask,
+  beat = null,
 }: {
   scene: IslandScene;
   slot: SceneSlot;
@@ -216,6 +230,7 @@ function SlotPiece({
   lit: boolean;
   hidden: boolean;
   showWalkMask: boolean;
+  beat?: SpotBeat | null;
 }) {
   if (hidden) return null;
   const placed = slot.x !== undefined && slot.y !== undefined;
@@ -238,6 +253,7 @@ function SlotPiece({
       data-anchor={footed ? 'foot' : isPortal(slot) ? 'portal' : undefined}
       data-coplanar={scenic ? 'yes' : undefined}
       data-shadow={slot.slot === 'props' ? (hasPngContact(slot.asset ?? slot.id) ? 'png' : 'none') : undefined}
+      data-result={beat && slot.spot === beat.spot ? beat.kind : undefined}
       data-testid={testId}
       style={slotStyle(slot, cam)}
     >
