@@ -229,9 +229,26 @@ h1 {
 
 .prologue {
   justify-content: flex-end;
-  padding: 0 6vw 7vh;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  padding: 0;
   background: #070c0e;
 }
+.prologue .hud-caption {
+  position: absolute;
+  left: calc(6vw + var(--safe-left));
+  right: calc(6vw + var(--safe-right));
+  bottom: calc(7vh + var(--safe-bottom));
+  z-index: 3;
+}
+.prologue .plate-still img {
+  object-fit: cover;
+  object-position: center center;
+  animation: none;
+  transform: none;
+}
+.prologue .nanaicha-look { display: none; }
 
 .hud-caption {
   position: relative;
@@ -1220,8 +1237,7 @@ h1 {
   50% { transform: translateY(-3px) rotate(-1deg); }
 }
 
-.title-screen,
-.prologue {
+.title-screen {
   padding-left: calc(6vw + var(--safe-left));
   padding-right: calc(6vw + var(--safe-right));
   padding-bottom: calc(7vh + var(--safe-bottom));
@@ -2026,6 +2042,9 @@ h1 {
   background: none;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
   pointer-events: none;
+}
+.approach-hint {
+  bottom: calc(72px + var(--safe-bottom));
 }
 
 .interact-flash {

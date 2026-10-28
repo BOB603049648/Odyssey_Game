@@ -141,7 +141,7 @@ export function IslandScreen({
         ) : null}
         {save.memories.includes('dba.mem.rain-night') ? <MemoryRain /> : null}
         {spoken ? (
-          <p className="diegetic-line" data-testid="spot-line" data-line={line}>
+          <p key={scene} className="diegetic-line" data-testid="spot-line" data-line={line}>
             {spoken}
           </p>
         ) : null}

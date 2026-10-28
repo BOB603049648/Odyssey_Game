@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { companionPost } from '../core/companionPost';
 import { SPAWNS } from '../core/stage';
@@ -233,6 +233,47 @@ describe('traveler art', () => {
     expect(heard).toEqual(['far:shore-depart']);
     expect(keyed.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).toBe('idle');
     keyed.unmount();
+  });
+
+  it('clears the approach hint when the scene changes', async () => {
+    const spawn = SPAWNS['dba.scene.shore'];
+    const wood: SpotView = {
+      id: 'shore-driftwood',
+      x: spawn.x,
+      y: spawn.y,
+      r: 0.2,
+      className: 'hotspot drift',
+      testId: 'shore-driftwood',
+      label: '漂木',
+    };
+    const props = {
+      drank: false,
+      hint: { level: 0 as const, anchor: 'driftwood' as const, wordId: null, pose: 'idle' as const },
+      paused: false,
+      purr: false,
+      knot: 'rest' as const,
+      remembered: null,
+      onRemember: () => undefined,
+      onExit: () => undefined,
+      onInteract: () => undefined,
+      onAsk: () => undefined,
+      onEscape: () => undefined,
+      taught: false,
+      catPost: companionPost('dba.scene.shore', {}, {}),
+    };
+    const view = render(<WalkLayer scene="dba.scene.shore" spots={[wood]} {...props} />);
+    expect(await screen.findByTestId('approach-hint')).toBeTruthy();
+    view.rerender(
+      <WalkLayer
+        scene="dba.scene.camp"
+        spots={[{ ...wood, id: 'camp-sleep', testId: 'camp-sleep', label: '躺下' }]}
+        {...props}
+        catPost={companionPost('dba.scene.camp', {}, {})}
+      />,
+    );
+    expect(screen.queryByTestId('approach-hint')).toBeNull();
+    expect(screen.queryByTestId('spot-line')).toBeNull();
+    view.unmount();
   });
 
   it('shows idle at rest and the walk clip once stride is up', () => {

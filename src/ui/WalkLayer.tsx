@@ -184,6 +184,7 @@ export function WalkLayer({
   const [teachLine, setTeachLine] = useState(false);
   const [reaching, setReaching] = useState(false);
   const reachTimer = useRef(0);
+  const driftSeek = useRef(0);
   const viewRef = useRef(view);
   const plates = useCrossfade(scene, 980);
   viewRef.current = view;
@@ -215,6 +216,8 @@ export function WalkLayer({
     setStride(0);
     setBlocked(false);
     setCat(next);
+    setTeachLine(false);
+    window.clearTimeout(driftSeek.current);
   }
 
   useEffect(() => {
@@ -467,7 +470,10 @@ export function WalkLayer({
     return () => window.clearTimeout(id);
   }, [arrive]);
 
-  useEffect(() => () => window.clearTimeout(reachTimer.current), []);
+  useEffect(() => () => {
+    window.clearTimeout(reachTimer.current);
+    window.clearTimeout(driftSeek.current);
+  }, []);
 
   const catSprite = companionFrameId(catPost.beat, clip);
   const catFoot = companionFoot(catSprite);
@@ -536,8 +542,17 @@ export function WalkLayer({
                   event.stopPropagation();
                   if (pausedRef.current) return;
                   if (!standsAt(sceneRef.current, spot, posRef.current)) {
-                    seek(spot);
                     onFar?.(spot.id);
+                    window.clearTimeout(driftSeek.current);
+                    const lineFirst = spot.id === 'shore-driftwood' && !taughtRef.current;
+                    if (lineFirst) {
+                      driftSeek.current = window.setTimeout(() => {
+                        if (sceneRef.current !== 'dba.scene.shore') return;
+                        seek(spot);
+                      }, 720);
+                    } else {
+                      seek(spot);
+                    }
                     return;
                   }
                   beginReach();
@@ -595,7 +610,7 @@ export function WalkLayer({
           </div>
           {flash ? (
             <img
-              key={flash.seq}
+              key={`${scene}-${flash.seq}`}
               className="interact-flash"
               data-testid="interact-flash"
               src={flash.kind === 'driftwood' ? driftFlash : flash.kind === 'sleep' ? sleepFlash : grainFlash}
@@ -644,11 +659,11 @@ export function WalkLayer({
       <div className="sole-layer" data-testid="sole-layer">
         <img ref={soleRef} className="sole-soft" data-testid="sole-soft" alt="" />
       </div>
-      {teachLine ? (
-        <p className="approach-hint" data-testid="approach-hint">
-          {t('hint.approach')}
-        </p>
-      ) : null}
+        {teachLine && scene === 'dba.scene.shore' ? (
+          <p className="approach-hint" data-testid="approach-hint">
+            {t('hint.approach')}
+          </p>
+        ) : null}
       <WalkStick
         onVector={(vector) => {
           stickRef.current = vector;

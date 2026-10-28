@@ -191,6 +191,7 @@ function enterShore(state: SaveData): SaveData {
     beats: { ...state.beats, 'pro.beat.storm': true, 'dba.beat.meet': true },
     flags: { ...state.flags, 'pro.flag.met-companion': true },
     companion: { level: 0, targetId: null, pawUsed: false },
+    feedback: { seq: state.feedback.seq, kind: 'none' },
   });
 }
 

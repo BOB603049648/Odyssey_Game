@@ -114,6 +114,7 @@ describe('island 1 scenes', () => {
     expect(state.currentScene).toBe('dba.scene.shore');
     expect(state.feedback.kind).toBe('none');
     expect(state.feedback.line).toBeUndefined();
+    expect(state.feedback.spot).toBeUndefined();
   });
 
   it('answers every shore, camp, and yard reach with a line', () => {
