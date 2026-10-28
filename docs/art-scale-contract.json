@@ -1,5 +1,5 @@
 {
-  "version": "1.3-pr24-seat2",
+  "version": "1.3-pr25-fog",
   "updated": "2026-10-28T09:36:18+08:00",
   "unit": "meters",
   "traveler": {
@@ -1369,5 +1369,112 @@
     "shore_cat_modified": false,
     "boards_locked": true,
     "yard_prop_wrote": false
+  },
+  "pr25_fog": {
+    "version": "1.3-pr25-fog",
+    "key": "pr25_fog",
+    "role": "auxiliary",
+    "updated": "2026-10-28T09:53:31+08:00",
+    "timezone": "Asia/Shanghai",
+    "priority_note": "PR25 fog：①雾岸大猫+旅人去雾青半透明硬剪贴，边缘溶雾色温跟岸雾；②棚火猫+旅人与廊板共雾/共光禁门口小贴纸；③前坪晾架/罐软边+角色雾溶；give爪本批不碰；sole锁。",
+    "knives": [
+      "shore cool fog melt / kill cyan hard-cut ghost",
+      "camp warm shared fog with deck / no doorway sticker",
+      "yard rack+boards soft edges + char fog melt",
+      "traveler upper fog melt with sole locked"
+    ],
+    "locked": [
+      "traveler sole-soft / foot-ellipse (byte-restored)",
+      "land-yard-give claws (file untouched)",
+      "curtain / grain bag thick plate / marker stone"
+    ],
+    "do_not_touch": [
+      "nanaicha/traj/land-yard-give.png",
+      "camp/art.camp.prop.north-curtain.png",
+      "yard/art.yard.prop.grain-bags.png",
+      "yard/art.yard.prop.grain-bags.interact.png",
+      "marker-stone (locked; eng walkable not art knife)"
+    ],
+    "fog_temps": {
+      "shore": [
+        122,
+        132,
+        136
+      ],
+      "camp": [
+        132,
+        110,
+        84
+      ],
+      "yard": [
+        96,
+        90,
+        80
+      ],
+      "traveler_shared": [
+        108,
+        104,
+        96
+      ]
+    },
+    "files_wrote": [
+      "shore/art.shore.prop.nanaicha.png",
+      "nanaicha/traj/land-shore-driftwood.png",
+      "nanaicha/traj/land-shore-east-gap.png",
+      "nanaicha/traj/land-shore-gourd.png",
+      "camp/art.camp.prop.nanaicha.png",
+      "nanaicha/traj/land-camp-fireside.png",
+      "nanaicha/traj/land-camp-sleep-mat.png",
+      "yard/art.yard.prop.nanaicha.png",
+      "yard/art.yard.prop.dried-fish.png",
+      "yard/art.yard.prop.more-less-boards.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-back-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-back-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-front-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-front-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-side-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-side-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/reach-front-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/reach-front-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/reach-side-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-back-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-back-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-back-03.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-back-04.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-front-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-front-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-front-03.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-front-04.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-side-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-side-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-side-03.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-side-04.png"
+    ],
+    "eng_bullets": [
+      "sole 锁勿动；爪锚停迭代（give 本批未改脚）",
+      "雾岸/棚火/前坪共雾溶边：去青硬剪贴与门口贴纸；晾架罐软边",
+      "工程同批挂 #26 即可，无需再拧 claw pivot"
+    ],
+    "verify": {
+      "sole_untouched": true,
+      "give_claws_untouched": true,
+      "shore_cyan_hard_cut_gone": true,
+      "shore_fog_melt_ok": true,
+      "camp_doorway_sticker_gone": true,
+      "camp_shared_fog_ok": true,
+      "yard_rack_can_soft_ok": true,
+      "yard_char_fog_ok": true,
+      "bags_still_gone": true,
+      "curtain_wrote": false,
+      "grain_wrote": false,
+      "give_wrote": false,
+      "traveler_count": 21,
+      "shore_knife_before": 293,
+      "shore_knife_after": 177,
+      "camp_knife_before": 371,
+      "camp_knife_after": 342,
+      "files_wrote_count": 31
+    },
+    "backup_tag": "pre-pr25-fog"
   }
 }
