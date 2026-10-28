@@ -21,22 +21,33 @@ export const TRAVELER_FRAME_COUNTS = {
 export const REACH_HZ = 1.4;
 export const REACH_HOLD_MS = 720;
 
+/**
+ * Temporary color lock. From #26 the idle/walk/reach sheets are near-black
+ * silhouettes. Show the older colored plates until those sheets are relit.
+ * Hem punch still runs (it only drops near-black hem pixels) and the sole row stays.
+ */
+const COLOR_LOCK: Record<TravelerSheet, string> = {
+  front: '04-front.png',
+  side: '02-side.png',
+  back: '03-back.png',
+};
+
 const WALK_FILES: Record<TravelerSheet, readonly string[]> = {
-  front: ['walk-front-01.png', 'walk-front-02.png', 'walk-front-03.png', 'walk-front-04.png'],
-  side: ['walk-side-01.png', 'walk-side-02.png', 'walk-side-03.png', 'walk-side-04.png'],
-  back: ['walk-back-01.png', 'walk-back-02.png', 'walk-back-03.png', 'walk-back-04.png'],
+  front: [COLOR_LOCK.front, COLOR_LOCK.front, COLOR_LOCK.front, COLOR_LOCK.front],
+  side: [COLOR_LOCK.side, COLOR_LOCK.side, COLOR_LOCK.side, COLOR_LOCK.side],
+  back: [COLOR_LOCK.back, COLOR_LOCK.back, COLOR_LOCK.back, COLOR_LOCK.back],
 };
 
 const IDLE_FILES: Record<TravelerSheet, readonly string[]> = {
-  front: ['idle-front-01.png', 'idle-front-02.png'],
-  side: ['idle-side-01.png', 'idle-side-02.png'],
-  back: ['idle-back-01.png', 'idle-back-02.png'],
+  front: [COLOR_LOCK.front, COLOR_LOCK.front],
+  side: [COLOR_LOCK.side, COLOR_LOCK.side],
+  back: [COLOR_LOCK.back, COLOR_LOCK.back],
 };
 
 /** Back reach was not delivered. Missing sheets fall back to idle. */
 const REACH_FILES: Partial<Record<TravelerSheet, readonly string[]>> = {
-  front: ['reach-front-01.png', 'reach-front-02.png'],
-  side: ['reach-side-01.png'],
+  front: [COLOR_LOCK.front, COLOR_LOCK.front],
+  side: [COLOR_LOCK.side],
 };
 
 function frameSrc(file: string): string {
