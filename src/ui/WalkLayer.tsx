@@ -450,6 +450,8 @@ export function WalkLayer({
 
   useEffect(() => () => window.clearTimeout(reachTimer.current), []);
 
+  const catSprite = companionFrameId(catPost.beat, clip);
+
   return (
     <div
       ref={viewportRef}
@@ -529,16 +531,16 @@ export function WalkLayer({
             data-traveling={Math.hypot(catPost.x - cat.x, catPost.y - cat.y) > 0.025 ? 'yes' : 'no'}
             data-traj={clip}
             data-face={catPost.x >= cat.x ? 'right' : 'left'}
-            data-sprite={companionFrameId(catPost.beat, clip)}
+            data-sprite={catSprite}
             style={{
-              ...worldToScreen({ x: cat.x, y: cat.y }, companionFoot(companionFrameId(catPost.beat, clip))),
+              ...worldToScreen({ x: cat.x, y: cat.y }, companionFoot(catSprite)),
               height: `${NANAICHA_HEIGHT * 100}%`,
             }}
           >
             <Companion
-              frame={companionFrameId(catPost.beat, clip)}
+              frame={catSprite}
               figure={
-                TRAJ_SRC[companionFrameId(catPost.beat, clip)] ??
+                TRAJ_SRC[catSprite] ??
                 (scene === 'dba.scene.camp'
                   ? campCat
                   : scene === 'dba.scene.yard' || scene === 'dba.scene.path'

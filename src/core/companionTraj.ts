@@ -15,6 +15,7 @@ export const LAND_BY_BEAT: Partial<Record<CatBeat, string>> = {
   S2: 'land-shore-east-gap',
   C2: 'land-camp-sleep-mat',
   C3: 'land-camp-fireside',
+  /* Bag-free give pose. Paws are the canvas bottom-center; the sack is gone. */
   Y0: 'land-yard-give',
 };
 

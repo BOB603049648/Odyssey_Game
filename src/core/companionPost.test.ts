@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { companionFoot, companionPost, gazeQueue, NANAICHA_FOOT, YARD_GIVE_FOOT } from './companionPost';
-import { BANDS, GATES, SPOTS, YARD_FACADE } from './stage';
+import { BANDS, GATES, SPOTS, YARD_FACADE, YARD_RIGHT_STEP } from './stage';
 
 const shore = 'dba.scene.shore' as const;
 const camp = 'dba.scene.camp' as const;
@@ -87,9 +87,11 @@ describe('companion feet and gaze', () => {
     const grab = SPOTS[yard].find((spot) => spot.id === 'yard-grab')!;
     expect(give.targetId).toBe('yard-give');
     expect(give.look).toBe('give');
-    expect(give.x).toBeCloseTo(0.47);
-    expect(give.y).toBeCloseTo(YARD_FACADE.groundY);
-    expect(pile.x - give.x).toBeGreaterThan(0.2);
+    expect(give.x).toBeCloseTo(YARD_RIGHT_STEP.x);
+    expect(give.y).toBeCloseTo(YARD_RIGHT_STEP.y);
+    expect(give.y).toBeGreaterThanOrEqual(YARD_FACADE.groundY);
+    expect(give.x).toBeGreaterThan(0.55);
+    expect(pile.x - give.x).toBeGreaterThan(0.12);
     expect(give.y).toBeGreaterThan(pile.y);
     expect(Math.abs(give.x - grab.x)).toBeGreaterThan(0.2);
 
