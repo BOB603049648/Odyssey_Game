@@ -1,0 +1,809 @@
+{
+  "version": "1.3-pr31-hemcat",
+  "key": "pr31_hemcat",
+  "updated": "2026-10-28T11:26:13+08:00",
+  "role": "auxiliary",
+  "timezone": "Asia/Shanghai",
+  "priority_note": "PR31 hemcat：①旅人近黑硬横条清整段 y≈990–1122（覆盖 995–1091）；②三屏大猫实心体+底边溶地，去硬黑新月/脚底圆点，禁半透明晕轮底板；③sole/give/门帘/粮袋/标石锁。",
+  "do_not_touch": [
+    "nanaicha/traj/land-yard-give.png",
+    "camp/art.camp.prop.north-curtain.png",
+    "yard/art.yard.prop.grain-bags.png",
+    "yard/art.yard.prop.grain-bags.interact.png"
+  ],
+  "files": {
+    "traveler-mythic/cloud-inspired/v3/anim/idle-back-01.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 38064,
+        "hem_995_1091": 38064,
+        "sole": {
+          "nonzero": 806,
+          "exact_28_22_16": 806,
+          "hash": "10b0c382720e524c4f5e719ff25e70ae17f3642cb91abfb800c2f46abf52f372"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 806,
+          "exact_28_22_16": 806,
+          "hash": "10b0c382720e524c4f5e719ff25e70ae17f3642cb91abfb800c2f46abf52f372"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-back-02.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 47518,
+        "hem_995_1091": 47518,
+        "sole": {
+          "nonzero": 802,
+          "exact_28_22_16": 802,
+          "hash": "5b721ceaeea47a8efa3d2d8a454d46936d00d2f7616a2a8daa685444e1a872fa"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 802,
+          "exact_28_22_16": 802,
+          "hash": "5b721ceaeea47a8efa3d2d8a454d46936d00d2f7616a2a8daa685444e1a872fa"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-front-01.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 43200,
+        "hem_995_1091": 41915,
+        "sole": {
+          "nonzero": 846,
+          "exact_28_22_16": 846,
+          "hash": "468181960cff3c4834c00cfeef89091890d9f46d64e86aaafb1a36ceade59387"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 846,
+          "exact_28_22_16": 846,
+          "hash": "468181960cff3c4834c00cfeef89091890d9f46d64e86aaafb1a36ceade59387"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-front-02.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 43603,
+        "hem_995_1091": 41893,
+        "sole": {
+          "nonzero": 846,
+          "exact_28_22_16": 846,
+          "hash": "468181960cff3c4834c00cfeef89091890d9f46d64e86aaafb1a36ceade59387"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 846,
+          "exact_28_22_16": 846,
+          "hash": "468181960cff3c4834c00cfeef89091890d9f46d64e86aaafb1a36ceade59387"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-side-01.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 31423,
+        "hem_995_1091": 31423,
+        "sole": {
+          "nonzero": 814,
+          "exact_28_22_16": 814,
+          "hash": "cbec8577550516c738e156913f11c8b3c0ba1de7597eb716c58adc7f695e1139"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 814,
+          "exact_28_22_16": 814,
+          "hash": "cbec8577550516c738e156913f11c8b3c0ba1de7597eb716c58adc7f695e1139"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-side-02.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 35129,
+        "hem_995_1091": 35129,
+        "sole": {
+          "nonzero": 838,
+          "exact_28_22_16": 838,
+          "hash": "b85c0085c7752cd1411281488790679cea209177fc1be7ab53eb00ba08eb6632"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 838,
+          "exact_28_22_16": 838,
+          "hash": "b85c0085c7752cd1411281488790679cea209177fc1be7ab53eb00ba08eb6632"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/reach-front-01.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 47782,
+        "hem_995_1091": 46823,
+        "sole": {
+          "nonzero": 838,
+          "exact_28_22_16": 838,
+          "hash": "6122dfb1cca316e8c1b17cd4b9f247ffad6bf7d019339fe8c58f868cc639171f"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 838,
+          "exact_28_22_16": 838,
+          "hash": "6122dfb1cca316e8c1b17cd4b9f247ffad6bf7d019339fe8c58f868cc639171f"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/reach-front-02.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 44802,
+        "hem_995_1091": 44375,
+        "sole": {
+          "nonzero": 838,
+          "exact_28_22_16": 838,
+          "hash": "6122dfb1cca316e8c1b17cd4b9f247ffad6bf7d019339fe8c58f868cc639171f"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 838,
+          "exact_28_22_16": 838,
+          "hash": "6122dfb1cca316e8c1b17cd4b9f247ffad6bf7d019339fe8c58f868cc639171f"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/reach-side-01.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 40091,
+        "hem_995_1091": 40091,
+        "sole": {
+          "nonzero": 802,
+          "exact_28_22_16": 802,
+          "hash": "d9f3542c90006cbd64bfade19135fd6c8e5ea4623aad02e3382f8f4bfdc95ae9"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 802,
+          "exact_28_22_16": 802,
+          "hash": "d9f3542c90006cbd64bfade19135fd6c8e5ea4623aad02e3382f8f4bfdc95ae9"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-01.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 50859,
+        "hem_995_1091": 50859,
+        "sole": {
+          "nonzero": 806,
+          "exact_28_22_16": 806,
+          "hash": "10b0c382720e524c4f5e719ff25e70ae17f3642cb91abfb800c2f46abf52f372"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 806,
+          "exact_28_22_16": 806,
+          "hash": "10b0c382720e524c4f5e719ff25e70ae17f3642cb91abfb800c2f46abf52f372"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-02.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 38868,
+        "hem_995_1091": 38868,
+        "sole": {
+          "nonzero": 810,
+          "exact_28_22_16": 810,
+          "hash": "58e0d3c1a7c2b988587aa0802f8018ebf20c0cb9db8b5ba0fb32fc0cc546e270"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 810,
+          "exact_28_22_16": 810,
+          "hash": "58e0d3c1a7c2b988587aa0802f8018ebf20c0cb9db8b5ba0fb32fc0cc546e270"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-03.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 53269,
+        "hem_995_1091": 53269,
+        "sole": {
+          "nonzero": 802,
+          "exact_28_22_16": 802,
+          "hash": "d9f3542c90006cbd64bfade19135fd6c8e5ea4623aad02e3382f8f4bfdc95ae9"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 802,
+          "exact_28_22_16": 802,
+          "hash": "d9f3542c90006cbd64bfade19135fd6c8e5ea4623aad02e3382f8f4bfdc95ae9"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-04.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 41242,
+        "hem_995_1091": 41242,
+        "sole": {
+          "nonzero": 810,
+          "exact_28_22_16": 810,
+          "hash": "58e0d3c1a7c2b988587aa0802f8018ebf20c0cb9db8b5ba0fb32fc0cc546e270"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 810,
+          "exact_28_22_16": 810,
+          "hash": "58e0d3c1a7c2b988587aa0802f8018ebf20c0cb9db8b5ba0fb32fc0cc546e270"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-01.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 44632,
+        "hem_995_1091": 44632,
+        "sole": {
+          "nonzero": 806,
+          "exact_28_22_16": 806,
+          "hash": "b2481cc98e0141f4bdbc174034a6afc0e6c3a7c27eab0a6b25618ae8e37516cc"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 806,
+          "exact_28_22_16": 806,
+          "hash": "b2481cc98e0141f4bdbc174034a6afc0e6c3a7c27eab0a6b25618ae8e37516cc"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-02.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 42720,
+        "hem_995_1091": 42720,
+        "sole": {
+          "nonzero": 814,
+          "exact_28_22_16": 814,
+          "hash": "cbec8577550516c738e156913f11c8b3c0ba1de7597eb716c58adc7f695e1139"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 814,
+          "exact_28_22_16": 814,
+          "hash": "cbec8577550516c738e156913f11c8b3c0ba1de7597eb716c58adc7f695e1139"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-03.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 51627,
+        "hem_995_1091": 51627,
+        "sole": {
+          "nonzero": 820,
+          "exact_28_22_16": 820,
+          "hash": "359e8f3a3284b9cdf66b96206bc45b3f1a8b3a626818620e7d4426d0f16eb0fe"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 820,
+          "exact_28_22_16": 820,
+          "hash": "359e8f3a3284b9cdf66b96206bc45b3f1a8b3a626818620e7d4426d0f16eb0fe"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-04.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 42069,
+        "hem_995_1091": 42069,
+        "sole": {
+          "nonzero": 814,
+          "exact_28_22_16": 814,
+          "hash": "cbec8577550516c738e156913f11c8b3c0ba1de7597eb716c58adc7f695e1139"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 814,
+          "exact_28_22_16": 814,
+          "hash": "cbec8577550516c738e156913f11c8b3c0ba1de7597eb716c58adc7f695e1139"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-01.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 41430,
+        "hem_995_1091": 41430,
+        "sole": {
+          "nonzero": 802,
+          "exact_28_22_16": 802,
+          "hash": "5b721ceaeea47a8efa3d2d8a454d46936d00d2f7616a2a8daa685444e1a872fa"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 802,
+          "exact_28_22_16": 802,
+          "hash": "5b721ceaeea47a8efa3d2d8a454d46936d00d2f7616a2a8daa685444e1a872fa"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-02.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 40087,
+        "hem_995_1091": 40087,
+        "sole": {
+          "nonzero": 784,
+          "exact_28_22_16": 784,
+          "hash": "be33fe05c49ba08c82464746bcc651cd5e635a1b548238dbc43d8043f231e8ac"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 784,
+          "exact_28_22_16": 784,
+          "hash": "be33fe05c49ba08c82464746bcc651cd5e635a1b548238dbc43d8043f231e8ac"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-03.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 46096,
+        "hem_995_1091": 46096,
+        "sole": {
+          "nonzero": 784,
+          "exact_28_22_16": 784,
+          "hash": "be33fe05c49ba08c82464746bcc651cd5e635a1b548238dbc43d8043f231e8ac"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 784,
+          "exact_28_22_16": 784,
+          "hash": "be33fe05c49ba08c82464746bcc651cd5e635a1b548238dbc43d8043f231e8ac"
+        }
+      },
+      "sole_untouched": true
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-04.png": {
+      "group": "traveler_hem_clear",
+      "wrote": true,
+      "note": "990-1122 near-black(≤12) alpha→0 (covers 995-1091 hard rect); sole byte-locked",
+      "before": {
+        "hem_near_black": 43398,
+        "hem_995_1091": 43398,
+        "sole": {
+          "nonzero": 784,
+          "exact_28_22_16": 784,
+          "hash": "be33fe05c49ba08c82464746bcc651cd5e635a1b548238dbc43d8043f231e8ac"
+        }
+      },
+      "after": {
+        "hem_near_black": 0,
+        "hem_995_1091": 0,
+        "sole": {
+          "nonzero": 784,
+          "exact_28_22_16": 784,
+          "hash": "be33fe05c49ba08c82464746bcc651cd5e635a1b548238dbc43d8043f231e8ac"
+        }
+      },
+      "sole_untouched": true
+    },
+    "nanaicha/traj/land-shore-driftwood.png": {
+      "group": "shore_cat_hemcat",
+      "wrote": true,
+      "fog": [
+        122,
+        132,
+        136
+      ],
+      "ground": [
+        72,
+        80,
+        84
+      ],
+      "before": {
+        "dark_hard": 0
+      },
+      "after": {
+        "dark_hard": 0,
+        "trans_body": 806,
+        "core_px": 267166,
+        "foot_y": 876,
+        "residual_bottom_hard": 0,
+        "soft_edge_px": 0
+      },
+      "foot_dots_cleared": 5100,
+      "crescent_recolored": 306,
+      "note": "solid core + stronger soft-alpha ground melt; no halo plate"
+    },
+    "nanaicha/traj/land-shore-gourd.png": {
+      "group": "shore_cat_hemcat",
+      "wrote": true,
+      "fog": [
+        122,
+        132,
+        136
+      ],
+      "ground": [
+        72,
+        80,
+        84
+      ],
+      "before": {
+        "dark_hard": 220
+      },
+      "after": {
+        "dark_hard": 0,
+        "trans_body": 65,
+        "core_px": 264061,
+        "foot_y": 1080,
+        "residual_bottom_hard": 0,
+        "soft_edge_px": 1190
+      },
+      "foot_dots_cleared": 784,
+      "crescent_recolored": 333,
+      "note": "solid core + stronger soft-alpha ground melt; no halo plate"
+    },
+    "nanaicha/traj/land-shore-east-gap.png": {
+      "group": "shore_cat_hemcat",
+      "wrote": true,
+      "fog": [
+        122,
+        132,
+        136
+      ],
+      "ground": [
+        72,
+        80,
+        84
+      ],
+      "before": {
+        "dark_hard": 0
+      },
+      "after": {
+        "dark_hard": 0,
+        "trans_body": 630,
+        "core_px": 204894,
+        "foot_y": 876,
+        "residual_bottom_hard": 0,
+        "soft_edge_px": 0
+      },
+      "foot_dots_cleared": 4001,
+      "crescent_recolored": 197,
+      "note": "solid core + stronger soft-alpha ground melt; no halo plate"
+    },
+    "shore/art.shore.prop.nanaicha.png": {
+      "group": "shore_cat_hemcat",
+      "wrote": true,
+      "fog": [
+        122,
+        132,
+        136
+      ],
+      "ground": [
+        72,
+        80,
+        84
+      ],
+      "before": {
+        "dark_hard": 7
+      },
+      "after": {
+        "dark_hard": 0,
+        "trans_body": 555,
+        "core_px": 43780,
+        "foot_y": 558,
+        "residual_bottom_hard": 0,
+        "soft_edge_px": 0
+      },
+      "foot_dots_cleared": 2085,
+      "crescent_recolored": 505,
+      "note": "solid core + stronger soft-alpha ground melt; no halo plate"
+    },
+    "nanaicha/traj/land-camp-fireside.png": {
+      "group": "camp_cat_hemcat",
+      "wrote": true,
+      "fog": [
+        132,
+        110,
+        84
+      ],
+      "ground": [
+        68,
+        54,
+        40
+      ],
+      "before": {
+        "dark_hard": 23594
+      },
+      "after": {
+        "dark_hard": 15161,
+        "trans_body": 810,
+        "core_px": 244169,
+        "foot_y": 1127,
+        "residual_bottom_hard": 0,
+        "soft_edge_px": 5535
+      },
+      "foot_dots_cleared": 1563,
+      "crescent_recolored": 6818,
+      "note": "solid core + stronger soft-alpha ground melt; no halo plate"
+    },
+    "nanaicha/traj/land-camp-sleep-mat.png": {
+      "group": "camp_cat_hemcat",
+      "wrote": true,
+      "fog": [
+        132,
+        110,
+        84
+      ],
+      "ground": [
+        68,
+        54,
+        40
+      ],
+      "before": {
+        "dark_hard": 29846
+      },
+      "after": {
+        "dark_hard": 20561,
+        "trans_body": 883,
+        "core_px": 268924,
+        "foot_y": 1123,
+        "residual_bottom_hard": 0,
+        "soft_edge_px": 5183
+      },
+      "foot_dots_cleared": 2900,
+      "crescent_recolored": 6729,
+      "note": "solid core + stronger soft-alpha ground melt; no halo plate"
+    },
+    "camp/art.camp.prop.nanaicha.png": {
+      "group": "camp_cat_hemcat",
+      "wrote": true,
+      "fog": [
+        132,
+        110,
+        84
+      ],
+      "ground": [
+        68,
+        54,
+        40
+      ],
+      "before": {
+        "dark_hard": 3720
+      },
+      "after": {
+        "dark_hard": 990,
+        "trans_body": 205,
+        "core_px": 80192,
+        "foot_y": 699,
+        "residual_bottom_hard": 0,
+        "soft_edge_px": 5492
+      },
+      "foot_dots_cleared": 623,
+      "crescent_recolored": 2151,
+      "note": "solid core + stronger soft-alpha ground melt; no halo plate"
+    },
+    "yard/art.yard.prop.nanaicha.png": {
+      "group": "yard_cat_hemcat",
+      "wrote": true,
+      "fog": [
+        96,
+        90,
+        80
+      ],
+      "ground": [
+        42,
+        37,
+        31
+      ],
+      "before": {
+        "dark_hard": 33654
+      },
+      "after": {
+        "dark_hard": 31004,
+        "trans_body": 128,
+        "core_px": 38899,
+        "foot_y": 694,
+        "residual_bottom_hard": 0,
+        "soft_edge_px": 4531
+      },
+      "foot_dots_cleared": 1081,
+      "crescent_recolored": 1255,
+      "note": "solid core + stronger soft-alpha ground melt; no halo plate"
+    }
+  },
+  "totals": {
+    "traveler_frames": 21,
+    "cat_assets": 8,
+    "hem_near_black_before": 907909,
+    "hem_near_black_after": 0,
+    "hem_995_1091_before": 903528,
+    "hem_995_1091_after": 0,
+    "wrote_count": 29
+  },
+  "verify": {
+    "sole_untouched": true,
+    "give_untouched": true,
+    "traveler_hem_bars_gone": true,
+    "hem_990_1122_after": 0,
+    "hem_995_1091_after": 0,
+    "cats_no_black_crescent": true,
+    "cats_no_foot_dots": true,
+    "cats_ground_melt_ok": true,
+    "curtain_grain_marker_untouched": true,
+    "locked_paths_sha_match": true
+  },
+  "eng_bullets": [
+    "sole 1148–1151 / rgb(28,22,16) 锁；give/门帘/粮袋/标石未动",
+    "旅人衣摆近黑横条清到约 995–1091（整段 990–1122）；三屏大猫实心溶地去硬黑新月/脚底圆点",
+    "工程挂 #32"
+  ],
+  "previews": [
+    "/tmp/pr31-hemcat-traveler-hem.png",
+    "/tmp/pr31-hemcat-traveler-hem-back.png",
+    "/tmp/pr31-hemcat-yard-cat.png",
+    "/tmp/pr31-hemcat-shore-cat.png",
+    "/tmp/pr31-hemcat-camp-cat.png"
+  ],
+  "blockers": [],
+  "wrote": [
+    "traveler-mythic/cloud-inspired/v3/anim/idle-back-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/idle-back-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/idle-front-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/idle-front-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/idle-side-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/idle-side-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/reach-front-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/reach-front-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/reach-side-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-03.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-04.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-03.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-04.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-03.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-04.png",
+    "nanaicha/traj/land-shore-driftwood.png",
+    "nanaicha/traj/land-shore-gourd.png",
+    "nanaicha/traj/land-shore-east-gap.png",
+    "shore/art.shore.prop.nanaicha.png",
+    "nanaicha/traj/land-camp-fireside.png",
+    "nanaicha/traj/land-camp-sleep-mat.png",
+    "camp/art.camp.prop.nanaicha.png",
+    "yard/art.yard.prop.nanaicha.png"
+  ]
+}
