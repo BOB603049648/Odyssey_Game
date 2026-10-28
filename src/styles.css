@@ -1917,8 +1917,8 @@ h1 {
 }
 /* Scene light sampled onto the sprite's own alpha. Not a uniform fog multiply. */
 .walk-viewport[data-scene="dba.scene.shore"] { --figure-light: #b8ced4; }
-.walk-viewport[data-scene="dba.scene.camp"] { --figure-light: #e6c4a2; }
-.walk-viewport[data-scene="dba.scene.yard"] { --figure-light: #9aa8ac; }
+.walk-viewport[data-scene="dba.scene.camp"] { --figure-light: #d4b08a; }
+.walk-viewport[data-scene="dba.scene.yard"] { --figure-light: #c9bca8; }
 .walk-viewport[data-scene="dba.scene.hall"] { --figure-light: #9aa8ac; }
 .figure-grade {
   position: absolute;
@@ -1936,11 +1936,13 @@ h1 {
 }
 .figure-grade.grade-color { mix-blend-mode: color; opacity: 0.58; }
 .figure-grade.grade-soft { mix-blend-mode: soft-light; opacity: 0.46; }
-.walk-viewport[data-scene="dba.scene.shore"] .figure-grade.grade-color { opacity: 0.72; }
-.walk-viewport[data-scene="dba.scene.shore"] .figure-grade.grade-soft { opacity: 0.55; }
-.walk-viewport[data-scene="dba.scene.camp"] .figure-grade.grade-color { opacity: 0.64; }
-.walk-viewport[data-scene="dba.scene.yard"] .figure-grade.grade-color { opacity: 0.74; }
-.walk-viewport[data-scene="dba.scene.yard"] .figure-grade.grade-soft { opacity: 0.58; }
+/* Shared fog wrap: a light veil of the scene color, not a second cyan/flat cutout. Sole band stays masked. */
+.walk-viewport[data-scene="dba.scene.shore"] .figure-grade.grade-color { opacity: 0.32; }
+.walk-viewport[data-scene="dba.scene.shore"] .figure-grade.grade-soft { opacity: 0.24; }
+.walk-viewport[data-scene="dba.scene.camp"] .figure-grade.grade-color { opacity: 0.36; }
+.walk-viewport[data-scene="dba.scene.camp"] .figure-grade.grade-soft { opacity: 0.28; }
+.walk-viewport[data-scene="dba.scene.yard"] .figure-grade.grade-color { opacity: 0.3; }
+.walk-viewport[data-scene="dba.scene.yard"] .figure-grade.grade-soft { opacity: 0.24; }
 /* Shore light #b8ced4 (and the other scene grades) lift a baked brown sole into a cool pad.
    Hard cut at 80%: body keeps the wrap, the sole band gets zero color and zero soft-light. */
 .traveler .figure-grade {
@@ -1960,7 +1962,16 @@ h1 {
   opacity: 0;
 }
 .walk-viewport[data-scene="dba.scene.shore"] .companion-anchor .figure-grade.grade-soft {
-  opacity: 0.22;
+  opacity: 0.08;
+}
+/* Feather the cat veil only. Traveler grade stays unblurred so the sole mask does not bleed. */
+.walk-viewport[data-scene="dba.scene.shore"] .companion-anchor .figure-grade,
+.walk-viewport[data-scene="dba.scene.camp"] .companion-anchor .figure-grade,
+.walk-viewport[data-scene="dba.scene.yard"] .companion-anchor .figure-grade {
+  filter: blur(1.1px);
+}
+.walk-viewport[data-scene="dba.scene.yard"] .scene-slot[data-kind="dried-fish"] .slot-asset {
+  opacity: 0.82;
 }
 /* Yard hall light and the camp wrap do the same to a dark paw contact. Shore cat stays as shipped. */
 .walk-viewport[data-scene="dba.scene.yard"] .companion-anchor .figure-grade,
