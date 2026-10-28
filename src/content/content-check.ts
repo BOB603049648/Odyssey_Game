@@ -1,3 +1,4 @@
+import { existsSync, readFileSync } from 'node:fs';
 import { COMPANION, ENDINGS, EVIDENCE, HINT_PLANS, LEXEMES, MEMORIES, SCENE_ASSEMBLIES } from './catalog';
 import { SLOT_ASSETS } from './slotAssets';
 import { HOTSPOT_IDS } from '../core/hints';
@@ -217,6 +218,57 @@ export function checkContent(): string[] {
         }
       }
     }
+    const seenSpots = new Set<string>();
+    for (const spot of SPOTS[sceneId]) {
+      if (seenSpots.has(spot.id)) errors.push(`${sceneId} repeats hotspot ${spot.id}`);
+      seenSpots.add(spot.id);
+      const anchors = kit.slots.filter((slot) => slot.slot === 'props' && slot.spot === spot.id);
+      const placed = anchors.filter((slot) => slot.x !== undefined && slot.y !== undefined);
+      const onSpot = placed.some((slot) => Math.abs((slot.x ?? 0) - spot.x) < 1e-6 && Math.abs((slot.y ?? 0) - spot.y) < 1e-6);
+      if (placed.length > 0 && !onSpot) errors.push(`${sceneId} hotspot ${spot.id} is not on an anchor`);
+    }
+  }
+  errors.push(...checkScaleContract(byId));
+  return errors;
+}
+
+type ScaleSample = { scene: string; id: string; h: number; max_h: number };
+
+function checkScaleContract(byId: Map<string, (typeof SCENE_ASSEMBLIES)[number]>): string[] {
+  const errors: string[] = [];
+  const contract = JSON.parse(readFileSync('docs/art-scale-contract.json', 'utf8')) as {
+    traveler?: { height_m?: number };
+    engine_scale?: { traveler_height_m?: number; traveler_world_h?: number; guide_world_h?: number; samples?: ScaleSample[] };
+    nanaicha_trajectory?: { landings?: { file?: string }[] };
+  };
+  const scale = contract.engine_scale;
+  if (!scale || scale.traveler_height_m !== contract.traveler?.height_m || scale.traveler_world_h === undefined) {
+    errors.push('engine_scale is missing the shared traveler height');
+    return errors;
+  }
+  const travelerSrc = readFileSync('src/ui/Traveler.tsx', 'utf8');
+  const height = travelerSrc.match(/export const TRAVELER_HEIGHT = ([0-9.]+)/);
+  if (!height || Number(height[1]) !== scale.traveler_world_h) {
+    errors.push(`traveler world height is not ${scale.traveler_world_h}`);
+  }
+  const guideSrc = readFileSync('src/core/companionPost.ts', 'utf8');
+  const guide = guideSrc.match(/export const NANAICHA_HEIGHT = ([0-9.]+)/);
+  if (!guide || Number(guide[1]) !== scale.guide_world_h) {
+    errors.push(`guide world height is not ${scale.guide_world_h}`);
+  }
+  for (const sample of scale.samples ?? []) {
+    const kit = byId.get(sample.scene);
+    const slot = kit?.slots.find((item) => item.id === sample.id);
+    if (!slot || slot.h !== sample.h) errors.push(`${sample.id} height drifted from the scale contract`);
+    if (slot?.h !== undefined && slot.h > sample.max_h) errors.push(`${sample.id} is taller than its class`);
+  }
+  const frames = [
+    ...(contract.nanaicha_trajectory?.landings ?? []).map((landing) => landing.file).filter((file): file is string => Boolean(file)),
+    'leap-01.png',
+    'leap-02.png',
+  ];
+  for (const file of frames) {
+    if (!existsSync(`src/assets/companion/nanaicha/traj/${file}`)) errors.push(`missing contract frame ${file}`);
   }
   return errors;
 }

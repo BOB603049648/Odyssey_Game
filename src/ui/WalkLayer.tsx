@@ -1,18 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CatPost } from '../core/companionPost';
 import { companionFace, companionFoot, NANAICHA_HEIGHT } from '../core/companionPost';
-import { companionFrameId, nextGuide, trajClip, type GuidePhase, type TrajClip } from '../core/companionTraj';
+import { companionFrameId, trajClip, type GuidePhase, type TrajClip } from '../core/companionTraj';
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
 import type { HintLevel } from '../core/schema';
 import { BANDS, SPAWNS, SPOTS, closestSpot, gateAt, gatesFrom, nearestSpot, plantOnGround, standsAt, type GateEdge } from '../core/stage';
+import { stepWorld } from '../core/worldLoop';
 import {
   WALK_SPEED,
   WORLD_SCALE,
   cameraOffset,
-  coastStep,
-  desiredVelocity,
-  distance,
   followCamera,
   inRadius,
   pointerToWorld,
@@ -373,48 +371,51 @@ export function WalkLayer({
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       if (!pausedRef.current) {
-        const dir = heldDirection();
-        const goal = targetRef.current;
         const from = posRef.current;
-        const wish = desiredVelocity(dir, dir ? null : goal, from);
-        const step = coastStep(from, velocityRef.current, wish, BANDS[sceneRef.current], dt);
-        velocityRef.current = step.velocity;
-        if (goal && (distance(step.pos, goal) < 0.01 || (!step.moving && step.blocked))) {
-          targetRef.current = null;
-          velocityRef.current = { x: 0, y: 0 };
-        }
-        const speed = Math.hypot(step.velocity.x, step.velocity.y);
-        if (step.moving) {
-          apply(step.pos, true, step.blocked, step.velocity.x, step.velocity.y, Math.min(1, speed / WALK_SPEED));
+        const prevCat = catRef.current;
+        const desired = postRef.current;
+        const stepped = stepWorld({
+          walker: { pos: from, velocity: velocityRef.current, seek: targetRef.current },
+          intent: { move: heldDirection(), seek: targetRef.current },
+          band: BANDS[sceneRef.current],
+          dt,
+          guide: {
+            phase: guideRef.current,
+            elapsed: guideElapsed.current,
+            cat: prevCat,
+            post: { x: desired.x, y: desired.y },
+          },
+        });
+        velocityRef.current = stepped.walker.velocity;
+        targetRef.current = stepped.walker.seek;
+        const speed = Math.hypot(stepped.walker.velocity.x, stepped.walker.velocity.y);
+        if (stepped.walker.moving) {
+          apply(
+            stepped.walker.pos,
+            true,
+            stepped.walker.blocked,
+            stepped.walker.velocity.x,
+            stepped.walker.velocity.y,
+            Math.min(1, speed / WALK_SPEED),
+          );
         } else if (movingRef.current) {
           movingRef.current = false;
           setMoving(false);
           setStride(0);
           setBlocked(false);
         }
-        const desired = postRef.current;
-        const prevCat = catRef.current;
-        const stepped = nextGuide({
-          phase: guideRef.current,
-          elapsed: guideElapsed.current,
-          cat: prevCat,
-          post: { x: desired.x, y: desired.y },
-          dt,
-          retarget: false,
-          sceneChanged: false,
-        });
-        guideElapsed.current = stepped.elapsed;
-        catRef.current = stepped.cat;
-        const clipNow = stepped.phase === 'move' ? trajClip(stepped.elapsed) : 'land';
-        if (stepped.phase !== guideRef.current) {
-          guideRef.current = stepped.phase;
-          setGuide(stepped.phase);
+        guideElapsed.current = stepped.guide.elapsed;
+        catRef.current = stepped.guide.cat;
+        const clipNow = stepped.guide.phase === 'move' ? trajClip(stepped.guide.elapsed) : 'land';
+        if (stepped.guide.phase !== guideRef.current) {
+          guideRef.current = stepped.guide.phase;
+          setGuide(stepped.guide.phase);
         }
         if (clipNow !== clipRef.current) {
           clipRef.current = clipNow;
           setClip(clipNow);
         }
-        if (stepped.cat.x !== prevCat.x || stepped.cat.y !== prevCat.y) setCat(stepped.cat);
+        if (stepped.guide.cat.x !== prevCat.x || stepped.guide.cat.y !== prevCat.y) setCat(stepped.guide.cat);
         const frameEl = viewportRef.current;
         if (frameEl && frameEl.clientWidth > 1 && (frameEl.clientWidth !== viewRef.current.w || frameEl.clientHeight !== viewRef.current.h)) {
           const nextView = { w: frameEl.clientWidth, h: frameEl.clientHeight };
