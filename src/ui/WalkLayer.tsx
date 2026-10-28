@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CatPost } from '../core/companionPost';
-import { NANAICHA_FOOT, NANAICHA_HEIGHT } from '../core/companionPost';
+import { companionFoot, NANAICHA_HEIGHT } from '../core/companionPost';
 import { companionFrameId, LEAP_01_MS, LEAP_02_MS, type TrajClip } from '../core/companionTraj';
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
@@ -531,7 +531,7 @@ export function WalkLayer({
             data-face={catPost.x >= cat.x ? 'right' : 'left'}
             data-sprite={companionFrameId(catPost.beat, clip)}
             style={{
-              ...worldToScreen({ x: cat.x, y: cat.y }, NANAICHA_FOOT),
+              ...worldToScreen({ x: cat.x, y: cat.y }, companionFoot(companionFrameId(catPost.beat, clip))),
               height: `${NANAICHA_HEIGHT * 100}%`,
             }}
           >
@@ -607,7 +607,7 @@ export function WalkLayer({
       <div className="grade-veil" data-grade={sceneAssembly(plates.previous ?? scene)?.grade ?? 'mist-dawn'} data-testid="grade-veil" />
       <img className="scene-grade" data-testid="scene-grade" src={sceneGrade(scene)} alt="" draggable={false} />
       <div className="sole-layer" data-testid="sole-layer">
-        <img ref={soleRef} className="sole-stamp" data-testid="sole-stamp" alt="" />
+        <img ref={soleRef} className="sole-soft" data-testid="sole-soft" alt="" />
       </div>
       {teachLine ? (
         <p className="approach-hint" data-testid="approach-hint">

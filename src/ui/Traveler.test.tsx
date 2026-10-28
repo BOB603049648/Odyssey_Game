@@ -5,6 +5,7 @@ import { SPAWNS } from '../core/stage';
 import { WALK_SPEED } from '../core/walk';
 import {
   FRAME_BLEND_MS,
+  TRAVELER_FOOT,
   TRAVELER_FRAME_COUNTS,
   TRAVELER_HEIGHT,
   TURN_BLEND_MS,
@@ -63,6 +64,8 @@ describe('traveler art', () => {
     expect(view.container.querySelector('.figure-grade')).toBeTruthy();
     expect(mark.style.transform).toContain('translate(-50%');
     expect(mark.style.transform).not.toContain('-50%, -50%');
+    expect(TRAVELER_FOOT.y).toBeCloseTo(1151 / 1152);
+    expect(TRAVELER_FOOT.x).toBeCloseTo(0.5);
   });
 
   it('lays the body along the mat with the sole still on the foot point', () => {
