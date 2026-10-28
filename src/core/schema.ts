@@ -149,6 +149,8 @@ export const saveDataSchema = z.object({
     kind: z.enum(['none', 'ok', 'no']),
     /** Locale key for a diegetic line. Absent when the beat has nothing to say. */
     line: z.string().optional(),
+    /** Hotspot that just answered, so the prop can glow or dim with the line. */
+    spot: z.string().optional(),
   }),
   stepCounter: z.number().int().nonnegative(),
   settings: settingsSchema,

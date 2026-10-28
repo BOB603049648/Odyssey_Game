@@ -185,3 +185,17 @@ export function nearestSpot(spots: readonly Spot[], pos: Point, scene: IslandSce
   }
   return best;
 }
+
+/** Nearest hotspot even when the traveler is still outside its radius. */
+export function closestSpot(spots: readonly Spot[], pos: Point): Spot | null {
+  let best: Spot | null = null;
+  let bestDist = Infinity;
+  for (const spot of spots) {
+    const dist = Math.hypot(spot.x - pos.x, spot.y - pos.y);
+    if (dist < bestDist) {
+      best = spot;
+      bestDist = dist;
+    }
+  }
+  return best;
+}

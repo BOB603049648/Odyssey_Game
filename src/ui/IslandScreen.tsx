@@ -122,6 +122,7 @@ export function IslandScreen({
           catPost={catPost}
           resting={line === 'spot.sleep.ok'}
           onFar={(id) => dispatch({ type: 'spot-far', id })}
+          beat={save.feedback.kind === 'none' || !save.feedback.spot ? null : { spot: save.feedback.spot, kind: save.feedback.kind }}
           flash={flashSpot && flashKind ? { kind: flashKind, seq: save.feedback.seq, x: flashSpot.x, y: flashSpot.y } : null}
           onEscape={() => {
             if (save.overlay === 'depart' || save.overlay === 'memory') return;

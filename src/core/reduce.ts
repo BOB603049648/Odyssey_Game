@@ -311,7 +311,7 @@ function pokeGourd(state: SaveData): SaveData {
   if (isLearnedState(state.words[WATER]?.state) && state.beats['dba.beat.water'] !== true) {
     return touch({ ...state, overlay: 'use-word', screen: 'island', currentScene: 'dba.scene.shore' });
   }
-  return mark(state, { feedback: { seq: state.feedback.seq + 1, kind: 'no' } });
+  return mark(state, { feedback: { seq: state.feedback.seq + 1, kind: 'no', line: 'spot.gourd.no', spot: 'island-gourd' } });
 }
 
 function useWord(state: SaveData, wordId: string): SaveData {
