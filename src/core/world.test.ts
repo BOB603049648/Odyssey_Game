@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { WORLD_SCALE } from './walk';
-import { buildingFoot, contactOpacity, depthScale, parallaxBleed, worldToScreen } from './world';
+import { buildingFoot, contactLift, contactOpacity, depthScale, parallaxBleed, worldToScreen } from './world';
 
 describe('world foot projection', () => {
   it('pins the opaque foot and never the canvas center', () => {
@@ -27,6 +27,11 @@ describe('world foot projection', () => {
     expect(contactOpacity(0)).toBe(1);
     expect(contactOpacity(1)).toBe(0);
     expect(contactOpacity(0.25)).toBeCloseTo(0.75);
+    expect(contactLift('hold', 'land')).toBe(0);
+    expect(contactLift('gaze', 'land')).toBe(0);
+    expect(contactLift('move', 'leap-01')).toBeCloseTo(0.42);
+    expect(contactOpacity(contactLift('move', 'leap-02'))).toBe(0);
+    expect(contactLift('move', 'land')).toBe(0);
   });
 
   it('bleeds parallax plates past a camera parked on the edge', () => {

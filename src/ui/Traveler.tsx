@@ -337,6 +337,15 @@ export function TravelerMark({
       }}
       aria-hidden="true"
     >
+      <span
+        className="contact-shadow"
+        data-testid="contact-shadow"
+        style={{
+          width: `${contactShadowWidth(y) * 100}%`,
+          ['--shadow-opacity' as string]: '1',
+          ['--foot-x' as string]: '50%',
+        }}
+      />
       <div className="traveler-bob">
         <span className="traveler-frames" style={{ ['--frame-blend' as string]: `${blendMs}ms` }}>
           {outgoing ? <FramePicture blend={outgoing} layer="out" /> : null}

@@ -535,12 +535,9 @@ h1 {
   opacity: 1;
 }
 
-.traveler .contact-shadow {
-  opacity: 0.9;
-}
-.walk-viewport[data-scene="dba.scene.shore"] .traveler .contact-shadow,
-.walk-viewport[data-scene="dba.scene.shore"] .companion-anchor .contact-shadow {
-  opacity: 1;
+.traveler .contact-shadow,
+.companion-anchor .contact-shadow {
+  opacity: var(--shadow-opacity, 0.82);
 }
 /* Baked soft contact is the sole. No DOM ellipse, and no shore cool radial if one is left behind. */
 .traveler .foot-ellipse,
@@ -787,7 +784,6 @@ h1 {
 }
 
 .companion-anchor[data-traveling="yes"][data-traj="land"] .nanaicha-figure { animation: nanaicha-hop 0.55s ease-in-out infinite; }
-.companion-anchor .contact-shadow { opacity: var(--shadow-opacity, 1); }
 .companion-anchor[data-look="gourd"] .nanaicha-figure,
 .companion-anchor[data-look="give"] .nanaicha-figure,
 .companion-anchor[data-look="sleep"] .nanaicha-figure,
@@ -2015,11 +2011,26 @@ h1 {
 
 .contact-shadow {
   position: absolute;
-  left: 50%;
+  left: var(--foot-x, 50%);
   bottom: 0;
   width: 46%;
+  height: 9%;
+  transform: translate(-50%, 40%);
+  opacity: var(--shadow-opacity, 0.82);
+  background: radial-gradient(ellipse at center, var(--shadow-tint, #3a2a22) 0%, transparent 70%);
+  filter: blur(2.5px);
+  border-radius: 50%;
   pointer-events: none;
   z-index: 0;
+  mix-blend-mode: multiply;
+}
+.contact-shadow[data-land="yes"] {
+  animation: contact-land 280ms ease-out;
+}
+@keyframes contact-land {
+  0% { transform: translate(-50%, 40%) scale(0.7); opacity: 0.28; }
+  58% { transform: translate(-50%, 40%) scale(1.14); opacity: var(--shadow-opacity, 0.82); }
+  100% { transform: translate(-50%, 40%) scale(1); opacity: var(--shadow-opacity, 0.82); }
 }
 
 /* Soft ground AO under the planted foot. Blurred, not a hard ellipse. */

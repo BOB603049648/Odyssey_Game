@@ -37,7 +37,9 @@ describe('traveler art', () => {
     expect(mark?.getAttribute('data-facing')).toBe('front');
     expect(current()).toMatch(/idle-front-01/);
     expect(view.container.querySelector('.traveler-shade')).toBeNull();
-    expect(view.container.querySelector('[data-testid="contact-shadow"]')).toBeNull();
+    const shadow = view.container.querySelector('[data-testid="contact-shadow"]') as HTMLElement;
+    expect(shadow).toBeTruthy();
+    expect(shadow.className).toBe('contact-shadow');
     expect(view.container.querySelector('.foot-ellipse')).toBeNull();
     for (const facing of ['back', 'left', 'right'] as const) {
       view.rerender(<TravelerMark x={0.4} y={0.6} facing={facing} moving={false} />);
