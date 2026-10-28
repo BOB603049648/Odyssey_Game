@@ -538,6 +538,13 @@ h1 {
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
+  /* Drop the hard black hem lip. The sole rows stay so the brown contact can show. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 93.5%, transparent 95.2%, transparent 98.6%, #000 99.35%, #000 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 93.5%, transparent 95.2%, transparent 98.6%, #000 99.35%, #000 100%);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
 }
 
 .traveler-frames { position: relative; height: 100%; }
@@ -1859,14 +1866,16 @@ h1 {
     transparent 40%
   );
   mix-blend-mode: soft-light;
-  opacity: 0.9;
+  opacity: 0.62;
 }
 .world-strip {
   background-repeat: no-repeat;
   background-size: 100% 100%;
   mix-blend-mode: soft-light;
-  opacity: 0.72;
+  opacity: 0.5;
 }
+.walk-viewport[data-scene="dba.scene.yard"] .world-ambient { opacity: 0.4; }
+.walk-viewport[data-scene="dba.scene.yard"] .world-strip { opacity: 0.34; }
 .world-vignette {
   background: radial-gradient(ellipse at 50% 46%, transparent 42%, rgba(0, 0, 0, 0.42) 100%);
 }
@@ -1885,7 +1894,9 @@ h1 {
   object-fit: cover;
   pointer-events: none;
   mix-blend-mode: soft-light;
+  opacity: 0.68;
 }
+.walk-viewport[data-scene="dba.scene.yard"] .scene-grade { opacity: 0.46; }
 /* Fog lifts a dark sole to a cool gray. This copy sits above that fog, but only the
    bottom contact, and the mask fades in — there is no hard 91% cut and no ellipse. */
 .sole-layer {
@@ -1902,13 +1913,13 @@ h1 {
   object-fit: contain;
   object-position: center bottom;
   /* Open only on the brown contact. The hem above stays out of this stamp. */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 97.6%, rgba(0, 0, 0, 0.28) 98.4%, rgba(0, 0, 0, 0.7) 99.1%, #000 99.6%, #000 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, transparent 97.6%, rgba(0, 0, 0, 0.28) 98.4%, rgba(0, 0, 0, 0.7) 99.1%, #000 99.6%, #000 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 99%, rgba(0, 0, 0, 0.4) 99.4%, #000 99.7%, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, transparent 99%, rgba(0, 0, 0, 0.4) 99.4%, #000 99.7%, #000 100%);
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-  filter: blur(0.9px);
+  filter: blur(0.45px);
 }
 .foot-ellipse {
   background: none;
@@ -1936,24 +1947,23 @@ h1 {
   -webkit-mask-position: center bottom;
   mask-position: center bottom;
 }
-.figure-grade.grade-color { mix-blend-mode: multiply; opacity: 0.58; }
-.figure-grade.grade-soft { mix-blend-mode: soft-light; opacity: 0.46; }
-/* Shared fog multiply. The body takes the scene hue; the sole band stays out of this wash. */
-.walk-viewport[data-scene="dba.scene.shore"] .figure-grade.grade-color { opacity: 0.5; }
-.walk-viewport[data-scene="dba.scene.shore"] .figure-grade.grade-soft { opacity: 0.22; }
-.walk-viewport[data-scene="dba.scene.camp"] .figure-grade.grade-color { opacity: 0.48; }
-.walk-viewport[data-scene="dba.scene.camp"] .figure-grade.grade-soft { opacity: 0.26; }
-.walk-viewport[data-scene="dba.scene.yard"] .figure-grade.grade-color { opacity: 0.46; }
-.walk-viewport[data-scene="dba.scene.yard"] .figure-grade.grade-soft { opacity: 0.22; }
-/* Let the ground show through the dark hem. sole-soft repaints the brown contact above this. */
+.figure-grade.grade-color { mix-blend-mode: color; opacity: 0.4; }
+.figure-grade.grade-soft { mix-blend-mode: soft-light; opacity: 0.2; }
+/* Colorize onto the solid sprite. The figure itself stays opaque. */
+.walk-viewport[data-scene="dba.scene.shore"] .figure-grade.grade-color { opacity: 0.38; }
+.walk-viewport[data-scene="dba.scene.shore"] .figure-grade.grade-soft { opacity: 0.16; }
+.walk-viewport[data-scene="dba.scene.camp"] .figure-grade.grade-color { opacity: 0.36; }
+.walk-viewport[data-scene="dba.scene.camp"] .figure-grade.grade-soft { opacity: 0.18; }
+.walk-viewport[data-scene="dba.scene.yard"] .figure-grade.grade-color { opacity: 0.34; }
+.walk-viewport[data-scene="dba.scene.yard"] .figure-grade.grade-soft { opacity: 0.16; }
 .walk-viewport .traveler-bob,
 .walk-viewport .nanaicha-figure {
-  opacity: 0.84;
+  opacity: 1;
 }
-/* Fade the multiply off before the sole rows. No hard 80% cut, so the hem is not an opaque black lip. */
+/* Tint the body. Leave the sole rows out so they are not lifted into a pale pad. */
 .traveler .figure-grade {
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 96%), var(--figure);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 96%), var(--figure);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 90%, transparent 96%), var(--figure);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 90%, transparent 96%), var(--figure);
   -webkit-mask-size: 100% 100%, contain;
   mask-size: 100% 100%, contain;
   -webkit-mask-position: center center, center bottom;
@@ -1963,18 +1973,12 @@ h1 {
   -webkit-mask-composite: source-in;
   mask-composite: intersect;
 }
-/* Shore cat takes the same multiply, a little lighter so the mist does not flatten the face. */
+/* Shore cat stays solid. A light colorize only; no blur halo and no see-through head. */
 .walk-viewport[data-scene="dba.scene.shore"] .companion-anchor .figure-grade.grade-color {
-  opacity: 0.42;
+  opacity: 0.32;
 }
 .walk-viewport[data-scene="dba.scene.shore"] .companion-anchor .figure-grade.grade-soft {
-  opacity: 0.16;
-}
-/* Feather the cat veil only. Traveler grade stays unblurred so the sole mask does not bleed. */
-.walk-viewport[data-scene="dba.scene.shore"] .companion-anchor .figure-grade,
-.walk-viewport[data-scene="dba.scene.camp"] .companion-anchor .figure-grade,
-.walk-viewport[data-scene="dba.scene.yard"] .companion-anchor .figure-grade {
-  filter: blur(1.1px);
+  opacity: 0.1;
 }
 .walk-viewport[data-scene="dba.scene.yard"] .scene-slot[data-kind="dried-fish"] .slot-asset {
   opacity: 0.82;
@@ -2010,11 +2014,11 @@ h1 {
   position: absolute;
   left: var(--foot-x, 50%);
   bottom: 0.6%;
-  width: 32%;
-  height: 2.4%;
-  transform: translate(-50%, 35%);
-  background: rgba(28, 22, 16, 0.38);
-  filter: blur(5px);
+  width: 26%;
+  height: 1.5%;
+  transform: translate(-50%, 20%);
+  background: rgba(22, 16, 12, 0.55);
+  filter: blur(3.5px);
   border-radius: 50%;
   pointer-events: none;
   z-index: -1;
