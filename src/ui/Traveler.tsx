@@ -2,27 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { WALK_SPEED } from '../core/walk';
 import { depthScale, worldToScreen } from '../core/world';
 import { punchHemUrl } from './hemPunch';
-import reachFront01 from '../assets/traveler/reach-front-01.png';
-import reachFront02 from '../assets/traveler/reach-front-02.png';
-import reachSide01 from '../assets/traveler/reach-side-01.png';
-import idleBack01 from '../assets/traveler/idle-back-01.png';
-import idleBack02 from '../assets/traveler/idle-back-02.png';
-import idleFront01 from '../assets/traveler/idle-front-01.png';
-import idleFront02 from '../assets/traveler/idle-front-02.png';
-import idleSide01 from '../assets/traveler/idle-side-01.png';
-import idleSide02 from '../assets/traveler/idle-side-02.png';
-import walkBack01 from '../assets/traveler/walk-back-01.png';
-import walkBack02 from '../assets/traveler/walk-back-02.png';
-import walkBack03 from '../assets/traveler/walk-back-03.png';
-import walkBack04 from '../assets/traveler/walk-back-04.png';
-import walkFront01 from '../assets/traveler/walk-front-01.png';
-import walkFront02 from '../assets/traveler/walk-front-02.png';
-import walkFront03 from '../assets/traveler/walk-front-03.png';
-import walkFront04 from '../assets/traveler/walk-front-04.png';
-import walkSide01 from '../assets/traveler/walk-side-01.png';
-import walkSide02 from '../assets/traveler/walk-side-02.png';
-import walkSide03 from '../assets/traveler/walk-side-03.png';
-import walkSide04 from '../assets/traveler/walk-side-04.png';
+import { frameUrl, loadFrame } from './travelerArt';
 
 export type TravelerFacing = 'front' | 'back' | 'left' | 'right';
 export type TravelerSheet = 'front' | 'side' | 'back';
@@ -41,23 +21,27 @@ export const TRAVELER_FRAME_COUNTS = {
 export const REACH_HZ = 1.4;
 export const REACH_HOLD_MS = 720;
 
-const WALK: Record<TravelerSheet, readonly string[]> = {
-  front: [walkFront01, walkFront02, walkFront03, walkFront04],
-  side: [walkSide01, walkSide02, walkSide03, walkSide04],
-  back: [walkBack01, walkBack02, walkBack03, walkBack04],
+const WALK_FILES: Record<TravelerSheet, readonly string[]> = {
+  front: ['walk-front-01.png', 'walk-front-02.png', 'walk-front-03.png', 'walk-front-04.png'],
+  side: ['walk-side-01.png', 'walk-side-02.png', 'walk-side-03.png', 'walk-side-04.png'],
+  back: ['walk-back-01.png', 'walk-back-02.png', 'walk-back-03.png', 'walk-back-04.png'],
 };
 
-const IDLE: Record<TravelerSheet, readonly string[]> = {
-  front: [idleFront01, idleFront02],
-  side: [idleSide01, idleSide02],
-  back: [idleBack01, idleBack02],
+const IDLE_FILES: Record<TravelerSheet, readonly string[]> = {
+  front: ['idle-front-01.png', 'idle-front-02.png'],
+  side: ['idle-side-01.png', 'idle-side-02.png'],
+  back: ['idle-back-01.png', 'idle-back-02.png'],
 };
 
 /** Back reach was not delivered. Missing sheets fall back to idle. */
-const REACH: Partial<Record<TravelerSheet, readonly string[]>> = {
-  front: [reachFront01, reachFront02],
-  side: [reachSide01],
+const REACH_FILES: Partial<Record<TravelerSheet, readonly string[]>> = {
+  front: ['reach-front-01.png', 'reach-front-02.png'],
+  side: ['reach-side-01.png'],
 };
+
+function frameSrc(file: string): string {
+  return frameUrl(file) ?? '';
+}
 
 /**
  * Full-speed walk cycles per second while covering WALK_SPEED.
@@ -157,16 +141,16 @@ export function frameIndex(phase: number, count: number): number {
 }
 
 export function poseForSheet(pose: TravelerPose, sheet: TravelerSheet): TravelerPose {
-  if (pose === 'reach' && !REACH[sheet]) return 'idle';
+  if (pose === 'reach' && !REACH_FILES[sheet]) return 'idle';
   return pose;
 }
 
 export function clipFrames(pose: TravelerPose, sheet: TravelerSheet): readonly string[] {
   const shown = poseForSheet(pose, sheet);
-  if (shown === 'walk') return WALK[sheet];
-  if (shown === 'reach') return REACH[sheet] ?? IDLE[sheet];
-  if (shown === 'idle' || shown === 'lie') return IDLE[sheet];
-  return [IDLE[sheet][0]];
+  if (shown === 'walk') return WALK_FILES[sheet].map(frameSrc);
+  if (shown === 'reach') return (REACH_FILES[sheet] ?? IDLE_FILES[sheet]).map(frameSrc);
+  if (shown === 'idle' || shown === 'lie') return IDLE_FILES[sheet].map(frameSrc);
+  return [frameSrc(IDLE_FILES[sheet][0])];
 }
 
 type Motion = { gait: number; pose: TravelerPose; frame: number };
@@ -238,30 +222,38 @@ function sameBlend(a: FrameBlend, b: FrameBlend): boolean {
 }
 
 function FramePicture({ blend, layer }: { blend: FrameBlend; layer: 'out' | 'current' }) {
-  const frames = clipFrames(blend.pose, blend.sheet);
-  const index = Math.min(frames.length - 1, Math.max(0, blend.frame));
-  const src = frames[index] ?? frames[0];
-  const [shown, setShown] = useState(src);
+  const files =
+    blend.pose === 'walk'
+      ? WALK_FILES[sheetOf(blend.facing)]
+      : blend.pose === 'reach'
+        ? REACH_FILES[sheetOf(blend.facing)] ?? IDLE_FILES[sheetOf(blend.facing)]
+        : IDLE_FILES[sheetOf(blend.facing)];
+  const file = files[Math.min(files.length - 1, Math.max(0, blend.frame))] ?? files[0];
+  const cached = frameSrc(file);
+  const [punched, setPunched] = useState<{ file: string; url: string } | null>(null);
   useEffect(() => {
     let live = true;
-    setShown(src);
-    punchHemUrl(src).then((next) => {
-      if (live) setShown(next);
+    loadFrame(file).then((url) => {
+      if (!live || !url) return;
+      punchHemUrl(url).then((next) => {
+        if (live) setPunched({ file, url: next });
+      });
     });
     return () => {
       live = false;
     };
-  }, [src]);
+  }, [file]);
+  const shown = punched?.file === file ? punched.url : cached;
   return (
     <span
       className={layer === 'out' ? 'traveler-frame-wrap out' : 'traveler-frame-wrap'}
       data-mirror={blend.facing === 'left' ? 'yes' : 'no'}
-      style={{ ['--figure' as string]: `url("${src}")` }}
+      style={{ ['--figure' as string]: `url("${shown}")` }}
     >
       <img
         className={layer === 'current' ? 'traveler-figure traveler-frame' : 'traveler-frame'}
         data-layer={layer}
-        data-frame={index}
+        data-frame={blend.frame}
         src={shown}
         alt=""
         draggable={false}

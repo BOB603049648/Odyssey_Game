@@ -1,6 +1,6 @@
-import type { CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { sceneAssembly } from '../content/catalog';
-import { resolveSlotAsset } from '../content/slotAssets';
+import { loadSlotAsset, resolveSlotAsset } from '../content/slotAssets';
 import { isIslandScene, type IslandScene } from '../core/island';
 import type { SceneAssembly, SceneSlot, SceneSlotName } from '../core/schema';
 import { BANDS } from '../core/stage';
@@ -236,7 +236,7 @@ function SlotPiece({
   const placed = slot.x !== undefined && slot.y !== undefined;
   const scenic = slot.slot === 'building' && !placed;
   const testId = slot.slot === 'props' ? `prop-${slot.id}` : `slot-${slot.slot}`;
-  const src = resolveSlotAsset(slot.asset);
+  const src = useSlotSrc(slot.asset);
   const interactable = Boolean(slot.spot);
   const footed = (slot.slot === 'props' || slot.slot === 'building') && !isPortal(slot);
   return (
@@ -268,6 +268,21 @@ function SlotPiece({
       </div>
     </div>
   );
+}
+
+function useSlotSrc(asset: string | null | undefined): string | null {
+  const [src, setSrc] = useState<string | null>(() => resolveSlotAsset(asset ?? null));
+  useEffect(() => {
+    let live = true;
+    setSrc(resolveSlotAsset(asset ?? null));
+    loadSlotAsset(asset ?? null).then((url) => {
+      if (live) setSrc(url);
+    });
+    return () => {
+      live = false;
+    };
+  }, [asset]);
+  return src;
 }
 
 function WalkMask({ scene }: { scene: IslandScene }) {

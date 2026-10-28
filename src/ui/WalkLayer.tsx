@@ -19,41 +19,18 @@ import {
   type WalkKey,
 } from '../core/walk';
 import { sceneAssembly } from '../content/catalog';
-import { resolveSlotAsset } from '../content/slotAssets';
+import { loadSlotAsset, preloadSceneAssets, resolveSlotAsset } from '../content/slotAssets';
 import { Companion } from './Companion';
 import type { KnotMark } from './companion/CatMark';
 import { Glyph } from './glyphs';
 import { t } from './i18n';
 import { PlateStack, type SpotBeat } from './Plate';
 import { gateLabel, type SpotView } from './spotViews';
-import shoreCat from '../assets/art/slots/art.shore.prop.nanaicha.png';
-import campCat from '../assets/art/slots/art.camp.prop.nanaicha.png';
-import yardCat from '../assets/art/slots/art.yard.prop.nanaicha.png';
-import landDriftwood from '../assets/companion/nanaicha/traj/land-shore-driftwood.png';
-import landGourd from '../assets/companion/nanaicha/traj/land-shore-gourd.png';
-import landEast from '../assets/companion/nanaicha/traj/land-shore-east-gap.png';
-import landMat from '../assets/companion/nanaicha/traj/land-camp-sleep-mat.png';
-import landFire from '../assets/companion/nanaicha/traj/land-camp-fireside.png';
-import landGive from '../assets/companion/nanaicha/traj/land-yard-give.png';
-import leap01 from '../assets/companion/nanaicha/traj/leap-01.png';
-import leap02 from '../assets/companion/nanaicha/traj/leap-02.png';
-import driftFlash from '../assets/art/slots/art.shore.prop.driftwood.interact.png';
-import sleepFlash from '../assets/art/slots/art.camp.prop.sleep-mat.interact.png';
-import grainFlash from '../assets/art/slots/art.yard.prop.grain-bags.interact.png';
 import { sceneGrade, sceneLook, sceneStrip } from './cohesion';
+import { loadTraj, trajUrl } from './trajArt';
 import { contactLift, contactOpacity, depthScale, worldToScreen } from '../core/world';
 import { facingFromMove, REACH_HOLD_MS, TravelerMark, type TravelerFacing } from './Traveler';
 
-const TRAJ_SRC: Record<string, string> = {
-  'land-shore-driftwood': landDriftwood,
-  'land-shore-gourd': landGourd,
-  'land-shore-east-gap': landEast,
-  'land-camp-sleep-mat': landMat,
-  'land-camp-fireside': landFire,
-  'land-yard-give': landGive,
-  'leap-01': leap01,
-  'leap-02': leap02,
-};
 import { WalkStick } from './WalkStick';
 import { useCrossfade } from './useCrossfade';
 
@@ -480,8 +457,51 @@ export function WalkLayer({
 
   const worldW = view.w * WORLD_SCALE;
   const worldH = view.h * WORLD_SCALE;
+  const catSprite = companionFrameId(catPost.beat, clip);
   const groundAsset = sceneAssembly(scene)?.slots.find((slot) => slot.slot === 'ground')?.asset ?? null;
-  const groundPlate = resolveSlotAsset(groundAsset);
+  const [groundPlate, setGroundPlate] = useState<string | null>(() => resolveSlotAsset(groundAsset));
+  const slotCat =
+    scene === 'dba.scene.camp'
+      ? 'art.camp.prop.nanaicha'
+      : scene === 'dba.scene.yard' || scene === 'dba.scene.path'
+        ? 'art.yard.prop.nanaicha'
+        : 'art.shore.prop.nanaicha';
+  const [catFigure, setCatFigure] = useState<string | undefined>(
+    () => trajUrl(catSprite) ?? resolveSlotAsset(slotCat) ?? undefined,
+  );
+  const flashId =
+    flash?.kind === 'driftwood'
+      ? 'art.shore.prop.driftwood.interact'
+      : flash?.kind === 'sleep'
+        ? 'art.camp.prop.sleep-mat.interact'
+        : flash?.kind === 'give'
+          ? 'art.yard.prop.grain-bags.interact'
+          : null;
+  const [flashSrc, setFlashSrc] = useState<string | null>(() => resolveSlotAsset(flashId));
+  useEffect(() => {
+    let live = true;
+    const kit = sceneAssembly(scene);
+    preloadSceneAssets(kit?.slots.map((slot) => slot.asset) ?? []);
+    loadSlotAsset(groundAsset).then((url) => {
+      if (live) setGroundPlate(url);
+    });
+    Promise.all([loadTraj(catSprite), loadSlotAsset(slotCat)]).then(([frame, plate]) => {
+      if (live) setCatFigure(frame ?? plate ?? undefined);
+    });
+    return () => {
+      live = false;
+    };
+  }, [scene, groundAsset, catSprite, slotCat]);
+  useEffect(() => {
+    let live = true;
+    setFlashSrc(resolveSlotAsset(flashId));
+    loadSlotAsset(flashId).then((url) => {
+      if (live) setFlashSrc(url);
+    });
+    return () => {
+      live = false;
+    };
+  }, [flashId]);
   const shownCam = import.meta.env.MODE === 'test' ? cameraOffset(pos, view.w, view.h) : cam;
   const look = sceneLook(scene);
   const near = spots.filter((spot) => standsAt(scene, spot, pos)).map((spot) => spot.id);
@@ -516,7 +536,6 @@ export function WalkLayer({
     window.clearTimeout(landTimer.current);
   }, []);
 
-  const catSprite = companionFrameId(catPost.beat, clip);
   const catFoot = companionFoot(catSprite);
   const catScreen = worldToScreen({ x: cat.x, y: cat.y }, catFoot);
   const catInFront = cat.y > feetY + 0.012;
@@ -635,14 +654,7 @@ export function WalkLayer({
             />
             <Companion
               frame={catSprite}
-              figure={
-                TRAJ_SRC[catSprite] ??
-                (scene === 'dba.scene.camp'
-                  ? campCat
-                  : scene === 'dba.scene.yard' || scene === 'dba.scene.path'
-                    ? yardCat
-                    : shoreCat)
-              }
+              figure={catFigure}
               level={hint.level}
               anchor={hint.pose === 'fetch' ? hint.anchor : catPost.look}
               pose={
@@ -666,7 +678,7 @@ export function WalkLayer({
               key={`${scene}-${flash.seq}`}
               className="interact-flash"
               data-testid="interact-flash"
-              src={flash.kind === 'driftwood' ? driftFlash : flash.kind === 'sleep' ? sleepFlash : grainFlash}
+              src={flashSrc ?? ''}
               alt=""
               style={{ left: pct(flash.x), top: pct(flash.y) }}
             />

@@ -1,4 +1,5 @@
-import { SLOT_ASSETS } from '../content/slotAssets';
+import { useEffect, useState } from 'react';
+import { loadSlotAsset, resolveSlotAsset } from '../content/slotAssets';
 
 const MOTIF = {
   'art.pro.storm': 'wreck',
@@ -17,9 +18,22 @@ export function isStillId(plate: string): plate is StillId {
 }
 
 export function StillFrame({ id }: { id: StillId }) {
+  const [src, setSrc] = useState(() => resolveSlotAsset(id));
+  useEffect(() => {
+    let live = true;
+    const order = Object.keys(MOTIF) as StillId[];
+    const next = order[order.indexOf(id) + 1];
+    loadSlotAsset(id).then((url) => {
+      if (live) setSrc(url);
+    });
+    if (next) void loadSlotAsset(next);
+    return () => {
+      live = false;
+    };
+  }, [id]);
   return (
-    <div className="plate-still" data-testid="still-frame" data-art-id={id} data-motif={MOTIF[id]} data-placeholder="art">
-      <img src={SLOT_ASSETS[id]} alt="" draggable={false} />
+    <div className="plate-still" data-testid="still-frame" data-art-id={id} data-motif={MOTIF[id]} data-placeholder={src ? 'art' : 'block'}>
+      {src ? <img src={src} alt="" draggable={false} /> : null}
     </div>
   );
 }

@@ -96,5 +96,12 @@ describe('cohesion shadows and grades', () => {
     expect(css).toMatch(/\.diegetic-line,\s*\.approach-hint\s*\{[^}]*backdrop-filter:\s*none/);
     expect(css).toMatch(/\.world-layer \.hotspot\[data-result="ok"\]\s*\{[^}]*box-shadow/);
     expect(css).not.toMatch(/\.diegetic-line,\s*\.approach-hint\s*\{[^}]*backdrop-filter:\s*blur/);
+    const slots = readFileSync('src/content/slotAssets.ts', 'utf8');
+    const traveler = readFileSync('src/ui/Traveler.tsx', 'utf8');
+    expect(slots).toContain('import.meta.glob');
+    expect(slots).not.toContain("from '../assets/art/slots/");
+    expect(traveler).not.toContain("from '../assets/traveler/");
+    expect(css).toContain('keyart.webp');
+    expect(css).not.toContain('art.camp.ground');
   });
 });

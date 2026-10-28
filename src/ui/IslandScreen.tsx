@@ -11,7 +11,7 @@ import { GlossSwitch } from './GlossSwitch';
 import { Glyph } from './glyphs';
 import { hintMark } from './hintMark';
 import { t, type MessageKey } from './i18n';
-import closeup from '../assets/art/slots/art.ev.main.closeup.jpg';
+import { loadSlotAsset, resolveSlotAsset } from '../content/slotAssets';
 import { EnterVeil } from './Plate';
 import { MemoryRain } from './scenes';
 import { SPOTS } from '../core/stage';
@@ -301,6 +301,16 @@ function Lexicon({
 }
 
 function CaseFile({ save, onMemory }: { save: SaveData; onMemory: () => void }) {
+  const [closeup, setCloseup] = useState(() => resolveSlotAsset('art.ev.main.closeup'));
+  useEffect(() => {
+    let live = true;
+    loadSlotAsset('art.ev.main.closeup').then((url) => {
+      if (live) setCloseup(url);
+    });
+    return () => {
+      live = false;
+    };
+  }, []);
   const slots = EVIDENCE.filter((item) => item.island === 'dba');
   const held = slots.filter((item) => save.evidence.includes(item.id));
   const remembered = save.memories.includes('dba.mem.rain-night');
@@ -312,7 +322,7 @@ function CaseFile({ save, onMemory }: { save: SaveData; onMemory: () => void }) 
         const label = has ? t(item.labelKey as MessageKey) : t('casefile.emptySlot');
         return (
           <figure key={item.id} data-testid={`case-${item.id}`} data-held={has ? 'yes' : 'no'}>
-            {has && item.id === 'dba.ev.main' ? (
+            {has && item.id === 'dba.ev.main' && closeup ? (
               <img className="evidence-closeup" data-testid="evidence-closeup" src={closeup} alt="" draggable={false} />
             ) : has ? (
               <BreakMark />

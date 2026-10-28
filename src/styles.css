@@ -1314,7 +1314,7 @@ h1 {
   animation: plate-drift 48s ease-in-out infinite alternate;
 }
 
-.plate-photo[data-plate="keyart"] { background-image: url("./assets/art/keyart.jpg"); }
+.plate-photo[data-plate="keyart"] { background-image: url("./assets/art/keyart.webp"); }
 
 .ambient {
   display: none;
