@@ -16,7 +16,8 @@ export type Gate = {
   edge?: GateEdge;
 };
 
-const shoreBand: Band = { minX: 0.05, maxX: 0.96, minY: 0.4, maxY: 0.84 };
+/** North edge is the tide line. Feet stay on the sand, south of the cliff. */
+const shoreBand: Band = { minX: 0.05, maxX: 0.96, minY: 0.48, maxY: 0.84 };
 /**
  * Porch planks only. The wall/deck seam sits near y 0.78; y 0.68 is the
  * door's right wall, so a foot there floats off the boards.
@@ -61,11 +62,11 @@ export const GATES: readonly Gate[] = [
 
 export const SPOTS: Record<IslandScene, readonly Spot[]> = {
   'dba.scene.shore': [
-    { id: 'island-mural', x: 0.26, y: 0.56, r: 0.072 },
-    { id: 'shore-stone', x: 0.22, y: 0.68, r: 0.05 },
-    { id: 'shore-driftwood', x: 0.33, y: 0.71, r: 0.05 },
-    { id: 'island-gourd', x: 0.58, y: 0.64, r: 0.068 },
-    { id: 'shore-depart', x: 0.74, y: 0.54, r: 0.05 },
+    { id: 'island-mural', x: 0.22, y: 0.62, r: 0.072 },
+    { id: 'shore-stone', x: 0.18, y: 0.7, r: 0.05 },
+    { id: 'shore-driftwood', x: 0.33, y: 0.72, r: 0.05 },
+    { id: 'island-gourd', x: 0.58, y: 0.66, r: 0.068 },
+    { id: 'shore-depart', x: 0.74, y: 0.6, r: 0.05 },
   ],
   'dba.scene.camp': [
     { id: 'camp-sleep', x: 0.42, y: 0.82, r: 0.016 },
