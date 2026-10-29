@@ -19,7 +19,7 @@
     "role": "runtime",
     "same_world": "shore, camp, and yard share one traveler height. Props are not given a second scale.",
     "traveler_height_m": 1.75,
-    "traveler_world_h": 0.118,
+    "traveler_world_h": 0.136,
     "guide_world_h": 0.22,
     "samples": [
       { "scene": "dba.scene.shore", "id": "art.shore.prop.driftwood", "h": 0.14, "max_h": 0.3 },

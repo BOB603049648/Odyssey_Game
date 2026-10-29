@@ -30,9 +30,9 @@ describe('hotspot acceptance', () => {
   it('anchors every shore, camp, and yard spot on its own prop', () => {
     const shore = [
       ['shore-driftwood', 'art.shore.prop.driftwood', 0.33, 0.71, 0.05],
-      ['shore-stone', 'art.shore.prop.break-shard', 0.17, 0.68, 0.05],
+      ['shore-stone', 'art.shore.prop.break-shard', 0.22, 0.68, 0.05],
       ['island-gourd', 'art.shore.prop.gourd', 0.58, 0.64, 0.068],
-      ['island-mural', 'art.shore.prop.mural-wall', 0.2, 0.56, 0.072],
+      ['island-mural', 'art.shore.prop.mural-wall', 0.26, 0.56, 0.072],
       ['shore-depart', 'art.shore.prop.east-gap', 0.74, 0.54, 0.05],
     ] as const;
     expect(SPOTS['dba.scene.shore']).toHaveLength(5);

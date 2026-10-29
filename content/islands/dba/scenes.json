@@ -67,7 +67,7 @@
         "asset": "art.shore.prop.break-shard",
         "parallax": 1,
         "spot": "shore-stone",
-        "x": 0.17,
+        "x": 0.22,
         "y": 0.68,
         "w": 0.1,
         "h": 0.08
@@ -79,7 +79,7 @@
         "asset": "art.shore.prop.mural-wall",
         "parallax": 1,
         "spot": "island-mural",
-        "x": 0.2,
+        "x": 0.26,
         "y": 0.56,
         "w": 0.2,
         "h": 0.14
