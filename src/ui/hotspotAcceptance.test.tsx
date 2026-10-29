@@ -32,7 +32,7 @@ describe('hotspot acceptance', () => {
       ['shore-driftwood', 'art.shore.prop.driftwood', 0.33, 0.72, 0.05],
       ['shore-stone', 'art.shore.prop.break-shard', 0.18, 0.7, 0.05],
       ['island-gourd', 'art.shore.prop.gourd', 0.58, 0.66, 0.11],
-      ['island-mural', 'art.shore.prop.mural-wall', 0.3, 0.5, 0.09],
+      ['island-mural', 'art.shore.prop.mural-wall', 0.3, 0.56, 0.09],
       ['shore-depart', 'art.shore.prop.east-gap', 0.74, 0.68, 0.05],
     ] as const;
     expect(SPOTS['dba.scene.shore']).toHaveLength(5);
@@ -104,6 +104,9 @@ describe('hotspot acceptance', () => {
     const gap = screen.getByTestId('prop-art.shore.prop.east-gap');
     expect(gap.getAttribute('data-slot')).toBe('props');
     expect(gap.getAttribute('data-spot')).toBe('shore-depart');
+    expect(gap.querySelector('[data-testid="mural-bite"]')).toBeNull();
+    const mural = screen.getByTestId('prop-art.shore.prop.mural-wall');
+    expect(mural.querySelector('[data-testid="mural-bite"]')).toBeTruthy();
     expect(gap.getAttribute('data-anchor')).toBe('foot');
     expect(gap.style.transform).toContain('translate(-50%, -100%)');
     expect(prop('art.camp.prop.fire', 'dba.scene.camp')?.y).toBeGreaterThanOrEqual(0.8);

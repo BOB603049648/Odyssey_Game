@@ -1664,6 +1664,25 @@ h1 {
   object-fit: contain;
   object-position: center bottom;
 }
+/* Opaque shore-fog pad behind the mural's low-alpha hem, so the cliff does not show through. */
+.scene-slot[data-kind="mural-wall"] .mural-bite {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 0;
+  height: 9%;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--ambient, #b8ced4) 46%, #fff) 0 58%,
+    transparent 100%
+  );
+}
+.scene-slot[data-kind="mural-wall"] .slot-asset {
+  position: relative;
+  z-index: 1;
+}
 .scene-slot.placed[data-slot="props"] .prop-contact {
   z-index: -1;
   height: auto;
