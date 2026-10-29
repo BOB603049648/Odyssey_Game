@@ -105,8 +105,7 @@ describe('hotspot acceptance', () => {
     expect(gap.getAttribute('data-slot')).toBe('props');
     expect(gap.getAttribute('data-spot')).toBe('shore-depart');
     expect(gap.querySelector('[data-testid="mural-bite"]')).toBeNull();
-    const mural = screen.getByTestId('prop-art.shore.prop.mural-wall');
-    expect(mural.querySelector('[data-testid="mural-bite"]')).toBeTruthy();
+    expect(screen.getByTestId('prop-art.shore.prop.mural-wall').querySelector('[data-testid="mural-bite"]')).toBeNull();
     expect(gap.getAttribute('data-anchor')).toBe('foot');
     expect(gap.style.transform).toContain('translate(-50%, -100%)');
     expect(prop('art.camp.prop.fire', 'dba.scene.camp')?.y).toBeGreaterThanOrEqual(0.8);
