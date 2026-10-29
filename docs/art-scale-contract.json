@@ -3640,5 +3640,59 @@
     },
     "foot_pad_below_opaque_max_px": 24,
     "note": "Auxiliary hang. Repo version stays 1.3-pr31-hemcat. Shore boxes stay the #53 eng table. ground.jpg was encoded to art.shore.ground.webp because the slot loader only reads png/webp."
+  },
+  "pr55_cliff": {
+    "version": "1.3-pr55-cliff",
+    "key": "pr55_cliff",
+    "role": "auxiliary",
+    "updated": "2026-10-29T15:29:29+08:00",
+    "priority_note": "PR55 cliff：①mural-wall 改贴崖壁画语义（非横条 UI）pad≤24+轻接触七符可读；②east-gap 去浮椭圆/罐头影/绿环、石脚沉沙、杆脚落石沙；③gourd 去灰台并放大；④P2 漂木/裂符底褐线软化。building/ground 不动。",
+    "knives": [
+      "mural-wall cliff plaque rewrite pad_below<=24 + light contact, 7 seals",
+      "east-gap kill float ellipse/green rim, sink feet, pole foot, soft sand",
+      "gourd strip gray plinth + enlarge, pad<=24",
+      "P2 driftwood/break-shard soften bottom brown line"
+    ],
+    "locked": [
+      "traveler sole-soft",
+      "nanaicha land-shore-* traj",
+      "land-yard-give claws",
+      "curtain/grain/marker"
+    ],
+    "do_not_touch": [
+      "nanaicha/traj/land-shore-driftwood.png",
+      "nanaicha/traj/land-shore-gourd.png",
+      "nanaicha/traj/land-shore-east-gap.png",
+      "nanaicha/traj/land-yard-give.png",
+      "camp/art.camp.prop.north-curtain.png",
+      "yard/art.yard.prop.grain-bags.png",
+      "yard/art.yard.prop.grain-bags.interact.png"
+    ],
+    "files_wrote": [
+      "shore/art.shore.prop.mural-wall.png",
+      "shore/art.shore.prop.east-gap.png",
+      "shore/art.shore.prop.gourd.png",
+      "shore/art.shore.prop.driftwood.png",
+      "shore/art.shore.prop.driftwood.interact.png",
+      "shore/art.shore.prop.break-shard.png"
+    ],
+    "verify": {
+      "mural_pad_below_le_24": true,
+      "mural_not_horizontal_ui_strip": true,
+      "mural_content_intact": true,
+      "east_gap_pad_below_le_24": true,
+      "east_gap_no_float_ellipse": true,
+      "east_gap_no_can_shadow": true,
+      "east_gap_no_green_rim": true,
+      "gourd_pad_below_le_24": true,
+      "gourd_no_gray_plinth": true,
+      "gourd_enlarged": true,
+      "locked_untouched": true,
+      "no_hard_black_ground_plate": true,
+      "files_wrote_count": 6
+    },
+    "foot_pad_below_opaque_max_px": 24,
+    "mural_strip_heuristic": "prior H/W=0.2467 bbox_h=205; after H/W=0.6061 bbox_h=574 (pass if H/W>=0.45 OR bbox_h>=180)",
+    "note": "Auxiliary hang. Repo version stays 1.3-pr31-hemcat. #55 shore boxes and shoreBand stay."
   }
 }
