@@ -29,11 +29,11 @@ function prop(id: string, scene: string) {
 describe('hotspot acceptance', () => {
   it('anchors every shore, camp, and yard spot on its own prop', () => {
     const shore = [
-      ['shore-driftwood', 'art.shore.prop.driftwood', 0.33, 0.71, 0.05],
-      ['shore-stone', 'art.shore.prop.break-shard', 0.22, 0.68, 0.05],
-      ['island-gourd', 'art.shore.prop.gourd', 0.58, 0.64, 0.068],
-      ['island-mural', 'art.shore.prop.mural-wall', 0.26, 0.56, 0.072],
-      ['shore-depart', 'art.shore.prop.east-gap', 0.74, 0.54, 0.05],
+      ['shore-driftwood', 'art.shore.prop.driftwood', 0.33, 0.72, 0.05],
+      ['shore-stone', 'art.shore.prop.break-shard', 0.18, 0.7, 0.05],
+      ['island-gourd', 'art.shore.prop.gourd', 0.58, 0.66, 0.068],
+      ['island-mural', 'art.shore.prop.mural-wall', 0.22, 0.62, 0.072],
+      ['shore-depart', 'art.shore.prop.east-gap', 0.74, 0.6, 0.05],
     ] as const;
     expect(SPOTS['dba.scene.shore']).toHaveLength(5);
     for (const [spotId, artId, x, y, r] of shore) {
@@ -51,6 +51,9 @@ describe('hotspot acceptance', () => {
     expect(wood && gourd && wood.x! < gourd.x!).toBe(true);
     expect(gap?.slot).toBe('props');
     expect(kit('dba.scene.shore').slots.find((slot) => slot.slot === 'sky')?.id).not.toBe('art.shore.prop.east-gap');
+    const gate = prop('art.shore.building', 'dba.scene.shore');
+    expect(gate).toMatchObject({ x: 0.16, y: 0.42, w: 0.48, h: 0.36 });
+    expect((gate?.y ?? 0) + (gate?.h ?? 0) / 2).toBeCloseTo(0.6);
 
     expect(SPOTS['dba.scene.camp']).toHaveLength(8);
     expect(prop('art.camp.prop.fire', 'dba.scene.camp')?.spot).toBe('camp-sleep');
