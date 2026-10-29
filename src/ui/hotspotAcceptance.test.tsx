@@ -31,7 +31,7 @@ describe('hotspot acceptance', () => {
     const shore = [
       ['shore-driftwood', 'art.shore.prop.driftwood', 0.33, 0.72, 0.05],
       ['shore-stone', 'art.shore.prop.break-shard', 0.18, 0.7, 0.05],
-      ['island-gourd', 'art.shore.prop.gourd', 0.58, 0.66, 0.11],
+      ['island-gourd', 'art.shore.prop.gourd', 0.58, 0.66, 0.07],
       ['island-mural', 'art.shore.prop.mural-wall', 0.3, 0.56, 0.09],
       ['shore-depart', 'art.shore.prop.east-gap', 0.74, 0.68, 0.05],
     ] as const;
