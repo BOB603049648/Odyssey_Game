@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CatPost } from '../core/companionPost';
-import { companionFace, companionFoot, companionSole, NANAICHA_HEIGHT } from '../core/companionPost';
+import { companionFace, companionFoot, companionSole, NANAICHA_HEIGHT, SHORE_CAT_HEIGHT } from '../core/companionPost';
 import { companionFrameId, trajClip, type GuidePhase, type TrajClip } from '../core/companionTraj';
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
@@ -27,7 +27,7 @@ import { t } from './i18n';
 import { PlateStack, type SpotBeat } from './Plate';
 import { gateLabel, type SpotView } from './spotViews';
 import { sceneGrade, sceneLook, sceneStrip } from './cohesion';
-import { heroUrl, loadHero, loadTraj, trajUrl } from './trajArt';
+import { loadTraj, trajUrl } from './trajArt';
 import { contactLift, contactOpacity, depthScale, worldToScreen } from '../core/world';
 import { facingFromMove, REACH_HOLD_MS, TravelerMark, type TravelerFacing } from './Traveler';
 
@@ -466,9 +466,8 @@ export function WalkLayer({
       : scene === 'dba.scene.yard' || scene === 'dba.scene.path'
         ? 'art.yard.prop.nanaicha'
         : 'art.shore.prop.nanaicha';
-  const shoreCat = scene === 'dba.scene.shore';
   const [catFigure, setCatFigure] = useState<string | undefined>(
-    () => (shoreCat ? heroUrl() : trajUrl(catSprite) ?? resolveSlotAsset(slotCat)) ?? undefined,
+    () => trajUrl(catSprite) ?? resolveSlotAsset(slotCat) ?? undefined,
   );
   const flashId =
     flash?.kind === 'driftwood'
@@ -486,16 +485,13 @@ export function WalkLayer({
     loadSlotAsset(groundAsset).then((url) => {
       if (live) setGroundPlate(url);
     });
-    const figure = shoreCat
-      ? loadHero()
-      : Promise.all([loadTraj(catSprite), loadSlotAsset(slotCat)]).then(([frame, plate]) => frame ?? plate ?? null);
-    figure.then((url) => {
-      if (live && url) setCatFigure(url);
+    Promise.all([loadTraj(catSprite), loadSlotAsset(slotCat)]).then(([frame, plate]) => {
+      if (live) setCatFigure(frame ?? plate ?? undefined);
     });
     return () => {
       live = false;
     };
-  }, [scene, groundAsset, catSprite, slotCat, shoreCat]);
+  }, [scene, groundAsset, catSprite, slotCat]);
   useEffect(() => {
     let live = true;
     setFlashSrc(resolveSlotAsset(flashId));
@@ -647,7 +643,7 @@ export function WalkLayer({
               ['--foot-x' as string]: `${catFoot.x * 100}%`,
               ['--foot-y' as string]: `${catFoot.y * 100}%`,
               ['--sole-y' as string]: `${companionSole(catSprite) * 100}%`,
-              height: `${NANAICHA_HEIGHT * 100}%`,
+              height: `${(scene === 'dba.scene.shore' ? SHORE_CAT_HEIGHT : NANAICHA_HEIGHT) * 100}%`,
             }}
           >
             <span

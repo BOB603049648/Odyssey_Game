@@ -49,6 +49,13 @@ export function companionFace(frameId: string, postX: number, catX: number): 'le
 }
 /** Canvas height as a fraction of the world layer. Subject reads a little taller than the traveler. */
 export const NANAICHA_HEIGHT = 0.22;
+/**
+ * Shore landings leave empty headroom, so the same 0.22 box painted a cat
+ * taller than the traveler. This box keeps the seated shore body slightly
+ * under TRAVELER_HEIGHT. Camp and yard, including the give claws, stay at
+ * NANAICHA_HEIGHT.
+ */
+export const SHORE_CAT_HEIGHT = 0.168;
 
 export type GazeStep = 'water' | 'food' | 'sleep' | 'danger' | 'done';
 

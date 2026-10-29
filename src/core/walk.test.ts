@@ -112,9 +112,9 @@ describe('walk', () => {
   });
 
   it('only counts a hotspot when the traveler is inside its radius', () => {
-    const spot = { x: 0.2, y: 0.56 };
+    const spot = { x: 0.26, y: 0.56 };
     expect(inRadius({ x: 0.42, y: 0.62 }, spot, 0.072)).toBe(false);
-    expect(inRadius({ x: 0.22, y: 0.58 }, spot, 0.072)).toBe(true);
+    expect(inRadius({ x: 0.28, y: 0.58 }, spot, 0.072)).toBe(true);
   });
 });
 
