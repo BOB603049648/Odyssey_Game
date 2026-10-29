@@ -3587,5 +3587,58 @@
       "camp/art.camp.prop.nanaicha.png",
       "yard/art.yard.prop.nanaicha.png"
     ]
+  },
+  "pr53_pad": {
+    "version": "1.3-pr53-pad",
+    "key": "pr53_pad",
+    "role": "auxiliary",
+    "updated": "2026-10-29T15:05:42+08:00",
+    "priority_note": "PR53 pad：①mural-wall 底 pad≤24+极轻落地接触；②building 底+侧空裁、西偏门廊/木径；③east-gap prop 底 pad≤24 软边贴沙、去绿边/罐头影、杆脚落石沙；④gourd/driftwood(+interact)/break-shard 去棚架台座贴沙；⑤ground 湿砂光带尽力/可缓。",
+    "knives": [
+      "mural-wall translate pad_below<=24 + light contact",
+      "building scale+west bias pad_below<=24",
+      "east-gap prop pad<=24 soft sand, green/ellipse clear, pole foot",
+      "gourd/driftwood/break-shard strip pedestal, pad<=24",
+      "optional ground wet-sand bands"
+    ],
+    "locked": [
+      "traveler sole-soft",
+      "nanaicha land-shore-* traj",
+      "land-yard-give claws",
+      "curtain/grain/marker"
+    ],
+    "do_not_touch": [
+      "nanaicha/traj/land-shore-driftwood.png",
+      "nanaicha/traj/land-shore-gourd.png",
+      "nanaicha/traj/land-shore-east-gap.png",
+      "nanaicha/traj/land-yard-give.png",
+      "camp/art.camp.prop.north-curtain.png",
+      "yard/art.yard.prop.grain-bags.png",
+      "yard/art.yard.prop.grain-bags.interact.png"
+    ],
+    "files_wrote": [
+      "shore/art.shore.prop.mural-wall.png",
+      "shore/art.shore.building.png",
+      "shore/art.shore.prop.east-gap.png",
+      "shore/art.shore.prop.gourd.png",
+      "shore/art.shore.prop.driftwood.png",
+      "shore/art.shore.prop.driftwood.interact.png",
+      "shore/art.shore.prop.break-shard.png",
+      "shore/art.shore.ground.jpg"
+    ],
+    "verify": {
+      "mural_pad_below_le_24": true,
+      "building_pad_below_le_24": true,
+      "east_gap_pad_below_le_24": true,
+      "gourd_pad_below_le_24": true,
+      "driftwood_pad_below_le_24": true,
+      "break_shard_pad_below_le_24": true,
+      "mural_content_intact": true,
+      "locked_untouched": true,
+      "no_hard_black_ground_plate": true,
+      "files_wrote_count": 8
+    },
+    "foot_pad_below_opaque_max_px": 24,
+    "note": "Auxiliary hang. Repo version stays 1.3-pr31-hemcat. Shore boxes stay the #53 eng table. ground.jpg was encoded to art.shore.ground.webp because the slot loader only reads png/webp."
   }
 }
