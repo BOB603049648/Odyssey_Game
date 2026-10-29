@@ -23,7 +23,7 @@
     "guide_world_h": 0.22,
     "samples": [
       { "scene": "dba.scene.shore", "id": "art.shore.prop.driftwood", "h": 0.24, "max_h": 0.3 },
-      { "scene": "dba.scene.shore", "id": "art.shore.prop.gourd", "h": 0.26, "max_h": 0.26 },
+      { "scene": "dba.scene.shore", "id": "art.shore.prop.gourd", "h": 0.38, "max_h": 0.38 },
       { "scene": "dba.scene.camp", "id": "art.camp.prop.fire", "h": 0.14, "max_h": 0.3 },
       { "scene": "dba.scene.yard", "id": "art.yard.prop.grain-bags", "h": 0.24, "max_h": 0.3 }
     ],

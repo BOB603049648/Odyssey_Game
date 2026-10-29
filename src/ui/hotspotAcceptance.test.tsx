@@ -31,9 +31,9 @@ describe('hotspot acceptance', () => {
     const shore = [
       ['shore-driftwood', 'art.shore.prop.driftwood', 0.33, 0.72, 0.05],
       ['shore-stone', 'art.shore.prop.break-shard', 0.18, 0.7, 0.05],
-      ['island-gourd', 'art.shore.prop.gourd', 0.58, 0.66, 0.068],
-      ['island-mural', 'art.shore.prop.mural-wall', 0.22, 0.62, 0.072],
-      ['shore-depart', 'art.shore.prop.east-gap', 0.74, 0.6, 0.05],
+      ['island-gourd', 'art.shore.prop.gourd', 0.58, 0.66, 0.11],
+      ['island-mural', 'art.shore.prop.mural-wall', 0.3, 0.5, 0.09],
+      ['shore-depart', 'art.shore.prop.east-gap', 0.74, 0.68, 0.05],
     ] as const;
     expect(SPOTS['dba.scene.shore']).toHaveLength(5);
     for (const [spotId, artId, x, y, r] of shore) {
@@ -104,8 +104,8 @@ describe('hotspot acceptance', () => {
     const gap = screen.getByTestId('prop-art.shore.prop.east-gap');
     expect(gap.getAttribute('data-slot')).toBe('props');
     expect(gap.getAttribute('data-spot')).toBe('shore-depart');
-    expect(gap.getAttribute('data-anchor')).toBe('portal');
-    expect(gap.style.transform).toContain('translate(-50%, -50%)');
+    expect(gap.getAttribute('data-anchor')).toBe('foot');
+    expect(gap.style.transform).toContain('translate(-50%, -100%)');
     expect(prop('art.camp.prop.fire', 'dba.scene.camp')?.y).toBeGreaterThanOrEqual(0.8);
     expect(prop('art.yard.prop.grain-bags', 'dba.scene.yard')?.y).toBeGreaterThanOrEqual(0.88);
     expect(gap.getAttribute('data-placeholder')).toBe('art');

@@ -112,9 +112,9 @@ describe('walk', () => {
   });
 
   it('only counts a hotspot when the traveler is inside its radius', () => {
-    const spot = { x: 0.22, y: 0.62 };
-    expect(inRadius({ x: 0.42, y: 0.62 }, spot, 0.072)).toBe(false);
-    expect(inRadius({ x: 0.24, y: 0.64 }, spot, 0.072)).toBe(true);
+    const spot = { x: 0.3, y: 0.5 };
+    expect(inRadius({ x: 0.42, y: 0.62 }, spot, 0.09)).toBe(false);
+    expect(inRadius({ x: 0.32, y: 0.52 }, spot, 0.09)).toBe(true);
   });
 });
 
@@ -135,7 +135,7 @@ describe('shore and camp layout', () => {
     expect(plantOnGround('dba.scene.shore', { x: 0.74, y: 0.75 }).y).toBeCloseTo(0.75);
     const depart = SPOTS['dba.scene.shore'].find((spot) => spot.id === 'shore-depart');
     expect(depart?.x).toBeCloseTo(0.74);
-    expect(depart?.y).toBeCloseTo(0.6);
+    expect(depart?.y).toBeCloseTo(0.68);
     expect(BANDS['dba.scene.shore'].minY).toBeCloseTo(0.48);
     expect(depart && standsAt('dba.scene.shore', depart, { x: 0.74, y: SHORE_MARKER.sandY })).toBe(true);
     expect(depart && standsAt('dba.scene.shore', depart, { x: 0.4, y: SHORE_MARKER.sandY })).toBe(false);

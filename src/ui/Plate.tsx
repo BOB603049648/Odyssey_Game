@@ -19,9 +19,9 @@ function isCurtain(slot: SceneSlot): boolean {
   return slot.kind === 'curtain' || slot.kind === 'north-curtain';
 }
 
-/** East doorway plate. Not a footed prop, so it must not plant on the sand. */
-function isPortal(slot: SceneSlot): boolean {
-  return slot.kind === 'light-slit';
+/** East rock used to float on a center pivot. It now shares the prop foot, on the sand. */
+function isPortal(_slot: SceneSlot): boolean {
+  return false;
 }
 
 /** Closer than the traveler's feet: paint after the figure. Curtain hem is the cloth's foot. */
