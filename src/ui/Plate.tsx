@@ -258,6 +258,7 @@ function SlotPiece({
       style={slotStyle(slot, cam)}
     >
       <div className="prop-body">
+        {slot.kind === 'mural-wall' ? <span className="mural-bite" data-testid="mural-bite" /> : null}
         {src ? <img className="slot-asset" src={src} alt="" draggable={false} /> : null}
         {!src && slot.slot === 'ground' ? <GroundPlane scene={scene} kind={slot.kind} /> : null}
         {!src && slot.slot !== 'ground' && slot.kind !== 'empty' ? (

@@ -62,7 +62,7 @@ export const GATES: readonly Gate[] = [
 
 export const SPOTS: Record<IslandScene, readonly Spot[]> = {
   'dba.scene.shore': [
-    { id: 'island-mural', x: 0.3, y: 0.5, r: 0.09 },
+    { id: 'island-mural', x: 0.3, y: 0.56, r: 0.09 },
     { id: 'shore-stone', x: 0.18, y: 0.7, r: 0.05 },
     { id: 'shore-driftwood', x: 0.33, y: 0.72, r: 0.05 },
     { id: 'island-gourd', x: 0.58, y: 0.66, r: 0.11 },
