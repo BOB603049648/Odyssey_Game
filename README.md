@@ -25,6 +25,22 @@ npm i && npm run dev
 
 开发服务器左下角有「调试」，`npm run build` 的正式包里没有。
 
+## Godot 雾岸竖切（B · feature flag）
+
+默认**关闭**：现网 / 本地不挂 Godot，仍走 Web `WalkLayer`。竖切期间 Web 走层与 Godot **双轨最长 14 天**（自本刀合入起算），到期排卸 Web `WalkLayer` 的雾岸路径；合同真源仍 `odyssey-godot/contract/`，稳定后再迁 `content/`。
+
+本机试玩（需旁路已部署的 HTML5，或同域 `/godot/`）：
+
+```bash
+cp .env.example .env.local
+# 编辑 .env.local：
+# VITE_GODOT_SHORE=1
+# VITE_GODOT_URL=http://47.252.94.138/godot/
+npm i && npm run dev
+```
+
+进标题 → 序章 → 岛后，雾岸由 iframe 装载；案卷/词库/设置仍为壳 overlay（会 `pause` iframe）。gate 仅 toast「营区未接」，不真切 camp。`shore-depart` 走现有 `reduce`。关 flag 或未设 env 时零引用 Godot。
+
 ## 核对
 
 ```bash

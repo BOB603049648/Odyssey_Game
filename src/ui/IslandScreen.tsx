@@ -21,6 +21,8 @@ import { useFadePresence } from './useCrossfade';
 import { useFeedbackFx } from './useFeedbackFx';
 import { useIdleHint } from './useIdleHint';
 import { sceneLook } from './cohesion';
+import { isGodotShoreEnabled } from '../bridge/godotBridge';
+import { IslandGodotViewport } from './IslandGodotViewport';
 import { WalkLayer } from './WalkLayer';
 
 export { hintMark } from './hintMark';
@@ -121,33 +123,41 @@ export function IslandScreen({
         data-bone-cell={save.flags['dba.flag.bone-cell'] === true ? 'yes' : 'no'}
         data-hotspots={save.flags['dev.hotspots'] === true ? 'on' : 'off'}
       >
-        <WalkLayer
-          scene={scene}
-          drank={drank}
-          spots={visibleSpots(scene, save, hint)}
-          hint={hint}
-          paused={paused}
-          purr={purr}
-          knot={knotMark(save.evidence)}
-          remembered={remembered}
-          onRemember={(nextScene, point) => setPlace({ scene: nextScene, x: point.x, y: point.y })}
-          onExit={(next) => dispatch({ type: 'goto-scene', scene: next })}
-          onInteract={(id) => interact(id, dispatch)}
-          onAsk={() => dispatch({ type: 'request-hint' })}
-          taught={save.flags['dba.flag.taught-approach'] === true}
-          onTeach={() => dispatch({ type: 'teach-approach' })}
-          showWalkMask={import.meta.env.DEV && save.flags['dev.walkable'] === true}
-          catPost={catPost}
-          resting={resting}
-          onFar={(id) => dispatch({ type: 'spot-far', id })}
-          beat={save.feedback.kind === 'none' || !save.feedback.spot ? null : { spot: save.feedback.spot, kind: save.feedback.kind }}
-          flash={flashSpot && flashKind ? { kind: flashKind, seq: save.feedback.seq, x: flashSpot.x, y: flashSpot.y } : null}
-          onEscape={() => {
-            if (save.overlay === 'depart' || save.overlay === 'memory') return;
-            if (save.overlay !== 'none') dispatch({ type: 'close-overlay' });
-            else dispatch({ type: 'open-overlay', overlay: 'casefile' });
-          }}
-        />
+        {isGodotShoreEnabled() && scene === 'dba.scene.shore' ? (
+          <IslandGodotViewport
+            save={save}
+            paused={paused}
+            onInteract={(id) => interact(id, dispatch)}
+          />
+        ) : (
+          <WalkLayer
+            scene={scene}
+            drank={drank}
+            spots={visibleSpots(scene, save, hint)}
+            hint={hint}
+            paused={paused}
+            purr={purr}
+            knot={knotMark(save.evidence)}
+            remembered={remembered}
+            onRemember={(nextScene, point) => setPlace({ scene: nextScene, x: point.x, y: point.y })}
+            onExit={(next) => dispatch({ type: 'goto-scene', scene: next })}
+            onInteract={(id) => interact(id, dispatch)}
+            onAsk={() => dispatch({ type: 'request-hint' })}
+            taught={save.flags['dba.flag.taught-approach'] === true}
+            onTeach={() => dispatch({ type: 'teach-approach' })}
+            showWalkMask={import.meta.env.DEV && save.flags['dev.walkable'] === true}
+            catPost={catPost}
+            resting={resting}
+            onFar={(id) => dispatch({ type: 'spot-far', id })}
+            beat={save.feedback.kind === 'none' || !save.feedback.spot ? null : { spot: save.feedback.spot, kind: save.feedback.kind }}
+            flash={flashSpot && flashKind ? { kind: flashKind, seq: save.feedback.seq, x: flashSpot.x, y: flashSpot.y } : null}
+            onEscape={() => {
+              if (save.overlay === 'depart' || save.overlay === 'memory') return;
+              if (save.overlay !== 'none') dispatch({ type: 'close-overlay' });
+              else dispatch({ type: 'open-overlay', overlay: 'casefile' });
+            }}
+          />
+        )}
         {save.chart.includes('chart.jgw') ? (
           <button
             type="button"
