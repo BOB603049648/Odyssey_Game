@@ -3797,5 +3797,66 @@
     },
     "foot_pad_below_opaque_max_px": 24,
     "note": "Auxiliary hang on the #58 seam branch. Repo version stays 1.3-pr31-hemcat. Mural foot stays y=0.56 with mural-bite. East and gourd bytes unchanged."
+  },
+  "pr59_catface": {
+    "version": "1.3-pr59-catface",
+    "key": "pr59_catface",
+    "role": "auxiliary",
+    "updated": "2026-10-30T15:25:04+08:00",
+    "priority_note": "PR59 catface（P2 岸猫脸对比）：Vite 雾岸 grade 把 land-shore-* 兜帽内浅口鼻+蓝眼压淡，游玩距离像没脸；Godot 旁路更清。局部抬脸 ROI 中调 + 蓝眼饱和/明度冲；禁整猫贴纸提亮；爪/脚底带字节锁；sole/give/门帘/粮袋/标石/岸道具未动。",
+    "knives": [
+      "land-shore-gourd: local face midtone lift + blue-eye punch",
+      "land-shore-driftwood: same face treatment (look-consistency)",
+      "land-shore-east-gap: same face treatment (look-consistency)"
+    ],
+    "locked": [
+      "WORLD_SCALE 1.46",
+      "#60 shore prop slots",
+      "porch / shoreBand",
+      "sole / claws",
+      "mural-bite",
+      "traveler frames/sole",
+      "land-yard-give",
+      "curtain/grain/marker",
+      "shore props mural/east/gourd/building/ground/driftwood",
+      "claws/feet bottom band of land-shore-*"
+    ],
+    "do_not_touch": [
+      "nanaicha/traj/land-yard-give.png",
+      "camp/art.camp.prop.north-curtain.png",
+      "yard/art.yard.prop.grain-bags.png",
+      "yard/art.yard.prop.grain-bags.interact.png",
+      "shore/art.shore.prop.mural-wall.png",
+      "shore/art.shore.prop.east-gap.png",
+      "shore/art.shore.prop.gourd.png",
+      "shore/art.shore.building.png",
+      "shore/art.shore.ground.jpg",
+      "shore/art.shore.prop.driftwood.png",
+      "shore/art.shore.prop.break-shard.png"
+    ],
+    "files_wrote": [
+      "nanaicha/traj/land-shore-gourd.png",
+      "nanaicha/traj/land-shore-driftwood.png",
+      "nanaicha/traj/land-shore-east-gap.png"
+    ],
+    "eng_bullets": [
+      "挂 land-shore-gourd / land-shore-driftwood / land-shore-east-gap（仅脸局部抬可读，斗篷/身/爪未整提亮）",
+      "P2 雾岸斗篷猫脸：兜帽内口鼻中调抬亮 + 蓝眼饱和/明度冲；抗 Vite 雾岸 grade，正常游玩距离可读脸",
+      "爪/脚底带字节锁；sole/give/门帘/粮袋/标石/岸道具(mural/east/瓢/building/ground/漂木)未动",
+      "合入后请测试在 Vite 雾岸以游玩距离复测斗篷猫脸（对照 Godot 旁路近景）"
+    ],
+    "verify": {
+      "face_roi_mean_lifted": true,
+      "eyes_blue_punch": true,
+      "no_whole_cat_sticker": true,
+      "claws_or_feet_locked": true,
+      "locked_untouched": true,
+      "alpha_silhouette_stable": true,
+      "no_green_rim": true,
+      "files_wrote_count": true
+    },
+    "backup_tag": "pre-pr59-catface",
+    "verdict_ref": "/workspace/playtest/cat-face-repro/VERDICT.txt",
+    "note": "Auxiliary hang. Repo version stays 1.3-pr31-hemcat. WORLD_SCALE 1.46, #60 shore prop slots, porch/shoreBand, sole/claws, and mural-bite stay. Face ROI only on the three land-shore traj sheets."
   }
 }
