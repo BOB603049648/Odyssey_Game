@@ -29,7 +29,7 @@ import { WalkLayer } from './WalkLayer';
 
 /**
  * 雾岸可读性：可走带、两步外能认出的热区、路口暖点。
- * 不改 sole / WORLD_SCALE / shoreBand / #60 岸槽。
+ * WORLD_SCALE、shoreBand、#60 岸槽不动。靴底遮罩改成贴靴的接触条，不再挖沙缝。
  */
 
 afterEach(() => {
@@ -341,7 +341,8 @@ describe('shore readability', () => {
     expect(box('art.shore.prop.mural-wall')).toMatchObject({ x: 0.3, y: 0.56, w: 0.3, h: 0.18 });
     expect(box('art.shore.prop.east-gap')).toMatchObject({ x: 0.74, y: 0.68, w: 0.26, h: 0.23 });
     expect(box('art.shore.prop.break-shard')).toMatchObject({ x: 0.18, y: 0.7, w: 0.18, h: 0.14 });
-    expect(css).toMatch(/\.sole-soft\s*\{[^}]*transparent 99%[^}]*#000 99\.7%/);
+    expect(css).toMatch(/\.sole-soft\s*\{[^}]*transparent 90\.2%[^}]*#000 94\.2%/);
+    expect(css).not.toMatch(/\.traveler img\s*\{[^}]*transparent 95\.2%/);
     expect(css).not.toContain('.fog-fringe');
     expect(css).not.toContain('.sole-stamp');
   });

@@ -648,13 +648,7 @@ h1 {
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
-  /* Drop the hard black hem lip. The sole rows stay so the brown contact can show. */
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 93.5%, transparent 95.2%, transparent 98.6%, #000 99.35%, #000 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 93.5%, transparent 95.2%, transparent 98.6%, #000 99.35%, #000 100%);
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
+  /* read4 contact is continuous with the boot. No hem hole, no bottom slit. */
 }
 
 .traveler-frames { position: relative; height: 100%; }
@@ -2037,8 +2031,9 @@ h1 {
   opacity: 0.36;
 }
 .walk-viewport[data-scene="dba.scene.yard"] .scene-grade { opacity: 0.22; }
-/* Fog lifts a dark sole to a cool gray. This copy sits above that fog, but only the
-   bottom contact, and the mask fades in — there is no hard 91% cut and no ellipse. */
+/* Fog cools a dark sole. This copy sits above that fog and stamps the baked
+   contact — the walk bar begins near 91% — fading in so it melts into the boot.
+   A 99% slit was the 1px line. There is no hard 91% cut and no ellipse. */
 .sole-layer {
   position: absolute;
   inset: 0;
@@ -2052,14 +2047,13 @@ h1 {
   pointer-events: none;
   object-fit: contain;
   object-position: center bottom;
-  /* Open only on the brown contact. The hem above stays out of this stamp. */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 99%, rgba(0, 0, 0, 0.4) 99.4%, #000 99.7%, #000 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, transparent 99%, rgba(0, 0, 0, 0.4) 99.4%, #000 99.7%, #000 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 90.2%, rgba(0, 0, 0, 0.45) 92.4%, #000 94.2%, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, transparent 90.2%, rgba(0, 0, 0, 0.45) 92.4%, #000 94.2%, #000 100%);
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-  filter: blur(0.45px);
+  filter: blur(0.8px);
 }
 .foot-ellipse {
   background: none;

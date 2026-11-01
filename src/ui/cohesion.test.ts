@@ -61,11 +61,13 @@ describe('cohesion shadows and grades', () => {
     expect(css).not.toContain('translate(-50%, 42%)');
     expect(css).toMatch(/\.traveler \.foot-ellipse[\s\S]*?background:\s*none/);
     expect(css).toMatch(/\.companion-anchor \.foot-ellipse[\s\S]*?background:\s*none/);
-    expect(css).toMatch(/\.traveler img\s*\{[^}]*transparent 95\.2%[^}]*#000 99\.35%/);
+    expect(css).not.toMatch(/\.traveler img\s*\{[^}]*transparent 95\.2%/);
+    expect(css).not.toContain('99.35%');
     expect(css).not.toContain('.sole-stamp');
     expect(css).not.toContain('transparent 91%');
-    expect(css).toMatch(/\.sole-soft\s*\{[^}]*transparent 99%[^}]*#000 99\.7%/);
-    expect(css).toMatch(/\.sole-soft\s*\{[^}]*filter:\s*blur\(0\.45px\)/);
+    expect(css).not.toMatch(/\.sole-soft\s*\{[^}]*transparent 99%/);
+    expect(css).toMatch(/\.sole-soft\s*\{[^}]*transparent 90\.2%[^}]*#000 94\.2%/);
+    expect(css).toMatch(/\.sole-soft\s*\{[^}]*filter:\s*blur\(0\.8px\)/);
     expect(css).toMatch(/\.contact-shadow\s*\{[^}]*var\(--shadow-tint/);
     expect(css).toMatch(/\.contact-shadow\s*\{[^}]*top:\s*var\(--sole-y/);
     expect(css).toMatch(/\.contact-shadow\s*\{[^}]*translate\(-50%, -50%\)/);
