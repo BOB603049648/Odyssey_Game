@@ -563,6 +563,7 @@ export function WalkLayer({
   const catInFront = cat.y > feetY + 0.012;
 
   return (
+    <>
     <div
       ref={viewportRef}
       className="walk-viewport"
@@ -757,19 +758,6 @@ export function WalkLayer({
       <div className="sole-layer" data-testid="sole-layer">
         <img ref={soleRef} className="sole-soft" data-testid="sole-soft" alt="" />
       </div>
-      {hearthGate && hearthAt ? (
-        <span
-          className="hearth-name"
-          data-testid="hearth-name"
-          aria-hidden="true"
-          style={{
-            left: `${hearthAt.x * worldW - shownCam.x}px`,
-            top: `${hearthAt.y * worldH - shownCam.y + 10}px`,
-          }}
-        >
-          {gateLabel(hearthGate.to)}
-        </span>
-      ) : null}
         {teachLine && scene === 'dba.scene.shore' ? (
           <p className="approach-hint once" data-testid="approach-hint">
             {t('hint.approach')}
@@ -782,5 +770,19 @@ export function WalkLayer({
         }}
       />
     </div>
+    {hearthGate && hearthAt ? (
+      <span
+        className="hearth-name"
+        data-testid="hearth-name"
+        aria-hidden="true"
+        style={{
+          left: `${hearthAt.x * worldW - shownCam.x}px`,
+          top: `${hearthAt.y * worldH - shownCam.y + 10}px`,
+        }}
+      >
+        {gateLabel(hearthGate.to)}
+      </span>
+    ) : null}
+    </>
   );
 }

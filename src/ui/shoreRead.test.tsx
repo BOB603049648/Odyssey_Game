@@ -159,7 +159,11 @@ describe('shore readability', () => {
     expect(hearthLabel).toMatch(/font-size:\s*1\.72rem/);
     expect(hearthLabel).toMatch(/#fff8ee/);
     expect(hearthLabel).toMatch(/rgba\(16,\s*9,\s*5,\s*0\.62\)/);
-    expect(hearthLabel).toMatch(/z-index:\s*8/);
+    expect(hearthLabel).toMatch(/z-index:\s*2/);
+    expect(hearthLabel).toMatch(/mix-blend-mode:\s*normal/);
+    expect(hearthLabel).toMatch(/opacity:\s*1/);
+    expect(hearthLabel).toMatch(/isolation:\s*isolate/);
+    expect(rule('.shore-wrap::before')).toMatch(/z-index:\s*1/);
     expect(hearthLabel).not.toMatch(/outline|dashed|#0ff|#00ffff/);
     expect(rule('.path-exit[data-hearth="yes"].near span')).toMatch(/opacity:\s*0/);
     const focus = rule('.walk-viewport .world-layer .hotspot:focus-visible');
@@ -293,6 +297,7 @@ describe('shore readability', () => {
     const name = screen.getByTestId('hearth-name');
     expect(name.textContent).toBe('棚火');
     expect(screen.getByTestId('world-root').contains(name)).toBe(false);
+    expect(screen.getByTestId('walk-stage').contains(name)).toBe(false);
     expect(screen.getByTestId('grade-veil').compareDocumentPosition(name) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.getByTestId('walk-stage').getAttribute('data-scene')).toBe('dba.scene.shore');
   });
@@ -341,17 +346,20 @@ describe('shore readability', () => {
     expect(css).not.toContain('.sole-stamp');
   });
 
-  it('mounts the pr64 read3 pack at the reported sha256', () => {
-    const report = JSON.parse(readFileSync('docs/_pr64-read3-report.json', 'utf8')) as {
+  it('mounts the pr64 read4 pack at the reported sha256', () => {
+    const report = JSON.parse(readFileSync('docs/_pr64-read4-report.json', 'utf8')) as {
       files: Record<string, { sha256: string }>;
       wrote: string[];
       version: string;
       blockers: unknown[];
     };
-    expect(report.version).toBe('1.3-pr64-read3');
+    expect(report.version).toBe('1.3-pr64-read4');
     expect(report.blockers).toEqual([]);
     expect(report.files['shore/art.shore.ground.jpg'].sha256).toBe(
       'df4b9af7195fccf5b5ee41059fa4306898693280f38e4b2737f1e50cecb3afbe',
+    );
+    expect(createHash('sha256').update(readFileSync('src/assets/art/slots/art.shore.ground.jpg')).digest('hex')).toBe(
+      report.files['shore/art.shore.ground.jpg'].sha256,
     );
     const disk = (logical: string) => {
       if (logical === 'shore/art.shore.ground.jpg') return 'src/assets/art/slots/art.shore.ground.jpg';
@@ -359,7 +367,8 @@ describe('shore readability', () => {
       if (logical.startsWith('nanaicha/traj/')) return `src/assets/companion/nanaicha/traj/${logical.split('/').pop()}`;
       throw new Error(logical);
     };
-    expect(report.wrote).toHaveLength(25);
+    expect(report.wrote).toHaveLength(24);
+    expect(report.wrote).not.toContain('shore/art.shore.ground.jpg');
     for (const logical of report.wrote) {
       const sha = createHash('sha256').update(readFileSync(disk(logical))).digest('hex');
       expect(sha).toBe(report.files[logical].sha256);
