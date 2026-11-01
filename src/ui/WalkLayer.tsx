@@ -14,6 +14,7 @@ import {
   followCamera,
   inRadius,
   pointerToWorld,
+  reachOf,
   stepKey,
   type Point,
   type WalkKey,
@@ -505,6 +506,9 @@ export function WalkLayer({
   const shownCam = import.meta.env.MODE === 'test' ? cameraOffset(pos, view.w, view.h) : cam;
   const look = sceneLook(scene);
   const near = spots.filter((spot) => standsAt(scene, spot, pos)).map((spot) => spot.id);
+  const glance = spots
+    .filter((spot) => !near.includes(spot.id) && reachOf(Math.hypot(spot.x - pos.x, spot.y - pos.y), spot.r) === 'glance')
+    .map((spot) => spot.id);
   const teachSpot = near.includes('shore-driftwood') ? 'shore-driftwood' : '';
   const onTeachRef = useRef(onTeach);
   const taughtRef = useRef(taught);
@@ -564,6 +568,7 @@ export function WalkLayer({
             previous={plates.previous}
             cam={shownCam}
             near={near}
+            glance={glance}
             activeSpots={spotIds}
             showWalkMask={showWalkMask}
             pass="back"
@@ -591,11 +596,13 @@ export function WalkLayer({
           ))}
           {spots.map((spot) => {
             const inside = near.includes(spot.id);
+            const reach = inside ? 'near' : glance.includes(spot.id) ? 'glance' : 'far';
             return (
               <button
                 key={spot.id}
                 type="button"
-                className={inside ? `${spot.className} near` : spot.className}
+                className={reach === 'near' ? `${spot.className} near` : reach === 'glance' ? `${spot.className} glance` : spot.className}
+                data-reach={reach}
                 data-testid={spot.testId}
                 data-result={beat && beat.spot === spot.id ? beat.kind : undefined}
                 style={{ left: pct(spot.x), top: pct(spot.y), right: 'auto', bottom: 'auto' }}
@@ -697,6 +704,7 @@ export function WalkLayer({
             previous={plates.previous}
             cam={shownCam}
             near={near}
+            glance={glance}
             activeSpots={spotIds}
             pass="near"
             feetY={feetY}
@@ -707,6 +715,7 @@ export function WalkLayer({
             previous={plates.previous}
             cam={shownCam}
             near={near}
+            glance={glance}
             activeSpots={spotIds}
             pass="fg"
             feetY={feetY}
@@ -728,7 +737,7 @@ export function WalkLayer({
         <img ref={soleRef} className="sole-soft" data-testid="sole-soft" alt="" />
       </div>
         {teachLine && scene === 'dba.scene.shore' ? (
-          <p className="approach-hint" data-testid="approach-hint">
+          <p className="approach-hint once" data-testid="approach-hint">
             {t('hint.approach')}
           </p>
         ) : null}

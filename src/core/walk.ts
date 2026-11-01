@@ -1,5 +1,16 @@
 export const WORLD_SCALE = 1.46;
 export const KEY_STEP = 0.05;
+/** Two steps past a hotspot's click radius, it should still read as touchable. */
+export const GLANCE_REACH = KEY_STEP * 2;
+
+export type Reach = 'near' | 'glance' | 'far';
+
+/** Distance from a hotspot center. Inside `radius` is the click. The next two steps are a glance. */
+export function reachOf(dist: number, radius: number, glance = GLANCE_REACH): Reach {
+  if (dist <= radius) return 'near';
+  if (dist <= radius + glance) return 'glance';
+  return 'far';
+}
 export const WALK_SPEED = 0.38;
 export const COMPANION_RING = 0.13;
 

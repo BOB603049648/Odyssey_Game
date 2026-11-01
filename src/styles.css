@@ -514,12 +514,14 @@ h1 {
 
 .path-exit i {
   display: block;
-  width: 8px;
-  height: 8px;
-  margin: 18px auto 0;
+  width: 12px;
+  height: 12px;
+  margin: 16px auto 0;
   border-radius: 50%;
-  border: 1px solid rgba(230, 211, 164, 0.45);
-  opacity: 0.16;
+  border: 1px solid rgba(230, 211, 164, 0.72);
+  background: radial-gradient(circle, rgba(236, 224, 196, 0.72), rgba(160, 140, 100, 0.08) 68%);
+  opacity: 0.72;
+  box-shadow: 0 0 14px rgba(214, 196, 154, 0.42);
 }
 
 .path-exit span {
@@ -536,16 +538,39 @@ h1 {
   pointer-events: none;
 }
 
+.path-exit[data-hearth="yes"]::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 62%;
+  width: 168px;
+  height: 64px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255, 176, 72, 0.78), rgba(180, 70, 16, 0.28) 46%, transparent 74%);
+  filter: blur(1.2px);
+  pointer-events: none;
+}
+
 .path-exit[data-hearth="yes"] i {
-  opacity: 0.9;
-  border-color: rgba(255, 170, 70, 0.9);
-  background: radial-gradient(circle, rgba(255, 176, 80, 0.95), rgba(140, 50, 10, 0.15) 72%);
-  box-shadow: 0 0 16px rgba(255, 140, 40, 0.8);
+  width: 16px;
+  height: 16px;
+  margin: 14px auto 0;
+  opacity: 1;
+  border-color: rgba(255, 186, 96, 0.95);
+  background: radial-gradient(circle, rgba(255, 196, 110, 0.98), rgba(160, 60, 12, 0.2) 70%);
+  box-shadow: 0 0 28px 8px rgba(255, 140, 40, 0.72);
 }
 
 .path-exit.near i {
   opacity: 1;
-  box-shadow: 0 0 10px rgba(230, 211, 164, 0.5);
+  box-shadow: 0 0 12px rgba(230, 211, 164, 0.55);
+}
+
+.path-exit[data-hearth="yes"].near i {
+  opacity: 1;
+  border-color: rgba(255, 196, 120, 1);
+  box-shadow: 0 0 32px 10px rgba(255, 150, 48, 0.88);
 }
 
 .path-exit.near span {
@@ -1448,7 +1473,8 @@ h1 {
   .plate-photo, .plate-fade, .ambient, .ambient-water::after,
   .companion-sway, .hud-caption, .sheet, .enter-veil, .hotspot, .act-tray button, .hud-actions .btn,
   .traveler-bob,
-  .traveler-frame-wrap.out {
+  .traveler-frame-wrap.out,
+  .approach-hint {
     animation: none;
     transition: none;
   }
@@ -2099,6 +2125,22 @@ h1 {
 .approach-hint {
   bottom: calc(72px + var(--safe-bottom));
 }
+.approach-hint.once {
+  font-size: 1.2rem;
+  letter-spacing: 0.16em;
+  color: var(--bone);
+  background: linear-gradient(90deg, transparent, rgba(6, 8, 10, 0.62) 18%, rgba(6, 8, 10, 0.62) 82%, transparent);
+  padding: 8px 36px 10px;
+  text-shadow:
+    0 0 16px rgba(0, 0, 0, 1),
+    0 2px 8px rgba(0, 0, 0, 0.95);
+  animation: approach-once 1.5s ease 1 both;
+}
+@keyframes approach-once {
+  0% { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  22% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
 
 .interact-flash {
   position: absolute;
@@ -2160,4 +2202,80 @@ h1 {
   border-color: rgba(230, 211, 164, 0.55);
 }
 .shore-wrap[data-hotspots="on"] .world-layer .hotspot::before { content: ""; opacity: 0.9; }
+
+/* shore-read: wet sand between the fog line and the stone lip. No neon stroke, no question marks. */
+.shore-tread {
+  position: absolute;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.shore-fog-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -10%;
+  height: 24%;
+  background:
+    linear-gradient(180deg, rgba(8, 16, 20, 0.82) 0%, rgba(28, 46, 54, 0.46) 55%, transparent 100%),
+    linear-gradient(180deg, transparent 62%, rgba(220, 232, 226, 0.4) 84%, transparent 100%);
+  filter: blur(2.4px);
+}
+.shore-sand-trace {
+  position: absolute;
+  inset: 14% 4% 18%;
+  mix-blend-mode: screen;
+  opacity: 0.34;
+  background:
+    radial-gradient(ellipse 22% 36% at 18% 62%, rgba(236, 226, 200, 0.9), transparent 72%),
+    radial-gradient(ellipse 16% 28% at 46% 44%, rgba(214, 228, 220, 0.55), transparent 74%),
+    radial-gradient(ellipse 24% 34% at 74% 70%, rgba(236, 226, 200, 0.8), transparent 72%);
+}
+.shore-stone-lip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -8%;
+  height: 22%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(176, 160, 140, 0.36) 28%,
+    rgba(18, 14, 12, 0.7) 62%,
+    rgba(8, 7, 6, 0.9) 100%
+  );
+  filter: blur(1.2px);
+}
+
+.walk-viewport[data-scene="dba.scene.shore"] .scene-slot[data-cue="far"] .prop-cue {
+  width: 52px;
+  height: 16px;
+  opacity: 0.82;
+  border-color: rgba(224, 210, 176, 0.85);
+  background: radial-gradient(ellipse at center, rgba(236, 226, 200, 0.7), rgba(140, 128, 100, 0.05) 72%);
+  box-shadow: 0 0 12px rgba(214, 196, 154, 0.55);
+}
+.walk-viewport[data-scene="dba.scene.shore"] .scene-slot[data-cue="glance"] .prop-cue {
+  width: 64px;
+  height: 18px;
+  opacity: 1;
+  border-color: rgba(236, 220, 180, 0.95);
+  background: radial-gradient(ellipse at center, rgba(244, 232, 204, 0.92), rgba(180, 150, 90, 0.12) 70%);
+  box-shadow: 0 0 18px rgba(232, 210, 160, 0.9);
+}
+.walk-viewport[data-scene="dba.scene.shore"] .scene-slot.lit .prop-cue,
+.walk-viewport[data-scene="dba.scene.shore"] .scene-slot[data-cue="near"] .prop-cue {
+  width: 72px;
+  height: 18px;
+  opacity: 1;
+  box-shadow: 0 0 22px rgba(236, 220, 180, 0.95);
+}
+.walk-viewport[data-scene="dba.scene.shore"] .world-layer .hotspot.near {
+  color: transparent;
+  background: transparent;
+  border-color: rgba(214, 196, 154, 0.95);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(214, 196, 154, 0.72), 0 0 20px rgba(214, 196, 154, 0.55);
+  backdrop-filter: none;
+}
 
