@@ -341,7 +341,7 @@ describe('shore readability', () => {
     expect(box('art.shore.prop.mural-wall')).toMatchObject({ x: 0.3, y: 0.56, w: 0.3, h: 0.18 });
     expect(box('art.shore.prop.east-gap')).toMatchObject({ x: 0.74, y: 0.68, w: 0.26, h: 0.23 });
     expect(box('art.shore.prop.break-shard')).toMatchObject({ x: 0.18, y: 0.7, w: 0.18, h: 0.14 });
-    expect(css).toMatch(/\.sole-soft\s*\{[^}]*transparent 90\.2%[^}]*#000 94\.2%/);
+    expect(css).toMatch(/\.sole-soft\s*\{[^}]*transparent 92\.8%[^}]*93\.5%[^}]*#000 94\.6%/);
     expect(css).not.toMatch(/\.traveler img\s*\{[^}]*transparent 95\.2%/);
     expect(css).not.toContain('.fog-fringe');
     expect(css).not.toContain('.sole-stamp');

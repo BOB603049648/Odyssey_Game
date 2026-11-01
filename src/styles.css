@@ -648,7 +648,9 @@ h1 {
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
-  /* read4 contact is continuous with the boot. No hem hole, no bottom slit. */
+  /* 864×1152. Visible boot edge is 93.5% (row 1077).
+     Leave the sheet opaque through the foot — a hole under that edge
+     hid the contact bridge (rows 1132–1143). */
 }
 
 .traveler-frames { position: relative; height: 100%; }
@@ -2031,9 +2033,9 @@ h1 {
   opacity: 0.36;
 }
 .walk-viewport[data-scene="dba.scene.yard"] .scene-grade { opacity: 0.22; }
-/* Fog cools a dark sole. This copy sits above that fog and stamps the baked
-   contact — the walk bar begins near 91% — fading in so it melts into the boot.
-   A 99% slit was the 1px line. There is no hard 91% cut and no ellipse. */
+/* Fog cools a dark sole. This copy sits above that fog and stamps from the
+   visible boot edge (93.5%, row 1077) through the foot. 94.6% is row 1090,
+   so the short strip includes the bridge and is not a hem slit. No ellipse. */
 .sole-layer {
   position: absolute;
   inset: 0;
@@ -2047,8 +2049,8 @@ h1 {
   pointer-events: none;
   object-fit: contain;
   object-position: center bottom;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 90.2%, rgba(0, 0, 0, 0.45) 92.4%, #000 94.2%, #000 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, transparent 90.2%, rgba(0, 0, 0, 0.45) 92.4%, #000 94.2%, #000 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 92.8%, rgba(0, 0, 0, 0.7) 93.5%, #000 94.6%, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, transparent 92.8%, rgba(0, 0, 0, 0.7) 93.5%, #000 94.6%, #000 100%);
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
