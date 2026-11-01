@@ -2033,9 +2033,10 @@ h1 {
   opacity: 0.36;
 }
 .walk-viewport[data-scene="dba.scene.yard"] .scene-grade { opacity: 0.22; }
-/* Fog cools a dark sole. This copy sits above that fog. The feather starts
-   at 90.2% (row 1039), is half open at the visible boot edge 93.5% (row 1077),
-   peaks at 96.8%, then falls off through the foot. No solid shelf, no ellipse. */
+/* Fog cools a dark sole. This copy sits above that fog. The boot leather
+   through 94.2% is still cool gray, so the feather stays shut there, opens on
+   the warm contact, and falls off through the extra pixels under the foot
+   (--fit is the sprite's share of that taller box). No shelf, no ellipse. */
 .sole-layer {
   position: absolute;
   inset: 0;
@@ -2043,19 +2044,26 @@ h1 {
   pointer-events: none;
   overflow: hidden;
 }
+.sole-filter {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
 .sole-soft {
   position: absolute;
   visibility: hidden;
   pointer-events: none;
   object-fit: contain;
-  object-position: center bottom;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 90.2%, rgba(0, 0, 0, 0.5) 93.5%, rgba(0, 0, 0, 0.95) 96.8%, rgba(0, 0, 0, 0.4) 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, transparent 90.2%, rgba(0, 0, 0, 0.5) 93.5%, rgba(0, 0, 0, 0.95) 96.8%, rgba(0, 0, 0, 0.4) 100%);
+  object-position: center top;
+  --fit: 0.910;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent calc(94.2% * var(--fit)), rgba(0, 0, 0, 1) calc(96.2% * var(--fit)), rgba(0, 0, 0, 1) calc(97.6% * var(--fit)), rgba(0, 0, 0, 0.42) calc(100% * var(--fit)), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, transparent calc(94.2% * var(--fit)), rgba(0, 0, 0, 1) calc(96.2% * var(--fit)), rgba(0, 0, 0, 1) calc(97.6% * var(--fit)), rgba(0, 0, 0, 0.42) calc(100% * var(--fit)), transparent 100%);
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-  filter: blur(2.4px);
+  filter: url(#sole-warm);
 }
 .foot-ellipse {
   background: none;

@@ -449,10 +449,13 @@ export function WalkLayer({
           sole.style.visibility = 'visible';
           const src = img.currentSrc || img.src;
           if (sole.src !== src) sole.src = src;
+          const soleFeather = 14;
+          const boxH = ir.height + soleFeather;
           sole.style.left = `${ir.left - vr.left}px`;
           sole.style.top = `${ir.top - vr.top}px`;
           sole.style.width = `${ir.width}px`;
-          sole.style.height = `${ir.height}px`;
+          sole.style.height = `${boxH}px`;
+          sole.style.setProperty('--fit', (ir.height / boxH).toFixed(4));
           sole.style.transform = img.parentElement?.getAttribute('data-mirror') === 'yes' ? 'scaleX(-1)' : 'none';
         }
       }
@@ -756,6 +759,21 @@ export function WalkLayer({
       <div className="grade-veil" data-grade={sceneAssembly(plates.previous ?? scene)?.grade ?? 'mist-dawn'} data-testid="grade-veil" />
       <img className="scene-grade" data-testid="scene-grade" src={sceneGrade(scene)} alt="" draggable={false} />
       <div className="sole-layer" data-testid="sole-layer">
+        <svg className="sole-filter" aria-hidden="true" focusable="false" width="0" height="0">
+          <filter id="sole-warm" colorInterpolationFilters="sRGB" x="-20%" y="-15%" width="140%" height="140%">
+            <feComponentTransfer in="SourceGraphic" result="solid">
+              <feFuncA type="linear" slope="2.6" intercept="-0.35" />
+            </feComponentTransfer>
+            <feColorMatrix
+              in="solid"
+              type="matrix"
+              values="0 0 0 0 0.109804 0 0 0 0 0.086275 0 0 0 0 0.062745 0 0 0 1 0"
+              result="warm"
+            />
+            <feMorphology in="warm" operator="dilate" radius="2.4 8" result="spread" />
+            <feGaussianBlur in="spread" stdDeviation="1.6 0.85" />
+          </filter>
+        </svg>
         <img ref={soleRef} className="sole-soft" data-testid="sole-soft" alt="" />
       </div>
         {teachLine && scene === 'dba.scene.shore' ? (
