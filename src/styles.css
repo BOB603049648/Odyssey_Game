@@ -591,6 +591,19 @@ h1 {
     0 2px 10px rgba(0, 0, 0, 0.92);
 }
 
+.path-exit[data-hearth="yes"].near span {
+  font-size: 1.72rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: #fff8ee;
+  background: linear-gradient(90deg, transparent, rgba(16, 9, 5, 0.62) 14%, rgba(16, 9, 5, 0.62) 86%, transparent);
+  padding: 1px 16px 3px;
+  text-shadow:
+    0 1px 0 rgba(28, 12, 4, 0.95),
+    0 2px 10px rgba(0, 0, 0, 0.96),
+    0 0 16px rgba(0, 0, 0, 0.9);
+}
+
 .traveler .contact-shadow,
 .companion-anchor .contact-shadow {
   opacity: var(--shadow-opacity, 0.82);
@@ -2292,5 +2305,10 @@ h1 {
   border-radius: 2px;
   box-shadow: none;
   backdrop-filter: none;
+}
+.walk-viewport .world-layer .hotspot:focus,
+.walk-viewport .world-layer .hotspot:focus-visible {
+  outline: none;
+  outline-offset: 0;
 }
 

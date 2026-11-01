@@ -155,6 +155,14 @@ describe('shore readability', () => {
     expect(label).toMatch(/opacity:\s*1/);
     expect(label).toMatch(/font-size:\s*1\.22rem/);
     expect(label).not.toMatch(/0\.74rem/);
+    const hearthLabel = rule('.path-exit[data-hearth="yes"].near span');
+    expect(hearthLabel).toMatch(/font-size:\s*1\.72rem/);
+    expect(hearthLabel).toMatch(/#fff8ee/);
+    expect(hearthLabel).toMatch(/rgba\(16,\s*9,\s*5,\s*0\.62\)/);
+    expect(hearthLabel).not.toMatch(/outline|dashed|#0ff|#00ffff/);
+    const focus = rule('.walk-viewport .world-layer .hotspot:focus-visible');
+    expect(focus).toMatch(/outline:\s*none/);
+    expect(focus).not.toMatch(/rgba\(230,\s*211,\s*164/);
   });
 
   it('speaks the first driftwood approach once, louder than the ambient line', () => {
