@@ -2033,9 +2033,9 @@ h1 {
   opacity: 0.36;
 }
 .walk-viewport[data-scene="dba.scene.yard"] .scene-grade { opacity: 0.22; }
-/* Fog cools a dark sole. This copy sits above that fog and stamps from the
-   visible boot edge (93.5%, row 1077) through the foot. 94.6% is row 1090,
-   so the short strip includes the bridge and is not a hem slit. No ellipse. */
+/* Fog cools a dark sole. This copy sits above that fog. The feather starts
+   at 90.2% (row 1039), is half open at the visible boot edge 93.5% (row 1077),
+   peaks at 96.8%, then falls off through the foot. No solid shelf, no ellipse. */
 .sole-layer {
   position: absolute;
   inset: 0;
@@ -2049,13 +2049,13 @@ h1 {
   pointer-events: none;
   object-fit: contain;
   object-position: center bottom;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 92.8%, rgba(0, 0, 0, 0.7) 93.5%, #000 94.6%, #000 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, transparent 92.8%, rgba(0, 0, 0, 0.7) 93.5%, #000 94.6%, #000 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 90.2%, rgba(0, 0, 0, 0.5) 93.5%, rgba(0, 0, 0, 0.95) 96.8%, rgba(0, 0, 0, 0.4) 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, transparent 90.2%, rgba(0, 0, 0, 0.5) 93.5%, rgba(0, 0, 0, 0.95) 96.8%, rgba(0, 0, 0, 0.4) 100%);
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-  filter: blur(0.8px);
+  filter: blur(2.4px);
 }
 .foot-ellipse {
   background: none;

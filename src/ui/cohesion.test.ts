@@ -66,8 +66,10 @@ describe('cohesion shadows and grades', () => {
     expect(css).not.toContain('.sole-stamp');
     expect(css).not.toContain('transparent 91%');
     expect(css).not.toMatch(/\.sole-soft\s*\{[^}]*transparent 99%/);
-    expect(css).toMatch(/\.sole-soft\s*\{[^}]*transparent 92\.8%[^}]*93\.5%[^}]*#000 94\.6%/);
-    expect(css).toMatch(/\.sole-soft\s*\{[^}]*filter:\s*blur\(0\.8px\)/);
+    expect(css).toMatch(/\.sole-soft\s*\{[^}]*transparent 90\.2%[^}]*93\.5%[^}]*96\.8%/);
+    expect(css).toMatch(/\.sole-soft\s*\{[^}]*rgba\(0,\s*0,\s*0,\s*0\.95\) 96\.8%[^}]*rgba\(0,\s*0,\s*0,\s*0\.4\) 100%/);
+    expect(css).not.toMatch(/\.sole-soft\s*\{[^}]*#000/);
+    expect(css).toMatch(/\.sole-soft\s*\{[^}]*filter:\s*blur\(2\.4px\)/);
     expect(css).toMatch(/\.contact-shadow\s*\{[^}]*var\(--shadow-tint/);
     expect(css).toMatch(/\.contact-shadow\s*\{[^}]*top:\s*var\(--sole-y/);
     expect(css).toMatch(/\.contact-shadow\s*\{[^}]*translate\(-50%, -50%\)/);
