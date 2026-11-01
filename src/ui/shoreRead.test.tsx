@@ -334,11 +334,13 @@ describe('shore readability', () => {
     expect(css).not.toContain('.sole-stamp');
   });
 
-  it('mounts the pr64 read pack at the reported sha256', () => {
-    const report = JSON.parse(readFileSync('docs/_pr64-read-report.json', 'utf8')) as {
+  it('mounts the pr64 read2 pack at the reported sha256', () => {
+    const report = JSON.parse(readFileSync('docs/_pr64-read2-report.json', 'utf8')) as {
       files: Record<string, { sha256: string }>;
       wrote: string[];
+      version: string;
     };
+    expect(report.version).toBe('1.3-pr64-read2');
     const disk = (logical: string) => {
       if (logical === 'shore/art.shore.ground.jpg') return 'src/assets/art/slots/art.shore.ground.jpg';
       if (logical.startsWith('traveler-mythic/')) return `src/assets/traveler/${logical.split('/').pop()}`;

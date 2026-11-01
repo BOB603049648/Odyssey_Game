@@ -3880,5 +3880,92 @@
     "backup_tag": "pre-pr64-read",
     "verdict_ref": "/workspace/playtest/pr64-shore-readability/VERDICT.txt",
     "note": "Auxiliary hang. Repo version stays 1.3-pr31-hemcat. shore/art.shore.ground.jpg is src/assets/art/slots/art.shore.ground.jpg (slot loader reads jpg; the old webp is gone so the sha256 is the pack). Traveler frames replace src/assets/traveler/. land-shore-* replace src/assets/companion/nanaicha/traj/. WORLD_SCALE, #60 shore boxes, shoreBand, and sole numbers stay."
+  },
+  "pr64_read2": {
+    "version": "1.3-pr64-read2",
+    "key": "pr64_read2",
+    "role": "auxiliary",
+    "updated": "2026-11-02T02:54:53+08:00",
+    "timezone": "Asia/Shanghai",
+    "priority_note": "PR64 read2：①出生沙带≥3枚椭圆湿砂浅迹 diegetic 一眼可读（非霓虹/非问号墙）；②旅人21帧 sole 芯≈rgb(28,22,16)，暖暗软接触贴靴底抗雾抬冷灰；③岸猫 land-shore×3 爪下软接触可读，脸 byte 锁 pr59。挂 #64 follow-up，现网勿合。",
+    "knives": [
+      "shore ground ≥3 elliptical wet-sand tide marks (strong contrast, shoreBand)",
+      "traveler 21 frames sole soft AO flush+anti-fog warm dark (core rgb 28,22,16)",
+      "land-shore-gourd/driftwood/east-gap claw soft-contact under paws"
+    ],
+    "locked": [
+      "land-yard-give",
+      "curtain / grain bags / marker",
+      "shore props mural-wall/east-gap/gourd/building/driftwood(+interact)/break-shard/nanaicha/sky/fg",
+      "#60 scale slots / subject scale"
+    ],
+    "do_not_touch": [
+      "nanaicha/traj/land-yard-give.png",
+      "camp/art.camp.prop.north-curtain.png",
+      "yard/art.yard.prop.grain-bags.png",
+      "yard/art.yard.prop.grain-bags.interact.png",
+      "shore/art.shore.prop.mural-wall.png",
+      "shore/art.shore.prop.east-gap.png",
+      "shore/art.shore.prop.gourd.png",
+      "shore/art.shore.building.png",
+      "shore/art.shore.prop.driftwood.png",
+      "shore/art.shore.prop.driftwood.interact.png",
+      "shore/art.shore.prop.break-shard.png",
+      "shore/art.shore.prop.nanaicha.png",
+      "shore/art.shore.sky.jpg",
+      "shore/art.shore.fg.png"
+    ],
+    "files_wrote": [
+      "shore/art.shore.ground.jpg",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-back-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-back-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-front-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-front-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-side-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/idle-side-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/reach-front-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/reach-front-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/reach-side-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-back-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-back-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-back-03.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-back-04.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-front-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-front-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-front-03.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-front-04.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-side-01.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-side-02.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-side-03.png",
+      "traveler-mythic/cloud-inspired/v3/anim/walk-side-04.png",
+      "nanaicha/traj/land-shore-gourd.png",
+      "nanaicha/traj/land-shore-driftwood.png",
+      "nanaicha/traj/land-shore-east-gap.png"
+    ],
+    "eng_bullets": [
+      "挂 shore/art.shore.ground.jpg — 出生沙带至少三枚椭圆湿砂浅迹，diegetic 一眼可读，非霓虹/非问号墙",
+      "挂 traveler 21 帧 — sole 芯≈rgb(28,22,16)；暖暗软接触贴靴底可读（抗雾岸抬冷灰）；禁冷灰细线/foot-ellipse/青白/冷黑新月",
+      "挂 land-shore×3 — 爪下软接触影可读（出生/北雾线/东暖光）；脸 byte 锁 pr59",
+      "合入后 Vite 雾岸复测对照 r01/r02/r04；挂 #64 follow-up，现网勿合"
+    ],
+    "verify": {
+      "tide_ellipses_ge3": true,
+      "no_neon_or_qwall": true,
+      "sole_core_rgb_locked": true,
+      "sole_no_cold_gray_hairline": true,
+      "sole_soft_more_readable": true,
+      "no_foot_ellipse_plate": true,
+      "no_cyan_white_core": true,
+      "no_cold_black_crescent": true,
+      "claws_soft_contact_readable": true,
+      "face_roi_byte_identical": true,
+      "locked_untouched": true,
+      "alpha_silhouette_stable": true,
+      "scale_bbox_stable": true
+    },
+    "backup_tag": "pre-pr64-read2",
+    "verdict_ref": "/workspace/playtest/pr64-shore-readability/VERDICT-RETEST.txt",
+    "prior_pack": "1.3-pr64-read (206a9ab failed retest)",
+    "note": "Auxiliary hang. Repo version stays 1.3-pr31-hemcat. Same paths as pr64_read: ground jpg, src/assets/traveler 21 frames, land-shore gourd/driftwood/east-gap. P2 focus outline and hearth label styles stay. WORLD_SCALE, #60 boxes, shoreBand, and sole numbers stay."
   }
 }
