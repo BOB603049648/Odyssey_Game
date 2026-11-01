@@ -347,14 +347,14 @@ describe('shore readability', () => {
     expect(css).not.toContain('.sole-stamp');
   });
 
-  it('mounts the pr64 read4 pack at the reported sha256', () => {
-    const report = JSON.parse(readFileSync('docs/_pr64-read4-report.json', 'utf8')) as {
+  it('mounts the pr64 read5 pack at the reported sha256', () => {
+    const report = JSON.parse(readFileSync('docs/_pr64-read5-report.json', 'utf8')) as {
       files: Record<string, { sha256: string }>;
       wrote: string[];
       version: string;
       blockers: unknown[];
     };
-    expect(report.version).toBe('1.3-pr64-read4');
+    expect(report.version).toBe('1.3-pr64-read5');
     expect(report.blockers).toEqual([]);
     expect(report.files['shore/art.shore.ground.jpg'].sha256).toBe(
       'df4b9af7195fccf5b5ee41059fa4306898693280f38e4b2737f1e50cecb3afbe',
