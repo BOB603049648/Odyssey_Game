@@ -526,6 +526,11 @@ export function WalkLayer({
   const spotIds = spots.map((spot) => spot.id);
   const sleepFoot = SPOTS[scene].find((spot) => spot.id === 'camp-sleep');
   const feetY = resting && sleepFoot ? sleepFoot.y : pos.y;
+  const exits = gatesFrom(scene);
+  const hearthGate = exits.find(
+    (gate) => gate.from === 'dba.scene.shore' && gate.to === 'dba.scene.camp' && pathExitNear(pos, gate),
+  );
+  const hearthAt = hearthGate ? pathExitPoint(hearthGate) : null;
 
   useEffect(() => {
     if (!teachSpot) {
@@ -589,7 +594,7 @@ export function WalkLayer({
             beat={beat}
           />
           <div className="walk-ground" data-testid="walk-ground" onPointerDown={onGround} />
-          {gatesFrom(scene).map((gate) => {
+          {exits.map((gate) => {
             const at = pathExitPoint(gate);
             return (
               <button
@@ -752,6 +757,19 @@ export function WalkLayer({
       <div className="sole-layer" data-testid="sole-layer">
         <img ref={soleRef} className="sole-soft" data-testid="sole-soft" alt="" />
       </div>
+      {hearthGate && hearthAt ? (
+        <span
+          className="hearth-name"
+          data-testid="hearth-name"
+          aria-hidden="true"
+          style={{
+            left: `${hearthAt.x * worldW - shownCam.x}px`,
+            top: `${hearthAt.y * worldH - shownCam.y + 10}px`,
+          }}
+        >
+          {gateLabel(hearthGate.to)}
+        </span>
+      ) : null}
         {teachLine && scene === 'dba.scene.shore' ? (
           <p className="approach-hint once" data-testid="approach-hint">
             {t('hint.approach')}

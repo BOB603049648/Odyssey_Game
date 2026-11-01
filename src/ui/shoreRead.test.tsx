@@ -155,11 +155,13 @@ describe('shore readability', () => {
     expect(label).toMatch(/opacity:\s*1/);
     expect(label).toMatch(/font-size:\s*1\.22rem/);
     expect(label).not.toMatch(/0\.74rem/);
-    const hearthLabel = rule('.path-exit[data-hearth="yes"].near span');
+    const hearthLabel = rule('.hearth-name');
     expect(hearthLabel).toMatch(/font-size:\s*1\.72rem/);
     expect(hearthLabel).toMatch(/#fff8ee/);
     expect(hearthLabel).toMatch(/rgba\(16,\s*9,\s*5,\s*0\.62\)/);
+    expect(hearthLabel).toMatch(/z-index:\s*8/);
     expect(hearthLabel).not.toMatch(/outline|dashed|#0ff|#00ffff/);
+    expect(rule('.path-exit[data-hearth="yes"].near span')).toMatch(/opacity:\s*0/);
     const focus = rule('.walk-viewport .world-layer .hotspot:focus-visible');
     expect(focus).toMatch(/outline:\s*none/);
     expect(focus).not.toMatch(/rgba\(230,\s*211,\s*164/);
@@ -232,6 +234,7 @@ describe('shore readability', () => {
     const camp = screen.getByTestId('exit-camp');
     expect(camp.getAttribute('data-hearth')).toBe('yes');
     expect(camp.className).not.toContain('near');
+    expect(screen.queryByTestId('hearth-name')).toBeNull();
     expect(camp.style.top).toBe(`${CAMP_HEARTH_Y * 100}%`);
     expect(camp.style.left).toBe('90%');
     expect(camp.querySelector('span')?.textContent).toBeTruthy();
@@ -287,6 +290,10 @@ describe('shore readability', () => {
     const camp = screen.getByTestId('exit-camp');
     expect(camp.className).toContain('near');
     expect(camp.querySelector('span')?.textContent).toBe('棚火');
+    const name = screen.getByTestId('hearth-name');
+    expect(name.textContent).toBe('棚火');
+    expect(screen.getByTestId('world-root').contains(name)).toBe(false);
+    expect(screen.getByTestId('grade-veil').compareDocumentPosition(name) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.getByTestId('walk-stage').getAttribute('data-scene')).toBe('dba.scene.shore');
   });
 
@@ -334,13 +341,18 @@ describe('shore readability', () => {
     expect(css).not.toContain('.sole-stamp');
   });
 
-  it('mounts the pr64 read2 pack at the reported sha256', () => {
-    const report = JSON.parse(readFileSync('docs/_pr64-read2-report.json', 'utf8')) as {
+  it('mounts the pr64 read3 pack at the reported sha256', () => {
+    const report = JSON.parse(readFileSync('docs/_pr64-read3-report.json', 'utf8')) as {
       files: Record<string, { sha256: string }>;
       wrote: string[];
       version: string;
+      blockers: unknown[];
     };
-    expect(report.version).toBe('1.3-pr64-read2');
+    expect(report.version).toBe('1.3-pr64-read3');
+    expect(report.blockers).toEqual([]);
+    expect(report.files['shore/art.shore.ground.jpg'].sha256).toBe(
+      'df4b9af7195fccf5b5ee41059fa4306898693280f38e4b2737f1e50cecb3afbe',
+    );
     const disk = (logical: string) => {
       if (logical === 'shore/art.shore.ground.jpg') return 'src/assets/art/slots/art.shore.ground.jpg';
       if (logical.startsWith('traveler-mythic/')) return `src/assets/traveler/${logical.split('/').pop()}`;

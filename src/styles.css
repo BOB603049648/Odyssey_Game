@@ -591,7 +591,18 @@ h1 {
     0 2px 10px rgba(0, 0, 0, 0.92);
 }
 
+/* The grade stack sits over the world and cools a #fff8ee fill. Keep this span
+   for the hit target; the painted name is .hearth-name, above the veil. */
 .path-exit[data-hearth="yes"].near span {
+  opacity: 0;
+}
+
+.hearth-name {
+  position: absolute;
+  z-index: 8;
+  transform: translateX(-50%);
+  pointer-events: none;
+  white-space: nowrap;
   font-size: 1.72rem;
   font-weight: 600;
   letter-spacing: 0.2em;
@@ -600,8 +611,7 @@ h1 {
   padding: 1px 16px 3px;
   text-shadow:
     0 1px 0 rgba(28, 12, 4, 0.95),
-    0 2px 10px rgba(0, 0, 0, 0.96),
-    0 0 16px rgba(0, 0, 0, 0.9);
+    0 2px 6px rgba(0, 0, 0, 0.9);
 }
 
 .traveler .contact-shadow,
