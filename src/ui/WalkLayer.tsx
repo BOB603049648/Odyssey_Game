@@ -13,6 +13,9 @@ import {
   cameraOffset,
   followCamera,
   inRadius,
+  lookEast,
+  pathExitNear,
+  pathExitPoint,
   pointerToWorld,
   reachOf,
   stepKey,
@@ -84,6 +87,7 @@ export function WalkLayer({
   showWalkMask = false,
   catPost,
   onFar,
+  onApproachHint,
   resting = false,
   flash = null,
   beat = null,
@@ -106,6 +110,8 @@ export function WalkLayer({
   showWalkMask?: boolean;
   catPost: CatPost;
   onFar?: (id: string) => void;
+  /** True while the one-shot driftwood approach line is on screen. */
+  onApproachHint?: (visible: boolean) => void;
   resting?: boolean;
   flash?: { kind: 'driftwood' | 'sleep' | 'give'; seq: number; x: number; y: number } | null;
   beat?: SpotBeat | null;
@@ -503,7 +509,8 @@ export function WalkLayer({
       live = false;
     };
   }, [flashId]);
-  const shownCam = import.meta.env.MODE === 'test' ? cameraOffset(pos, view.w, view.h) : cam;
+  const rawCam = import.meta.env.MODE === 'test' ? cameraOffset(pos, view.w, view.h) : cam;
+  const shownCam = lookEast(rawCam, view.w, scene === 'dba.scene.shore');
   const look = sceneLook(scene);
   const near = spots.filter((spot) => standsAt(scene, spot, pos)).map((spot) => spot.id);
   const glance = spots
@@ -512,8 +519,10 @@ export function WalkLayer({
   const teachSpot = near.includes('shore-driftwood') ? 'shore-driftwood' : '';
   const onTeachRef = useRef(onTeach);
   const taughtRef = useRef(taught);
+  const approachRef = useRef(onApproachHint);
   onTeachRef.current = onTeach;
   taughtRef.current = taught;
+  approachRef.current = onApproachHint;
   const spotIds = spots.map((spot) => spot.id);
   const sleepFoot = SPOTS[scene].find((spot) => spot.id === 'camp-sleep');
   const feetY = resting && sleepFoot ? sleepFoot.y : pos.y;
@@ -527,6 +536,10 @@ export function WalkLayer({
     setTeachLine(true);
     onTeachRef.current?.();
   }, [teachSpot]);
+
+  useEffect(() => {
+    approachRef.current?.(teachLine && scene === 'dba.scene.shore');
+  }, [teachLine, scene]);
 
   useEffect(() => {
     if (!arrive) return undefined;
@@ -562,7 +575,7 @@ export function WalkLayer({
       <div className="world-root" data-testid="world-root" data-ambient={look.ambient}>
         {groundPlate ? <img className="ground-fill" src={groundPlate} alt="" draggable={false} /> : null}
         <div className="world-cam" data-testid="world-camera" style={{ transform: `translate3d(${-shownCam.x}px, ${-shownCam.y}px, 0)`, zIndex: 1 }}>
-        <div ref={worldRef} className="world-layer" style={{ width: worldW, height: worldH }}>
+        <div ref={worldRef} className="world-layer" style={{ width: worldW, height: worldH, ['--world-w' as string]: `${worldW}px` }}>
           <PlateStack
             plate={plates.current}
             previous={plates.previous}
@@ -576,24 +589,27 @@ export function WalkLayer({
             beat={beat}
           />
           <div className="walk-ground" data-testid="walk-ground" onPointerDown={onGround} />
-          {gatesFrom(scene).map((gate) => (
-            <button
-              key={gate.to}
-              type="button"
-              className={inRadius(pos, gate, gate.r) ? 'path-exit near' : 'path-exit'}
-              data-hearth={gate.to === 'dba.scene.camp' ? 'yes' : 'no'}
-              data-testid={`exit-${gate.to.split('.').at(-1)}`}
-              style={{ left: pct(gate.x), top: pct(gate.y) }}
-              aria-label={gateLabel(gate.to)}
-              onClick={(event) => {
-                event.stopPropagation();
-                if (!pausedRef.current) seek(gate);
-              }}
-            >
-              <i />
-              <span aria-hidden="true">{gateLabel(gate.to)}</span>
-            </button>
-          ))}
+          {gatesFrom(scene).map((gate) => {
+            const at = pathExitPoint(gate);
+            return (
+              <button
+                key={gate.to}
+                type="button"
+                className={pathExitNear(pos, gate) ? 'path-exit near' : 'path-exit'}
+                data-hearth={gate.from === 'dba.scene.shore' && gate.to === 'dba.scene.camp' ? 'yes' : 'no'}
+                data-testid={`exit-${gate.to.split('.').at(-1)}`}
+                style={{ left: pct(at.x), top: pct(at.y) }}
+                aria-label={gateLabel(gate.to)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  if (!pausedRef.current) seek(gate);
+                }}
+              >
+                <i />
+                <span aria-hidden="true">{gateLabel(gate.to)}</span>
+              </button>
+            );
+          })}
           {spots.map((spot) => {
             const inside = near.includes(spot.id);
             const reach = inside ? 'near' : glance.includes(spot.id) ? 'glance' : 'far';

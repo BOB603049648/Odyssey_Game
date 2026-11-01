@@ -164,6 +164,44 @@ export function cameraOffset(focus: Point, viewW: number, viewH: number, scale =
   };
 }
 
+/**
+ * Shore spawn looks a little east so the camp hearth's west tail
+ * enters the first frame. Small enough that the west gate stays on screen.
+ */
+export const SHORE_LOOK_EAST = 0.015;
+
+/** South of the fog-line gate. The east cross itself stays on the gate point. */
+export const CAMP_HEARTH_Y = 0.72;
+/** Name lights in this radius around the warm pool, before x reaches the east cross. */
+export const CAMP_HEARTH_R = 0.14;
+/**
+ * How far west of the gate the warm pool still has body, in world fraction.
+ * The hearth ::before width is twice this, centered on the gate.
+ */
+export const CAMP_HEARTH_GLOW_WEST = 0.22;
+
+export function lookEast(cam: Point, viewW: number, shore: boolean, scale = WORLD_SCALE): Point {
+  if (!shore || viewW < 1) return cam;
+  const maxX = Math.max(0, viewW * scale - viewW);
+  return { x: Math.min(maxX, cam.x + SHORE_LOOK_EAST * viewW * scale), y: cam.y };
+}
+
+export function frameWorldX(camX: number, viewW: number, scale = WORLD_SCALE): { left: number; right: number } {
+  const worldW = viewW * scale;
+  return { left: camX / worldW, right: camX / worldW + viewW / worldW };
+}
+
+export function pathExitPoint(gate: { from: string; to: string; x: number; y: number }): Point {
+  if (gate.from === 'dba.scene.shore' && gate.to === 'dba.scene.camp') return { x: gate.x, y: CAMP_HEARTH_Y };
+  return { x: gate.x, y: gate.y };
+}
+
+export function pathExitNear(pos: Point, gate: { from: string; to: string; x: number; y: number; r: number }): boolean {
+  const at = pathExitPoint(gate);
+  const radius = gate.from === 'dba.scene.shore' && gate.to === 'dba.scene.camp' ? CAMP_HEARTH_R : gate.r;
+  return inRadius(pos, at, radius);
+}
+
 export function pointerToWorld(
   clientX: number,
   clientY: number,

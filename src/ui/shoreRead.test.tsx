@@ -3,9 +3,25 @@ import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { sceneAssembly } from '../content/catalog';
 import { companionPost } from '../core/companionPost';
+import { reduce } from '../core/reduce';
 import { newGameState } from '../core/save';
-import { BANDS, SPAWNS, SPOTS } from '../core/stage';
-import { GLANCE_REACH, KEY_STEP, WORLD_SCALE, distance, reachOf } from '../core/walk';
+import { BANDS, GATES, SPAWNS, SPOTS, crossed } from '../core/stage';
+import {
+  CAMP_HEARTH_GLOW_WEST,
+  CAMP_HEARTH_R,
+  CAMP_HEARTH_Y,
+  GLANCE_REACH,
+  KEY_STEP,
+  WORLD_SCALE,
+  cameraOffset,
+  distance,
+  frameWorldX,
+  lookEast,
+  pathExitNear,
+  reachOf,
+} from '../core/walk';
+import { useGame } from '../stores/gameStore';
+import { IslandScreen } from './IslandScreen';
 import { PlateStack } from './Plate';
 import { visibleSpots } from './spotViews';
 import { WalkLayer } from './WalkLayer';
@@ -109,13 +125,17 @@ describe('shore readability', () => {
 
     const far = rule('.walk-viewport[data-scene="dba.scene.shore"] .scene-slot[data-cue="far"] .prop-cue');
     const glance = rule('.walk-viewport[data-scene="dba.scene.shore"] .scene-slot[data-cue="glance"] .prop-cue');
-    const near = rule('.walk-viewport[data-scene="dba.scene.shore"] .world-layer .hotspot.near');
+    const foot = rule('.walk-viewport[data-scene="dba.scene.shore"] .scene-slot[data-cue="near"] .prop-cue');
+    const quiet = rule('.walk-viewport .world-layer .hotspot.hint-near');
     expect(far).toMatch(/opacity:\s*0\.[6-9]/);
     expect(glance).toMatch(/opacity:\s*1/);
     expect(glance).toMatch(/box-shadow/);
-    expect(near).toMatch(/border-color:\s*rgba\(214,\s*196,\s*154/);
-    expect(near).toMatch(/color:\s*transparent/);
-    expect(near).not.toMatch(/content:\s*["']\?/);
+    expect(foot).toMatch(/box-shadow/);
+    expect(quiet).toMatch(/box-shadow:\s*none/);
+    expect(quiet).toMatch(/border-color:\s*transparent/);
+    expect(quiet).not.toMatch(/999px|rgba\(214,\s*196,\s*154|rgba\(230,\s*211,\s*164/);
+    expect(quiet).not.toMatch(/content:\s*["']\?/);
+    expect(css).not.toMatch(/\.walk-viewport\[data-scene="dba\.scene\.shore"\] \.world-layer \.hotspot\.near\s*\{[^}]*box-shadow/);
   });
 
   it('keeps path exits readable from far, and the near label bright', () => {
@@ -129,7 +149,11 @@ describe('shore readability', () => {
     expect(hearth).toMatch(/28px/);
     expect(pool).toMatch(/rgba\(255,\s*176,\s*72/);
     expect(pool).toMatch(/pointer-events:\s*none/);
+    expect(pool).toMatch(/var\(--world-w\)\s*\*\s*0\.44/);
+    expect(CAMP_HEARTH_GLOW_WEST * 2).toBeCloseTo(0.44);
     expect(label).toMatch(/opacity:\s*1/);
+    expect(label).toMatch(/font-size:\s*1\.22rem/);
+    expect(label).not.toMatch(/0\.74rem/);
   });
 
   it('speaks the first driftwood approach once, louder than the ambient line', () => {
@@ -196,10 +220,94 @@ describe('shore readability', () => {
     expect(screen.getByTestId('shore-depart').getAttribute('data-reach')).toBe('far');
     expect(screen.getByTestId('prop-art.shore.prop.driftwood').getAttribute('data-cue')).toBe('glance');
     expect(screen.getByTestId('prop-art.shore.prop.east-gap').getAttribute('data-cue')).toBe('far');
-    expect(screen.getByTestId('exit-camp').getAttribute('data-hearth')).toBe('yes');
-    expect(screen.getByTestId('exit-camp').className).not.toContain('near');
-    expect(screen.getByTestId('exit-camp').querySelector('span')?.textContent).toBeTruthy();
+    const camp = screen.getByTestId('exit-camp');
+    expect(camp.getAttribute('data-hearth')).toBe('yes');
+    expect(camp.className).not.toContain('near');
+    expect(camp.style.top).toBe(`${CAMP_HEARTH_Y * 100}%`);
+    expect(camp.style.left).toBe('90%');
+    expect(camp.querySelector('span')?.textContent).toBeTruthy();
+    const hall = screen.getByTestId('exit-hall');
+    expect(hall.getAttribute('data-hearth')).toBe('no');
+    expect(hall.className).not.toContain('near');
     expect(screen.queryByText('?')).toBeNull();
+
+    const view = { w: 1280, h: 720 };
+    const framed = lookEast(cameraOffset(SPAWNS['dba.scene.shore'], view.w, view.h), view.w, true);
+    const span = frameWorldX(framed.x, view.w);
+    const gate = GATES.find((item) => item.from === 'dba.scene.shore' && item.to === 'dba.scene.camp')!;
+    expect(span.left).toBeLessThan(0.11);
+    expect(gate.x - CAMP_HEARTH_GLOW_WEST).toBeLessThan(span.right - 0.04);
+    const stage = screen.getByTestId('walk-stage');
+    expect(Number(stage.getAttribute('data-cam-x'))).toBeCloseTo(framed.x, 0);
+  });
+
+  it('lights the camp name on the south tide line before the east cross', () => {
+    const gate = GATES.find((item) => item.from === 'dba.scene.shore' && item.to === 'dba.scene.camp')!;
+    const south = { x: 0.85, y: 0.78 };
+    const fog = { x: 0.84, y: 0.63 };
+    expect(south.x).toBeLessThan(gate.x);
+    expect(fog.x).toBeLessThan(gate.x);
+    expect(pathExitNear(south, gate)).toBe(true);
+    expect(pathExitNear(fog, gate)).toBe(true);
+    expect(crossed(gate, south)).toBe(false);
+    expect(crossed(gate, fog)).toBe(false);
+    expect(pathExitNear(SPAWNS['dba.scene.shore'], gate)).toBe(false);
+    expect(CAMP_HEARTH_R).toBeGreaterThan(gate.r);
+
+    const save = newGameState();
+    const spots = visibleSpots('dba.scene.shore', save, { level: 0, anchor: 'driftwood', wordId: null });
+    render(
+      <WalkLayer
+        scene="dba.scene.shore"
+        drank={false}
+        spots={spots}
+        hint={{ level: 0, anchor: 'driftwood', wordId: null, pose: 'idle' }}
+        paused={false}
+        purr={false}
+        knot="rest"
+        remembered={south}
+        onRemember={() => undefined}
+        onExit={() => undefined}
+        onInteract={() => undefined}
+        onAsk={() => undefined}
+        onEscape={() => undefined}
+        taught
+        catPost={companionPost('dba.scene.shore', {}, {})}
+      />,
+    );
+    const camp = screen.getByTestId('exit-camp');
+    expect(camp.className).toContain('near');
+    expect(camp.querySelector('span')?.textContent).toBe('棚火');
+    expect(screen.getByTestId('walk-stage').getAttribute('data-scene')).toBe('dba.scene.shore');
+  });
+
+  it('hides the far driftwood line while the first approach line is up', () => {
+    let state = reduce(newGameState(), { type: 'new-game' });
+    for (let step = 0; step < 4; step += 1) state = reduce(state, { type: 'advance-prologue' });
+    state = {
+      ...state,
+      feedback: {
+        seq: state.feedback.seq + 1,
+        kind: 'no',
+        line: 'spot.driftwood.far',
+        spot: 'shore-driftwood',
+      },
+    };
+    const wood = SPOTS['dba.scene.shore'].find((spot) => spot.id === 'shore-driftwood')!;
+    useGame.setState({ place: { scene: 'dba.scene.shore', x: wood.x, y: wood.y } });
+    const near = render(<IslandScreen save={state} dispatch={() => undefined} onTitle={() => undefined} />);
+    expect(near.getByTestId('approach-hint').textContent).toBe('近一点。手才能够到。');
+    expect(near.queryByTestId('spot-line')).toBeNull();
+    expect(near.queryByText('还够不着。')).toBeNull();
+    near.unmount();
+
+    useGame.setState({ place: { scene: 'dba.scene.shore', x: 0.55, y: 0.8 } });
+    const away = render(<IslandScreen save={state} dispatch={() => undefined} onTitle={() => undefined} />);
+    expect(away.queryByTestId('approach-hint')).toBeNull();
+    expect(away.getByTestId('spot-line').getAttribute('data-line')).toBe('spot.driftwood.far');
+    expect(away.getByTestId('spot-line').textContent).toBe('还够不着。');
+    away.unmount();
+    useGame.setState({ place: null });
   });
 
   it('does not move sole, scale, shore band, or the #60 shore boxes', () => {
