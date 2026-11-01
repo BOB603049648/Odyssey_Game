@@ -2,7 +2,7 @@
  * Scene art is fetched when a frame asks for it. The opening route
  * (title → new game → shore) must not reference the rest of the island.
  */
-const loaders = import.meta.glob<string>('../assets/art/slots/*.{png,webp}', {
+const loaders = import.meta.glob<string>('../assets/art/slots/*.{png,webp,jpg,jpeg}', {
   import: 'default',
 });
 

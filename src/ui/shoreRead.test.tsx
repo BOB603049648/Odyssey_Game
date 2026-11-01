@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -323,5 +324,23 @@ describe('shore readability', () => {
     expect(css).toMatch(/\.sole-soft\s*\{[^}]*transparent 99%[^}]*#000 99\.7%/);
     expect(css).not.toContain('.fog-fringe');
     expect(css).not.toContain('.sole-stamp');
+  });
+
+  it('mounts the pr64 read pack at the reported sha256', () => {
+    const report = JSON.parse(readFileSync('docs/_pr64-read-report.json', 'utf8')) as {
+      files: Record<string, { sha256: string }>;
+      wrote: string[];
+    };
+    const disk = (logical: string) => {
+      if (logical === 'shore/art.shore.ground.jpg') return 'src/assets/art/slots/art.shore.ground.jpg';
+      if (logical.startsWith('traveler-mythic/')) return `src/assets/traveler/${logical.split('/').pop()}`;
+      if (logical.startsWith('nanaicha/traj/')) return `src/assets/companion/nanaicha/traj/${logical.split('/').pop()}`;
+      throw new Error(logical);
+    };
+    expect(report.wrote).toHaveLength(25);
+    for (const logical of report.wrote) {
+      const sha = createHash('sha256').update(readFileSync(disk(logical))).digest('hex');
+      expect(sha).toBe(report.files[logical].sha256);
+    }
   });
 });
