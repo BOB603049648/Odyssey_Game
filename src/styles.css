@@ -2033,9 +2033,9 @@ h1 {
   opacity: 0.36;
 }
 .walk-viewport[data-scene="dba.scene.yard"] .scene-grade { opacity: 0.22; }
-/* Fog cools a dark sole. This copy sits above that fog. The boot leather
-   through 94.2% is still cool gray, so the feather stays shut there, opens on
-   the warm contact, and falls off through the extra pixels under the foot
+/* Fog cools a dark sole. This copy sits above that fog. The mask stays shut
+   through the boot shaft and opens on the leather hem, so the warm core sits
+   on the sole and then falls off through the extra pixels under the foot
    (--fit is the sprite's share of that taller box). No shelf, no ellipse. */
 .sole-layer {
   position: absolute;
@@ -2057,8 +2057,8 @@ h1 {
   object-fit: contain;
   object-position: center top;
   --fit: 0.910;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent calc(94.2% * var(--fit)), rgba(0, 0, 0, 1) calc(96.2% * var(--fit)), rgba(0, 0, 0, 1) calc(97.6% * var(--fit)), rgba(0, 0, 0, 0.42) calc(100% * var(--fit)), transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, transparent calc(94.2% * var(--fit)), rgba(0, 0, 0, 1) calc(96.2% * var(--fit)), rgba(0, 0, 0, 1) calc(97.6% * var(--fit)), rgba(0, 0, 0, 0.42) calc(100% * var(--fit)), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent calc(89.8% * var(--fit)), rgba(0, 0, 0, 1) calc(92.0% * var(--fit)), rgba(0, 0, 0, 1) calc(94.0% * var(--fit)), rgba(0, 0, 0, 0.42) calc(100% * var(--fit)), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, transparent calc(89.8% * var(--fit)), rgba(0, 0, 0, 1) calc(92.0% * var(--fit)), rgba(0, 0, 0, 1) calc(94.0% * var(--fit)), rgba(0, 0, 0, 0.42) calc(100% * var(--fit)), transparent 100%);
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;

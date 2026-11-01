@@ -67,7 +67,7 @@ describe('cohesion shadows and grades', () => {
     expect(css).not.toContain('transparent 91%');
     expect(css).not.toMatch(/\.sole-soft\s*\{[^}]*transparent 99%/);
     expect(css).toMatch(/\.sole-soft\s*\{[^}]*--fit:\s*0\.910/);
-    expect(css).toMatch(/\.sole-soft\s*\{[^}]*transparent calc\(94\.2% \* var\(--fit\)\)[^}]*rgba\(0,\s*0,\s*0,\s*1\) calc\(96\.2% \* var\(--fit\)\)/);
+    expect(css).toMatch(/\.sole-soft\s*\{[^}]*transparent calc\(89\.8% \* var\(--fit\)\)[^}]*rgba\(0,\s*0,\s*0,\s*1\) calc\(92\.0% \* var\(--fit\)\)/);
     expect(css).toMatch(/\.sole-soft\s*\{[^}]*rgba\(0,\s*0,\s*0,\s*0\.42\) calc\(100% \* var\(--fit\)\)[^}]*transparent 100%/);
     expect(css).not.toMatch(/\.sole-soft\s*\{[^}]*#000/);
     expect(css).toMatch(/\.sole-soft\s*\{[^}]*filter:\s*url\(#sole-warm\)/);
