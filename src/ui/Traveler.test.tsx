@@ -295,7 +295,7 @@ describe('traveler art', () => {
     const near = render(layer([here], null));
     const pose = () => near.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose');
     expect(pose()).toBe('idle');
-    expect(near.container.querySelector('.nanaicha-ground')?.getAttribute('src')).toMatch(/land-shore/);
+    expect(near.container.querySelector('.nanaicha-ground')?.getAttribute('src')).toMatch(/nanaicha-hero/);
     expect(near.container.querySelector('[data-testid="companion-anchor"]')?.getAttribute('data-sprite')).toMatch(/land-shore/);
     fireEvent.keyDown(window, { key: 'e' });
     expect(pose()).toBe('reach');

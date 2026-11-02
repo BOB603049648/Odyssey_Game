@@ -32,6 +32,27 @@ export function loadTraj(id: string): Promise<string | null> {
   return job;
 }
 
+const heroLoaders = import.meta.glob<string>('../assets/companion/nanaicha/nanaicha-hero.png', { import: 'default' });
+const heroLoader = Object.values(heroLoaders)[0] as (() => Promise<string>) | undefined;
+let heroCache: string | undefined;
+let heroPending: Promise<string | null> | null = null;
+
+/** Colored standing plate. Shore traj still collapses the dark Siamese mask at display size; shore uses hero (#51 / face P0). */
+export function heroUrl(): string | undefined {
+  return heroCache;
+}
+
+export function loadHero(): Promise<string | null> {
+  if (heroCache) return Promise.resolve(heroCache);
+  if (!heroLoader) return Promise.resolve(null);
+  heroPending ??= heroLoader().then((url) => {
+    heroCache = url;
+    return url;
+  });
+  return heroPending;
+}
+
 if (import.meta.env.MODE === 'test') {
   await Promise.all([...byId.keys()].map((id) => loadTraj(id)));
+  await loadHero();
 }

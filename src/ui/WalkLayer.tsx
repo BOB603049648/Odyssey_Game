@@ -31,7 +31,7 @@ import { t } from './i18n';
 import { PlateStack, type SpotBeat } from './Plate';
 import { gateLabel, type SpotView } from './spotViews';
 import { sceneGrade, sceneLook, sceneStrip } from './cohesion';
-import { loadTraj, trajUrl } from './trajArt';
+import { heroUrl, loadHero, loadTraj, trajUrl } from './trajArt';
 import { contactLift, contactOpacity, depthScale, worldToScreen } from '../core/world';
 import { catContactUrl, clippedBootUrl } from './soleClip';
 import { facingFromMove, REACH_HOLD_MS, TravelerMark, type TravelerFacing } from './Traveler';
@@ -526,8 +526,9 @@ export function WalkLayer({
       : scene === 'dba.scene.yard' || scene === 'dba.scene.path'
         ? 'art.yard.prop.nanaicha'
         : 'art.shore.prop.nanaicha';
+  const shoreCat = scene === 'dba.scene.shore';
   const [catFigure, setCatFigure] = useState<string | undefined>(
-    () => trajUrl(catSprite) ?? resolveSlotAsset(slotCat) ?? undefined,
+    () => (shoreCat ? heroUrl() : trajUrl(catSprite) ?? resolveSlotAsset(slotCat)) ?? undefined,
   );
   const flashId =
     flash?.kind === 'driftwood'
@@ -545,13 +546,16 @@ export function WalkLayer({
     loadSlotAsset(groundAsset).then((url) => {
       if (live) setGroundPlate(url);
     });
-    Promise.all([loadTraj(catSprite), loadSlotAsset(slotCat)]).then(([frame, plate]) => {
-      if (live) setCatFigure(frame ?? plate ?? undefined);
+    const figure = shoreCat
+      ? loadHero()
+      : Promise.all([loadTraj(catSprite), loadSlotAsset(slotCat)]).then(([frame, plate]) => frame ?? plate ?? null);
+    figure.then((url) => {
+      if (live && url) setCatFigure(url);
     });
     return () => {
       live = false;
     };
-  }, [scene, groundAsset, catSprite, slotCat]);
+  }, [scene, groundAsset, catSprite, slotCat, shoreCat]);
   useEffect(() => {
     let live = true;
     setFlashSrc(resolveSlotAsset(flashId));
