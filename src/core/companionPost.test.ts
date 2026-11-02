@@ -30,11 +30,12 @@ describe('companion feet and gaze', () => {
     expect(companionFace('land-camp-fireside', 0.7, 0.4)).toBe('right');
   });
 
-  it('puts the contact ellipse on the visible paw, above the canvas lip', () => {
-    expect(companionSole('land-shore-driftwood')).toBeCloseTo(897 / 1152);
-    expect(companionSole('land-shore-driftwood')).toBeLessThan(0.82);
+  it('puts the contact on the paw tip, above the canvas lip', () => {
+    expect(companionSole('land-shore-driftwood')).toBeCloseTo(976 / 1152);
+    expect(companionSole('land-shore-driftwood')).toBeGreaterThan(0.82);
+    expect(companionSole('land-shore-driftwood')).toBeLessThan(0.9);
     expect(companionSole('land-shore-east-gap')).toBeCloseTo(1117 / 1152);
-    expect(companionSole('land-shore-gourd')).toBeCloseTo(897 / 1152);
+    expect(companionSole('land-shore-gourd')).toBeCloseTo(976 / 1152);
     expect(companionSole('land-shore-gourd')).toBe(companionSole('land-shore-driftwood'));
     expect(companionSole('land-yard-give')).toBeCloseTo(1128 / 1152);
     expect(companionSole('land-camp-fireside')).toBeCloseTo(1143 / 1152);

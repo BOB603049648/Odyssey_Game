@@ -18,15 +18,15 @@ export function companionFoot(frameId: string): { readonly x: number; readonly y
 }
 
 /**
- * Visible paw row on the 1152 sheet. The plant pivot stays near the canvas
- * bottom; several landings keep the claws higher, so the contact ellipse
- * uses this row instead of the box edge.
+ * Visible paw tip on the 1152 sheet. The plant pivot stays near the canvas
+ * bottom. Shore landings anchor the warm contact on the claw tip, not the
+ * cloak hem (that hem sat at row 897 and left the puddle under cold fog).
  */
 const COMPANION_SOLE: Record<string, number> = {
-  'land-shore-driftwood': 897 / 1152,
+  'land-shore-driftwood': 976 / 1152,
+  /* East paws and the baked puddle sit on this row, not higher on the cloak. */
   'land-shore-east-gap': 1117 / 1152,
-  /* Cloak hem. Edge scraps below it are not the center paw. */
-  'land-shore-gourd': 897 / 1152,
+  'land-shore-gourd': 976 / 1152,
   'land-yard-give': 1128 / 1152,
   'land-camp-fireside': 1143 / 1152,
   'land-camp-sleep-mat': 1143 / 1152,
