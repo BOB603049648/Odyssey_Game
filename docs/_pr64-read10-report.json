@@ -1,0 +1,3646 @@
+{
+  "version": "1.3-pr64-read10",
+  "key": "pr64_read10",
+  "updated": "2026-11-02T08:30:32+08:00",
+  "role": "auxiliary",
+  "timezone": "Asia/Shanghai",
+  "priority_note": "PR64 read10（RETEST9 不过）：①潮印/棚火/骨框/尺度已过 ground 锁 read3 不改；②旅人21 SECONDARY：芯色 rgb(28,22,16)+底边羽化已过勿坏，轻贴靴廓配合 tip-attach；行走沙缝 eng 主拧；③岸猫 land-shore×3 PRIMARY：真实下摆 tip（≈930–976）下肉眼可见暖褐软 puddle α芯≥230（潮印/瓢口不算），脸 byte 锁 pr59。Art + eng sole-soft horizontal 同挂 #64，现网勿合。",
+  "do_not_touch": [
+    "nanaicha/traj/land-yard-give.png",
+    "camp/art.camp.prop.north-curtain.png",
+    "yard/art.yard.prop.grain-bags.png",
+    "yard/art.yard.prop.grain-bags.interact.png",
+    "shore/art.shore.prop.mural-wall.png",
+    "shore/art.shore.prop.east-gap.png",
+    "shore/art.shore.prop.gourd.png",
+    "shore/art.shore.building.png",
+    "shore/art.shore.prop.driftwood.png",
+    "shore/art.shore.prop.driftwood.interact.png",
+    "shore/art.shore.prop.break-shard.png",
+    "shore/art.shore.prop.nanaicha.png",
+    "shore/art.shore.sky.jpg",
+    "shore/art.shore.fg.png",
+    "shore/art.shore.ground.jpg"
+  ],
+  "files": {
+    "traveler-mythic/cloud-inspired/v3/anim/idle-back-01.png": {
+      "sha256": "74521a67c313ef4ef24d80dfd731562d6a833a3c53184af61b638932661ecf6f",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            184,
+            44,
+            740,
+            1151
+          ],
+          "soft_shadow_px": 10161,
+          "soft_shadow_rgb": [
+            27.99,
+            21.99,
+            15.99
+          ],
+          "soft_shadow_alpha": 119.13,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0096,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 150.46,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 218.96,
+          "mean_strip_alpha_all": 19.19,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085
+        },
+        "after": {
+          "opaque_bbox": [
+            184,
+            44,
+            740,
+            1151
+          ],
+          "soft_shadow_px": 11107,
+          "soft_shadow_rgb": [
+            27.99,
+            21.99,
+            16.0
+          ],
+          "soft_shadow_alpha": 156.85,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0088,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 162.77,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 230.22,
+          "mean_strip_alpha_all": 37.17,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085,
+          "hard_bottom_edge_px": 14
+        },
+        "sole_x": [
+          321,
+          547
+        ],
+        "pool": [
+          434.0,
+          113.0
+        ],
+        "boot_y_max": 1085,
+        "tip_y": 1085,
+        "boots": [
+          [
+            368.0,
+            1085.0,
+            36.0
+          ],
+          [
+            507.0,
+            1085.0,
+            36.0
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 230.22,
+        "fog_sim_mean_rgb": [
+          31.81,
+          26.49,
+          20.78
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 14,
+        "sand_sim_mean_rgb": [
+          30.15,
+          24.56,
+          18.68
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-back-02.png": {
+      "sha256": "142512de6ded390f035e904578c959be87c79c32bc9b7907786d6964e627773c",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            161,
+            49,
+            759,
+            1151
+          ],
+          "soft_shadow_px": 9719,
+          "soft_shadow_rgb": [
+            27.99,
+            21.99,
+            15.99
+          ],
+          "soft_shadow_alpha": 118.65,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.015,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 149.43,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 218.48,
+          "mean_strip_alpha_all": 19.05,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085
+        },
+        "after": {
+          "opaque_bbox": [
+            161,
+            49,
+            759,
+            1151
+          ],
+          "soft_shadow_px": 9000,
+          "soft_shadow_rgb": [
+            27.99,
+            21.99,
+            15.99
+          ],
+          "soft_shadow_alpha": 158.33,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0163,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 158.89,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 225.1,
+          "mean_strip_alpha_all": 25.98,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085,
+          "hard_bottom_edge_px": 0
+        },
+        "sole_x": [
+          347,
+          474
+        ],
+        "pool": [
+          410.5,
+          63.5
+        ],
+        "boot_y_max": 1085,
+        "tip_y": 1085,
+        "boots": [
+          [
+            410.5,
+            1085.0,
+            36.0
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 222.9,
+        "fog_sim_mean_rgb": [
+          30.72,
+          25.21,
+          19.42
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 0,
+        "sand_sim_mean_rgb": [
+          29.53,
+          23.83,
+          17.92
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-front-01.png": {
+      "sha256": "1c6e046fdb4ee5fbb14b390d2b20351ab88be2beeeaedc40cdddbb7bfa64ecd3",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            184,
+            32,
+            635,
+            1151
+          ],
+          "soft_shadow_px": 12199,
+          "soft_shadow_rgb": [
+            27.96,
+            21.97,
+            15.99
+          ],
+          "soft_shadow_alpha": 117.11,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0592,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 148.39,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 217.98,
+          "mean_strip_alpha_all": 19.02,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085
+        },
+        "after": {
+          "opaque_bbox": [
+            184,
+            32,
+            635,
+            1151
+          ],
+          "soft_shadow_px": 16367,
+          "soft_shadow_rgb": [
+            27.97,
+            21.98,
+            15.99
+          ],
+          "soft_shadow_alpha": 156.56,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0857,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 159.14,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 227.16,
+          "mean_strip_alpha_all": 35.32,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085,
+          "hard_bottom_edge_px": 30
+        },
+        "sole_x": [
+          263,
+          558
+        ],
+        "pool": [
+          410.5,
+          147.5
+        ],
+        "boot_y_max": 1085,
+        "tip_y": 1085,
+        "boots": [
+          [
+            330.5,
+            1068.0,
+            36.0
+          ],
+          [
+            526.0,
+            1085.0,
+            31.7
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 226.32,
+        "fog_sim_mean_rgb": [
+          31.34,
+          25.94,
+          20.2
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 30,
+        "sand_sim_mean_rgb": [
+          29.89,
+          24.25,
+          18.36
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-front-02.png": {
+      "sha256": "a89e1d722c7cd4912b4296e112195fac1007a7cb89c66fce2880c6af814cf447",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            183,
+            31,
+            635,
+            1151
+          ],
+          "soft_shadow_px": 12292,
+          "soft_shadow_rgb": [
+            27.98,
+            21.99,
+            16.0
+          ],
+          "soft_shadow_alpha": 117.49,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0636,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 150.46,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 218.96,
+          "mean_strip_alpha_all": 19.19,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085
+        },
+        "after": {
+          "opaque_bbox": [
+            183,
+            31,
+            635,
+            1151
+          ],
+          "soft_shadow_px": 16339,
+          "soft_shadow_rgb": [
+            27.99,
+            22.0,
+            16.0
+          ],
+          "soft_shadow_alpha": 156.58,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0829,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 159.53,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 227.34,
+          "mean_strip_alpha_all": 35.24,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085,
+          "hard_bottom_edge_px": 31
+        },
+        "sole_x": [
+          263,
+          557
+        ],
+        "pool": [
+          410.0,
+          147.0
+        ],
+        "boot_y_max": 1085,
+        "tip_y": 1085,
+        "boots": [
+          [
+            331.5,
+            1069.0,
+            36.0
+          ],
+          [
+            525.5,
+            1085.0,
+            31.2
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 226.52,
+        "fog_sim_mean_rgb": [
+          31.34,
+          25.94,
+          20.2
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 31,
+        "sand_sim_mean_rgb": [
+          29.89,
+          24.25,
+          18.36
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-side-01.png": {
+      "sha256": "8cc6c8da100706cc0de00961282a10cd4a21cac9bae9f529859a4ef1c775eb85",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            249,
+            42,
+            599,
+            1151
+          ],
+          "soft_shadow_px": 4798,
+          "soft_shadow_rgb": [
+            27.7,
+            21.77,
+            15.85
+          ],
+          "soft_shadow_alpha": 120.72,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0202,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 150.46,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 218.96,
+          "mean_strip_alpha_all": 9.59,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085
+        },
+        "after": {
+          "opaque_bbox": [
+            249,
+            42,
+            599,
+            1151
+          ],
+          "soft_shadow_px": 8373,
+          "soft_shadow_rgb": [
+            27.83,
+            21.87,
+            15.92
+          ],
+          "soft_shadow_alpha": 159.98,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0115,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 162.77,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 230.22,
+          "mean_strip_alpha_all": 18.59,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085,
+          "hard_bottom_edge_px": 60
+        },
+        "sole_x": [
+          336,
+          476
+        ],
+        "pool": [
+          406.0,
+          70.0
+        ],
+        "boot_y_max": 1085,
+        "tip_y": 1085,
+        "boots": [
+          [
+            406.0,
+            1085.0,
+            36.0
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 230.22,
+        "fog_sim_mean_rgb": [
+          31.3,
+          25.89,
+          20.14
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 60,
+        "sand_sim_mean_rgb": [
+          29.86,
+          24.22,
+          18.32
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/idle-side-02.png": {
+      "sha256": "0e996d90574d7ff372c6b358fec4e97e9ba65e412bf52abf6461b5562b9f295f",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            222,
+            30,
+            623,
+            1151
+          ],
+          "soft_shadow_px": 4759,
+          "soft_shadow_rgb": [
+            27.94,
+            21.98,
+            16.02
+          ],
+          "soft_shadow_alpha": 120.97,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0117,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 150.46,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 218.96,
+          "mean_strip_alpha_all": 9.59,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085
+        },
+        "after": {
+          "opaque_bbox": [
+            222,
+            30,
+            623,
+            1151
+          ],
+          "soft_shadow_px": 8207,
+          "soft_shadow_rgb": [
+            27.97,
+            21.99,
+            16.01
+          ],
+          "soft_shadow_alpha": 160.36,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0067,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 162.77,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 230.22,
+          "mean_strip_alpha_all": 18.59,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085,
+          "hard_bottom_edge_px": 58
+        },
+        "sole_x": [
+          336,
+          474
+        ],
+        "pool": [
+          405.0,
+          69.0
+        ],
+        "boot_y_max": 1085,
+        "tip_y": 1085,
+        "boots": [
+          [
+            405.0,
+            1085.0,
+            36.0
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 230.22,
+        "fog_sim_mean_rgb": [
+          31.6,
+          26.25,
+          20.53
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 58,
+        "sand_sim_mean_rgb": [
+          30.03,
+          24.42,
+          18.54
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/reach-front-01.png": {
+      "sha256": "31fc12109558501f7b3febfddcd03b7cb3c7893f7aae88c44bf8c8a54942cf40",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            95,
+            22,
+            760,
+            1151
+          ],
+          "soft_shadow_px": 8204,
+          "soft_shadow_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "soft_shadow_alpha": 115.59,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.1455,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 135.86,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 213.47,
+          "mean_strip_alpha_all": 9.24,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085
+        },
+        "after": {
+          "opaque_bbox": [
+            95,
+            22,
+            760,
+            1151
+          ],
+          "soft_shadow_px": 6755,
+          "soft_shadow_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "soft_shadow_alpha": 137.4,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.1857,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 157.51,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 228.11,
+          "mean_strip_alpha_all": 15.33,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085,
+          "hard_bottom_edge_px": 2
+        },
+        "sole_x": [
+          625,
+          748
+        ],
+        "pool": [
+          686.5,
+          61.5
+        ],
+        "boot_y_max": 1085,
+        "tip_y": 1085,
+        "boots": [
+          [
+            632.0,
+            1084.0,
+            8.0
+          ],
+          [
+            721.0,
+            1085.0,
+            26.5
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 225.1,
+        "fog_sim_mean_rgb": [
+          31.36,
+          25.97,
+          20.23
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 2,
+        "sand_sim_mean_rgb": [
+          29.9,
+          24.26,
+          18.37
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/reach-front-02.png": {
+      "sha256": "0d56e3a04f06f90f6aae3fe45199de4f8bfe2f2990948530149a8e4e924b26d1",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            79,
+            23,
+            777,
+            1151
+          ],
+          "soft_shadow_px": 9636,
+          "soft_shadow_rgb": [
+            28.06,
+            22.07,
+            16.06
+          ],
+          "soft_shadow_alpha": 117.27,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.2553,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 142.59,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 216.77,
+          "mean_strip_alpha_all": 12.36,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085
+        },
+        "after": {
+          "opaque_bbox": [
+            79,
+            23,
+            777,
+            1151
+          ],
+          "soft_shadow_px": 6786,
+          "soft_shadow_rgb": [
+            28.08,
+            22.1,
+            16.09
+          ],
+          "soft_shadow_alpha": 132.22,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.4067,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 156.29,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 227.38,
+          "mean_strip_alpha_all": 12.6,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085,
+          "hard_bottom_edge_px": 5
+        },
+        "sole_x": [
+          644,
+          768
+        ],
+        "pool": [
+          706.0,
+          62.0
+        ],
+        "boot_y_max": 1085,
+        "tip_y": 1085,
+        "boots": [
+          [
+            651.0,
+            1084.0,
+            8.0
+          ],
+          [
+            747.0,
+            1085.0,
+            20.3
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 225.54,
+        "fog_sim_mean_rgb": [
+          30.65,
+          25.13,
+          19.33
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 5,
+        "sand_sim_mean_rgb": [
+          29.5,
+          23.78,
+          17.87
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/reach-side-01.png": {
+      "sha256": "7f8bc7fe85308819f02af8f7e0ae96210bb9b2c916b94fa498670c7dcc8d6cae",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            7,
+            83,
+            858,
+            1151
+          ],
+          "soft_shadow_px": 4106,
+          "soft_shadow_rgb": [
+            28.14,
+            22.28,
+            16.39
+          ],
+          "soft_shadow_alpha": 115.83,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.2439,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 141.42,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 216.35,
+          "mean_strip_alpha_all": 5.43,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085
+        },
+        "after": {
+          "opaque_bbox": [
+            7,
+            83,
+            858,
+            1151
+          ],
+          "soft_shadow_px": 3096,
+          "soft_shadow_rgb": [
+            28.21,
+            22.39,
+            16.54
+          ],
+          "soft_shadow_alpha": 134.36,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.3514,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 155.71,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 226.87,
+          "mean_strip_alpha_all": 6.03,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085,
+          "hard_bottom_edge_px": 1
+        },
+        "sole_x": [
+          504,
+          531
+        ],
+        "pool": [
+          517.5,
+          13.5
+        ],
+        "boot_y_max": 1085,
+        "tip_y": 1085,
+        "boots": [
+          [
+            517.5,
+            1085.0,
+            12.5
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 226.87,
+        "fog_sim_mean_rgb": [
+          30.87,
+          25.38,
+          19.6
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 1,
+        "sand_sim_mean_rgb": [
+          29.62,
+          23.93,
+          18.02
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-01.png": {
+      "sha256": "0a1432683fd914a4ae67137c33d32fd1c18c78f2a398b59c20d169f0f70abeff",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            175,
+            51,
+            752,
+            1151
+          ],
+          "soft_shadow_px": 5319,
+          "soft_shadow_rgb": [
+            28.06,
+            22.06,
+            16.06
+          ],
+          "soft_shadow_alpha": 119.24,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0668,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 148.39,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 217.98,
+          "mean_strip_alpha_all": 9.51,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085
+        },
+        "after": {
+          "opaque_bbox": [
+            175,
+            51,
+            752,
+            1151
+          ],
+          "soft_shadow_px": 4764,
+          "soft_shadow_rgb": [
+            28.06,
+            22.06,
+            16.06
+          ],
+          "soft_shadow_alpha": 150.56,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0752,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 163.14,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 230.45,
+          "mean_strip_alpha_all": 15.97,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085,
+          "hard_bottom_edge_px": 0
+        },
+        "sole_x": [
+          385,
+          454
+        ],
+        "pool": [
+          419.5,
+          34.5
+        ],
+        "boot_y_max": 1085,
+        "tip_y": 1085,
+        "boots": [
+          [
+            419.5,
+            1085.0,
+            34.3
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 230.45,
+        "fog_sim_mean_rgb": [
+          31.57,
+          26.21,
+          20.48
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 0,
+        "sand_sim_mean_rgb": [
+          30.01,
+          24.4,
+          18.52
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-02.png": {
+      "sha256": "a643c8f35715f62fbe7849ceb2b00ac5c9dbe798fd6faccc5f28f9523d4f1e10",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            189,
+            38,
+            691,
+            1151
+          ],
+          "soft_shadow_px": 11219,
+          "soft_shadow_rgb": [
+            27.98,
+            21.98,
+            15.99
+          ],
+          "soft_shadow_alpha": 119.42,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.062,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 148.04,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 218.31,
+          "mean_strip_alpha_all": 17.34,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085
+        },
+        "after": {
+          "opaque_bbox": [
+            189,
+            38,
+            691,
+            1151
+          ],
+          "soft_shadow_px": 6939,
+          "soft_shadow_rgb": [
+            27.97,
+            21.97,
+            15.98
+          ],
+          "soft_shadow_alpha": 142.73,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.1042,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 162.77,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 230.22,
+          "mean_strip_alpha_all": 18.6,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085,
+          "hard_bottom_edge_px": 0
+        },
+        "sole_x": [
+          436,
+          516
+        ],
+        "pool": [
+          476.0,
+          40.0
+        ],
+        "boot_y_max": 1085,
+        "tip_y": 1085,
+        "boots": [
+          [
+            476.0,
+            1085.0,
+            36.0
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 230.22,
+        "fog_sim_mean_rgb": [
+          31.3,
+          25.89,
+          20.14
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 0,
+        "sand_sim_mean_rgb": [
+          29.86,
+          24.22,
+          18.32
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-03.png": {
+      "sha256": "1604c94e08199f24518ec4a8faef35182b3a462340c3c034570cb7eae0431c2e",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            164,
+            50,
+            797,
+            1151
+          ],
+          "soft_shadow_px": 4904,
+          "soft_shadow_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "soft_shadow_alpha": 120.64,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0149,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 150.46,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 218.96,
+          "mean_strip_alpha_all": 9.55,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085
+        },
+        "after": {
+          "opaque_bbox": [
+            164,
+            50,
+            797,
+            1151
+          ],
+          "soft_shadow_px": 4293,
+          "soft_shadow_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "soft_shadow_alpha": 154.32,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0171,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 163.5,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 230.65,
+          "mean_strip_alpha_all": 14.78,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085,
+          "hard_bottom_edge_px": 0
+        },
+        "sole_x": [
+          369,
+          433
+        ],
+        "pool": [
+          401.0,
+          32.0
+        ],
+        "boot_y_max": 1085,
+        "tip_y": 1085,
+        "boots": [
+          [
+            401.0,
+            1085.0,
+            31.7
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 230.65,
+        "fog_sim_mean_rgb": [
+          31.26,
+          25.85,
+          20.1
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 0,
+        "sand_sim_mean_rgb": [
+          29.84,
+          24.2,
+          18.3
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-04.png": {
+      "sha256": "ff8c2098cc2bd6297dc05c00d1bab94dba31d7db7c2cbd9514487a81cc589ff1",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            164,
+            47,
+            755,
+            1151
+          ],
+          "soft_shadow_px": 4866,
+          "soft_shadow_rgb": [
+            27.96,
+            21.98,
+            15.99
+          ],
+          "soft_shadow_alpha": 119.96,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0146,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 150.46,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 218.96,
+          "mean_strip_alpha_all": 9.59,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085
+        },
+        "after": {
+          "opaque_bbox": [
+            164,
+            47,
+            755,
+            1151
+          ],
+          "soft_shadow_px": 11172,
+          "soft_shadow_rgb": [
+            27.98,
+            21.99,
+            16.0
+          ],
+          "soft_shadow_alpha": 154.79,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0936,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 161.66,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 229.55,
+          "mean_strip_alpha_all": 31.08,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085,
+          "hard_bottom_edge_px": 8
+        },
+        "sole_x": [
+          258,
+          662
+        ],
+        "pool": [
+          460.0,
+          202.0
+        ],
+        "boot_y_max": 1085,
+        "tip_y": 1085,
+        "boots": [
+          [
+            285.0,
+            1052.0,
+            26.5
+          ],
+          [
+            617.5,
+            1085.0,
+            36.0
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 229.55,
+        "fog_sim_mean_rgb": [
+          31.98,
+          26.69,
+          21.0
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 8,
+        "sand_sim_mean_rgb": [
+          30.24,
+          24.68,
+          18.8
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-01.png": {
+      "sha256": "95d4663c3ef7174993e5fde3cef29079f0f0d31bb00753e86e9802a360500730",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            201,
+            30,
+            641,
+            1151
+          ],
+          "soft_shadow_px": 5346,
+          "soft_shadow_rgb": [
+            28.0,
+            22.01,
+            16.01
+          ],
+          "soft_shadow_alpha": 121.06,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0021,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 150.46,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 218.96,
+          "mean_strip_alpha_all": 9.59,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1076
+        },
+        "after": {
+          "opaque_bbox": [
+            201,
+            30,
+            641,
+            1151
+          ],
+          "soft_shadow_px": 6816,
+          "soft_shadow_rgb": [
+            28.0,
+            22.01,
+            16.01
+          ],
+          "soft_shadow_alpha": 159.88,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0016,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 162.74,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 230.2,
+          "mean_strip_alpha_all": 18.82,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1076,
+          "hard_bottom_edge_px": 18
+        },
+        "sole_x": [
+          334,
+          433
+        ],
+        "pool": [
+          383.5,
+          49.5
+        ],
+        "boot_y_max": 1076,
+        "tip_y": 1076,
+        "boots": [
+          [
+            383.5,
+            1076.0,
+            36.0
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 230.2,
+        "fog_sim_mean_rgb": [
+          31.3,
+          25.89,
+          20.14
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 18,
+        "sand_sim_mean_rgb": [
+          29.86,
+          24.22,
+          18.32
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-02.png": {
+      "sha256": "cfaf4b8a9a335b547a323302437b3ba8fa74abe2e1861043cb2e7e9921a9c5e6",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            214,
+            33,
+            637,
+            1151
+          ],
+          "soft_shadow_px": 4952,
+          "soft_shadow_rgb": [
+            27.98,
+            22.0,
+            16.02
+          ],
+          "soft_shadow_alpha": 120.88,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0034,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 150.46,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 218.96,
+          "mean_strip_alpha_all": 9.59,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085
+        },
+        "after": {
+          "opaque_bbox": [
+            214,
+            33,
+            637,
+            1151
+          ],
+          "soft_shadow_px": 5337,
+          "soft_shadow_rgb": [
+            27.98,
+            22.0,
+            16.02
+          ],
+          "soft_shadow_alpha": 157.27,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0032,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 162.77,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 230.22,
+          "mean_strip_alpha_all": 18.58,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1085,
+          "hard_bottom_edge_px": 4
+        },
+        "sole_x": [
+          347,
+          431
+        ],
+        "pool": [
+          389.0,
+          42.0
+        ],
+        "boot_y_max": 1085,
+        "tip_y": 1085,
+        "boots": [
+          [
+            389.0,
+            1085.0,
+            36.0
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 230.22,
+        "fog_sim_mean_rgb": [
+          31.6,
+          26.25,
+          20.53
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 4,
+        "sand_sim_mean_rgb": [
+          30.03,
+          24.42,
+          18.54
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-03.png": {
+      "sha256": "73801254a4b19ba5a69036d66774346a8b8d77f1f6c3f0741304bbf254f3c307",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            95,
+            28,
+            711,
+            1151
+          ],
+          "soft_shadow_px": 5050,
+          "soft_shadow_rgb": [
+            27.99,
+            22.0,
+            16.01
+          ],
+          "soft_shadow_alpha": 121.22,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0108,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 150.46,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 218.96,
+          "mean_strip_alpha_all": 9.59,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1084
+        },
+        "after": {
+          "opaque_bbox": [
+            95,
+            28,
+            711,
+            1151
+          ],
+          "soft_shadow_px": 13461,
+          "soft_shadow_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "soft_shadow_alpha": 158.75,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.1635,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 161.61,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 229.53,
+          "mean_strip_alpha_all": 32.03,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1084,
+          "hard_bottom_edge_px": 20
+        },
+        "sole_x": [
+          306,
+          502
+        ],
+        "pool": [
+          404.0,
+          98.0
+        ],
+        "boot_y_max": 1084,
+        "tip_y": 1084,
+        "boots": [
+          [
+            356.0,
+            1084.0,
+            36.0
+          ],
+          [
+            472.5,
+            1032.0,
+            29.1
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 229.53,
+        "fog_sim_mean_rgb": [
+          31.98,
+          26.69,
+          21.0
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 20,
+        "sand_sim_mean_rgb": [
+          30.24,
+          24.68,
+          18.8
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-04.png": {
+      "sha256": "6def380b20a5516964f158cfdb37df17a741c4da62764f984bc973a9f725861f",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            206,
+            34,
+            641,
+            1151
+          ],
+          "soft_shadow_px": 5046,
+          "soft_shadow_rgb": [
+            27.99,
+            22.01,
+            16.03
+          ],
+          "soft_shadow_alpha": 120.55,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0028,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 150.46,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 218.96,
+          "mean_strip_alpha_all": 9.59,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1082
+        },
+        "after": {
+          "opaque_bbox": [
+            206,
+            34,
+            641,
+            1151
+          ],
+          "soft_shadow_px": 5999,
+          "soft_shadow_rgb": [
+            27.99,
+            22.01,
+            16.02
+          ],
+          "soft_shadow_alpha": 158.39,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0023,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 162.77,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 230.22,
+          "mean_strip_alpha_all": 18.58,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1082,
+          "hard_bottom_edge_px": 12
+        },
+        "sole_x": [
+          337,
+          429
+        ],
+        "pool": [
+          383.0,
+          46.0
+        ],
+        "boot_y_max": 1082,
+        "tip_y": 1082,
+        "boots": [
+          [
+            383.0,
+            1082.0,
+            36.0
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 230.22,
+        "fog_sim_mean_rgb": [
+          31.6,
+          26.25,
+          20.53
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 12,
+        "sand_sim_mean_rgb": [
+          30.03,
+          24.42,
+          18.54
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-01.png": {
+      "sha256": "8e2b6e28b5a7973106aa9422390f867585c1d08a8cbd66e8000f33effe025c2e",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            124,
+            46,
+            682,
+            1151
+          ],
+          "soft_shadow_px": 13357,
+          "soft_shadow_rgb": [
+            28.0,
+            22.01,
+            16.0
+          ],
+          "soft_shadow_alpha": 119.26,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0293,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 149.42,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 1,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 218.48,
+          "mean_strip_alpha_all": 19.07,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1073
+        },
+        "after": {
+          "opaque_bbox": [
+            124,
+            46,
+            682,
+            1151
+          ],
+          "soft_shadow_px": 15066,
+          "soft_shadow_rgb": [
+            28.0,
+            22.01,
+            16.0
+          ],
+          "soft_shadow_alpha": 160.35,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.031,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 162.88,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 230.29,
+          "mean_strip_alpha_all": 35.38,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1073,
+          "hard_bottom_edge_px": 22
+        },
+        "sole_x": [
+          231,
+          642
+        ],
+        "pool": [
+          436.5,
+          205.5
+        ],
+        "boot_y_max": 1073,
+        "tip_y": 1073,
+        "boots": [
+          [
+            267.0,
+            1059.0,
+            35.9
+          ],
+          [
+            587.0,
+            1073.0,
+            36.0
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 230.29,
+        "fog_sim_mean_rgb": [
+          31.57,
+          26.21,
+          20.48
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 22,
+        "sand_sim_mean_rgb": [
+          30.01,
+          24.4,
+          18.52
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-02.png": {
+      "sha256": "ef44a7ad3d86566f02b71a141fc00fde705fc822ff727136e04c42e65eb6d984",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            145,
+            47,
+            708,
+            1151
+          ],
+          "soft_shadow_px": 14841,
+          "soft_shadow_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "soft_shadow_alpha": 120.3,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0838,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 148.39,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 217.98,
+          "mean_strip_alpha_all": 19.02,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1064
+        },
+        "after": {
+          "opaque_bbox": [
+            145,
+            47,
+            708,
+            1151
+          ],
+          "soft_shadow_px": 15137,
+          "soft_shadow_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "soft_shadow_alpha": 159.12,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.1005,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 162.28,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 230.16,
+          "mean_strip_alpha_all": 37.67,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1064,
+          "hard_bottom_edge_px": 2
+        },
+        "sole_x": [
+          262,
+          643
+        ],
+        "pool": [
+          452.5,
+          190.5
+        ],
+        "boot_y_max": 1064,
+        "tip_y": 1064,
+        "boots": [
+          [
+            303.5,
+            1054.0,
+            36.0
+          ],
+          [
+            602.5,
+            1064.0,
+            36.0
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 230.16,
+        "fog_sim_mean_rgb": [
+          31.53,
+          26.17,
+          20.44
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 2,
+        "sand_sim_mean_rgb": [
+          29.99,
+          24.38,
+          18.49
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-03.png": {
+      "sha256": "a80fba44bd87242cc3a234619db7e887e2e19cee60b7c79afb3781bf33ce85d9",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            44,
+            58,
+            733,
+            1151
+          ],
+          "soft_shadow_px": 13142,
+          "soft_shadow_rgb": [
+            28.0,
+            22.01,
+            16.0
+          ],
+          "soft_shadow_alpha": 118.59,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0242,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 149.42,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 218.48,
+          "mean_strip_alpha_all": 19.1,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1075
+        },
+        "after": {
+          "opaque_bbox": [
+            44,
+            58,
+            733,
+            1151
+          ],
+          "soft_shadow_px": 11091,
+          "soft_shadow_rgb": [
+            28.0,
+            22.01,
+            16.0
+          ],
+          "soft_shadow_alpha": 154.12,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.0321,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 161.36,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 229.21,
+          "mean_strip_alpha_all": 31.01,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1075,
+          "hard_bottom_edge_px": 0
+        },
+        "sole_x": [
+          272,
+          639
+        ],
+        "pool": [
+          455.5,
+          183.5
+        ],
+        "boot_y_max": 1075,
+        "tip_y": 1075,
+        "boots": [
+          [
+            312.5,
+            1067.0,
+            36.0
+          ],
+          [
+            612.5,
+            1075.0,
+            26.0
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 229.21,
+        "fog_sim_mean_rgb": [
+          31.9,
+          26.6,
+          20.9
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 0,
+        "sand_sim_mean_rgb": [
+          30.2,
+          24.62,
+          18.75
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-04.png": {
+      "sha256": "7c8b808a0989d85f0f143205f4db88fddc470e87e275e411388f1215585456e9",
+      "sole": {
+        "before": {
+          "opaque_bbox": [
+            96,
+            48,
+            716,
+            1151
+          ],
+          "soft_shadow_px": 15458,
+          "soft_shadow_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "soft_shadow_alpha": 120.19,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.1107,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 149.42,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 218.48,
+          "mean_strip_alpha_all": 19.1,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1062
+        },
+        "after": {
+          "opaque_bbox": [
+            96,
+            48,
+            716,
+            1151
+          ],
+          "soft_shadow_px": 12448,
+          "soft_shadow_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "soft_shadow_alpha": 155.69,
+          "soft_warm": true,
+          "hard_plate_px": 0,
+          "hard_plate_edge": 0,
+          "soft_contact_ratio": 1.1416,
+          "core_rgb": [
+            28.0,
+            22.0,
+            16.0
+          ],
+          "core_alpha": 161.66,
+          "cyan_foot_px": 0,
+          "white_core_px": 0,
+          "cold_black_px": 0,
+          "cold_gray_px": 0,
+          "gap_mean_px": 0.0,
+          "gap_max_px": 0,
+          "tip_attach_mean_px": 0.0,
+          "tip_attach_max_px": 0,
+          "empty_bridge_rows": 0,
+          "gap_closed": true,
+          "tip_attached": true,
+          "mean_strip_alpha_1144_1151": 229.39,
+          "mean_strip_alpha_all": 29.6,
+          "foot_pad_px": 0,
+          "boot_tip_ymax": 1062,
+          "hard_bottom_edge_px": 0
+        },
+        "sole_x": [
+          216,
+          624
+        ],
+        "pool": [
+          420.0,
+          204.0
+        ],
+        "boot_y_max": 1062,
+        "tip_y": 1062,
+        "boots": [
+          [
+            255.0,
+            1052.0,
+            36.0
+          ],
+          [
+            599.0,
+            1062.0,
+            24.4
+          ]
+        ],
+        "mean_strip_alpha_1144_1151": 229.39,
+        "fog_sim_mean_rgb": [
+          31.3,
+          25.89,
+          20.14
+        ],
+        "fog_sim_warm": true,
+        "gap_closed": true,
+        "empty_bridge_rows": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "tip_attached": true,
+        "hard_bottom_edge_px": 0,
+        "sand_sim_mean_rgb": [
+          29.86,
+          24.22,
+          18.32
+        ],
+        "hard_plate_edge": 0
+      }
+    },
+    "nanaicha/traj/land-shore-gourd.png": {
+      "sha256": "eea611bf55ed1fc3c44d701581792bff2b5f72e62b71ef6e285140e597274849",
+      "claws": {
+        "before": {
+          "opaque_bbox": [
+            19,
+            317,
+            843,
+            1108
+          ],
+          "soft_paw_px": 12705,
+          "soft_paw_rgb": [
+            32.91,
+            26.28,
+            20.93
+          ],
+          "soft_paw_alpha": 142.21,
+          "dense_paw_px": 10159,
+          "dense_paw_alpha": 154.19,
+          "below_op_soft_px": 2947,
+          "below_op_dense_px": 2156,
+          "below_op_rgb": [
+            34.36,
+            27.61,
+            22.34
+          ],
+          "sole_y": 897,
+          "y_max": 1108
+        },
+        "after": {
+          "opaque_bbox": [
+            19,
+            317,
+            843,
+            1108
+          ],
+          "soft_paw_px": 16815,
+          "soft_paw_rgb": [
+            30.64,
+            24.18,
+            18.25
+          ],
+          "soft_paw_alpha": 168.72,
+          "dense_paw_px": 20074,
+          "dense_paw_alpha": 190.52,
+          "below_op_soft_px": 9840,
+          "below_op_dense_px": 9831,
+          "below_op_rgb": [
+            30.9,
+            24.54,
+            18.74
+          ],
+          "sole_y": 897,
+          "y_max": 1108,
+          "local_paw_soft_px": 9903,
+          "local_paw_dense_px": 9870,
+          "hem_soft_px": 12279,
+          "hem_dense_px": 12270,
+          "op_ymax": 976,
+          "companion_sole_y": 897,
+          "dense_core_alpha": 236.46
+        },
+        "paws": [
+          [
+            534.0,
+            913.0,
+            10.0
+          ],
+          [
+            606.5,
+            876.0,
+            19.8
+          ],
+          [
+            711.5,
+            976.0,
+            10.0
+          ]
+        ],
+        "face_roi_stable": true,
+        "cloak_L_abs_delta": 0.0,
+        "green_rim_px": 0,
+        "face_bbox": [
+          565,
+          485,
+          782,
+          643
+        ],
+        "local_paw_soft_px": 9903,
+        "local_paw_dense_px": 9870,
+        "hem_soft_px": 12279,
+        "hem_dense_px": 12270,
+        "below_op_soft_px": 9840,
+        "below_op_dense_px": 9831,
+        "op_ymax": 976,
+        "companion_sole_y": 897,
+        "sand_comp_mean_rgb": [
+          35.93,
+          28.87,
+          21.31
+        ],
+        "sand_comp_warm": true,
+        "hem_y": 913.0,
+        "hem_cx": 617.3,
+        "tip_y_used": 976.0,
+        "dense_core_alpha": 236.46,
+        "mean_contact_alpha": 241.02,
+        "face_roi_sha_match": true
+      }
+    },
+    "nanaicha/traj/land-shore-driftwood.png": {
+      "sha256": "5a22e7b1cfcf66d6c11eb237663f73d06a9760e9f75339aa156fac1e76bdf77d",
+      "claws": {
+        "before": {
+          "opaque_bbox": [
+            15,
+            353,
+            847,
+            1116
+          ],
+          "soft_paw_px": 11900,
+          "soft_paw_rgb": [
+            31.41,
+            25.07,
+            20.21
+          ],
+          "soft_paw_alpha": 123.64,
+          "dense_paw_px": 7551,
+          "dense_paw_alpha": 155.47,
+          "below_op_soft_px": 4139,
+          "below_op_dense_px": 2927,
+          "below_op_rgb": [
+            32.74,
+            25.88,
+            21.05
+          ],
+          "sole_y": 897,
+          "y_max": 1116
+        },
+        "after": {
+          "opaque_bbox": [
+            15,
+            353,
+            847,
+            1116
+          ],
+          "soft_paw_px": 17161,
+          "soft_paw_rgb": [
+            31.4,
+            24.61,
+            18.54
+          ],
+          "soft_paw_alpha": 165.61,
+          "dense_paw_px": 15080,
+          "dense_paw_alpha": 188.97,
+          "below_op_soft_px": 11193,
+          "below_op_dense_px": 11175,
+          "below_op_rgb": [
+            31.79,
+            26.1,
+            21.13
+          ],
+          "sole_y": 897,
+          "y_max": 1116,
+          "local_paw_soft_px": 10724,
+          "local_paw_dense_px": 10655,
+          "hem_soft_px": 13496,
+          "hem_dense_px": 13477,
+          "op_ymax": 987,
+          "companion_sole_y": 897,
+          "dense_core_alpha": 237.51
+        },
+        "paws": [
+          [
+            507.0,
+            944.0,
+            24.0
+          ],
+          [
+            579.0,
+            987.0,
+            24.0
+          ],
+          [
+            300.4,
+            987.0,
+            24.0
+          ]
+        ],
+        "face_roi_stable": true,
+        "cloak_L_abs_delta": 0.0,
+        "green_rim_px": 0,
+        "face_bbox": [
+          437,
+          497,
+          647,
+          646
+        ],
+        "local_paw_soft_px": 10724,
+        "local_paw_dense_px": 10655,
+        "hem_soft_px": 13496,
+        "hem_dense_px": 13477,
+        "below_op_soft_px": 11193,
+        "below_op_dense_px": 11175,
+        "op_ymax": 987,
+        "companion_sole_y": 897,
+        "sand_comp_mean_rgb": [
+          36.14,
+          28.93,
+          21.41
+        ],
+        "sand_comp_warm": true,
+        "hem_y": 985.0,
+        "hem_cx": 462.1,
+        "tip_y_used": 987.0,
+        "dense_core_alpha": 237.51,
+        "mean_contact_alpha": 242.59,
+        "face_roi_sha_match": true
+      }
+    },
+    "nanaicha/traj/land-shore-east-gap.png": {
+      "sha256": "7570f28ea7420dbf9e70d4e7049cc0577d631ef1f57fc21a1c53b2d802fd9b0b",
+      "claws": {
+        "before": {
+          "opaque_bbox": [
+            15,
+            58,
+            847,
+            1106
+          ],
+          "soft_paw_px": 3026,
+          "soft_paw_rgb": [
+            19.42,
+            16.42,
+            14.21
+          ],
+          "soft_paw_alpha": 86.8,
+          "dense_paw_px": 1421,
+          "dense_paw_alpha": 159.65,
+          "below_op_soft_px": 638,
+          "below_op_dense_px": 359,
+          "below_op_rgb": [
+            22.84,
+            19.41,
+            17.13
+          ],
+          "sole_y": 1117,
+          "y_max": 1106
+        },
+        "after": {
+          "opaque_bbox": [
+            15,
+            58,
+            847,
+            1151
+          ],
+          "soft_paw_px": 6589,
+          "soft_paw_rgb": [
+            27.89,
+            21.36,
+            15.15
+          ],
+          "soft_paw_alpha": 181.18,
+          "dense_paw_px": 8611,
+          "dense_paw_alpha": 208.93,
+          "below_op_soft_px": 10694,
+          "below_op_dense_px": 10674,
+          "below_op_rgb": [
+            22.84,
+            19.41,
+            17.13
+          ],
+          "sole_y": 1117,
+          "y_max": 1151,
+          "local_paw_soft_px": 6850,
+          "local_paw_dense_px": 6850,
+          "hem_soft_px": 13030,
+          "hem_dense_px": 13010,
+          "op_ymax": 1097,
+          "companion_sole_y": 1117,
+          "dense_core_alpha": 234.79
+        },
+        "paws": [
+          [
+            627.0,
+            1094.0,
+            10.0
+          ],
+          [
+            504.0,
+            1087.0,
+            10.0
+          ]
+        ],
+        "face_roi_stable": true,
+        "cloak_L_abs_delta": 0.0,
+        "green_rim_px": 0,
+        "face_bbox": [
+          519,
+          336,
+          730,
+          500
+        ],
+        "local_paw_soft_px": 6850,
+        "local_paw_dense_px": 6850,
+        "hem_soft_px": 13030,
+        "hem_dense_px": 13010,
+        "below_op_soft_px": 10694,
+        "below_op_dense_px": 10674,
+        "op_ymax": 1097,
+        "companion_sole_y": 1117,
+        "sand_comp_mean_rgb": [
+          35.64,
+          28.82,
+          21.38
+        ],
+        "sand_comp_warm": true,
+        "hem_y": 1090.5,
+        "hem_cx": 565.5,
+        "tip_y_used": 1097.0,
+        "dense_core_alpha": 234.79,
+        "mean_contact_alpha": 239.31,
+        "face_roi_sha_match": true
+      }
+    },
+    "shore/art.shore.ground.jpg": {
+      "sha256": "df4b9af7195fccf5b5ee41059fa4306898693280f38e4b2737f1e50cecb3afbe",
+      "unchanged": true,
+      "note": "tide+棚火 PASSED in VERDICT-RETEST3/5/6 — locked byte-identical"
+    }
+  },
+  "knives_meta": {
+    "ground": {
+      "unchanged": true,
+      "sha256": "df4b9af7195fccf5b5ee41059fa4306898693280f38e4b2737f1e50cecb3afbe"
+    },
+    "traveler_soft_px_before_sum": 179374,
+    "traveler_soft_px_after_sum": 198553,
+    "traveler_cold_gray_before_sum": 0,
+    "traveler_cold_gray_after_sum": 0,
+    "traveler_sample_idle_front": {
+      "before": {
+        "opaque_bbox": [
+          184,
+          32,
+          635,
+          1151
+        ],
+        "soft_shadow_px": 12199,
+        "soft_shadow_rgb": [
+          27.96,
+          21.97,
+          15.99
+        ],
+        "soft_shadow_alpha": 117.11,
+        "soft_warm": true,
+        "hard_plate_px": 0,
+        "hard_plate_edge": 0,
+        "soft_contact_ratio": 1.0592,
+        "core_rgb": [
+          28.0,
+          22.0,
+          16.0
+        ],
+        "core_alpha": 148.39,
+        "cyan_foot_px": 0,
+        "white_core_px": 0,
+        "cold_black_px": 0,
+        "cold_gray_px": 0,
+        "gap_mean_px": 0.0,
+        "gap_max_px": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "empty_bridge_rows": 0,
+        "gap_closed": true,
+        "tip_attached": true,
+        "mean_strip_alpha_1144_1151": 217.98,
+        "mean_strip_alpha_all": 19.02,
+        "foot_pad_px": 0,
+        "boot_tip_ymax": 1085
+      },
+      "after": {
+        "opaque_bbox": [
+          184,
+          32,
+          635,
+          1151
+        ],
+        "soft_shadow_px": 16367,
+        "soft_shadow_rgb": [
+          27.97,
+          21.98,
+          15.99
+        ],
+        "soft_shadow_alpha": 156.56,
+        "soft_warm": true,
+        "hard_plate_px": 0,
+        "hard_plate_edge": 0,
+        "soft_contact_ratio": 1.0857,
+        "core_rgb": [
+          28.0,
+          22.0,
+          16.0
+        ],
+        "core_alpha": 159.14,
+        "cyan_foot_px": 0,
+        "white_core_px": 0,
+        "cold_black_px": 0,
+        "cold_gray_px": 0,
+        "gap_mean_px": 0.0,
+        "gap_max_px": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "empty_bridge_rows": 0,
+        "gap_closed": true,
+        "tip_attached": true,
+        "mean_strip_alpha_1144_1151": 227.16,
+        "mean_strip_alpha_all": 35.32,
+        "foot_pad_px": 0,
+        "boot_tip_ymax": 1085,
+        "hard_bottom_edge_px": 30
+      },
+      "boots": [
+        [
+          330.5,
+          1068.0,
+          36.0
+        ],
+        [
+          526.0,
+          1085.0,
+          31.7
+        ]
+      ],
+      "tip_y": 1085,
+      "mean_strip_alpha_1144_1151": 226.32,
+      "fog_sim_mean_rgb": [
+        31.34,
+        25.94,
+        20.2
+      ],
+      "fog_sim_warm": true,
+      "gap_closed": true,
+      "empty_bridge_rows": 0,
+      "tip_attach_mean_px": 0.0,
+      "tip_attach_max_px": 0,
+      "tip_attached": true,
+      "live_gap": {
+        "opaque_bbox": [
+          184,
+          32,
+          635,
+          1151
+        ],
+        "soft_shadow_px": 16367,
+        "soft_shadow_rgb": [
+          27.97,
+          21.98,
+          15.99
+        ],
+        "soft_shadow_alpha": 156.56,
+        "soft_warm": true,
+        "hard_plate_px": 0,
+        "hard_plate_edge": 0,
+        "soft_contact_ratio": 1.0857,
+        "core_rgb": [
+          28.0,
+          22.0,
+          16.0
+        ],
+        "core_alpha": 159.14,
+        "cyan_foot_px": 0,
+        "white_core_px": 0,
+        "cold_black_px": 0,
+        "cold_gray_px": 0,
+        "gap_mean_px": 0.0,
+        "gap_max_px": 0,
+        "tip_attach_mean_px": 0.0,
+        "tip_attach_max_px": 0,
+        "empty_bridge_rows": 0,
+        "gap_closed": true,
+        "tip_attached": true,
+        "mean_strip_alpha_1144_1151": 227.16,
+        "mean_strip_alpha_all": 35.32,
+        "foot_pad_px": 0,
+        "boot_tip_ymax": 1085
+      }
+    },
+    "cats": {
+      "land-shore-gourd.png": {
+        "before": {
+          "opaque_bbox": [
+            19,
+            317,
+            843,
+            1108
+          ],
+          "soft_paw_px": 12705,
+          "soft_paw_rgb": [
+            32.91,
+            26.28,
+            20.93
+          ],
+          "soft_paw_alpha": 142.21,
+          "dense_paw_px": 10159,
+          "dense_paw_alpha": 154.19,
+          "below_op_soft_px": 2947,
+          "below_op_dense_px": 2156,
+          "below_op_rgb": [
+            34.36,
+            27.61,
+            22.34
+          ],
+          "sole_y": 897,
+          "y_max": 1108
+        },
+        "after": {
+          "opaque_bbox": [
+            19,
+            317,
+            843,
+            1108
+          ],
+          "soft_paw_px": 16815,
+          "soft_paw_rgb": [
+            30.64,
+            24.18,
+            18.25
+          ],
+          "soft_paw_alpha": 168.72,
+          "dense_paw_px": 20074,
+          "dense_paw_alpha": 190.52,
+          "below_op_soft_px": 9840,
+          "below_op_dense_px": 9831,
+          "below_op_rgb": [
+            30.9,
+            24.54,
+            18.74
+          ],
+          "sole_y": 897,
+          "y_max": 1108,
+          "local_paw_soft_px": 9903,
+          "local_paw_dense_px": 9870,
+          "hem_soft_px": 12279,
+          "hem_dense_px": 12270,
+          "op_ymax": 976,
+          "companion_sole_y": 897,
+          "dense_core_alpha": 236.46
+        },
+        "face_roi_stable": true,
+        "cloak_L_abs_delta": 0.0,
+        "paws": [
+          [
+            534.0,
+            913.0,
+            10.0
+          ],
+          [
+            606.5,
+            876.0,
+            19.8
+          ],
+          [
+            711.5,
+            976.0,
+            10.0
+          ]
+        ],
+        "local_paw_soft_px": 9903,
+        "local_paw_dense_px": 9870,
+        "hem_soft_px": 12279,
+        "hem_dense_px": 12270,
+        "below_op_soft_px": 9840,
+        "below_op_dense_px": 9831,
+        "op_ymax": 976,
+        "companion_sole_y": 897,
+        "hem_y": 913.0,
+        "tip_y_used": 976.0,
+        "dense_core_alpha": 236.46,
+        "mean_contact_alpha": 241.02,
+        "sand_comp_mean_rgb": [
+          35.93,
+          28.87,
+          21.31
+        ],
+        "sand_comp_warm": true
+      },
+      "land-shore-driftwood.png": {
+        "before": {
+          "opaque_bbox": [
+            15,
+            353,
+            847,
+            1116
+          ],
+          "soft_paw_px": 11900,
+          "soft_paw_rgb": [
+            31.41,
+            25.07,
+            20.21
+          ],
+          "soft_paw_alpha": 123.64,
+          "dense_paw_px": 7551,
+          "dense_paw_alpha": 155.47,
+          "below_op_soft_px": 4139,
+          "below_op_dense_px": 2927,
+          "below_op_rgb": [
+            32.74,
+            25.88,
+            21.05
+          ],
+          "sole_y": 897,
+          "y_max": 1116
+        },
+        "after": {
+          "opaque_bbox": [
+            15,
+            353,
+            847,
+            1116
+          ],
+          "soft_paw_px": 17161,
+          "soft_paw_rgb": [
+            31.4,
+            24.61,
+            18.54
+          ],
+          "soft_paw_alpha": 165.61,
+          "dense_paw_px": 15080,
+          "dense_paw_alpha": 188.97,
+          "below_op_soft_px": 11193,
+          "below_op_dense_px": 11175,
+          "below_op_rgb": [
+            31.79,
+            26.1,
+            21.13
+          ],
+          "sole_y": 897,
+          "y_max": 1116,
+          "local_paw_soft_px": 10724,
+          "local_paw_dense_px": 10655,
+          "hem_soft_px": 13496,
+          "hem_dense_px": 13477,
+          "op_ymax": 987,
+          "companion_sole_y": 897,
+          "dense_core_alpha": 237.51
+        },
+        "face_roi_stable": true,
+        "cloak_L_abs_delta": 0.0,
+        "paws": [
+          [
+            507.0,
+            944.0,
+            24.0
+          ],
+          [
+            579.0,
+            987.0,
+            24.0
+          ],
+          [
+            300.4,
+            987.0,
+            24.0
+          ]
+        ],
+        "local_paw_soft_px": 10724,
+        "local_paw_dense_px": 10655,
+        "hem_soft_px": 13496,
+        "hem_dense_px": 13477,
+        "below_op_soft_px": 11193,
+        "below_op_dense_px": 11175,
+        "op_ymax": 987,
+        "companion_sole_y": 897,
+        "hem_y": 985.0,
+        "tip_y_used": 987.0,
+        "dense_core_alpha": 237.51,
+        "mean_contact_alpha": 242.59,
+        "sand_comp_mean_rgb": [
+          36.14,
+          28.93,
+          21.41
+        ],
+        "sand_comp_warm": true
+      },
+      "land-shore-east-gap.png": {
+        "before": {
+          "opaque_bbox": [
+            15,
+            58,
+            847,
+            1106
+          ],
+          "soft_paw_px": 3026,
+          "soft_paw_rgb": [
+            19.42,
+            16.42,
+            14.21
+          ],
+          "soft_paw_alpha": 86.8,
+          "dense_paw_px": 1421,
+          "dense_paw_alpha": 159.65,
+          "below_op_soft_px": 638,
+          "below_op_dense_px": 359,
+          "below_op_rgb": [
+            22.84,
+            19.41,
+            17.13
+          ],
+          "sole_y": 1117,
+          "y_max": 1106
+        },
+        "after": {
+          "opaque_bbox": [
+            15,
+            58,
+            847,
+            1151
+          ],
+          "soft_paw_px": 6589,
+          "soft_paw_rgb": [
+            27.89,
+            21.36,
+            15.15
+          ],
+          "soft_paw_alpha": 181.18,
+          "dense_paw_px": 8611,
+          "dense_paw_alpha": 208.93,
+          "below_op_soft_px": 10694,
+          "below_op_dense_px": 10674,
+          "below_op_rgb": [
+            22.84,
+            19.41,
+            17.13
+          ],
+          "sole_y": 1117,
+          "y_max": 1151,
+          "local_paw_soft_px": 6850,
+          "local_paw_dense_px": 6850,
+          "hem_soft_px": 13030,
+          "hem_dense_px": 13010,
+          "op_ymax": 1097,
+          "companion_sole_y": 1117,
+          "dense_core_alpha": 234.79
+        },
+        "face_roi_stable": true,
+        "cloak_L_abs_delta": 0.0,
+        "paws": [
+          [
+            627.0,
+            1094.0,
+            10.0
+          ],
+          [
+            504.0,
+            1087.0,
+            10.0
+          ]
+        ],
+        "local_paw_soft_px": 6850,
+        "local_paw_dense_px": 6850,
+        "hem_soft_px": 13030,
+        "hem_dense_px": 13010,
+        "below_op_soft_px": 10694,
+        "below_op_dense_px": 10674,
+        "op_ymax": 1097,
+        "companion_sole_y": 1117,
+        "hem_y": 1090.5,
+        "tip_y_used": 1097.0,
+        "dense_core_alpha": 234.79,
+        "mean_contact_alpha": 239.31,
+        "sand_comp_mean_rgb": [
+          35.64,
+          28.82,
+          21.38
+        ],
+        "sand_comp_warm": true
+      }
+    },
+    "claw_soft_pairs": {
+      "land-shore-gourd.png": {
+        "before": 12705,
+        "after": 16815,
+        "dense": 20074,
+        "local_soft": 9903,
+        "local_dense": 9870,
+        "paws": [
+          [
+            534.0,
+            913.0,
+            10.0
+          ],
+          [
+            606.5,
+            876.0,
+            19.8
+          ],
+          [
+            711.5,
+            976.0,
+            10.0
+          ]
+        ],
+        "below_op_soft": 9840,
+        "below_op_dense": 9831,
+        "hem_soft": 12279,
+        "hem_dense": 12270,
+        "dense_core_alpha": 236.46,
+        "mean_contact_alpha": 241.02,
+        "tip_y_used": 976.0,
+        "sand_comp": [
+          35.93,
+          28.87,
+          21.31
+        ],
+        "sand_warm": true,
+        "sole_y": 897,
+        "hem_y": 913.0
+      },
+      "land-shore-driftwood.png": {
+        "before": 11900,
+        "after": 17161,
+        "dense": 15080,
+        "local_soft": 10724,
+        "local_dense": 10655,
+        "paws": [
+          [
+            507.0,
+            944.0,
+            24.0
+          ],
+          [
+            579.0,
+            987.0,
+            24.0
+          ],
+          [
+            300.4,
+            987.0,
+            24.0
+          ]
+        ],
+        "below_op_soft": 11193,
+        "below_op_dense": 11175,
+        "hem_soft": 13496,
+        "hem_dense": 13477,
+        "dense_core_alpha": 237.51,
+        "mean_contact_alpha": 242.59,
+        "tip_y_used": 987.0,
+        "sand_comp": [
+          36.14,
+          28.93,
+          21.41
+        ],
+        "sand_warm": true,
+        "sole_y": 897,
+        "hem_y": 985.0
+      },
+      "land-shore-east-gap.png": {
+        "before": 3026,
+        "after": 6589,
+        "dense": 8611,
+        "local_soft": 6850,
+        "local_dense": 6850,
+        "paws": [
+          [
+            627.0,
+            1094.0,
+            10.0
+          ],
+          [
+            504.0,
+            1087.0,
+            10.0
+          ]
+        ],
+        "below_op_soft": 10694,
+        "below_op_dense": 10674,
+        "hem_soft": 13030,
+        "hem_dense": 13010,
+        "dense_core_alpha": 234.79,
+        "mean_contact_alpha": 239.31,
+        "tip_y_used": 1097.0,
+        "sand_comp": [
+          35.64,
+          28.82,
+          21.38
+        ],
+        "sand_warm": true,
+        "sole_y": 1117,
+        "hem_y": 1090.5
+      }
+    }
+  },
+  "locked_hashes": {
+    "before": {
+      "nanaicha/traj/land-yard-give.png": "1b8b222f87459031298c6975df0072de77ec9ff9ef960d74aa3028c8dc86cf53",
+      "camp/art.camp.prop.north-curtain.png": "fa418f59e4dc779ea94f69c4099e7ced07ba61829b9679440e5bc05abac8026a",
+      "yard/art.yard.prop.grain-bags.png": "403e7863764251181c9a8a72ece67f81f9605692853ba11c639ada1e04c5d257",
+      "yard/art.yard.prop.grain-bags.interact.png": "64ac7e36b7f01408ce9f8a5f8631c1477324e3f36f35d5297e785a93f5dc6bd5",
+      "shore/art.shore.prop.mural-wall.png": "0620e74a5ec8615e25e0b37ce1ac8c10c8969ba4908f5eb95f72a3fae2e0cd8e",
+      "shore/art.shore.prop.east-gap.png": "0947939d2c8587061eed403bd60853fe369db70ad16c183172e5259d7fea4681",
+      "shore/art.shore.prop.gourd.png": "bcb94401e58d555ce19ffd263a9c59312472f44342f61ff9bce56a63be5027da",
+      "shore/art.shore.building.png": "f9ac3413073817d91414830d502004ddc5aaa49e44a8854ee29270a0ec5a7061",
+      "shore/art.shore.prop.driftwood.png": "85528d22db2bba31b6390ea14a295b6e332ba4a79cd3ca0763e4d2334fe3cab2",
+      "shore/art.shore.prop.driftwood.interact.png": "fa6150b85301b8b3a915d9f8b0c52af81938c8c14bad965b211cbd0b6c6c2dec",
+      "shore/art.shore.prop.break-shard.png": "490a7bc1ae25a180a261dcd35dfa752e06b1ab6e66a4b7467fc7af742fb6de6a",
+      "shore/art.shore.prop.nanaicha.png": "68792eed2efe2a09e86bf9d54571942e9350fda6e2d5d59463fc99d5d5f7bcfa",
+      "shore/art.shore.sky.jpg": "6c4a2ac2dc67b212399c2593a5c99277dadedd9bf653a3191bebfaff262948e8",
+      "shore/art.shore.fg.png": "d3dd68d7b8d1b60e96f4690af14e80986fa68ee6d0a6e8744e174a0ff7fc1f55",
+      "shore/art.shore.ground.jpg": "df4b9af7195fccf5b5ee41059fa4306898693280f38e4b2737f1e50cecb3afbe"
+    },
+    "after": {
+      "nanaicha/traj/land-yard-give.png": "1b8b222f87459031298c6975df0072de77ec9ff9ef960d74aa3028c8dc86cf53",
+      "camp/art.camp.prop.north-curtain.png": "fa418f59e4dc779ea94f69c4099e7ced07ba61829b9679440e5bc05abac8026a",
+      "yard/art.yard.prop.grain-bags.png": "403e7863764251181c9a8a72ece67f81f9605692853ba11c639ada1e04c5d257",
+      "yard/art.yard.prop.grain-bags.interact.png": "64ac7e36b7f01408ce9f8a5f8631c1477324e3f36f35d5297e785a93f5dc6bd5",
+      "shore/art.shore.prop.mural-wall.png": "0620e74a5ec8615e25e0b37ce1ac8c10c8969ba4908f5eb95f72a3fae2e0cd8e",
+      "shore/art.shore.prop.east-gap.png": "0947939d2c8587061eed403bd60853fe369db70ad16c183172e5259d7fea4681",
+      "shore/art.shore.prop.gourd.png": "bcb94401e58d555ce19ffd263a9c59312472f44342f61ff9bce56a63be5027da",
+      "shore/art.shore.building.png": "f9ac3413073817d91414830d502004ddc5aaa49e44a8854ee29270a0ec5a7061",
+      "shore/art.shore.prop.driftwood.png": "85528d22db2bba31b6390ea14a295b6e332ba4a79cd3ca0763e4d2334fe3cab2",
+      "shore/art.shore.prop.driftwood.interact.png": "fa6150b85301b8b3a915d9f8b0c52af81938c8c14bad965b211cbd0b6c6c2dec",
+      "shore/art.shore.prop.break-shard.png": "490a7bc1ae25a180a261dcd35dfa752e06b1ab6e66a4b7467fc7af742fb6de6a",
+      "shore/art.shore.prop.nanaicha.png": "68792eed2efe2a09e86bf9d54571942e9350fda6e2d5d59463fc99d5d5f7bcfa",
+      "shore/art.shore.sky.jpg": "6c4a2ac2dc67b212399c2593a5c99277dadedd9bf653a3191bebfaff262948e8",
+      "shore/art.shore.fg.png": "d3dd68d7b8d1b60e96f4690af14e80986fa68ee6d0a6e8744e174a0ff7fc1f55",
+      "shore/art.shore.ground.jpg": "df4b9af7195fccf5b5ee41059fa4306898693280f38e4b2737f1e50cecb3afbe"
+    }
+  },
+  "verify": {
+    "ground_sha_locked": true,
+    "sole_gap_closed": true,
+    "sole_tip_attached": true,
+    "sole_core_rgb_locked": true,
+    "sole_bottom_strip_opaque": true,
+    "sole_no_cold_gray": true,
+    "sole_soft_fog_sim_warm": true,
+    "no_foot_ellipse_plate": true,
+    "no_cyan_white": true,
+    "no_cold_black_crescent": true,
+    "claws_soft_contact_readable": true,
+    "face_roi_byte_identical": true,
+    "locked_untouched": true,
+    "alpha_silhouette_stable": true,
+    "scale_bbox_stable": true
+  },
+  "eng_bullets": [
+    "挂 land-shore×3 PRIMARY — tip 下缘可读暖褐 puddle（α芯≥230≈近不透明，sand_comp≈rgb(34,29,24)；潮印/瓢口不算）；脸 byte 锁 pr59",
+    "挂 traveler21 SECONDARY — 芯色 rgb(28,22,16)+羽化+靴心沙缝已过勿坏；轻贴靴底轮廓（尤其靴尖）勿平直矩形外溢；eng 另拧 sole-soft 水平收口",
+    "潮印/棚火/骨框/尺度已过，ground 锁 read3 不改",
+    "Vite 对照 r9-02/03/04a/b/c；Art + eng sole-soft horizontal 同挂 #64，现网勿合"
+  ],
+  "previews": [
+    "/tmp/pr64-read10-traveler-feet-before-after.png",
+    "/tmp/pr64-read10-traveler-feet-after.png",
+    "/tmp/pr64-read10-traveler-walk-feet-before-after.png",
+    "/tmp/pr64-read10-traveler-walk-feet-after.png",
+    "/tmp/pr64-read10-sole-bridge-zoom.png",
+    "/tmp/pr64-read10-sole-tip-attach-zoom.png",
+    "/tmp/pr64-read10-sole-bottom8-zoom.png",
+    "/tmp/pr64-read10-sole-bridge-alpha.png",
+    "/tmp/pr64-read10-cat-paw-before-after.png",
+    "/tmp/pr64-read10-cat-paw-after.png",
+    "/tmp/pr64-read10-cat-east-after.png",
+    "/tmp/pr64-read10-cat-drift-after.png"
+  ],
+  "note": "Art + 贴靴/tip-attach CSS 同挂 #64；现网勿合；Vite 对照 r9-02/03/04a/b/c。sole 芯色+羽化+靴心缝已过勿坏，轻贴靴廓；爪为主刀 densify below real tip。",
+  "companion_sole_y": {
+    "land-shore-gourd.png": 897,
+    "land-shore-driftwood.png": 897,
+    "land-shore-east-gap.png": 1117
+  },
+  "blockers": [],
+  "wrote": [
+    "traveler-mythic/cloud-inspired/v3/anim/idle-back-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/idle-back-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/idle-front-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/idle-front-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/idle-side-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/idle-side-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/reach-front-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/reach-front-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/reach-side-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-03.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-back-04.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-03.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-front-04.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-01.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-02.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-03.png",
+    "traveler-mythic/cloud-inspired/v3/anim/walk-side-04.png",
+    "nanaicha/traj/land-shore-gourd.png",
+    "nanaicha/traj/land-shore-driftwood.png",
+    "nanaicha/traj/land-shore-east-gap.png"
+  ],
+  "backup_tag": "pre-pr64-read10",
+  "verdict_ref": "/workspace/playtest/pr64-shore-readability/VERDICT-RETEST9.txt",
+  "ground_sha256": "df4b9af7195fccf5b5ee41059fa4306898693280f38e4b2737f1e50cecb3afbe"
+}

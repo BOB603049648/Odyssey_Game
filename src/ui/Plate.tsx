@@ -47,6 +47,7 @@ export function PlateStack({
   previous,
   cam = { x: 0, y: 0 },
   near = [],
+  glance = [],
   activeSpots = null,
   showWalkMask = false,
   pass = 'all',
@@ -57,6 +58,8 @@ export function PlateStack({
   previous: string | null;
   cam?: Point;
   near?: readonly string[];
+  /** Hotspots about two steps out: readable, not yet in the click radius. */
+  glance?: readonly string[];
   activeSpots?: readonly string[] | null;
   showWalkMask?: boolean;
   pass?: PlatePass;
@@ -73,6 +76,7 @@ export function PlateStack({
           leaving
           cam={cam}
           near={[]}
+          glance={[]}
           activeSpots={null}
           showWalkMask={false}
           pass={pass}
@@ -86,6 +90,7 @@ export function PlateStack({
         incoming={previous !== null}
         cam={cam}
         near={near}
+        glance={glance}
         activeSpots={activeSpots}
         showWalkMask={showWalkMask}
         pass={pass}
@@ -102,6 +107,7 @@ function PlateBody({
   incoming = false,
   cam,
   near,
+  glance,
   activeSpots,
   showWalkMask,
   pass,
@@ -113,6 +119,7 @@ function PlateBody({
   incoming?: boolean;
   cam: Point;
   near: readonly string[];
+  glance: readonly string[];
   activeSpots: readonly string[] | null;
   showWalkMask: boolean;
   pass: PlatePass;
@@ -143,6 +150,7 @@ function PlateBody({
         className={className}
         cam={cam}
         near={near}
+        glance={glance}
         activeSpots={activeSpots}
         showWalkMask={showWalkMask && !leaving}
         pass={pass}
@@ -163,6 +171,7 @@ function SlotAssembly({
   className,
   cam,
   near,
+  glance,
   activeSpots,
   showWalkMask,
   pass,
@@ -173,6 +182,7 @@ function SlotAssembly({
   className: string;
   cam: Point;
   near: readonly string[];
+  glance: readonly string[];
   activeSpots: readonly string[] | null;
   showWalkMask: boolean;
   pass: PlatePass;
@@ -196,18 +206,25 @@ function SlotAssembly({
       data-legacy-plate={kit.legacyPlate ?? 'none'}
       data-grade={kit.grade}
     >
-      {slots.map((slot) => (
-        <SlotPiece
-          key={slot.id}
-          scene={scene}
-          slot={slot}
-          cam={cam}
-          lit={slot.spot ? near.includes(slot.spot) : false}
-          hidden={slot.spot !== undefined && activeSpots !== null && !activeSpots.includes(slot.spot)}
-          showWalkMask={showWalkMask}
-          beat={beat}
-        />
-      ))}
+      {slots.flatMap((slot) => {
+        const piece = (
+          <SlotPiece
+            key={slot.id}
+            scene={scene}
+            slot={slot}
+            cam={cam}
+            lit={slot.spot ? near.includes(slot.spot) : false}
+            glanced={slot.spot ? glance.includes(slot.spot) : false}
+            hidden={slot.spot !== undefined && activeSpots !== null && !activeSpots.includes(slot.spot)}
+            showWalkMask={showWalkMask}
+            beat={beat}
+          />
+        );
+        if (scene === 'dba.scene.shore' && slot.slot === 'ground' && pass !== 'near' && pass !== 'fg') {
+          return [piece, <ShoreTread key="shore-tread" />];
+        }
+        return [piece];
+      })}
       <div className="ambient ambient-flame" />
       <div className="ambient ambient-rain" />
       <div className="ambient ambient-dark" />
@@ -220,6 +237,7 @@ function SlotPiece({
   slot,
   cam,
   lit,
+  glanced,
   hidden,
   showWalkMask,
   beat = null,
@@ -228,6 +246,7 @@ function SlotPiece({
   slot: SceneSlot;
   cam: Point;
   lit: boolean;
+  glanced: boolean;
   hidden: boolean;
   showWalkMask: boolean;
   beat?: SpotBeat | null;
@@ -238,6 +257,7 @@ function SlotPiece({
   const testId = slot.slot === 'props' ? `prop-${slot.id}` : `slot-${slot.slot}`;
   const src = useSlotSrc(slot.asset);
   const interactable = Boolean(slot.spot);
+  const cue = interactable ? (lit ? 'near' : glanced ? 'glance' : 'far') : undefined;
   const footed = (slot.slot === 'props' || slot.slot === 'building') && !isPortal(slot);
   return (
     <div
@@ -248,7 +268,7 @@ function SlotPiece({
       data-parallax={scenic ? 1 : slot.parallax}
       data-spot={slot.spot}
       data-interactable={interactable ? 'yes' : 'no'}
-      data-cue={interactable ? (lit ? 'near' : 'far') : undefined}
+      data-cue={cue}
       data-placeholder={src ? 'art' : 'block'}
       data-anchor={footed ? 'foot' : isPortal(slot) ? 'portal' : undefined}
       data-coplanar={scenic ? 'yes' : undefined}
@@ -283,6 +303,26 @@ function useSlotSrc(asset: string | null | undefined): string | null {
     };
   }, [asset]);
   return src;
+}
+
+function ShoreTread() {
+  const band = BANDS['dba.scene.shore'];
+  return (
+    <div
+      className="shore-tread"
+      data-testid="shore-tread"
+      style={{
+        left: `${band.minX * 100}%`,
+        top: `${band.minY * 100}%`,
+        width: `${(band.maxX - band.minX) * 100}%`,
+        height: `${(band.maxY - band.minY) * 100}%`,
+      }}
+    >
+      <span className="shore-fog-line" data-testid="shore-fog-line" />
+      <span className="shore-sand-trace" data-testid="shore-sand-trace" />
+      <span className="shore-stone-lip" data-testid="shore-stone-lip" />
+    </div>
+  );
 }
 
 function WalkMask({ scene }: { scene: IslandScene }) {

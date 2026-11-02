@@ -13,7 +13,11 @@ import {
   cameraOffset,
   followCamera,
   inRadius,
+  lookEast,
+  pathExitNear,
+  pathExitPoint,
   pointerToWorld,
+  reachOf,
   stepKey,
   type Point,
   type WalkKey,
@@ -29,6 +33,7 @@ import { gateLabel, type SpotView } from './spotViews';
 import { sceneGrade, sceneLook, sceneStrip } from './cohesion';
 import { loadTraj, trajUrl } from './trajArt';
 import { contactLift, contactOpacity, depthScale, worldToScreen } from '../core/world';
+import { catContactUrl, clippedBootUrl } from './soleClip';
 import { facingFromMove, REACH_HOLD_MS, TravelerMark, type TravelerFacing } from './Traveler';
 
 import { WalkStick } from './WalkStick';
@@ -83,6 +88,7 @@ export function WalkLayer({
   showWalkMask = false,
   catPost,
   onFar,
+  onApproachHint,
   resting = false,
   flash = null,
   beat = null,
@@ -105,12 +111,15 @@ export function WalkLayer({
   showWalkMask?: boolean;
   catPost: CatPost;
   onFar?: (id: string) => void;
+  /** True while the one-shot driftwood approach line is on screen. */
+  onApproachHint?: (visible: boolean) => void;
   resting?: boolean;
   flash?: { kind: 'driftwood' | 'sleep' | 'give'; seq: number; x: number; y: number } | null;
   beat?: SpotBeat | null;
 }) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const soleRef = useRef<HTMLImageElement>(null);
+  const catSoleRef = useRef<HTMLImageElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
   const pending = useRef<Point | null>(null);
   const sceneRef = useRef(scene);
@@ -441,13 +450,64 @@ export function WalkLayer({
         } else {
           sole.style.visibility = 'visible';
           const src = img.currentSrc || img.src;
-          if (sole.src !== src) sole.src = src;
+          if (sole.dataset.base !== src) {
+            const clipped = clippedBootUrl(img);
+            if (clipped) {
+              sole.dataset.base = src;
+              sole.src = clipped;
+            }
+          }
+          const soleFeather = 14;
+          const boxH = ir.height + soleFeather;
           sole.style.left = `${ir.left - vr.left}px`;
           sole.style.top = `${ir.top - vr.top}px`;
           sole.style.width = `${ir.width}px`;
-          sole.style.height = `${ir.height}px`;
+          sole.style.height = `${boxH}px`;
+          sole.style.setProperty('--fit', (ir.height / boxH).toFixed(4));
           sole.style.transform = img.parentElement?.getAttribute('data-mirror') === 'yes' ? 'scaleX(-1)' : 'none';
         }
+      }
+      const catSole = catSoleRef.current;
+      const catImg = vp?.querySelector('.nanaicha-ground');
+      const anchor = vp?.querySelector('[data-testid="companion-anchor"]');
+      const shoreCat =
+        vp?.getAttribute('data-scene') === 'dba.scene.shore' &&
+        (anchor?.getAttribute('data-sprite') ?? '').startsWith('land-shore');
+      if (catSole && vp && shoreCat && catImg instanceof HTMLImageElement && anchor instanceof HTMLElement) {
+        const cr = catImg.getBoundingClientRect();
+        const vr = vp.getBoundingClientRect();
+        const tip = parseFloat(anchor.style.getPropertyValue('--sole-y')) / 100;
+        if (cr.width < 2 || !Number.isFinite(tip)) {
+          catSole.style.visibility = 'hidden';
+        } else {
+          const src = catImg.currentSrc || catImg.src;
+          const key = `${src}@${tip.toFixed(4)}`;
+          if (catSole.dataset.base !== key) {
+            const contact = catContactUrl(catImg, tip);
+            if (contact) {
+              catSole.dataset.base = key;
+              catSole.src = contact;
+            }
+          }
+          if (catSole.dataset.base === key) {
+            const feather = 16;
+            const boxH = cr.height + feather;
+            const fit = cr.height / boxH;
+            catSole.style.visibility = 'visible';
+            catSole.style.left = `${cr.left - vr.left}px`;
+            catSole.style.top = `${cr.top - vr.top}px`;
+            catSole.style.width = `${cr.width}px`;
+            catSole.style.height = `${boxH}px`;
+            catSole.style.setProperty('--fit', fit.toFixed(4));
+            catSole.style.setProperty('--cat-a', `${((tip - 0.09) * fit * 100).toFixed(2)}%`);
+            catSole.style.setProperty('--cat-b', `${((tip - 0.05) * fit * 100).toFixed(2)}%`);
+            catSole.style.setProperty('--cat-c', `${Math.min(97, (tip + 0.11) * fit * 100).toFixed(2)}%`);
+            catSole.style.setProperty('--cat-d', `${Math.min(99.2, (tip + 0.15) * fit * 100).toFixed(2)}%`);
+            catSole.style.transform = anchor.getAttribute('data-face') === 'left' ? 'scaleX(-1)' : 'none';
+          }
+        }
+      } else if (catSole) {
+        catSole.style.visibility = 'hidden';
       }
       frame = window.requestAnimationFrame(tick);
     };
@@ -502,17 +562,28 @@ export function WalkLayer({
       live = false;
     };
   }, [flashId]);
-  const shownCam = import.meta.env.MODE === 'test' ? cameraOffset(pos, view.w, view.h) : cam;
+  const rawCam = import.meta.env.MODE === 'test' ? cameraOffset(pos, view.w, view.h) : cam;
+  const shownCam = lookEast(rawCam, view.w, scene === 'dba.scene.shore');
   const look = sceneLook(scene);
   const near = spots.filter((spot) => standsAt(scene, spot, pos)).map((spot) => spot.id);
+  const glance = spots
+    .filter((spot) => !near.includes(spot.id) && reachOf(Math.hypot(spot.x - pos.x, spot.y - pos.y), spot.r) === 'glance')
+    .map((spot) => spot.id);
   const teachSpot = near.includes('shore-driftwood') ? 'shore-driftwood' : '';
   const onTeachRef = useRef(onTeach);
   const taughtRef = useRef(taught);
+  const approachRef = useRef(onApproachHint);
   onTeachRef.current = onTeach;
   taughtRef.current = taught;
+  approachRef.current = onApproachHint;
   const spotIds = spots.map((spot) => spot.id);
   const sleepFoot = SPOTS[scene].find((spot) => spot.id === 'camp-sleep');
   const feetY = resting && sleepFoot ? sleepFoot.y : pos.y;
+  const exits = gatesFrom(scene);
+  const hearthGate = exits.find(
+    (gate) => gate.from === 'dba.scene.shore' && gate.to === 'dba.scene.camp' && pathExitNear(pos, gate),
+  );
+  const hearthAt = hearthGate ? pathExitPoint(hearthGate) : null;
 
   useEffect(() => {
     if (!teachSpot) {
@@ -523,6 +594,10 @@ export function WalkLayer({
     setTeachLine(true);
     onTeachRef.current?.();
   }, [teachSpot]);
+
+  useEffect(() => {
+    approachRef.current?.(teachLine && scene === 'dba.scene.shore');
+  }, [teachLine, scene]);
 
   useEffect(() => {
     if (!arrive) return undefined;
@@ -541,6 +616,7 @@ export function WalkLayer({
   const catInFront = cat.y > feetY + 0.012;
 
   return (
+    <>
     <div
       ref={viewportRef}
       className="walk-viewport"
@@ -558,12 +634,13 @@ export function WalkLayer({
       <div className="world-root" data-testid="world-root" data-ambient={look.ambient}>
         {groundPlate ? <img className="ground-fill" src={groundPlate} alt="" draggable={false} /> : null}
         <div className="world-cam" data-testid="world-camera" style={{ transform: `translate3d(${-shownCam.x}px, ${-shownCam.y}px, 0)`, zIndex: 1 }}>
-        <div ref={worldRef} className="world-layer" style={{ width: worldW, height: worldH }}>
+        <div ref={worldRef} className="world-layer" style={{ width: worldW, height: worldH, ['--world-w' as string]: `${worldW}px` }}>
           <PlateStack
             plate={plates.current}
             previous={plates.previous}
             cam={shownCam}
             near={near}
+            glance={glance}
             activeSpots={spotIds}
             showWalkMask={showWalkMask}
             pass="back"
@@ -571,31 +648,36 @@ export function WalkLayer({
             beat={beat}
           />
           <div className="walk-ground" data-testid="walk-ground" onPointerDown={onGround} />
-          {gatesFrom(scene).map((gate) => (
-            <button
-              key={gate.to}
-              type="button"
-              className={inRadius(pos, gate, gate.r) ? 'path-exit near' : 'path-exit'}
-              data-hearth={gate.to === 'dba.scene.camp' ? 'yes' : 'no'}
-              data-testid={`exit-${gate.to.split('.').at(-1)}`}
-              style={{ left: pct(gate.x), top: pct(gate.y) }}
-              aria-label={gateLabel(gate.to)}
-              onClick={(event) => {
-                event.stopPropagation();
-                if (!pausedRef.current) seek(gate);
-              }}
-            >
-              <i />
-              <span aria-hidden="true">{gateLabel(gate.to)}</span>
-            </button>
-          ))}
+          {exits.map((gate) => {
+            const at = pathExitPoint(gate);
+            return (
+              <button
+                key={gate.to}
+                type="button"
+                className={pathExitNear(pos, gate) ? 'path-exit near' : 'path-exit'}
+                data-hearth={gate.from === 'dba.scene.shore' && gate.to === 'dba.scene.camp' ? 'yes' : 'no'}
+                data-testid={`exit-${gate.to.split('.').at(-1)}`}
+                style={{ left: pct(at.x), top: pct(at.y) }}
+                aria-label={gateLabel(gate.to)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  if (!pausedRef.current) seek(gate);
+                }}
+              >
+                <i />
+                <span aria-hidden="true">{gateLabel(gate.to)}</span>
+              </button>
+            );
+          })}
           {spots.map((spot) => {
             const inside = near.includes(spot.id);
+            const reach = inside ? 'near' : glance.includes(spot.id) ? 'glance' : 'far';
             return (
               <button
                 key={spot.id}
                 type="button"
-                className={inside ? `${spot.className} near` : spot.className}
+                className={reach === 'near' ? `${spot.className} near` : reach === 'glance' ? `${spot.className} glance` : spot.className}
+                data-reach={reach}
                 data-testid={spot.testId}
                 data-result={beat && beat.spot === spot.id ? beat.kind : undefined}
                 style={{ left: pct(spot.x), top: pct(spot.y), right: 'auto', bottom: 'auto' }}
@@ -697,6 +779,7 @@ export function WalkLayer({
             previous={plates.previous}
             cam={shownCam}
             near={near}
+            glance={glance}
             activeSpots={spotIds}
             pass="near"
             feetY={feetY}
@@ -707,6 +790,7 @@ export function WalkLayer({
             previous={plates.previous}
             cam={shownCam}
             near={near}
+            glance={glance}
             activeSpots={spotIds}
             pass="fg"
             feetY={feetY}
@@ -725,10 +809,30 @@ export function WalkLayer({
       <div className="grade-veil" data-grade={sceneAssembly(plates.previous ?? scene)?.grade ?? 'mist-dawn'} data-testid="grade-veil" />
       <img className="scene-grade" data-testid="scene-grade" src={sceneGrade(scene)} alt="" draggable={false} />
       <div className="sole-layer" data-testid="sole-layer">
+        <svg className="sole-filter" aria-hidden="true" focusable="false" width="0" height="0">
+          <filter id="sole-warm" colorInterpolationFilters="sRGB" x="-8%" y="-10%" width="116%" height="145%">
+            <feComponentTransfer in="SourceGraphic" result="boot">
+              <feFuncA type="table" tableValues="0 0 0 0 0 1 1 1" />
+            </feComponentTransfer>
+            <feColorMatrix
+              in="boot"
+              type="matrix"
+              values="0 0 0 0 0.109804 0 0 0 0 0.086275 0 0 0 0 0.062745 0 0 0 1 0"
+              result="warm"
+            />
+            <feOffset in="warm" dx="0" dy="2" result="dropped" />
+            <feComposite in="dropped" in2="warm" operator="out" result="rim" />
+            <feMorphology in="rim" operator="dilate" radius="0.3 6" result="band" />
+            <feGaussianBlur in="band" stdDeviation="0.35 2.2" result="tail" />
+            <feComposite in="warm" in2="tail" operator="over" result="body" />
+            <feGaussianBlur in="body" stdDeviation="0.25 0.35" />
+          </filter>
+        </svg>
         <img ref={soleRef} className="sole-soft" data-testid="sole-soft" alt="" />
+        <img ref={catSoleRef} className="sole-soft cat-sole" data-testid="cat-sole" alt="" />
       </div>
         {teachLine && scene === 'dba.scene.shore' ? (
-          <p className="approach-hint" data-testid="approach-hint">
+          <p className="approach-hint once" data-testid="approach-hint">
             {t('hint.approach')}
           </p>
         ) : null}
@@ -739,5 +843,19 @@ export function WalkLayer({
         }}
       />
     </div>
+    {hearthGate && hearthAt ? (
+      <span
+        className="hearth-name"
+        data-testid="hearth-name"
+        aria-hidden="true"
+        style={{
+          left: `${hearthAt.x * worldW - shownCam.x}px`,
+          top: `${hearthAt.y * worldH - shownCam.y + 10}px`,
+        }}
+      >
+        {gateLabel(hearthGate.to)}
+      </span>
+    ) : null}
+    </>
   );
 }

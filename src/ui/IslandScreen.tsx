@@ -67,6 +67,7 @@ export function IslandScreen({
   }, [save.flags['dba.flag.driftwood']]);
   const catPost = companionPost(scene, save.beats, save.flags, { skipWelcome });
   const line = save.feedback.line;
+  const [approachHint, setApproachHint] = useState(false);
   const sleepOk = scene === 'dba.scene.camp' && line === 'spot.sleep.ok';
   const [lieUntil, setLieUntil] = useState(0);
   useEffect(() => {
@@ -140,6 +141,7 @@ export function IslandScreen({
           catPost={catPost}
           resting={resting}
           onFar={(id) => dispatch({ type: 'spot-far', id })}
+          onApproachHint={setApproachHint}
           beat={save.feedback.kind === 'none' || !save.feedback.spot ? null : { spot: save.feedback.spot, kind: save.feedback.kind }}
           flash={flashSpot && flashKind ? { kind: flashKind, seq: save.feedback.seq, x: flashSpot.x, y: flashSpot.y } : null}
           onEscape={() => {
@@ -173,7 +175,7 @@ export function IslandScreen({
       </div>
       {save.overlay === 'chart' ? <ChartSealed onClose={() => dispatch({ type: 'close-overlay' })} /> : null}
       <OverlaySheet save={save} dispatch={dispatch} learned={learned} hint={hint} />
-      {spoken ? (
+      {spoken && !(approachHint && line === 'spot.driftwood.far') ? (
         <p key={scene} className="diegetic-line" data-testid="spot-line" data-line={line}>
           {spoken}
         </p>
