@@ -35,18 +35,51 @@ describe('boot footprint columns', () => {
   });
 });
 
+function span(rgba: Uint8ClampedArray, width: number): number {
+  let minX = width;
+  let maxX = -1;
+  for (let i = 3; i < rgba.length; i += 4) {
+    if (rgba[i] === 0) continue;
+    const x = Math.floor(i / 4) % width;
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+  }
+  return maxX - minX + 1;
+}
+
 describe('cat contact gate', () => {
-  it('keeps the tip puddle and drops the cloak', () => {
-    const width = 4;
+  it('keeps the paw footprint and drops the wide puddle and the cloak', () => {
+    const width = 200;
     const height = 1000;
     const rgba = sheet(width, height);
-    paint(rgba, width, 0, 850, 230, [30, 22, 14]);
-    paint(rgba, width, 1, 850, 255, [70, 55, 40]);
-    paint(rgba, width, 2, 100, 240, [30, 22, 14]);
+    for (let y = 800; y < 900; y++) {
+      for (let x = 20; x < 160; x++) paint(rgba, width, x, y, 240, [30, 22, 14]);
+    }
+    for (let y = 752; y < 800; y++) {
+      for (let x = 40; x < 72; x++) paint(rgba, width, x, y, 255, [90, 70, 50]);
+    }
+    paint(rgba, width, 50, 850, 255, [70, 55, 40]);
+    paint(rgba, width, 50, 100, 240, [30, 22, 14]);
     keepCatContact(rgba, width, height, 0.85);
-    expect(rgba[0 * 4 + 3]).toBe(0);
-    expect(rgba[(850 * width + 0) * 4 + 3]).toBe(230);
-    expect(rgba[(850 * width + 1) * 4 + 3]).toBe(0);
-    expect(rgba[(100 * width + 2) * 4 + 3]).toBe(0);
+    expect(rgba[(850 * width + 55) * 4 + 3]).toBe(240);
+    expect(rgba[(850 * width + 20) * 4 + 3]).toBe(0);
+    expect(rgba[(850 * width + 120) * 4 + 3]).toBe(0);
+    expect(rgba[(850 * width + 50) * 4 + 3]).toBe(0);
+    expect(rgba[(100 * width + 50) * 4 + 3]).toBe(0);
+    expect(span(rgba, width)).toBe(32);
+  });
+
+  it('shrinks a puddle with no paw fur to a paw-sized core', () => {
+    const width = 200;
+    const height = 1000;
+    const rgba = sheet(width, height);
+    for (let y = 800; y < 900; y++) {
+      for (let x = 10; x < 170; x++) paint(rgba, width, x, y, 230, [30, 22, 14]);
+    }
+    keepCatContact(rgba, width, height, 0.85);
+    expect(span(rgba, width)).toBeLessThanOrEqual(96);
+    expect(rgba[(850 * width + 90) * 4 + 3]).toBe(230);
+    expect(rgba[(850 * width + 10) * 4 + 3]).toBe(0);
+    expect(rgba[(850 * width + 169) * 4 + 3]).toBe(0);
   });
 });
