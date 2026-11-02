@@ -2036,7 +2036,8 @@ h1 {
 /* Fog cools a dark sole. This copy sits above that fog. The mask stays shut
    through the boot shaft and opens on the leather hem, so the warm core sits
    on the sole and then falls off through the extra pixels under the foot
-   (--fit is the sprite's share of that taller box). No shelf, no ellipse. */
+   (--fit is the sprite's share of that taller box). Width stays on the boot
+   footprint. No shelf, no ellipse. */
 .sole-layer {
   position: absolute;
   inset: 0;

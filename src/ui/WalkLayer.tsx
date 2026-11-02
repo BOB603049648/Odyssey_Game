@@ -760,18 +760,22 @@ export function WalkLayer({
       <img className="scene-grade" data-testid="scene-grade" src={sceneGrade(scene)} alt="" draggable={false} />
       <div className="sole-layer" data-testid="sole-layer">
         <svg className="sole-filter" aria-hidden="true" focusable="false" width="0" height="0">
-          <filter id="sole-warm" colorInterpolationFilters="sRGB" x="-20%" y="-15%" width="140%" height="140%">
-            <feComponentTransfer in="SourceGraphic" result="solid">
-              <feFuncA type="linear" slope="2.6" intercept="-0.35" />
+          <filter id="sole-warm" colorInterpolationFilters="sRGB" x="-8%" y="-10%" width="116%" height="145%">
+            <feComponentTransfer in="SourceGraphic" result="boot">
+              <feFuncA type="table" tableValues="0 0 0 0 0 1 1 1" />
             </feComponentTransfer>
             <feColorMatrix
-              in="solid"
+              in="boot"
               type="matrix"
               values="0 0 0 0 0.109804 0 0 0 0 0.086275 0 0 0 0 0.062745 0 0 0 1 0"
               result="warm"
             />
-            <feMorphology in="warm" operator="dilate" radius="2.4 8" result="spread" />
-            <feGaussianBlur in="spread" stdDeviation="1.6 0.85" />
+            <feOffset in="warm" dx="0" dy="2" result="dropped" />
+            <feComposite in="dropped" in2="warm" operator="out" result="rim" />
+            <feMorphology in="rim" operator="dilate" radius="0.8 6" result="band" />
+            <feGaussianBlur in="band" stdDeviation="0.8 2.2" result="tail" />
+            <feComposite in="warm" in2="tail" operator="over" result="body" />
+            <feGaussianBlur in="body" stdDeviation="0.25 0.35" />
           </filter>
         </svg>
         <img ref={soleRef} className="sole-soft" data-testid="sole-soft" alt="" />
