@@ -348,30 +348,29 @@ describe('shore readability', () => {
     expect(css).not.toContain('.sole-stamp');
   });
 
-  it('mounts the pr64 read8 pack at the reported sha256', () => {
-    const report = JSON.parse(readFileSync('docs/_pr64-read8-report.json', 'utf8')) as {
+  it('mounts the pr64 read9 pack at the reported sha256', () => {
+    const report = JSON.parse(readFileSync('docs/_pr64-read9-report.json', 'utf8')) as {
       files: Record<string, { sha256: string }>;
-      wrote_count: number;
+      wrote: string[];
       version: string;
       blockers: unknown[];
-      ground_sha: string;
+      ground_sha256: string;
     };
-    expect(report.version).toBe('1.3-pr64-read8');
+    expect(report.version).toBe('1.3-pr64-read9');
     expect(report.blockers).toEqual([]);
-    expect(report.ground_sha).toBe('df4b9af7195fccf5b5ee41059fa4306898693280f38e4b2737f1e50cecb3afbe');
+    expect(report.ground_sha256).toBe('df4b9af7195fccf5b5ee41059fa4306898693280f38e4b2737f1e50cecb3afbe');
     expect(createHash('sha256').update(readFileSync('src/assets/art/slots/art.shore.ground.jpg')).digest('hex')).toBe(
-      report.ground_sha,
+      report.ground_sha256,
     );
     const disk = (logical: string) => {
       if (logical.startsWith('traveler-mythic/')) return `src/assets/traveler/${logical.split('/').pop()}`;
       if (logical.startsWith('nanaicha/traj/')) return `src/assets/companion/nanaicha/traj/${logical.split('/').pop()}`;
       throw new Error(logical);
     };
-    const wrote = Object.keys(report.files);
-    expect(report.wrote_count).toBe(24);
-    expect(wrote).toHaveLength(24);
-    expect(wrote).not.toContain('shore/art.shore.ground.jpg');
-    for (const logical of wrote) {
+    expect(report.wrote).toHaveLength(24);
+    expect(report.wrote).not.toContain('shore/art.shore.ground.jpg');
+    expect(report.files['shore/art.shore.ground.jpg'].sha256).toBe(report.ground_sha256);
+    for (const logical of report.wrote) {
       const sha = createHash('sha256').update(readFileSync(disk(logical))).digest('hex');
       expect(sha).toBe(report.files[logical].sha256);
     }
