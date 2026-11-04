@@ -361,14 +361,14 @@
     "landings": [
       {
         "id": "land-shore-driftwood",
-        "file": "land-shore-driftwood.png",
+        "file": "land-shore-driftwood.webp",
         "scene": "shore",
         "beat_stage": "pre-water / S0",
         "pose": "crouch/sit beside driftwood",
         "gaze": "driftwood",
         "readable": "这里能喘",
         "§5.1": "S0 迎人 → 漂木旁",
-        "path": "nanaicha/traj/land-shore-driftwood.png",
+        "path": "nanaicha/traj/land-shore-driftwood.webp",
         "opaque_bbox": [
           22,
           360,
@@ -380,14 +380,14 @@
       },
       {
         "id": "land-shore-gourd",
-        "file": "land-shore-gourd.png",
+        "file": "land-shore-gourd.webp",
         "scene": "shore",
         "beat_stage": "water / S1",
         "pose": "half-step stop by water gourd",
         "gaze": "gourd",
         "readable": "喝水",
         "§5.1": "S1 引水 → 水瓢旁",
-        "path": "nanaicha/traj/land-shore-gourd.png",
+        "path": "nanaicha/traj/land-shore-gourd.webp",
         "opaque_bbox": [
           22,
           326,
@@ -399,14 +399,14 @@
       },
       {
         "id": "land-shore-east-gap",
-        "file": "land-shore-east-gap.png",
+        "file": "land-shore-east-gap.webp",
         "scene": "shore",
         "beat_stage": "post-water / S2 → camp",
         "pose": "stand at east door/gap, body faces east",
         "gaze": "east / camp smoke",
         "readable": "往有烟",
         "§5.1": "S2 引营 → 东门→camp",
-        "path": "nanaicha/traj/land-shore-east-gap.png",
+        "path": "nanaicha/traj/land-shore-east-gap.webp",
         "opaque_bbox": [
           22,
           213,

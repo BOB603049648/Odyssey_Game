@@ -1,7 +1,10 @@
 /**
  * Scene art is fetched when a frame asks for it. The opening route
  * (title → new game → shore) must not reference the rest of the island.
+ * Shore entry asks for sky, ground, building, and fg before props.
  */
+import { loadGated, partitionSceneAssets, slotLoadTier } from './loadGate';
+
 const loaders = import.meta.glob<string>('../assets/art/slots/*.{png,webp,jpg,jpeg}', {
   import: 'default',
 });
@@ -22,7 +25,6 @@ for (const [path, loader] of Object.entries(loaders)) {
 export const SLOT_ASSETS: Record<string, true> = Object.fromEntries([...byId.keys()].map((id) => [id, true]));
 
 const cache = new Map<string, string>();
-const pending = new Map<string, Promise<string | null>>();
 
 export function resolveSlotAsset(asset: string | null): string | null {
   if (!asset) return null;
@@ -35,21 +37,14 @@ export function loadSlotAsset(asset: string | null): Promise<string | null> {
   if (hit) return Promise.resolve(hit);
   const loader = byId.get(asset);
   if (!loader) return Promise.resolve(null);
-  let job = pending.get(asset);
-  if (!job) {
-    job = loader()
-      .then((url) => {
-        cache.set(asset, url);
-        return url;
-      })
-      .catch(() => null);
-    pending.set(asset, job);
-  }
-  return job;
+  const tier = slotLoadTier(asset) ?? 'shell';
+  return loadGated(`slot:${asset}`, tier, () => loader(), cache, { cacheKey: asset });
 }
 
 export function preloadSceneAssets(ids: readonly (string | null | undefined)[]): void {
-  for (const id of ids) void loadSlotAsset(id ?? null);
+  const { shell, props } = partitionSceneAssets(ids);
+  for (const id of shell) void loadSlotAsset(id);
+  for (const id of props) void loadSlotAsset(id);
 }
 
 if (import.meta.env.MODE === 'test') {
