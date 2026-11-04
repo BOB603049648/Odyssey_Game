@@ -2186,8 +2186,8 @@
         "unchanged": true
       }
     },
-    "nanaicha/traj/land-shore-gourd.png": {
-      "sha256": "0928e51fc18c79936d75a661e5f7fd122fae4e99a13110de7f89d5cb9a562191",
+    "nanaicha/traj/land-shore-gourd.webp": {
+      "sha256": "8a16bd1f009fb2668301eee7873e73a0957fd4d673cfdc26e7ccbb717ee46d97",
       "claws": {
         "before": {
           "opaque_bbox": [
@@ -2316,8 +2316,8 @@
         "face_roi_sha_match": true
       }
     },
-    "nanaicha/traj/land-shore-driftwood.png": {
-      "sha256": "d4b5caf35c6478fbba1e62c843a54949a41362675ac7ca02cfbaba744f519b2d",
+    "nanaicha/traj/land-shore-driftwood.webp": {
+      "sha256": "a1238e0a7a3da9d7b6a4f3f0422933940ce9acb09b0a6ea11efd0c51134aebbd",
       "claws": {
         "before": {
           "opaque_bbox": [
@@ -2446,8 +2446,8 @@
         "face_roi_sha_match": true
       }
     },
-    "nanaicha/traj/land-shore-east-gap.png": {
-      "sha256": "b3b8acd7240cf7abf8f64500d2323346c24e628d9123598124c87f99bce01947",
+    "nanaicha/traj/land-shore-east-gap.webp": {
+      "sha256": "d67be1885ea9545be7c7278dd40b94b028d9c3a3447eaf3f4556fe9469e3303c",
       "claws": {
         "before": {
           "opaque_bbox": [
@@ -2745,7 +2745,7 @@
       }
     },
     "cats": {
-      "land-shore-gourd.png": {
+      "land-shore-gourd.webp": {
         "before": {
           "opaque_bbox": [
             19,
@@ -2863,7 +2863,7 @@
         "max_puddle_to_tip_ratio": 0.833,
         "hard_rect_score": 0
       },
-      "land-shore-driftwood.png": {
+      "land-shore-driftwood.webp": {
         "before": {
           "opaque_bbox": [
             15,
@@ -2981,7 +2981,7 @@
         "max_puddle_to_tip_ratio": 0.85,
         "hard_rect_score": 0
       },
-      "land-shore-east-gap.png": {
+      "land-shore-east-gap.webp": {
         "before": {
           "opaque_bbox": [
             15,
@@ -3123,7 +3123,7 @@
     },
     "traveler_sole_byte_locked": true,
     "claw_soft_pairs": {
-      "land-shore-gourd.png": {
+      "land-shore-gourd.webp": {
         "before": 23584,
         "after": 3308,
         "dense": 1403,
@@ -3169,7 +3169,7 @@
         "sole_y": 976,
         "hem_y": 976.0
       },
-      "land-shore-driftwood.png": {
+      "land-shore-driftwood.webp": {
         "before": 23322,
         "after": 4528,
         "dense": 1637,
@@ -3215,7 +3215,7 @@
         "sole_y": 987,
         "hem_y": 987.0
       },
-      "land-shore-east-gap.png": {
+      "land-shore-east-gap.webp": {
         "before": 6589,
         "after": 902,
         "dense": 480,
@@ -3352,9 +3352,9 @@
   ],
   "note": "Art + optional eng cat sole-soft horizontal 同挂 #64；现网勿合；Vite 对照 r11-04a/b/c。traveler sole LOCK；爪收 tip 下紧凑软水洼 ≤1.1×爪尖宽。",
   "companion_sole_y": {
-    "land-shore-gourd.png": 976,
-    "land-shore-driftwood.png": 987,
-    "land-shore-east-gap.png": 1117
+    "land-shore-gourd.webp": 976,
+    "land-shore-driftwood.webp": 987,
+    "land-shore-east-gap.webp": 1117
   },
   "blockers": [],
   "wrote": [
@@ -3379,9 +3379,9 @@
     "traveler-mythic/cloud-inspired/v3/anim/walk-side-02.png",
     "traveler-mythic/cloud-inspired/v3/anim/walk-side-03.png",
     "traveler-mythic/cloud-inspired/v3/anim/walk-side-04.png",
-    "nanaicha/traj/land-shore-gourd.png",
-    "nanaicha/traj/land-shore-driftwood.png",
-    "nanaicha/traj/land-shore-east-gap.png"
+    "nanaicha/traj/land-shore-gourd.webp",
+    "nanaicha/traj/land-shore-driftwood.webp",
+    "nanaicha/traj/land-shore-east-gap.webp"
   ],
   "backup_tag": "pre-pr64-read11",
   "verdict_ref": "/workspace/playtest/pr64-shore-readability/VERDICT-RETEST11.txt",

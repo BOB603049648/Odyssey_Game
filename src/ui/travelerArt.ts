@@ -1,7 +1,8 @@
+import { loadGated } from '../content/loadGate';
+
 const loaders = import.meta.glob<string>('../assets/traveler/*.png', { import: 'default' });
 
 const cache = new Map<string, string>();
-const pending = new Map<string, Promise<string>>();
 
 function fileOf(path: string): string {
   return path.split('/').pop()!;
@@ -21,15 +22,8 @@ export function loadFrame(file: string): Promise<string> {
   if (hit) return Promise.resolve(hit);
   const loader = byFile.get(file);
   if (!loader) return Promise.resolve('');
-  let job = pending.get(file);
-  if (!job) {
-    job = loader().then((url) => {
-      cache.set(file, url);
-      return url;
-    });
-    pending.set(file, job);
-  }
-  return job;
+  // Idle and gait frames wait until the shell, props, and trajectory batches drain.
+  return loadGated(`frame:${file}`, 'idle', () => loader(), cache, { defer: true, cacheKey: file }).then((url) => url ?? '');
 }
 
 export function loadFrames(files: readonly string[]): Promise<string[]> {

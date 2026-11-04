@@ -1,15 +1,19 @@
-const loaders = import.meta.glob<string>('../assets/companion/nanaicha/traj/*.png', { import: 'default' });
+import { loadGated } from '../content/loadGate';
+
+const loaders = import.meta.glob<string>('../assets/companion/nanaicha/traj/*.{png,webp}', { import: 'default' });
 
 const cache = new Map<string, string>();
-const pending = new Map<string, Promise<string>>();
 
 function idOf(path: string): string {
-  return path.split('/').pop()!.replace(/\.png$/, '');
+  return path.split('/').pop()!.replace(/\.(png|webp)$/, '');
 }
 
 const byId = new Map<string, () => Promise<string>>();
 for (const [path, loader] of Object.entries(loaders)) {
-  byId.set(idOf(path), loader as () => Promise<string>);
+  const id = idOf(path);
+  const current = byId.get(id);
+  if (current && !path.endsWith('.webp')) continue;
+  byId.set(id, loader as () => Promise<string>);
 }
 
 export function trajUrl(id: string): string | undefined {
@@ -21,15 +25,7 @@ export function loadTraj(id: string): Promise<string | null> {
   if (hit) return Promise.resolve(hit);
   const loader = byId.get(id);
   if (!loader) return Promise.resolve(null);
-  let job = pending.get(id);
-  if (!job) {
-    job = loader().then((url) => {
-      cache.set(id, url);
-      return url;
-    });
-    pending.set(id, job);
-  }
-  return job;
+  return loadGated(`traj:${id}`, 'traj', () => loader(), cache, { cacheKey: id });
 }
 
 if (import.meta.env.MODE === 'test') {
