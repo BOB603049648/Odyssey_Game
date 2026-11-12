@@ -1,4 +1,15 @@
+import { registerCatAlias } from './catDisplay';
+
 const cache = new Map<string, Promise<string>>();
+const blobs = new Map<string, string>();
+
+/** An error belongs to this original source, including its current blob alias. */
+export function forgetCatSrc(src: string): void {
+  cache.delete(src);
+  const blob = blobs.get(src);
+  if (blob && typeof URL.revokeObjectURL === 'function') URL.revokeObjectURL(blob);
+  blobs.delete(src);
+}
 
 /**
  * Load a cat frame through fetch, then a blob URL.
@@ -8,7 +19,22 @@ const cache = new Map<string, Promise<string>>();
 export function loadCatSrc(src: string): Promise<string> {
   const hit = cache.get(src);
   if (hit) return hit;
-  const job = fetchCat(src);
+  const job = fetchCat(src).then((url) => {
+    // A pre-error fetch must not resurrect its obsolete bitmap or cache entry.
+    if (cache.get(src) !== job) {
+      if (url !== src && typeof URL.revokeObjectURL === 'function') URL.revokeObjectURL(url);
+      return src;
+    }
+    if (url !== src) blobs.set(src, url);
+    // A fallback URL is not a recovered blob. Share the current attempt, but
+    // let the next caller fetch again after connectivity has returned.
+    if (url === src && cache.get(src) === job) cache.delete(src);
+    if (url !== src) registerCatAlias(src, url);
+    return url;
+  }, () => {
+    if (cache.get(src) === job) cache.delete(src);
+    return src;
+  });
   cache.set(src, job);
   return job;
 }

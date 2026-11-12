@@ -1,3 +1,6 @@
+import { travelerContactFile } from './hemPunch';
+import { keepTravelerContactOnly } from './travelerContact';
+
 /**
  * Horizontal boot footprint for `.sole-soft`.
  * The sheet's soft mat is already 2–3× the boot and the vertical mask dyes all of it.
@@ -187,7 +190,7 @@ function canvasOf(img: HTMLImageElement): HTMLCanvasElement | null {
   return canvas;
 }
 
-/** Sprite copy whose alpha is zero outside the boot columns. The vertical mask still opens the hem. */
+/** Reviewed bitmap: contact-only copy. Legacy/unsupported bitmap: original boot-column copy. */
 export function clippedBootUrl(img: HTMLImageElement): string | null {
   const key = img.currentSrc || img.src;
   const hit = bootCache.get(key);
@@ -197,12 +200,14 @@ export function clippedBootUrl(img: HTMLImageElement): string | null {
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
   if (!ctx) return null;
   const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const cols = bootColumns(image.data, canvas.width, canvas.height);
-  const data = image.data;
-  for (let y = 0; y < canvas.height; y++) {
-    const row = y * canvas.width * 4;
-    for (let x = 0; x < canvas.width; x++) {
-      if (!cols[x]) data[row + x * 4 + 3] = 0;
+  if (!keepTravelerContactOnly(image.data, canvas.width, canvas.height, travelerContactFile(key))) {
+    const cols = bootColumns(image.data, canvas.width, canvas.height);
+    const data = image.data;
+    for (let y = 0; y < canvas.height; y++) {
+      const row = y * canvas.width * 4;
+      for (let x = 0; x < canvas.width; x++) {
+        if (!cols[x]) data[row + x * 4 + 3] = 0;
+      }
     }
   }
   ctx.putImageData(image, 0, 0);

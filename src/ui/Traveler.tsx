@@ -1,8 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { supportForSource, supportTransform, type TravelerSupport } from './travelerSupport';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { WALK_SPEED } from '../core/walk';
 import { depthScale, worldToScreen } from '../core/world';
-import { punchHemUrl } from './hemPunch';
-import { frameUrl, loadFrame } from './travelerArt';
+import { punchHemUrl, wakeHemPunch } from './hemPunch';
+import { heldFrameIndex } from './travelerDisplay';
+import { forgetFrame, frameUrl, loadFrame } from './travelerArt';
+import { useAssetSrc } from './useAssetSrc';
 
 export type TravelerFacing = 'front' | 'back' | 'left' | 'right';
 export type TravelerSheet = 'front' | 'side' | 'back';
@@ -162,6 +165,7 @@ function useTravelerMotion(
   sheet: TravelerSheet,
   x: number,
   y: number,
+  presentationFrozen: boolean,
 ): Motion {
   const strideRef = useRef(stride);
   const overrideRef = useRef(override);
@@ -174,7 +178,7 @@ function useTravelerMotion(
   const [motion, setMotion] = useState<Motion>({ gait: 0, pose: 'idle', frame: 0 });
 
   useEffect(() => {
-    if (import.meta.env.MODE === 'test') return undefined;
+    if (presentationFrozen || import.meta.env.MODE === 'test') return undefined;
     let raf = 0;
     let last = performance.now();
     let gait = 0;
@@ -190,13 +194,13 @@ function useTravelerMotion(
       const here = posRef.current;
       const dist = Math.hypot(here.x - lastPos.x, here.y - lastPos.y);
       lastPos = here;
-      gait = stepGait(gait, strideRef.current, dt);
-      locomotion = nextLocomotion(locomotion, gait);
+      const physicallyWalking = dist > 1e-6 && strideRef.current > 0.001;
+      gait = stepGait(gait, physicallyWalking ? strideRef.current : 0, dt);
+      locomotion = physicallyWalking ? nextLocomotion(locomotion, gait) : 'idle';
       const requested: TravelerPose = overrideRef.current === 'auto' ? locomotion : overrideRef.current;
       const pose = poseForSheet(requested, sheetRef.current);
       if (pose === 'walk') {
         if (dist > 1e-6) walkPhase = stepCycleByDistance(walkPhase, dist);
-        else if (strideRef.current <= 0.001) walkPhase = stepCycle(walkPhase, gait, dt);
       } else if (pose === 'reach') {
         reachPhase = prevPose === 'reach' ? stepCycle(reachPhase, 1, dt, REACH_HZ) : 0;
       } else idlePhase = stepCycle(idlePhase, 1, dt, IDLE_CYCLE_HZ);
@@ -207,7 +211,9 @@ function useTravelerMotion(
     };
     raf = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(raf);
-  }, []);
+  }, [presentationFrozen]);
+
+  if (presentationFrozen) return { gait: 0, pose: 'idle', frame: 0 };
 
   if (import.meta.env.MODE === 'test') {
     const gait = Math.min(1, Math.max(0, stride));
@@ -222,55 +228,121 @@ function sameBlend(a: FrameBlend, b: FrameBlend): boolean {
   return a.sheet === b.sheet && a.pose === b.pose && a.frame === b.frame && a.facing === b.facing;
 }
 
-function FramePicture({ blend, layer }: { blend: FrameBlend; layer: 'out' | 'current' }) {
-  const files =
-    blend.pose === 'walk'
-      ? WALK_FILES[sheetOf(blend.facing)]
-      : blend.pose === 'reach'
-        ? REACH_FILES[sheetOf(blend.facing)] ?? IDLE_FILES[sheetOf(blend.facing)]
-        : IDLE_FILES[sheetOf(blend.facing)];
-  const file = files[Math.min(files.length - 1, Math.max(0, blend.frame))] ?? files[0];
-  const cached = frameSrc(file);
-  const [punched, setPunched] = useState<{ file: string; url: string } | null>(null);
+const FRAME_SRC_API = {
+  resolve: (id: string | null) => (id ? frameUrl(id) ?? null : null),
+  load: (id: string | null) => (id ? loadFrame(id).then((url) => url || null) : Promise.resolve(null)),
+  forget: (id: string) => forgetFrame(id),
+};
+
+export type FramePresentation = { blend:FrameBlend; shown:string; support:TravelerSupport|null; onError:()=>void };
+/** One persistent display slot. current/outgoing call independently; no borrowed lastReady. */
+function useFramePresentation(blend:FrameBlend|null,contactCleanup:boolean):FramePresentation|null {
+  const facing=blend?.facing??'front';
+  const files=blend?.pose==='walk'?WALK_FILES[sheetOf(facing)]:blend?.pose==='reach'?REACH_FILES[sheetOf(facing)]??IDLE_FILES[sheetOf(facing)]:IDLE_FILES[sheetOf(facing)];
+  const file=blend ? files[Math.min(files.length-1,Math.max(0,blend.frame))]??files[0] : null;
+  const {src:loaded,onError}=useAssetSrc(file,FRAME_SRC_API);
+  const [processed,setProcessed]=useState<{file:string;originalUrl:string;src:string}|null>(null);
+  const lastReady=useRef<{shown:string;blend:FrameBlend}|null>(null);
   useEffect(() => {
     let live = true;
-    loadFrame(file).then((url) => {
-      if (!live || !url) return;
-      punchHemUrl(url).then((next) => {
-        if (live) setPunched({ file, url: next });
-      });
-    });
+    // Keep the last ready bitmap on screen until the next punch resolves.
+    // Clearing punched here unmounts <img> and leaves only the
+    // viewport sole layer visible ("only feet") for the duration of decode.
+    if (!file || !loaded) return undefined;
+    const frameFile = file; // Stable non-null source identity for async closures.
+    // useAssetSrc can expose its previous state for one render when file changes.
+    // Keep lastReady rather than apply the next frame's coordinates to that bitmap.
+    if (loaded !== frameUrl(file)) return undefined;
+    if (import.meta.env.MODE === 'test') {
+      setProcessed({file:frameFile,originalUrl:loaded,src:loaded});
+      return undefined;
+    }
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let pending = false;
+    let retries = 0;
+    async function attempt() {
+      if (!live || pending) return;
+      pending = true;
+      try {
+        const next = await punchHemUrl(loaded!, contactCleanup ? frameFile : undefined);
+        if (live) setProcessed({file:frameFile,originalUrl:loaded!,src:next});
+      } catch (error) {
+        // Never clear lastReady, or spin on rejected/uncached processing.
+        // Baseline only gains rejection handling, not new retry semantics.
+        if (!live || !contactCleanup || retries >= 4) return;
+        const retryAt = error instanceof Error && 'retryAt' in error && typeof error.retryAt === 'number'
+          ? error.retryAt : Date.now() + Math.min(30000,5000*2**retries);
+        if (!Number.isFinite(retryAt)) return;
+        retries += 1;
+        if (timer !== undefined) clearTimeout(timer);
+        timer = setTimeout(() => { timer = undefined; void attempt(); }, Math.max(1,retryAt-Date.now()));
+      } finally {
+        pending = false;
+      }
+    }
+    function online() {
+      retries = 0;
+      if (timer !== undefined) clearTimeout(timer);
+      timer = undefined;
+      wakeHemPunch(loaded!,frameFile);
+      void attempt();
+    }
+    void attempt();
+    if (contactCleanup) window.addEventListener('online',online);
     return () => {
       live = false;
+      if (timer !== undefined) clearTimeout(timer);
+      if (contactCleanup) window.removeEventListener('online',online);
     };
-  }, [file]);
-  const shown = punched?.file === file ? punched.url : cached;
+  }, [file, loaded, contactCleanup]);
+  if (!blend || !file) {
+    // Match the former outgoing component's logical unmount, not its view parent.
+    lastReady.current=null;
+    if (processed!==null) setProcessed(null);
+    return null;
+  }
+  const matchingOriginal=loaded===frameUrl(file)?loaded:null;
+  const punched=processed?.file===file && processed.originalUrl===matchingOriginal ? processed.src : null;
+  // Advance live walk frames (and their stop) even if processing is slow.
+  // Keep reviewed idle-turn lastReady and baseline idle-first-paint contracts.
+  const advanceRaw=blend.pose==='walk' || lastReady.current?.blend.pose==='walk' || (contactCleanup && !lastReady.current);
+  const current=punched || (advanceRaw ? matchingOriginal : null);
+  if (current) lastReady.current={shown:current,blend};
+  const shown=current || lastReady.current?.shown || '';
+  const shownBlend=current ? blend : lastReady.current?.blend ?? blend;
+  const support=contactCleanup && shownBlend.pose!=='lie'?supportForSource(shown):null;
+  return {blend:shownBlend,shown,support,onError};
+}
+
+/** Pure bitmap/metadata view; async work belongs entirely to the persistent slot. */
+export function FramePictureView({picture,layer,onMount}:{picture:FramePresentation;layer:'out'|'current';onMount?:(node:HTMLSpanElement|null)=>void}) {
+  const {blend,shown,support,onError}=picture;
   return (
     <span
+      ref={onMount}
       className={layer === 'out' ? 'traveler-frame-wrap out' : 'traveler-frame-wrap'}
       data-mirror={blend.facing === 'left' ? 'yes' : 'no'}
+      data-support-frame={support?.file}
+      data-support-x={support?.x}
+      data-support-y={support?.y}
+      style={support ? { transform: supportTransform(support, blend.facing === 'left', TRAVELER_FOOT) } : undefined}
     >
-      <img
-        className={layer === 'current' ? 'traveler-figure traveler-frame' : 'traveler-frame'}
-        data-layer={layer}
-        data-frame={blend.frame}
-        src={shown}
-        alt=""
-        draggable={false}
-      />
+      {shown ? (
+        <img
+          className={layer === 'current' ? 'traveler-figure traveler-frame' : 'traveler-frame'}
+          data-layer={layer}
+          data-frame={blend.frame}
+          src={shown}
+          alt=""
+          draggable={false}
+          onError={onError}
+        />
+      ) : null}
     </span>
   );
 }
 
-export function TravelerMark({
-  x,
-  y,
-  facing,
-  moving,
-  stride,
-  pose = 'auto',
-  depthZ = 5,
-}: {
+export type TravelerProps = {
   x: number;
   y: number;
   facing: TravelerFacing;
@@ -281,42 +353,93 @@ export function TravelerMark({
   pose?: 'auto' | 'interact' | 'reach' | 'lie';
   /** Paint order against the guide. Near props stay above both. */
   depthZ?: number;
-}) {
+  /** Diagnostic presentation only; normal gameplay must leave this off. */
+  presentationFrozen?: boolean;
+  /** Candidate shore only: reviewed, alpha-only exterior contact cleanup. */
+  contactCleanup?: boolean;
+};
+
+export function useTravelerPresentation({
+  x,
+  y,
+  facing,
+  moving,
+  stride,
+  pose = 'auto',
+  depthZ = 5,
+  presentationFrozen = false,
+  contactCleanup = false,
+}: TravelerProps) {
   const sheet = sheetOf(facing);
   const power = stride ?? (moving ? 1 : 0);
-  const motion = useTravelerMotion(power, pose, sheet, x, y);
+  const motion = useTravelerMotion(power, pose, sheet, x, y, presentationFrozen);
   const frames = clipFrames(motion.pose, sheet);
-  const frame = Math.min(frames.length - 1, motion.frame);
+  const firstFile =
+    motion.pose === 'walk'
+      ? WALK_FILES[sheet][0]
+      : motion.pose === 'reach'
+        ? (REACH_FILES[sheet] ?? IDLE_FILES[sheet])[0]
+        : IDLE_FILES[sheet][0];
+  const { src: firstSrc } = useAssetSrc(firstFile, FRAME_SRC_API);
+  const firstReady = Boolean(firstSrc);
+  const frame = heldFrameIndex(Math.min(frames.length - 1, motion.frame), firstReady);
   const current: FrameBlend = { sheet, pose: motion.pose, frame, facing };
   const [shown, setShown] = useState(current);
   const [outgoing, setOutgoing] = useState<FrameBlend | null>(null);
+  const fade=useRef({token:0,startedAt:0,deadline:0,duration:0});
+  if (presentationFrozen && outgoing) setOutgoing(null);
   if (!sameBlend(shown, current)) {
-    if (blendDuration(shown, current) > 0) setOutgoing(shown);
+    // Do not crossfade away from a frame that has not finished: a 140ms unmount cancels 0B GETs.
+    if (!presentationFrozen && blendDuration(shown, current) > 0 && firstReady) {
+      const duration=blendDuration(shown,current)||FRAME_BLEND_MS;const startedAt=Date.now();
+      fade.current={token:fade.current.token+1,startedAt,deadline:startedAt+duration,duration};
+      setOutgoing(shown);
+    } else if (!presentationFrozen && outgoing) {
+      const duration=blendDuration(outgoing,current)||FRAME_BLEND_MS;const startedAt=Date.now();
+      fade.current={token:fade.current.token+1,startedAt,deadline:startedAt+duration,duration};
+    }
     setShown(current);
   }
 
   useEffect(() => {
     if (!outgoing || import.meta.env.MODE === 'test') return undefined;
-    const ms = blendDuration(outgoing, shown) || FRAME_BLEND_MS;
-    const id = window.setTimeout(() => setOutgoing(null), ms);
+    const remaining=Math.max(0,fade.current.deadline-Date.now());
+    const id = window.setTimeout(() => setOutgoing(null), remaining);
     return () => window.clearTimeout(id);
   }, [outgoing, shown]);
 
-  const blendMs = outgoing ? blendDuration(outgoing, shown) || FRAME_BLEND_MS : 0;
+  const blendMs = outgoing ? fade.current.duration : 0;
   const poseNow = pose === 'lie' ? 'lie' : motion.pose;
+  const currentPicture=useFramePresentation(shown,contactCleanup)!;
+  const outgoingPicture=useFramePresentation(outgoing,contactCleanup);
+  const supported=contactCleanup?currentPicture.support:null;
   const planted = worldToScreen({ x, y }, TRAVELER_FOOT, poseNow === 'lie' ? 'rotate(-86deg)' : '');
+  const fadeToken=fade.current.token;
+  // Run once per native view mount, not every motion tick (which would double-advance CSS).
+  const onOutgoingMount=useCallback((node:HTMLSpanElement|null)=>{
+    if(node) node.style.animationDelay=`${-Math.max(0,Date.now()-fade.current.startedAt)}ms`;
+  },[fadeToken]);
+  return {x,y,facing,moving,depthZ,presentationFrozen,contactCleanup,sheet,motion,frame,frameCount:frames.length,blendMs,poseNow,supported,planted,current:currentPicture,outgoing:outgoingPicture,fadeToken,onOutgoingMount};
+}
+export type TravelerPresentation=ReturnType<typeof useTravelerPresentation>;
+
+export function TravelerView({presentation}:{presentation:TravelerPresentation}) {
+  const {x,y,facing,moving,depthZ,presentationFrozen,contactCleanup,sheet,motion,frame,frameCount,blendMs,poseNow,supported,planted,current,outgoing,fadeToken,onOutgoingMount}=presentation;
   return (
     <div
       className="traveler"
       data-testid="traveler"
       data-figure="traveler"
+      data-contact-cleanup={contactCleanup ? 'yes' : 'no'}
+      data-support-registered={supported ? 'yes' : undefined}
       data-facing={facing}
       data-sheet={sheet}
       data-moving={moving ? 'yes' : 'no'}
+      data-presentation-frozen={presentationFrozen ? 'yes' : undefined}
       data-pose={poseNow}
       data-gait={motion.gait.toFixed(2)}
       data-frame={frame}
-      data-clip-frames={frames.length}
+      data-clip-frames={frameCount}
       data-crossfade={outgoing ? 'yes' : 'no'}
       data-anchor="foot"
       data-x={x}
@@ -327,7 +450,7 @@ export function TravelerMark({
         transform: `${planted.transform} scale(${depthScale(y).toFixed(3)})`,
         transformOrigin: `${TRAVELER_FOOT.x * 100}% ${TRAVELER_FOOT.y * 100}%`,
         zIndex: depthZ,
-        ['--sole-y' as string]: `${(poseNow === 'lie' ? TRAVELER_FOOT.y : TRAVELER_SOLE) * 100}%`,
+        ['--sole-y' as string]: `${(poseNow === 'lie' || supported ? TRAVELER_FOOT.y : TRAVELER_SOLE) * 100}%`,
         height: `${TRAVELER_HEIGHT * 100}%`,
         width: 'auto',
         aspectRatio: '3 / 4',
@@ -343,12 +466,18 @@ export function TravelerMark({
           ['--foot-x' as string]: '50%',
         }}
       />
-      <div className="traveler-bob">
+      <div className="traveler-bob" style={presentationFrozen || supported ? { ...(presentationFrozen ? { animation: 'none' } : {}), ...(supported ? { transformOrigin: `50% ${TRAVELER_FOOT.y * 100}%` } : {}) } : undefined}>
         <span className="traveler-frames" style={{ ['--frame-blend' as string]: `${blendMs}ms` }}>
-          {outgoing ? <FramePicture blend={outgoing} layer="out" /> : null}
-          <FramePicture blend={shown} layer="current" />
+          {outgoing ? <FramePictureView key={fadeToken} picture={outgoing} layer="out" onMount={onOutgoingMount} /> : null}
+          <FramePictureView picture={current} layer="current" />
         </span>
       </div>
     </div>
   );
+}
+
+/** Standalone compatibility owner. WalkLayer owns the hook above its conditional depth DOM. */
+export function TravelerMark(props:TravelerProps) {
+  const presentation=useTravelerPresentation(props);
+  return <TravelerView presentation={presentation}/>;
 }

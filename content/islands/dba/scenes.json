@@ -452,6 +452,7 @@
         "id": "art.hall.prop.wrist-knot",
         "slot": "props",
         "kind": "wrist-knot",
+        "depthMode": "wall-art",
         "asset": "art.hall.prop.wrist-knot",
         "parallax": 1,
         "spot": "hall-tattoo",

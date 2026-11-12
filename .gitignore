@@ -6,3 +6,6 @@ dist
 android
 ios
 coverage
+
+__pycache__/
+*.pyc

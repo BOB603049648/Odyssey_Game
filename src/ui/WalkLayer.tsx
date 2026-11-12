@@ -1,6 +1,11 @@
+import { useCatRecordRecovery } from './useCatRecordRecovery';
+import { getShoreVisualProfile } from '../dev/shoreVisualProfile';
+import { catDisplaySnapshot, lookupCatDisplay, writeCatDisplayAttributes } from './catDisplay';
+import { travelerContactFile } from './hemPunch';
 import { useEffect, useRef, useState } from 'react';
 import type { CatPost } from '../core/companionPost';
-import { companionFace, companionFoot, companionSole, NANAICHA_HEIGHT, SHORE_CAT_HEIGHT } from '../core/companionPost';
+import { companionFace, NANAICHA_HEIGHT, SHORE_CAT_HEIGHT } from '../core/companionPost';
+import { catMotionGeometry } from './catMotionGeometry';
 import { companionFrameId, trajClip, type GuidePhase, type TrajClip } from '../core/companionTraj';
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
@@ -23,21 +28,28 @@ import {
   type WalkKey,
 } from '../core/walk';
 import { sceneAssembly } from '../content/catalog';
-import { loadSlotAsset, preloadSceneAssets, resolveSlotAsset } from '../content/slotAssets';
-import { Companion } from './Companion';
+import { slotAssetUrl, trajAssetUrl } from '../content/assetUrls';
+import { forgetSlotAsset, loadSlotAsset, preloadSceneAssets, resolveSlotAsset } from '../content/slotAssets';
+import { CompanionView, useCompanionPresentation } from './Companion';
 import type { KnotMark } from './companion/CatMark';
 import { Glyph } from './glyphs';
 import { t } from './i18n';
-import { PlateStack, type SpotBeat } from './Plate';
+import { PlateStack, SlotPiece, groundDepthSlots, type SpotBeat } from './Plate';
+import { GroundDepth, type GroundDepthNode } from './GroundDepth';
+import { worldContactBox } from './soleCoordinates';
 import { gateLabel, type SpotView } from './spotViews';
 import { sceneGrade, sceneLook, sceneStrip } from './cohesion';
-import { loadTraj, trajUrl } from './trajArt';
+import { forgetTraj, loadTraj, trajUrl } from './trajArt';
 import { contactLift, contactOpacity, depthScale, worldToScreen } from '../core/world';
 import { catContactUrl, clippedBootUrl } from './soleClip';
-import { facingFromMove, REACH_HOLD_MS, TravelerMark, type TravelerFacing } from './Traveler';
+import { FirstScreenGate } from './FirstScreenGate';
+import { facingFromMove, REACH_HOLD_MS, TravelerView, useTravelerPresentation, type TravelerFacing } from './Traveler';
+import { useFirstScreenReady } from './firstScreenReady';
+import { useAssetSrc } from './useAssetSrc';
 
 import { WalkStick } from './WalkStick';
 import { useCrossfade } from './useCrossfade';
+import { useShoreCuePresentation } from './useShoreCuePresentation';
 
 type Hint = { level: HintLevel; anchor: HintAnchor; wordId: string | null; pose: CompanionPose };
 
@@ -69,6 +81,18 @@ function entrySide(edge: GateEdge | undefined): string | null {
   return null;
 }
 
+const SLOT_SRC_API = {
+  resolve: resolveSlotAsset,
+  load: loadSlotAsset,
+  forget: forgetSlotAsset,
+};
+
+const TRAJ_SRC_API = {
+  resolve: (id: string | null) => (id ? trajUrl(id) ?? null : null),
+  load: (id: string | null) => (id ? loadTraj(id) : Promise.resolve(null)),
+  forget: (id: string) => forgetTraj(id),
+};
+
 export function WalkLayer({
   scene,
   drank,
@@ -92,6 +116,7 @@ export function WalkLayer({
   resting = false,
   flash = null,
   beat = null,
+  presentationFrozen = false,
 }: {
   scene: IslandScene;
   drank: boolean;
@@ -116,10 +141,13 @@ export function WalkLayer({
   resting?: boolean;
   flash?: { kind: 'driftwood' | 'sleep' | 'give'; seq: number; x: number; y: number } | null;
   beat?: SpotBeat | null;
+  /** Static local fixture only. Does not pause asset/contact RAF work. */
+  presentationFrozen?: boolean;
 }) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const soleRef = useRef<HTMLImageElement>(null);
   const catSoleRef = useRef<HTMLImageElement>(null);
+  const catDiagnosticRef = useRef<HTMLOutputElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
   const pending = useRef<Point | null>(null);
   const sceneRef = useRef(scene);
@@ -168,6 +196,10 @@ export function WalkLayer({
   restingRef.current = resting;
   const viewRef = useRef(view);
   const plates = useCrossfade(scene, 980);
+  const depthComparison = getShoreVisualProfile().fixture !== null && new URLSearchParams(window.location.search).get('depth') === 'legacy';
+  const depthScenes = !depthComparison && getShoreVisualProfile().variant === 'candidate' && (plates.current === 'dba.scene.shore' || plates.previous === 'dba.scene.shore')
+    ? [plates.current, ...(plates.previous ? [plates.previous] : [])] : [];
+  const sharedDepth = depthScenes.length > 0;
   viewRef.current = view;
 
   spotsRef.current = spots;
@@ -347,10 +379,12 @@ export function WalkLayer({
     };
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
-    window.addEventListener('blur', () => held.current.clear());
+    const onBlur = () => held.current.clear();
+    window.addEventListener('blur', onBlur);
     return () => {
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
+      window.removeEventListener('blur', onBlur);
     };
   }, []);
 
@@ -385,6 +419,7 @@ export function WalkLayer({
             elapsed: guideElapsed.current,
             cat: prevCat,
             post: { x: desired.x, y: desired.y },
+            ready: guideReadyRef.current,
           },
         });
         velocityRef.current = stepped.walker.velocity;
@@ -407,7 +442,7 @@ export function WalkLayer({
         }
         guideElapsed.current = stepped.guide.elapsed;
         catRef.current = stepped.guide.cat;
-        const clipNow = stepped.guide.phase === 'move' ? trajClip(stepped.guide.elapsed) : 'land';
+        const clipNow = trajClip(stepped.guide.elapsed, {phase:stepped.guide.phase,cat:stepped.guide.cat,post:desired});
         if (guideRef.current === 'move' && stepped.guide.phase === 'hold') {
           setLand(true);
           window.clearTimeout(landTimer.current);
@@ -441,9 +476,15 @@ export function WalkLayer({
       const sole = soleRef.current;
       const vp = viewportRef.current;
       const img = vp?.querySelector('.traveler-figure');
-      if (sole && vp && img instanceof HTMLImageElement) {
-        const ir = img.getBoundingClientRect();
-        const vr = vp.getBoundingClientRect();
+      const catImg = vp?.querySelector('.nanaicha-ground');
+      const anchor = vp?.querySelector('[data-testid="companion-anchor"]');
+      const worldContact = vp?.dataset.groundDepth === 'world';
+      // Capture the same-frame containing origin before any contact writes. No second scale/support adjustment.
+      const contactOrigin = worldContact ? worldRef.current?.getBoundingClientRect() : vp?.getBoundingClientRect();
+      const humanRect = img instanceof HTMLImageElement ? img.getBoundingClientRect() : null;
+      const catRect = catImg instanceof HTMLImageElement ? catImg.getBoundingClientRect() : null;
+      if (sole && vp && img instanceof HTMLImageElement && humanRect && contactOrigin) {
+        const ir = humanRect;
         const pose = vp.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose');
         if (pose === 'lie' || ir.width < 2) {
           sole.style.visibility = 'hidden';
@@ -455,28 +496,28 @@ export function WalkLayer({
             if (clipped) {
               sole.dataset.base = src;
               sole.src = clipped;
+              sole.dataset.contact = travelerContactFile(src) ? 'contour' : 'legacy';
             }
           }
-          const soleFeather = 14;
-          const boxH = ir.height + soleFeather;
-          sole.style.left = `${ir.left - vr.left}px`;
-          sole.style.top = `${ir.top - vr.top}px`;
-          sole.style.width = `${ir.width}px`;
-          sole.style.height = `${boxH}px`;
-          sole.style.setProperty('--fit', (ir.height / boxH).toFixed(4));
+          const box = worldContactBox(ir, contactOrigin, 14);
+          sole.style.left = `${box.left}px`;
+          sole.style.top = `${box.top}px`;
+          sole.style.width = `${box.width}px`;
+          sole.style.height = `${box.height}px`;
+          sole.style.setProperty('--fit', box.fit.toFixed(4));
+          if (worldContact && sole.dataset.base !== src) sole.style.visibility = 'hidden';
           sole.style.transform = img.parentElement?.getAttribute('data-mirror') === 'yes' ? 'scaleX(-1)' : 'none';
         }
       }
       const catSole = catSoleRef.current;
-      const catImg = vp?.querySelector('.nanaicha-ground');
-      const anchor = vp?.querySelector('[data-testid="companion-anchor"]');
+      const actualContact = vp?.dataset.catContactSource === 'actual';
+      const displayedCat = actualContact && catImg instanceof HTMLImageElement ? lookupCatDisplay(catImg.currentSrc || catImg.src) : null;
       const shoreCat =
         vp?.getAttribute('data-scene') === 'dba.scene.shore' &&
-        (anchor?.getAttribute('data-sprite') ?? '').startsWith('land-shore');
-      if (catSole && vp && shoreCat && catImg instanceof HTMLImageElement && anchor instanceof HTMLElement) {
-        const cr = catImg.getBoundingClientRect();
-        const vr = vp.getBoundingClientRect();
-        const tip = parseFloat(anchor.style.getPropertyValue('--sole-y')) / 100;
+        (actualContact ? displayedCat !== null : (anchor?.getAttribute('data-sprite') ?? '').startsWith('land-shore'));
+      if (catSole && vp && shoreCat && catImg instanceof HTMLImageElement && anchor instanceof HTMLElement && catRect && contactOrigin) {
+        const cr = catRect;
+        const tip = actualContact ? displayedCat!.supportY : parseFloat(anchor.style.getPropertyValue('--sole-y')) / 100;
         if (cr.width < 2 || !Number.isFinite(tip)) {
           catSole.style.visibility = 'hidden';
         } else {
@@ -490,24 +531,32 @@ export function WalkLayer({
             }
           }
           if (catSole.dataset.base === key) {
-            const feather = 16;
-            const boxH = cr.height + feather;
-            const fit = cr.height / boxH;
+            const box = worldContactBox(cr, contactOrigin, 16);
+            const fit = box.fit;
             catSole.style.visibility = 'visible';
-            catSole.style.left = `${cr.left - vr.left}px`;
-            catSole.style.top = `${cr.top - vr.top}px`;
-            catSole.style.width = `${cr.width}px`;
-            catSole.style.height = `${boxH}px`;
+            catSole.style.left = `${box.left}px`;
+            catSole.style.top = `${box.top}px`;
+            catSole.style.width = `${box.width}px`;
+            catSole.style.height = `${box.height}px`;
             catSole.style.setProperty('--fit', fit.toFixed(4));
             catSole.style.setProperty('--cat-a', `${((tip - 0.09) * fit * 100).toFixed(2)}%`);
             catSole.style.setProperty('--cat-b', `${((tip - 0.05) * fit * 100).toFixed(2)}%`);
             catSole.style.setProperty('--cat-c', `${Math.min(97, (tip + 0.11) * fit * 100).toFixed(2)}%`);
             catSole.style.setProperty('--cat-d', `${Math.min(99.2, (tip + 0.15) * fit * 100).toFixed(2)}%`);
             catSole.style.transform = anchor.getAttribute('data-face') === 'left' ? 'scaleX(-1)' : 'none';
+          } else if (actualContact) {
+            catSole.style.visibility = 'hidden'; // Never retain another image's contact after an unmatched swap.
           }
         }
       } else if (catSole) {
         catSole.style.visibility = 'hidden';
+      }
+      const diagnostic = catDiagnosticRef.current;
+      const world = worldRef.current;
+      if (diagnostic && vp && world && catImg instanceof HTMLImageElement && anchor instanceof HTMLElement) {
+        writeCatDisplayAttributes(catImg, true);
+        const value = JSON.stringify(catDisplaySnapshot(catImg, anchor, world.getBoundingClientRect(), vp.getBoundingClientRect()));
+        if (diagnostic.textContent !== value) diagnostic.textContent = value;
       }
       frame = window.requestAnimationFrame(tick);
     };
@@ -515,20 +564,56 @@ export function WalkLayer({
     return () => window.cancelAnimationFrame(frame);
   }, []);
 
+  // Decode both leap poses during the existing gaze. A failed/missing frame
+  // waits here, not halfway across the scene on a stationary landing bitmap.
+  const warmLeap = !presentationFrozen && guide !== 'hold';
+  const {src:leap01} = useAssetSrc(warmLeap ? 'leap-01' : null, TRAJ_SRC_API);
+  const {src:leap02} = useAssetSrc(warmLeap ? 'leap-02' : null, TRAJ_SRC_API);
+  const guideReadyRef = useRef(false);
+  guideReadyRef.current = !!leap01 && !!leap02;
   const worldW = view.w * WORLD_SCALE;
   const worldH = view.h * WORLD_SCALE;
-  const catSprite = companionFrameId(catPost.beat, clip);
+  const requestedCatSprite = companionFrameId(catPost.beat, clip);
+  // Contract permits the complete scene prop as a temporary Y0 landing fallback.
+  // Keep the beat/guide/queue and the dedicated trajectory file untouched.
+  const yardLandingFallback = scene === 'dba.scene.yard' && requestedCatSprite === 'land-yard-give';
+  const targetCatSprite = yardLandingFallback ? 'fallback' : requestedCatSprite;
   const groundAsset = sceneAssembly(scene)?.slots.find((slot) => slot.slot === 'ground')?.asset ?? null;
-  const [groundPlate, setGroundPlate] = useState<string | null>(() => resolveSlotAsset(groundAsset));
+  const { src: groundPlate, onError: onGroundError } = useAssetSrc(groundAsset, SLOT_SRC_API);
   const slotCat =
     scene === 'dba.scene.camp'
       ? 'art.camp.prop.nanaicha'
       : scene === 'dba.scene.yard' || scene === 'dba.scene.path'
         ? 'art.yard.prop.nanaicha'
         : 'art.shore.prop.nanaicha';
-  const [catFigure, setCatFigure] = useState<string | undefined>(
-    () => trajUrl(catSprite) ?? resolveSlotAsset(slotCat) ?? undefined,
-  );
+  const { src: trajFigure } = useAssetSrc(yardLandingFallback ? null : targetCatSprite, TRAJ_SRC_API);
+  const { src: slotCatFigure } = useAssetSrc(slotCat, SLOT_SRC_API);
+  // A target beat is not an arrived picture. Keep one committed, scene-scoped
+  // record through gaze/cold loading; metadata always follows its actual bitmap.
+  // The decode hooks above still preload the target while the departure is shown.
+  type CatRecord = { scene: IslandScene; frame: string; figure: string };
+  const committedCat = useRef<CatRecord | null>(null);
+  const previousCat = committedCat.current?.scene === scene ? committedCat.current : null;
+  // Hook state can lag an id change by one render. Never pair that old URL with
+  // the requested frame, or reuse the previous scene's fallback on entry.
+  const readyTraj = targetCatSprite === 'fallback' ? undefined : trajUrl(targetCatSprite)
+    ?? (trajFigure === trajAssetUrl(targetCatSprite) ? trajFigure : undefined);
+  const initialCat: CatRecord | null = slotCatFigure && slotCatFigure === slotAssetUrl(slotCat)
+    ? { scene, frame: 'fallback', figure: slotCatFigure } : null;
+  const requestedCat: CatRecord | null = readyTraj
+    ? { scene, frame: targetCatSprite, figure: readyTraj }
+    : targetCatSprite === 'fallback' ? initialCat : null;
+  const shownCat = guide === 'gaze' ? previousCat ?? initialCat
+    : requestedCat ?? previousCat ?? initialCat;
+  // If arrival precedes target decode, keep the final ready leap at the now-fixed
+  // arrival foot. Never move a held departure landing: the guide gates on leaps.
+  const catSprite = shownCat?.frame ?? 'fallback';
+  const catFigure = shownCat?.figure;
+  const catRecovery = useCatRecordRecovery(shownCat ? {
+    scene, kind: catSprite === 'fallback' ? 'slot' : 'traj',
+    id: catSprite === 'fallback' ? slotCat : catSprite,
+    originalURL: shownCat.figure, api: catSprite === 'fallback' ? SLOT_SRC_API : TRAJ_SRC_API,
+  } : null, () => { committedCat.current = shownCat; });
   const flashId =
     flash?.kind === 'driftwood'
       ? 'art.shore.prop.driftwood.interact'
@@ -537,32 +622,15 @@ export function WalkLayer({
         : flash?.kind === 'give'
           ? 'art.yard.prop.grain-bags.interact'
           : null;
-  const [flashSrc, setFlashSrc] = useState<string | null>(() => resolveSlotAsset(flashId));
+  const { src: flashSrc, onError: onFlashError } = useAssetSrc(flashId, SLOT_SRC_API);
   useEffect(() => {
-    let live = true;
     const kit = sceneAssembly(scene);
     preloadSceneAssets(kit?.slots.map((slot) => slot.asset) ?? []);
-    loadSlotAsset(groundAsset).then((url) => {
-      if (live) setGroundPlate(url);
-    });
-    Promise.all([loadTraj(catSprite), loadSlotAsset(slotCat)]).then(([frame, plate]) => {
-      if (live) setCatFigure(frame ?? plate ?? undefined);
-    });
-    return () => {
-      live = false;
-    };
-  }, [scene, groundAsset, catSprite, slotCat]);
-  useEffect(() => {
-    let live = true;
-    setFlashSrc(resolveSlotAsset(flashId));
-    loadSlotAsset(flashId).then((url) => {
-      if (live) setFlashSrc(url);
-    });
-    return () => {
-      live = false;
-    };
-  }, [flashId]);
-  const rawCam = import.meta.env.MODE === 'test' ? cameraOffset(pos, view.w, view.h) : cam;
+  }, [scene]);
+  // Only the explicitly frozen depth matrix shares a fixed reference camera; live camera is unchanged.
+  const fixedFixtureCamera = presentationFrozen && getShoreVisualProfile().fixture?.startsWith('depth-')
+    ? cameraOffset(SPAWNS['dba.scene.shore'], view.w, view.h) : null;
+  const rawCam = fixedFixtureCamera ?? (import.meta.env.MODE === 'test' ? cameraOffset(pos, view.w, view.h) : cam);
   const shownCam = lookEast(rawCam, view.w, scene === 'dba.scene.shore');
   const look = sceneLook(scene);
   const near = spots.filter((spot) => standsAt(scene, spot, pos)).map((spot) => spot.id);
@@ -579,7 +647,14 @@ export function WalkLayer({
   const spotIds = spots.map((spot) => spot.id);
   const sleepFoot = SPOTS[scene].find((spot) => spot.id === 'camp-sleep');
   const feetY = resting && sleepFoot ? sleepFoot.y : pos.y;
+  useShoreCuePresentation(viewportRef, scene === 'dba.scene.shore' && getShoreVisualProfile().variant === 'candidate',
+    [shownCam.x, shownCam.y, feetY, plates.current, plates.previous, near.join(','), glance.join(','), spotIds.join(',')].join('|'));
   const exits = gatesFrom(scene);
+  // The light is always present at this exit; only its name is proximity-gated.
+  const hearthLightGate = exits.find(
+    (gate) => gate.from === 'dba.scene.shore' && gate.to === 'dba.scene.camp',
+  );
+  const hearthLightAt = hearthLightGate ? pathExitPoint(hearthLightGate) : null;
   const hearthGate = exits.find(
     (gate) => gate.from === 'dba.scene.shore' && gate.to === 'dba.scene.camp' && pathExitNear(pos, gate),
   );
@@ -611,33 +686,126 @@ export function WalkLayer({
     window.clearTimeout(landTimer.current);
   }, []);
 
-  const catFoot = companionFoot(catSprite);
+  const catFace = companionFace(catSprite, catPost.x, cat.x);
+  const companionPresentation=useCompanionPresentation(catFigure,catRecovery.revision);
+  // A detached old img may still finish/error. Match its committed render, not
+  // just a URL that could recur after a scene round-trip or a raw/blob swap.
+  const catGeometry=catMotionGeometry(companionPresentation.originalUrl,scene,catSprite,catFace);
+  const catFoot=catGeometry.foot;
   const catScreen = worldToScreen({ x: cat.x, y: cat.y }, catFoot);
-  const catInFront = cat.y > feetY + 0.012;
+  const catInFront = !sharedDepth && cat.y > feetY + 0.012;
+  const firstScreen = useFirstScreenReady(scene);
+  const shoreCandidate = scene === 'dba.scene.shore' && getShoreVisualProfile().variant === 'candidate';
+  const catDiagnostic = shoreCandidate && getShoreVisualProfile().fixture !== null && new URLSearchParams(window.location.search).get('diagnostic') === '1';
+
+
+  // These owners are unconditional for WalkLayer's lifetime; only their stateless views reparent.
+  const travelerPresentation=useTravelerPresentation({
+    x:resting && sleepFoot?sleepFoot.x:pos.x,y:feetY,facing,moving,stride,
+    pose:resting?'lie':reaching?'reach':'auto',depthZ:catInFront?4:6,
+    presentationFrozen,contactCleanup:shoreCandidate,
+  });
+  const catNode = (<div
+            className="companion-anchor"
+            data-testid="companion-anchor"
+            data-beat={catPost.beat}
+            data-look={catPost.look}
+            data-traveling={guide === 'move' ? 'yes' : 'no'}
+            data-guide={guide}
+            data-traj={clip}
+            data-face={catFace}
+            data-sprite={catSprite}
+            data-fallback-for={yardLandingFallback ? requestedCatSprite : undefined}
+            style={{
+              ...catScreen,
+              transform: `${catScreen.transform} scale(${depthScale(cat.y).toFixed(3)})`,
+              transformOrigin: `${catFoot.x * 100}% ${catFoot.y * 100}%`,
+              zIndex: catInFront ? 6 : 4,
+              ['--foot-x' as string]: `${catFoot.x * 100}%`,
+              ['--foot-y' as string]: `${catFoot.y * 100}%`,
+              ['--sole-y' as string]: `${catGeometry.sole * 100}%`,
+              height: `${(scene === 'dba.scene.shore' ? SHORE_CAT_HEIGHT : NANAICHA_HEIGHT) * catGeometry.heightScale * 100}%`,
+            }}
+          >
+            <span
+              className="contact-shadow"
+              data-testid="contact-shadow"
+              data-land={land ? 'yes' : 'no'}
+              style={{ ['--shadow-opacity' as string]: contactOpacity(contactLift(guide, clip)).toFixed(2) }}
+            />
+            <CompanionView
+              presentation={companionPresentation}
+              imageKey={catRecovery.imageKey}
+              figureRef={catRecovery.imageRef}
+              frame={catSprite}
+              diagnostic={catDiagnostic}
+              figure={catFigure}
+              level={hint.level}
+              anchor={hint.pose === 'fetch' ? hint.anchor : catPost.look}
+              pose={
+                hint.pose === 'fetch' || hint.pose === 'look-at'
+                  ? hint.pose
+                  : guide === 'gaze'
+                    ? 'look-at'
+                    : guide === 'move'
+                      ? 'lead'
+                      : scene === 'dba.scene.yard' && spots.some((spot) => spot.id === 'yard-grab' && inRadius(pos, spot, spot.r)) && catPost.beat === 'Y0'
+                        ? 'look-at'
+                        : catPost.pose
+              }
+              purr={purr}
+              knot={knot}
+              onAsk={onAsk}
+              onFigureError={catRecovery.onError}
+            />
+          </div>);
+  const travelerNode = <TravelerView presentation={travelerPresentation}/>;
+  const depthItems:GroundDepthNode[] = sharedDepth ? depthScenes.flatMap(plate => {
+    const leaving = plate !== plates.current;
+    return groundDepthSlots(plate)
+      .filter(slot => leaving || !slot.spot || spotIds.includes(slot.spot))
+      .map(slot => ({ id:`${plate}:${slot.id}`, footY:slot.y!, kind:'prop' as const, scene:plate,
+        phase:leaving ? 'leaving' as const : plates.previous ? 'entering' as const : 'stable' as const,
+        node:<SlotPiece scene={plate as IslandScene} slot={slot} cam={shownCam} lit={!leaving && !!slot.spot && near.includes(slot.spot)} glanced={!leaving && !!slot.spot && glance.includes(slot.spot)} hidden={false} showWalkMask={false} beat={leaving?null:beat}/> }));
+  }) : [];
+  if (sharedDepth) depthItems.push(
+    {id:'cat',footY:cat.y,kind:'cat',scene,node:<>{catNode}<img ref={catSoleRef} className="sole-soft cat-sole" data-testid="cat-sole" alt="" /></>},
+    {id:'traveler',footY:feetY,kind:'traveler',scene,node:<>{travelerNode}<img ref={soleRef} className="sole-soft" data-testid="sole-soft" alt="" />
+      {hearthLightGate && hearthLightAt ? <span
+        className={pathExitNear(pos, hearthLightGate) ? 'path-exit depth-hearth-emitter near' : 'path-exit depth-hearth-emitter'}
+        data-hearth="yes" data-testid="hearth-depth-light" aria-hidden="true"
+        style={{ left: pct(hearthLightAt.x), top: pct(hearthLightAt.y) }}
+      /> : null}
+    </>},
+  );
 
   return (
     <>
     <div
       ref={viewportRef}
       className="walk-viewport"
+      data-display={firstScreen.status}
       data-testid="walk-stage"
       data-blocked={blocked ? 'yes' : 'no'}
       data-near={near.join(' ')}
       data-cam-x={shownCam.x.toFixed(1)}
       data-cam-y={shownCam.y.toFixed(1)}
       data-scene={scene}
+      data-ground-depth={sharedDepth ? 'world' : undefined}
+      data-cat-contact-source={shoreCandidate ? 'actual' : undefined}
       data-arrive={arrive ?? 'no'}
       data-resting={resting ? 'yes' : 'no'}
       data-drank={drank ? 'yes' : 'no'}
       style={{ ['--ambient' as string]: look.ambient, ['--shadow-tint' as string]: look.shadowTint }}
     >
       <div className="world-root" data-testid="world-root" data-ambient={look.ambient}>
-        {groundPlate ? <img className="ground-fill" src={groundPlate} alt="" draggable={false} /> : null}
+        {groundPlate ? <img className="ground-fill" src={groundPlate} alt="" draggable={false} onError={onGroundError} /> : null}
         <div className="world-cam" data-testid="world-camera" style={{ transform: `translate3d(${-shownCam.x}px, ${-shownCam.y}px, 0)`, zIndex: 1 }}>
         <div ref={worldRef} className="world-layer" style={{ width: worldW, height: worldH, ['--world-w' as string]: `${worldW}px` }}>
           <PlateStack
             plate={plates.current}
             previous={plates.previous}
+            depthScenes={depthScenes}
             cam={shownCam}
             near={near}
             glance={glance}
@@ -647,6 +815,7 @@ export function WalkLayer({
             feetY={feetY}
             beat={beat}
           />
+          {sharedDepth ? <GroundDepth items={depthItems}/> : null}
           <div className="walk-ground" data-testid="walk-ground" onPointerDown={onGround} />
           {exits.map((gate) => {
             const at = pathExitPoint(gate);
@@ -707,76 +876,23 @@ export function WalkLayer({
               </button>
             );
           })}
-          <div
-            className="companion-anchor"
-            data-testid="companion-anchor"
-            data-beat={catPost.beat}
-            data-look={catPost.look}
-            data-traveling={guide === 'move' ? 'yes' : 'no'}
-            data-guide={guide}
-            data-traj={clip}
-            data-face={companionFace(catSprite, catPost.x, cat.x)}
-            data-sprite={catSprite}
-            style={{
-              ...catScreen,
-              transform: `${catScreen.transform} scale(${depthScale(cat.y).toFixed(3)})`,
-              transformOrigin: `${catFoot.x * 100}% ${catFoot.y * 100}%`,
-              zIndex: catInFront ? 6 : 4,
-              ['--foot-x' as string]: `${catFoot.x * 100}%`,
-              ['--foot-y' as string]: `${catFoot.y * 100}%`,
-              ['--sole-y' as string]: `${companionSole(catSprite) * 100}%`,
-              height: `${(scene === 'dba.scene.shore' ? SHORE_CAT_HEIGHT : NANAICHA_HEIGHT) * 100}%`,
-            }}
-          >
-            <span
-              className="contact-shadow"
-              data-testid="contact-shadow"
-              data-land={land ? 'yes' : 'no'}
-              style={{ ['--shadow-opacity' as string]: contactOpacity(contactLift(guide, clip)).toFixed(2) }}
-            />
-            <Companion
-              frame={catSprite}
-              figure={catFigure}
-              level={hint.level}
-              anchor={hint.pose === 'fetch' ? hint.anchor : catPost.look}
-              pose={
-                hint.pose === 'fetch' || hint.pose === 'look-at'
-                  ? hint.pose
-                  : guide === 'gaze'
-                    ? 'look-at'
-                    : guide === 'move'
-                      ? 'lead'
-                      : scene === 'dba.scene.yard' && spots.some((spot) => spot.id === 'yard-grab' && inRadius(pos, spot, spot.r)) && catPost.beat === 'Y0'
-                        ? 'look-at'
-                        : catPost.pose
-              }
-              purr={purr}
-              knot={knot}
-              onAsk={onAsk}
-            />
-          </div>
+          {!sharedDepth ? catNode : null}
           {flash ? (
             <img
               key={`${scene}-${flash.seq}`}
               className="interact-flash"
               data-testid="interact-flash"
               src={flashSrc ?? ''}
+              onError={onFlashError}
               alt=""
               style={{ left: pct(flash.x), top: pct(flash.y) }}
             />
           ) : null}
-          <TravelerMark
-            x={resting && sleepFoot ? sleepFoot.x : pos.x}
-            y={feetY}
-            facing={facing}
-            moving={moving}
-            stride={stride}
-            pose={resting ? 'lie' : reaching ? 'reach' : 'auto'}
-            depthZ={catInFront ? 4 : 6}
-          />
+          {!sharedDepth ? travelerNode : null}
           <PlateStack
             plate={plates.current}
             previous={plates.previous}
+            depthScenes={depthScenes}
             cam={shownCam}
             near={near}
             glance={glance}
@@ -788,6 +904,7 @@ export function WalkLayer({
           <PlateStack
             plate={plates.current}
             previous={plates.previous}
+            depthScenes={depthScenes}
             cam={shownCam}
             near={near}
             glance={glance}
@@ -828,14 +945,18 @@ export function WalkLayer({
             <feGaussianBlur in="body" stdDeviation="0.25 0.35" />
           </filter>
         </svg>
-        <img ref={soleRef} className="sole-soft" data-testid="sole-soft" alt="" />
-        <img ref={catSoleRef} className="sole-soft cat-sole" data-testid="cat-sole" alt="" />
+        {!sharedDepth ? <>
+          <img ref={soleRef} className="sole-soft" data-testid="sole-soft" alt="" />
+          <img ref={catSoleRef} className="sole-soft cat-sole" data-testid="cat-sole" alt="" />
+        </> : null}
       </div>
+      {catDiagnostic ? <output ref={catDiagnosticRef} hidden data-testid="cat-display-diagnostic" /> : null}
         {teachLine && scene === 'dba.scene.shore' ? (
           <p className="approach-hint once" data-testid="approach-hint">
             {t('hint.approach')}
           </p>
         ) : null}
+      <FirstScreenGate state={firstScreen.status} done={firstScreen.done} total={firstScreen.total} onRetry={firstScreen.retry} />
       <WalkStick
         onVector={(vector) => {
           stickRef.current = vector;

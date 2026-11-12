@@ -23,7 +23,14 @@ export const LAND_BY_BEAT: Partial<Record<CatBeat, string>> = {
 };
 
 /** On a beat change: leap-01, then leap-02, then the landing. First paint stays on land. */
-export function trajClip(elapsedMs: number): TrajClip {
+export function trajClip(elapsedMs: number, travel?: { phase: GuidePhase; cat: Point; post: Point }): TrajClip {
+  if (travel) {
+    if (travel.phase !== 'move') return 'land';
+    // Elapsed travel and remaining physical distance share the same speed clock.
+    // A long route must not show a stationary landing before it actually arrives.
+    const remainingMs = Math.hypot(travel.post.x - travel.cat.x, travel.post.y - travel.cat.y) / GUIDE_SPEED * 1000;
+    return elapsedMs < remainingMs ? 'leap-01' : 'leap-02';
+  }
   if (elapsedMs < LEAP_01_MS) return 'leap-01';
   if (elapsedMs < LEAP_01_MS + LEAP_02_MS) return 'leap-02';
   return 'land';
@@ -50,6 +57,8 @@ export function nextGuide(input: {
   dt: number;
   retarget: boolean;
   sceneChanged: boolean;
+  /** Decoded leap frames; a failed load waits visibly at the gaze instead of sliding a landing. */
+  ready?: boolean;
 }): { phase: GuidePhase; elapsed: number; cat: Point; moving: boolean } {
   if (input.sceneChanged) {
     return { phase: 'hold', elapsed: 0, cat: { x: input.post.x, y: input.post.y }, moving: false };
@@ -60,6 +69,9 @@ export function nextGuide(input: {
   if (input.retarget) {
     phase = 'gaze';
     elapsed = 0;
+  }
+  if (!(input.dt > 0) || (phase === 'move' && input.ready === false)) {
+    return { phase, elapsed, cat, moving: false };
   }
   const gap = () => Math.hypot(input.post.x - cat.x, input.post.y - cat.y);
   if (phase === 'hold') {
@@ -75,6 +87,7 @@ export function nextGuide(input: {
     if (nextElapsed < GUIDE_GAZE_MS) {
       return { phase: 'gaze', elapsed: nextElapsed, cat, moving: false };
     }
+    if (input.ready === false) return { phase: 'gaze', elapsed: GUIDE_GAZE_MS, cat, moving: false };
     phase = 'move';
     elapsed = nextElapsed - GUIDE_GAZE_MS;
   }

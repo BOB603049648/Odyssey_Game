@@ -177,6 +177,8 @@ export const sceneSlotSchema = z.object({
   id: z.string().min(1),
   slot: sceneSlotNameSchema,
   kind: z.string().min(1),
+  /** Wall-mounted clues stay behind actors; omission preserves legacy ground sorting. */
+  depthMode: z.enum(['ground', 'wall-art']).optional(),
   /** Null until the language-island artist delivers a slot file. */
   asset: z.string().nullable(),
   parallax: z.number(),

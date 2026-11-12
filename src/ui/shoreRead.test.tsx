@@ -370,9 +370,25 @@ describe('shore readability', () => {
     expect(report.wrote).toHaveLength(24);
     expect(report.wrote).not.toContain('shore/art.shore.ground.jpg');
     expect(report.files['shore/art.shore.ground.jpg'].sha256).toBe(report.ground_sha256);
+    // Three shore-cat traj webps were interior-restored after pr64-read11.
+    // Rollback originals at playtest/cat-face-restore-20261110/rollback-originals
+    // still match the pr64 hashes. Other pack files stay locked.
+    const restoredTraj: Record<string, string> = {
+      'nanaicha/traj/land-shore-gourd.webp':
+        '00e39fa00f1d6920ef36180e1c51afe788cad6a513a8697a3e010f4d81fe624d',
+      'nanaicha/traj/land-shore-driftwood.webp':
+        '90fa45b0d158440cc430598e606a5b2a61016f73be9cb34beb925f31f757a59b',
+      'nanaicha/traj/land-shore-east-gap.webp':
+        '3ccbd9247e38383f3f87980ff97050a27e9972ec15ed297b481d7d3c0ed4bd44',
+    };
     for (const logical of report.wrote) {
       const sha = createHash('sha256').update(readFileSync(disk(logical))).digest('hex');
-      expect(sha).toBe(report.files[logical].sha256);
+      if (logical in restoredTraj) {
+        expect(sha, logical).not.toBe(report.files[logical].sha256);
+        expect(sha, logical).toBe(restoredTraj[logical]);
+      } else {
+        expect(sha, logical).toBe(report.files[logical].sha256);
+      }
     }
   });
 });

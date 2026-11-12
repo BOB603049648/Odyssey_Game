@@ -18,6 +18,7 @@ export type GuideSim = {
   elapsed: number;
   cat: Point;
   post: Point;
+  ready?: boolean;
 };
 
 /**
@@ -52,6 +53,7 @@ export function stepWorld(input: { walker: WalkerSim; intent: MoveIntent; band: 
       dt: input.dt,
       retarget: false,
       sceneChanged: false,
+      ready: input.guide.ready,
     }),
   };
 }

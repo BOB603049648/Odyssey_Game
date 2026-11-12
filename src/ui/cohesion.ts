@@ -9,7 +9,7 @@ import gradeCamp from '../assets/art/cohesion/grades/grade.camp.png';
 import gradeHall from '../assets/art/cohesion/grades/grade.hall.png';
 import gradeNight from '../assets/art/cohesion/grades/grade.night.png';
 import gradePath from '../assets/art/cohesion/grades/grade.path.png';
-import gradeShore from '../assets/art/cohesion/grades/grade.shore.png';
+import gradeShore from '../assets/art/cohesion/grades/grade.shore.webp';
 import gradeYard from '../assets/art/cohesion/grades/grade.yard.png';
 import stripCamp from '../assets/art/cohesion/strips/strip.camp.png';
 import stripHall from '../assets/art/cohesion/strips/strip.hall.png';

@@ -26,6 +26,9 @@ let active = 0;
 let generation = 0;
 let delayFor = (attempt: number) => 80 * attempt;
 
+import { notifyAssetUpdates } from './assetUpdates';
+import { recordLoadTrace } from './loadTrace';
+
 export function slotLoadTier(asset: string | null | undefined): LoadTier | null {
   if (!asset) return null;
   if (asset.includes('.prop.')) return 'prop';
@@ -108,13 +111,22 @@ function pump(): void {
 async function execute(job: Job): Promise<void> {
   for (let attempt = 1; attempt <= LOAD_ATTEMPTS; attempt += 1) {
     if (job.generation !== generation) return;
+    recordLoadTrace({ event: attempt === 1 ? 'start' : 'retry', key: job.key, attempt });
     try {
       const url = await job.run();
       if (job.generation !== generation) return;
+      recordLoadTrace({ event: 'ok', key: job.key, attempt });
       job.resolve(url);
       return;
-    } catch {
+    } catch (error) {
       if (job.generation !== generation) return;
+      const detail = error instanceof Error ? error.message : 'error';
+      recordLoadTrace({
+        event: /timed out/i.test(detail) ? 'timeout' : 'fail',
+        key: job.key,
+        attempt,
+        detail,
+      });
       if (attempt >= LOAD_ATTEMPTS) {
         job.resolve(null);
         return;
@@ -133,14 +145,23 @@ export function loadGated(
 ): Promise<string | null> {
   const cacheKey = options?.cacheKey ?? key;
   const hit = cache.get(cacheKey);
-  if (hit) return Promise.resolve(hit);
+  if (hit) {
+    recordLoadTrace({ event: 'cache-hit', key });
+    return Promise.resolve(hit);
+  }
   const existing = inflight.get(key);
-  if (existing) return existing;
+  if (existing) {
+    recordLoadTrace({ event: 'inflight-join', key });
+    return existing;
+  }
   let resolve!: (url: string | null) => void;
   const result = new Promise<string | null>((settle) => {
     resolve = settle;
   }).then((url) => {
-    if (url) cache.set(cacheKey, url);
+    if (url) {
+      cache.set(cacheKey, url);
+      notifyAssetUpdates();
+    }
     return url;
   });
   inflight.set(key, result);

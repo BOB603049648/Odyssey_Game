@@ -1,0 +1,290 @@
+[
+  {
+    "file": "idle-back-01.png",
+    "source": "idle-back-01.png",
+    "source_sha256": "74521a67c313ef4ef24d80dfd731562d6a833a3c53184af61b638932661ecf6f",
+    "support": {
+      "x": 410.5,
+      "y": 1086.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1085,
+    "opaque_bottom_row_pixels": 76,
+    "support_band_x_min": 358,
+    "support_band_x_max": 519,
+    "legacy_vertical_error_source_px": 65.0
+  },
+  {
+    "file": "idle-back-02.png",
+    "source": "idle-back-02.png",
+    "source_sha256": "142512de6ded390f035e904578c959be87c79c32bc9b7907786d6964e627773c",
+    "support": {
+      "x": 373.5,
+      "y": 1086.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1085,
+    "opaque_bottom_row_pixels": 33,
+    "support_band_x_min": 350,
+    "support_band_x_max": 410,
+    "legacy_vertical_error_source_px": 65.0
+  },
+  {
+    "file": "idle-front-01.png",
+    "source": "idle-front-01.webp",
+    "source_sha256": "2cf63fc465e3c51cb860060c31079b1983ef68309f4f0e9baba1b295c4592844",
+    "support": {
+      "x": 528.0,
+      "y": 1086.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1085,
+    "opaque_bottom_row_pixels": 62,
+    "support_band_x_min": 495,
+    "support_band_x_max": 556,
+    "legacy_vertical_error_source_px": 65.0
+  },
+  {
+    "file": "idle-front-02.png",
+    "source": "idle-front-02.png",
+    "source_sha256": "a89e1d722c7cd4912b4296e112195fac1007a7cb89c66fce2880c6af814cf447",
+    "support": {
+      "x": 529.5,
+      "y": 1086.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1085,
+    "opaque_bottom_row_pixels": 61,
+    "support_band_x_min": 496,
+    "support_band_x_max": 556,
+    "legacy_vertical_error_source_px": 65.0
+  },
+  {
+    "file": "idle-side-01.png",
+    "source": "idle-side-01.png",
+    "source_sha256": "8cc6c8da100706cc0de00961282a10cd4a21cac9bae9f529859a4ef1c775eb85",
+    "support": {
+      "x": 419.5,
+      "y": 1086.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1085,
+    "opaque_bottom_row_pixels": 132,
+    "support_band_x_min": 339,
+    "support_band_x_max": 475,
+    "legacy_vertical_error_source_px": 65.0
+  },
+  {
+    "file": "idle-side-02.png",
+    "source": "idle-side-02.png",
+    "source_sha256": "0e996d90574d7ff372c6b358fec4e97e9ba65e412bf52abf6461b5562b9f295f",
+    "support": {
+      "x": 419.5,
+      "y": 1086.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1085,
+    "opaque_bottom_row_pixels": 131,
+    "support_band_x_min": 338,
+    "support_band_x_max": 472,
+    "legacy_vertical_error_source_px": 65.0
+  },
+  {
+    "file": "walk-back-01.png",
+    "source": "walk-back-01.png",
+    "source_sha256": "0a1432683fd914a4ae67137c33d32fd1c18c78f2a398b59c20d169f0f70abeff",
+    "support": {
+      "x": 415.5,
+      "y": 1086.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1085,
+    "opaque_bottom_row_pixels": 40,
+    "support_band_x_min": 387,
+    "support_band_x_max": 451,
+    "legacy_vertical_error_source_px": 65.0
+  },
+  {
+    "file": "walk-back-02.png",
+    "source": "walk-back-02.png",
+    "source_sha256": "a643c8f35715f62fbe7849ceb2b00ac5c9dbe798fd6faccc5f28f9523d4f1e10",
+    "support": {
+      "x": 474.0,
+      "y": 1086.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1085,
+    "opaque_bottom_row_pixels": 71,
+    "support_band_x_min": 438,
+    "support_band_x_max": 511,
+    "legacy_vertical_error_source_px": 65.0
+  },
+  {
+    "file": "walk-back-03.png",
+    "source": "walk-back-03.png",
+    "source_sha256": "1604c94e08199f24518ec4a8faef35182b3a462340c3c034570cb7eae0431c2e",
+    "support": {
+      "x": 398.5,
+      "y": 1086.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1085,
+    "opaque_bottom_row_pixels": 16,
+    "support_band_x_min": 377,
+    "support_band_x_max": 418,
+    "legacy_vertical_error_source_px": 65.0
+  },
+  {
+    "file": "walk-back-04.png",
+    "source": "walk-back-04.png",
+    "source_sha256": "ff8c2098cc2bd6297dc05c00d1bab94dba31d7db7c2cbd9514487a81cc589ff1",
+    "support": {
+      "x": 608.5,
+      "y": 1086.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1085,
+    "opaque_bottom_row_pixels": 66,
+    "support_band_x_min": 575,
+    "support_band_x_max": 649,
+    "legacy_vertical_error_source_px": 65.0
+  },
+  {
+    "file": "walk-front-01.png",
+    "source": "walk-front-01.png",
+    "source_sha256": "95d4663c3ef7174993e5fde3cef29079f0f0d31bb00753e86e9802a360500730",
+    "support": {
+      "x": 386.5,
+      "y": 1077.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1076,
+    "opaque_bottom_row_pixels": 9,
+    "support_band_x_min": 345,
+    "support_band_x_max": 410,
+    "legacy_vertical_error_source_px": 74.0
+  },
+  {
+    "file": "walk-front-02.png",
+    "source": "walk-front-02.png",
+    "source_sha256": "cfaf4b8a9a335b547a323302437b3ba8fa74abe2e1861043cb2e7e9921a9c5e6",
+    "support": {
+      "x": 377.5,
+      "y": 1086.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1085,
+    "opaque_bottom_row_pixels": 31,
+    "support_band_x_min": 349,
+    "support_band_x_max": 408,
+    "legacy_vertical_error_source_px": 65.0
+  },
+  {
+    "file": "walk-front-03.png",
+    "source": "walk-front-03.png",
+    "source_sha256": "73801254a4b19ba5a69036d66774346a8b8d77f1f6c3f0741304bbf254f3c307",
+    "support": {
+      "x": 384.5,
+      "y": 1083.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1082,
+    "opaque_bottom_row_pixels": 23,
+    "support_band_x_min": 349,
+    "support_band_x_max": 403,
+    "legacy_vertical_error_source_px": 68.0
+  },
+  {
+    "file": "walk-front-04.png",
+    "source": "walk-front-04.png",
+    "source_sha256": "6def380b20a5516964f158cfdb37df17a741c4da62764f984bc973a9f725861f",
+    "support": {
+      "x": 377.5,
+      "y": 1083.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1082,
+    "opaque_bottom_row_pixels": 16,
+    "support_band_x_min": 339,
+    "support_band_x_max": 401,
+    "legacy_vertical_error_source_px": 68.0
+  },
+  {
+    "file": "walk-side-01.png",
+    "source": "walk-side-01.png",
+    "source_sha256": "8e2b6e28b5a7973106aa9422390f867585c1d08a8cbd66e8000f33effe025c2e",
+    "support": {
+      "x": 563.0,
+      "y": 1074.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1073,
+    "opaque_bottom_row_pixels": 6,
+    "support_band_x_min": 557,
+    "support_band_x_max": 570,
+    "legacy_vertical_error_source_px": 77.0
+  },
+  {
+    "file": "walk-side-02.png",
+    "source": "walk-side-02.png",
+    "source_sha256": "ef44a7ad3d86566f02b71a141fc00fde705fc822ff727136e04c42e65eb6d984",
+    "support": {
+      "x": 587.0,
+      "y": 1063.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1062,
+    "opaque_bottom_row_pixels": 5,
+    "support_band_x_min": 568,
+    "support_band_x_max": 592,
+    "legacy_vertical_error_source_px": 88.0
+  },
+  {
+    "file": "walk-side-03.png",
+    "source": "walk-side-03.png",
+    "source_sha256": "a80fba44bd87242cc3a234619db7e887e2e19cee60b7c79afb3781bf33ce85d9",
+    "support": {
+      "x": 614.5,
+      "y": 1070.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1069,
+    "opaque_bottom_row_pixels": 29,
+    "support_band_x_min": 302,
+    "support_band_x_max": 631,
+    "legacy_vertical_error_source_px": 81.0
+  },
+  {
+    "file": "walk-side-04.png",
+    "source": "walk-side-04.png",
+    "source_sha256": "7c8b808a0989d85f0f143205f4db88fddc470e87e275e411388f1215585456e9",
+    "support": {
+      "x": 589.5,
+      "y": 1063.0,
+      "width": 864,
+      "height": 1152
+    },
+    "opaque_bottom_row": 1062,
+    "opaque_bottom_row_pixels": 6,
+    "support_band_x_min": 584,
+    "support_band_x_max": 593,
+    "legacy_vertical_error_source_px": 88.0
+  }
+]

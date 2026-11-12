@@ -130,6 +130,12 @@ h1 {
   background:
     linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, transparent 26%, transparent 62%, rgba(0, 0, 0, 0.62) 100%);
 }
+/* Opened shore sky made the generic 0.62 south wash read as a black belt
+   (browser y≈538/576). Soften only this scene; other island scenes keep the wrap. */
+.shore-wrap[data-scene="dba.scene.shore"]::before {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.28) 0%, transparent 22%, transparent 78%, rgba(0, 0, 0, 0.2) 100%);
+}
 
 .title-block {
   position: relative;
@@ -548,15 +554,18 @@ h1 {
   height: calc(var(--world-w) * 0.16);
   transform: translate(-50%, -50%);
   border-radius: 50%;
+  /* Soft spawn hint: width stays 0.44 so the west tail still enters the
+     first frame, but peak alpha is capped so it cannot read as a flat
+     orange plane on the opened shore (DGwRK4Qh browser fail). */
   background: radial-gradient(
     ellipse at center,
-    rgba(255, 196, 110, 0.95) 0%,
-    rgba(255, 176, 72, 0.78) 36%,
-    rgba(255, 140, 40, 0.5) 62%,
-    rgba(170, 64, 16, 0.16) 82%,
+    rgba(255, 196, 110, 0.34) 0%,
+    rgba(255, 176, 72, 0.2) 36%,
+    rgba(255, 140, 40, 0.1) 62%,
+    rgba(170, 64, 16, 0.04) 82%,
     transparent 100%
   );
-  filter: blur(1.2px);
+  filter: blur(8px);
   pointer-events: none;
 }
 
@@ -575,6 +584,17 @@ h1 {
   box-shadow: 0 0 12px rgba(230, 211, 164, 0.55);
 }
 
+.path-exit[data-hearth="yes"].near::before {
+  filter: blur(6px);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 196, 110, 0.42) 0%,
+    rgba(255, 176, 72, 0.24) 36%,
+    rgba(255, 140, 40, 0.12) 62%,
+    rgba(170, 64, 16, 0.05) 82%,
+    transparent 100%
+  );
+}
 .path-exit[data-hearth="yes"].near i {
   opacity: 1;
   border-color: rgba(255, 196, 120, 1);
@@ -873,7 +893,7 @@ h1 {
   pointer-events: none;
 }
 
-.companion-anchor[data-traveling="yes"][data-traj="land"] .nanaicha-figure { animation: nanaicha-hop 0.55s ease-in-out infinite; }
+/* Travel uses the delivered leap poses; a landing never bounces while sliding. */
 .companion-anchor[data-look="gourd"] .nanaicha-figure,
 .companion-anchor[data-look="give"] .nanaicha-figure,
 .companion-anchor[data-look="sleep"] .nanaicha-figure,
@@ -1717,6 +1737,23 @@ h1 {
   width: 100%;
   height: 100%;
 }
+/* Shore wet-sand plate is a top-down rock/sand sheet. Soft-mask the
+   upper rock belt so the mist-sky slot has real space; fade width comes
+   from the measured tide transition. Mask image is set in Plate. */
+.walk-viewport[data-scene="dba.scene.shore"] .shore-ground-plate {
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+/* Viewport-locked copy of the same opaque rock/sand plate. After the
+   sky is opened by the shore ground mask, this layer would leak the
+   uncut rock belt through any transparent region or during a pan.
+   The plate ground already hangs 22% south of the world and the
+   camera is clamped, so the south-gap filler is not needed on shore. */
+.walk-viewport[data-scene="dba.scene.shore"] .ground-fill {
+  visibility: hidden;
+}
 /* Camp and yard building plates end in a hard vertical cut on the east.
    Fade that edge into the ground plate so the modules meet. */
 .walk-viewport[data-scene="dba.scene.camp"] .scene-slot[data-slot="building"] .slot-asset,
@@ -2010,6 +2047,9 @@ h1 {
 .world-vignette {
   background: radial-gradient(ellipse at 50% 46%, transparent 42%, rgba(0, 0, 0, 0.42) 100%);
 }
+.walk-viewport[data-scene="dba.scene.shore"] .world-vignette {
+  background: radial-gradient(ellipse at 50% 46%, transparent 58%, rgba(0, 0, 0, 0.16) 100%);
+}
 .scene-grain {
   position: absolute;
   inset: 0;
@@ -2271,8 +2311,27 @@ h1 {
 .shore-tread {
   position: absolute;
   pointer-events: none;
+  overflow: visible;
+}
+/* Side fading must not crop blurred fog/lip paint at the walk-band edges.
+   Double-height envelope gives transparent vertical headroom. The inner
+   25%/50% box exactly reconstructs the original band, preserving every
+   painter's percentages and their shared blend group without mask-clip hacks. */
+.shore-tread-envelope {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -50%;
+  height: 200%;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.shore-tread-content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 25%;
+  height: 50%;
 }
 .shore-fog-line {
   position: absolute;
@@ -2281,9 +2340,9 @@ h1 {
   top: -10%;
   height: 24%;
   background:
-    linear-gradient(180deg, rgba(8, 16, 20, 0.82) 0%, rgba(28, 46, 54, 0.46) 55%, transparent 100%),
-    linear-gradient(180deg, transparent 62%, rgba(220, 232, 226, 0.4) 84%, transparent 100%);
-  filter: blur(2.4px);
+    linear-gradient(180deg, transparent 0%, rgba(8, 16, 20, 0.22) 40%, rgba(28, 46, 54, 0.12) 70%, transparent 100%),
+    linear-gradient(180deg, transparent 62%, rgba(220, 232, 226, 0.18) 84%, transparent 100%);
+  filter: blur(8px);
 }
 .shore-sand-trace {
   position: absolute;
@@ -2304,11 +2363,11 @@ h1 {
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(176, 160, 140, 0.36) 28%,
-    rgba(18, 14, 12, 0.7) 62%,
-    rgba(8, 7, 6, 0.9) 100%
+    rgba(176, 160, 140, 0.16) 28%,
+    rgba(18, 14, 12, 0.2) 62%,
+    rgba(8, 7, 6, 0.28) 100%
   );
-  filter: blur(1.2px);
+  filter: blur(4px);
 }
 
 .walk-viewport[data-scene="dba.scene.shore"] .scene-slot[data-cue="far"] .prop-cue {
@@ -2349,3 +2408,108 @@ h1 {
   outline-offset: 0;
 }
 
+
+.scene-display {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #070c0e;
+  color: var(--bone, #e8e0d0);
+  pointer-events: auto;
+}
+.scene-display[data-display="loading"] {
+  background: rgba(7, 12, 14, 0.92);
+}
+
+/* Local opt-in shore sample only. Entity pixels and their baked shadow stay planted;
+   the existing non-intercepting cue alone provides the motion feedback. */
+[data-shore-visual="candidate"] .scene-slot.lit[data-slot="props"] > .prop-body {
+  animation: none;
+}
+[data-shore-visual="candidate"] .scene-slot.lit > .prop-cue,
+[data-shore-visual="candidate"] .scene-slot[data-cue="glance"] > .prop-cue {
+  animation: shore-cue-breathe 1.7s ease-in-out infinite;
+}
+@keyframes shore-cue-breathe {
+  50% { opacity: 0.68; }
+}
+/* Candidate-only common world depth. Contacts now pass through existing ambient/grade.
+   No contact filter, source alpha, size, pivot or camera projection is changed. */
+.walk-viewport[data-ground-depth="world"] .ground-depth-root {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.walk-viewport[data-ground-depth="world"] .depth-unit {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.walk-viewport[data-ground-depth="world"] .depth-unit .companion { pointer-events: auto; }
+.walk-viewport[data-ground-depth="world"] .depth-unit > .sole-soft { z-index: 10; }
+/* Keep the exit hit target/UI at z6; only its large decorative pool follows
+   the legacy human-foot near/back boundary inside the full-world depth unit. */
+.walk-viewport[data-ground-depth="world"] .world-layer > .path-exit[data-hearth="yes"]::before { content: none; }
+.walk-viewport[data-ground-depth="world"] .depth-hearth-emitter {
+  z-index: 11;
+  pointer-events: none;
+}
+.walk-viewport[data-ground-depth="world"] .depth-unit[data-phase="entering"] { animation: depth-enter 980ms ease both; }
+.walk-viewport[data-ground-depth="world"] .depth-unit[data-phase="leaving"] { animation: depth-leave 980ms ease both; }
+@keyframes depth-enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes depth-leave { from { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .walk-viewport[data-ground-depth="world"] .depth-unit[data-phase] { animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-shore-visual="candidate"] .scene-slot.lit > .prop-cue,
+  [data-shore-visual="candidate"] .scene-slot[data-cue="glance"] > .prop-cue { animation: none; }
+}
+
+/* Reviewed human contact bitmap already contains only a small shoe-exterior contour.
+   Do not re-dye/dilate it, or copy boot leather above the scene grade. Cats stay legacy. */
+.sole-soft[data-contact="contour"] {
+  filter: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* Candidate-only viewport cue presentation. Dimensions and input stay with their owners. */
+.walk-viewport[data-cue-presentation="viewport"] [data-shore-visual="candidate"] .scene-slot > .prop-cue {
+  transform: translateX(-50%) scale(var(--cue-scale, 1));
+  transform-origin: center;
+}
+.walk-viewport[data-cue-presentation="viewport"] [data-shore-visual="candidate"] .scene-slot > .prop-cue[data-cue-small="yes"] {
+  box-shadow: 0 0 6px rgba(232, 210, 160, 0.6);
+}
+/* Suppress only the large ornament, not the cue: a 4 screen-pixel point stays at the target. */
+.walk-viewport[data-cue-presentation="viewport"] [data-shore-visual="candidate"] .scene-slot > .prop-cue[data-cue-obscured="yes"] {
+  border-color: transparent;
+  background: none;
+  box-shadow: none;
+  opacity: 1;
+  animation: none;
+}
+.walk-viewport[data-cue-presentation="viewport"] [data-shore-visual="candidate"] .scene-slot > .prop-cue[data-cue-obscured="yes"]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(4px / var(--cue-scale, 1));
+  height: calc(4px / var(--cue-scale, 1));
+  border-radius: 50%;
+  background: rgba(236, 220, 180, 0.95);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.walk-viewport[data-cue-presentation="viewport"] .world-layer .hotspot:focus-visible {
+  outline: 2px solid rgba(236, 220, 180, 0.95);
+  outline-offset: 2px;
+}

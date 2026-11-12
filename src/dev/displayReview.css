@@ -1,0 +1,14 @@
+/* Dedicated page only: controls overlay without changing the real world viewport. */
+.display-review-tools { position: fixed; left: 8px; top: 8px; z-index: 10000; max-width: calc(100vw - 16px); padding: 8px; background: rgba(8,14,16,.92); font: 13px/1.4 sans-serif; }
+.display-review-tools label { display: inline-flex; gap: 4px; align-items: center; margin-right: 8px; }
+.display-review-tools select { max-width: 180px; color: #eee; background: #152426; }
+.display-review-tools details { max-height: 48vh; overflow: auto; }
+.display-review-tools table { border-collapse: collapse; font-size: 12px; }
+.display-review-tools td, .display-review-tools th { border: 1px solid #667; padding: 3px; text-align: left; }
+.display-review-tools small { display: block; overflow-wrap: anywhere; max-width: 50vw; }
+.display-review-input-guard { display: contents; }
+.display-review-renderer *, .display-review-renderer *::before, .display-review-renderer *::after { animation: none !important; transition: none !important; }
+.display-review-renderer .walk-viewport { pointer-events: none; }
+
+/* Freeze input without applying global disabled-button dimming to the cat. */
+.display-review-renderer .display-review-input-guard button.companion:disabled { opacity: 1; }

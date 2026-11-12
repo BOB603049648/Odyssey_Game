@@ -1,20 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type SyntheticEvent } from 'react';
+import { writeCatDisplayAttributes } from './catDisplay';
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { HintLevel } from '../core/schema';
 import { loadCatSrc } from './catImage';
 import { CatMark, nanaichaState, type KnotMark } from './companion/CatMark';
 import { t } from './i18n';
 
-export function Companion({
-  level,
-  anchor,
-  pose,
-  purr,
-  knot = 'rest',
-  onAsk,
-  figure,
-  frame,
-}: {
+export type CompanionProps = {
   level: HintLevel;
   anchor: HintAnchor;
   pose: CompanionPose;
@@ -23,23 +15,56 @@ export function Companion({
   onAsk: () => void;
   /** Grounded scene plate or a trajectory frame. The anchor still moves. */
   figure?: string;
+  onFigureError?: (event: SyntheticEvent<HTMLImageElement>) => void;
   frame?: string;
-}) {
-  const [src, setSrc] = useState(figure);
+  /** Only the WalkLayer record opts into source-keyed native error isolation. */
+  imageKey?: string;
+  figureRef?: (node: HTMLImageElement | null) => void;
+  /** Only explicit approved fixture diagnostic; no bearing certification. */
+  diagnostic?: boolean;
+};
+
+/** Source/loading lifetime follows WalkLayer, never the legacy/depth view parent. */
+export function useCompanionPresentation(figure:string|undefined, revision=0) {
+  const [ready,setReady]=useState({src:figure,originalUrl:figure,revision});
   useEffect(() => {
     if (!figure) {
-      setSrc(undefined);
+      setReady({src:undefined,originalUrl:undefined,revision});
       return undefined;
     }
     let live = true;
-    setSrc(figure);
+    setReady({src:figure,originalUrl:figure,revision});
     loadCatSrc(figure).then((next) => {
-      if (live) setSrc(next);
-    });
-    return () => {
-      live = false;
-    };
-  }, [figure]);
+      if (live) setReady({src:next,originalUrl:figure,revision});
+    }, () => { /* Keep the ready raw/current bitmap if an unexpected loader rejection occurs. */ });
+    return () => { live=false; };
+  },[figure,revision]);
+  // Effects run after commit. Never paint the previous blob under new raw metadata
+  // during that intervening render; figure is already decoded by useAssetSrc.
+  return ready.originalUrl === figure && ready.revision === revision
+    ? {src:ready.src,originalUrl:ready.originalUrl} : {src:figure,originalUrl:figure};
+}
+export type CompanionPresentation=ReturnType<typeof useCompanionPresentation>;
+
+export function CompanionView({
+  level,
+  anchor,
+  pose,
+  purr,
+  knot = 'rest',
+  onAsk,
+  figure,
+  frame,
+  imageKey,
+  figureRef,
+  onFigureError,
+  diagnostic = false,
+  presentation,
+}: CompanionProps & {presentation:CompanionPresentation}) {
+  const {src}=presentation;
+  const imageRef = useRef<HTMLImageElement | null>(null);
+  const bindImage = useCallback((node: HTMLImageElement | null) => { imageRef.current = node; figureRef?.(node); }, [figureRef]);
+  useLayoutEffect(() => { if (imageRef.current) writeCatDisplayAttributes(imageRef.current, diagnostic); }, [src, figure, diagnostic]);
   return (
     <button
       type="button"
@@ -59,7 +84,7 @@ export function Companion({
         <span className="companion-sway">
           {figure ? (
             <span className="nanaicha-figure" style={{ ['--figure' as string]: `url("${src ?? figure}")` }}>
-              <img className="nanaicha-ground" data-look={anchor} data-frame={frame} src={src ?? figure} alt="" draggable={false} />
+              <img key={imageKey} ref={bindImage} onLoad={() => { if (imageRef.current) writeCatDisplayAttributes(imageRef.current, diagnostic); }} className="nanaicha-ground" data-look={anchor} data-frame={frame} src={src ?? figure} alt="" draggable={false} onError={onFigureError} />
               <span className="figure-grade grade-color" />
               <span className="figure-grade grade-soft" />
             </span>
@@ -70,4 +95,9 @@ export function Companion({
       </span>
     </button>
   );
+}
+
+export function Companion(props:CompanionProps) {
+  const presentation=useCompanionPresentation(props.figure);
+  return <CompanionView {...props} presentation={presentation}/>;
 }

@@ -1,0 +1,7 @@
+/* Only imported by the explicit local fixture chunk. Both variants freeze identically. */
+.shore-visual-fixture *,
+.shore-visual-fixture *::before,
+.shore-visual-fixture *::after {
+  animation: none !important;
+  transition: none !important;
+}
