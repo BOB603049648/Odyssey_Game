@@ -1,5 +1,6 @@
 import { supportForSource, supportTransform, type TravelerSupport } from './travelerSupport';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { IslandScene } from '../core/island';
 import { WALK_SPEED } from '../core/walk';
 import { depthScale, worldToScreen } from '../core/world';
 import { punchHemUrl, wakeHemPunch } from './hemPunch';
@@ -60,6 +61,18 @@ export const WALK_STRIDE = WALK_SPEED / WALK_CYCLE_HZ;
  * shore cat's painted body, still under that 22% mark.
  */
 export const TRAVELER_HEIGHT = 0.136;
+/**
+ * Hall (木经堂) reads from a much nearer camera than the shore: the timber
+ * pillars span ~3.7 m in the plate, so the shore's 0.136 box painted the
+ * traveler at about a metre, roughly a third of the architecture. 0.22 keeps
+ * a 1.75 m body at the scroll-and-pillar scale the hall art was drawn to.
+ */
+export const HALL_TRAVELER_HEIGHT = 0.22;
+
+/** Figure box height for the scene the traveler is standing in. */
+export function travelerHeight(scene: IslandScene): number {
+  return scene === 'dba.scene.hall' ? HALL_TRAVELER_HEIGHT : TRAVELER_HEIGHT;
+}
 /**
  * Opaque-bounds bottom center on the 864×1152 sheet.
  * The soft contact (rgb ≈ 28,22,16, gaussian edge) reaches the last row.
@@ -357,6 +370,8 @@ export type TravelerProps = {
   presentationFrozen?: boolean;
   /** Candidate shore only: reviewed, alpha-only exterior contact cleanup. */
   contactCleanup?: boolean;
+  /** Figure box as a fraction of the world. Defaults to the shared TRAVELER_HEIGHT. */
+  height?: number;
 };
 
 export function useTravelerPresentation({
@@ -369,6 +384,7 @@ export function useTravelerPresentation({
   depthZ = 5,
   presentationFrozen = false,
   contactCleanup = false,
+  height = TRAVELER_HEIGHT,
 }: TravelerProps) {
   const sheet = sheetOf(facing);
   const power = stride ?? (moving ? 1 : 0);
@@ -419,12 +435,12 @@ export function useTravelerPresentation({
   const onOutgoingMount=useCallback((node:HTMLSpanElement|null)=>{
     if(node) node.style.animationDelay=`${-Math.max(0,Date.now()-fade.current.startedAt)}ms`;
   },[fadeToken]);
-  return {x,y,facing,moving,depthZ,presentationFrozen,contactCleanup,sheet,motion,frame,frameCount:frames.length,blendMs,poseNow,supported,planted,current:currentPicture,outgoing:outgoingPicture,fadeToken,onOutgoingMount};
+  return {x,y,facing,moving,depthZ,presentationFrozen,contactCleanup,height,sheet,motion,frame,frameCount:frames.length,blendMs,poseNow,supported,planted,current:currentPicture,outgoing:outgoingPicture,fadeToken,onOutgoingMount};
 }
 export type TravelerPresentation=ReturnType<typeof useTravelerPresentation>;
 
 export function TravelerView({presentation}:{presentation:TravelerPresentation}) {
-  const {x,y,facing,moving,depthZ,presentationFrozen,contactCleanup,sheet,motion,frame,frameCount,blendMs,poseNow,supported,planted,current,outgoing,fadeToken,onOutgoingMount}=presentation;
+  const {x,y,facing,moving,depthZ,presentationFrozen,contactCleanup,height,sheet,motion,frame,frameCount,blendMs,poseNow,supported,planted,current,outgoing,fadeToken,onOutgoingMount}=presentation;
   return (
     <div
       className="traveler"
@@ -451,7 +467,7 @@ export function TravelerView({presentation}:{presentation:TravelerPresentation})
         transformOrigin: `${TRAVELER_FOOT.x * 100}% ${TRAVELER_FOOT.y * 100}%`,
         zIndex: depthZ,
         ['--sole-y' as string]: `${(poseNow === 'lie' || supported ? TRAVELER_FOOT.y : TRAVELER_SOLE) * 100}%`,
-        height: `${TRAVELER_HEIGHT * 100}%`,
+        height: `${height * 100}%`,
         width: 'auto',
         aspectRatio: '3 / 4',
       }}

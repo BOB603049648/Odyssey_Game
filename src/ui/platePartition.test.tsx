@@ -18,10 +18,10 @@ beforeEach(()=>window.history.replaceState(null,'','/?loadtrace=1'));
 afterEach(cleanup);
 
 describe('actual PlateStack complete and exclusive scene partitions',()=>{
- it('assigns all 60 real slots to exactly one pass at 43 foot boundaries (2580 contracts)',()=>{
+ it('assigns all 60 real slots to exactly one pass at 54 foot boundaries (3240 contracts)',()=>{
   const all=SCENES.flatMap(scene=>sceneAssembly(scene)!.slots);
   const values=[...new Set([0,.5,.95,1,...all.flatMap(slot=>slot.y===undefined?[]:[slot.y-1e-6,slot.y,slot.y+1e-6])])].sort((a,b)=>a-b);
-  expect(all).toHaveLength(60);expect(values).toHaveLength(43);
+  expect(all).toHaveLength(60);expect(values).toHaveLength(54);
   let contracts=0;
   for(const scene of SCENES){
    const view=render(<Stack scene={scene} y={values[0]} active={null}/>);
@@ -36,7 +36,7 @@ describe('actual PlateStack complete and exclusive scene partitions',()=>{
    }
    view.unmount();
   }
-  expect(contracts).toBe(2580);
+  expect(contracts).toBe(3240);
  });
 
  it.each([[.699999,'near'],[.7,'back'],[.700001,'back']] as const)('renders night curtain actual bitmap exactly once at feetY=%s in %s', (y,pass)=>{

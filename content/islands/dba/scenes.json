@@ -422,7 +422,11 @@
         "slot": "building",
         "kind": "scroll-beam",
         "asset": "art.hall.building",
-        "parallax": 0.72
+        "parallax": 0.72,
+        "x": 0.5,
+        "y": 0.315,
+        "w": 0.72,
+        "h": 0.47
       },
       {
         "id": "art.hall.prop.scroll-wall",
@@ -431,10 +435,10 @@
         "asset": "art.hall.prop.scroll-wall",
         "parallax": 1,
         "spot": "hall-mural",
-        "x": 0.32,
-        "y": 0.56,
-        "w": 0.34,
-        "h": 0.36
+        "x": 0.47,
+        "y": 0.5,
+        "w": 0.172,
+        "h": 0.125
       },
       {
         "id": "art.hall.prop.stamp-rail",
@@ -443,10 +447,10 @@
         "asset": "art.hall.prop.stamp-rail",
         "parallax": 1,
         "spot": "hall-stamps",
-        "x": 0.66,
-        "y": 0.56,
-        "w": 0.28,
-        "h": 0.2
+        "x": 0.655,
+        "y": 0.505,
+        "w": 0.1,
+        "h": 0.052
       },
       {
         "id": "art.hall.prop.wrist-knot",
@@ -456,10 +460,10 @@
         "asset": "art.hall.prop.wrist-knot",
         "parallax": 1,
         "spot": "hall-tattoo",
-        "x": 0.5,
-        "y": 0.66,
-        "w": 0.22,
-        "h": 0.22
+        "x": 0.38,
+        "y": 0.44,
+        "w": 0.055,
+        "h": 0.055
       },
       {
         "id": "art.hall.fg",

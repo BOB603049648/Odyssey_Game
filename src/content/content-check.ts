@@ -240,6 +240,12 @@ function checkScaleContract(byId: Map<string, (typeof SCENE_ASSEMBLIES)[number]>
     traveler?: { height_m?: number };
     engine_scale?: { traveler_height_m?: number; traveler_world_h?: number; guide_world_h?: number; samples?: ScaleSample[] };
     nanaicha_trajectory?: { landings?: { file?: string }[] };
+    hall_scale?: {
+      scene?: string;
+      traveler_world_h?: number;
+      px_per_m?: number;
+      slots?: { id: string; w: number; h: number; world_h_m: number }[];
+    };
   };
   const scale = contract.engine_scale;
   if (!scale || scale.traveler_height_m !== contract.traveler?.height_m || scale.traveler_world_h === undefined) {
@@ -261,6 +267,31 @@ function checkScaleContract(byId: Map<string, (typeof SCENE_ASSEMBLIES)[number]>
     const slot = kit?.slots.find((item) => item.id === sample.id);
     if (!slot || slot.h !== sample.h) errors.push(`${sample.id} height drifted from the scale contract`);
     if (slot?.h !== undefined && slot.h > sample.max_h) errors.push(`${sample.id} is taller than its class`);
+  }
+  const hall = contract.hall_scale;
+  if (!hall || hall.traveler_world_h === undefined || !hall.px_per_m) {
+    errors.push('hall_scale is missing the 木经堂 world scale');
+  } else {
+    const hallHeight = travelerSrc.match(/export const HALL_TRAVELER_HEIGHT = ([0-9.]+)/);
+    if (!hallHeight || Number(hallHeight[1]) !== hall.traveler_world_h) {
+      errors.push(`hall traveler world height is not ${hall.traveler_world_h}`);
+    }
+    const hallKit = byId.get(hall.scene ?? 'dba.scene.hall');
+    for (const expected of hall.slots ?? []) {
+      const slot = hallKit?.slots.find((item) => item.id === expected.id);
+      if (!slot) {
+        errors.push(`missing hall slot ${expected.id}`);
+        continue;
+      }
+      if (slot.w !== expected.w || slot.h !== expected.h) {
+        errors.push(`${expected.id} size drifted from the hall scale contract`);
+      }
+      // The box must still describe the subject in metres at the hall's px/m.
+      const implied = Math.round(((slot.h ?? 0) * 720) / hall.px_per_m * 100) / 100;
+      if (Math.abs(implied - expected.world_h_m) > 0.02) {
+        errors.push(`${expected.id} is ${implied} m, not ${expected.world_h_m} m`);
+      }
+    }
   }
   const frames = [
     ...(contract.nanaicha_trajectory?.landings ?? []).map((landing) => landing.file).filter((file): file is string => Boolean(file)),

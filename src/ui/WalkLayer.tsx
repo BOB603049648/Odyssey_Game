@@ -43,7 +43,7 @@ import { forgetTraj, loadTraj, trajUrl } from './trajArt';
 import { contactLift, contactOpacity, depthScale, worldToScreen } from '../core/world';
 import { catContactUrl, clippedBootUrl } from './soleClip';
 import { FirstScreenGate } from './FirstScreenGate';
-import { facingFromMove, REACH_HOLD_MS, TravelerView, useTravelerPresentation, type TravelerFacing } from './Traveler';
+import { facingFromMove, REACH_HOLD_MS, TravelerView, travelerHeight, useTravelerPresentation, type TravelerFacing } from './Traveler';
 import { useFirstScreenReady } from './firstScreenReady';
 import { useAssetSrc } from './useAssetSrc';
 
@@ -704,6 +704,7 @@ export function WalkLayer({
     x:resting && sleepFoot?sleepFoot.x:pos.x,y:feetY,facing,moving,stride,
     pose:resting?'lie':reaching?'reach':'auto',depthZ:catInFront?4:6,
     presentationFrozen,contactCleanup:shoreCandidate,
+    height:travelerHeight(scene),
   });
   const catNode = (<div
             className="companion-anchor"

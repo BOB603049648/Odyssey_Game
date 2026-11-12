@@ -87,9 +87,9 @@ export const SPOTS: Record<IslandScene, readonly Spot[]> = {
     { id: 'act:dba.word.size:b', x: 0.36, y: 0.9, r: 0.034 },
   ],
   'dba.scene.hall': [
-    { id: 'hall-mural', x: 0.32, y: 0.56, r: 0.065 },
-    { id: 'hall-stamps', x: 0.66, y: 0.56, r: 0.06 },
-    { id: 'hall-tattoo', x: 0.5, y: 0.66, r: 0.055 },
+    { id: 'hall-mural', x: 0.47, y: 0.5, r: 0.075 },
+    { id: 'hall-stamps', x: 0.655, y: 0.505, r: 0.055 },
+    { id: 'hall-tattoo', x: 0.38, y: 0.44, r: 0.07 },
   ],
   'dba.scene.path': [
     { id: 'path-stop', x: 0.3, y: 0.66, r: 0.06 },

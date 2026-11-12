@@ -22,10 +22,30 @@
     "traveler_world_h": 0.136,
     "guide_world_h": 0.22,
     "samples": [
-      { "scene": "dba.scene.shore", "id": "art.shore.prop.driftwood", "h": 0.14, "max_h": 0.3 },
-      { "scene": "dba.scene.shore", "id": "art.shore.prop.gourd", "h": 0.15, "max_h": 0.16 },
-      { "scene": "dba.scene.camp", "id": "art.camp.prop.fire", "h": 0.14, "max_h": 0.3 },
-      { "scene": "dba.scene.yard", "id": "art.yard.prop.grain-bags", "h": 0.24, "max_h": 0.3 }
+      {
+        "scene": "dba.scene.shore",
+        "id": "art.shore.prop.driftwood",
+        "h": 0.14,
+        "max_h": 0.3
+      },
+      {
+        "scene": "dba.scene.shore",
+        "id": "art.shore.prop.gourd",
+        "h": 0.15,
+        "max_h": 0.16
+      },
+      {
+        "scene": "dba.scene.camp",
+        "id": "art.camp.prop.fire",
+        "h": 0.14,
+        "max_h": 0.3
+      },
+      {
+        "scene": "dba.scene.yard",
+        "id": "art.yard.prop.grain-bags",
+        "h": 0.24,
+        "max_h": 0.3
+      }
     ],
     "not_enforced_yet": [
       "opaque alpha height versus meters on every sheet (the slot box is what the engine locks)",
@@ -4791,5 +4811,39 @@
     "prior_pack": "1.3-pr64-read10 (RETEST11 half-pass: sole PASS; claw warm on frame but ~55x33 hard rect)",
     "ground_sha256": "df4b9af7195fccf5b5ee41059fa4306898693280f38e4b2737f1e50cecb3afbe",
     "note": "Auxiliary hang. Repo version stays 1.3-pr31-hemcat. Only land-shore gourd/driftwood/east-gap replace the read10 frames. Traveler 21 match read10 byte-for-byte and were not rewritten. Ground sha stays df4b9af7 and was not rewritten. Soft puddle core stays rgb(28,22,16). Cat sole-soft horizontal paw clip is ab49136; vertical stops 89.8/92.0/94.0 and #sole-warm stay at 0d03dcd. COMPANION_SOLE stays gourd/driftwood 976 and east 1117. WORLD_SCALE, #60 boxes, shoreBand, hearth label, and focus outline stay."
+  },
+  "hall_scale": {
+    "scene": "dba.scene.hall",
+    "updated": "2026-11-13",
+    "note": "木经堂 uses a nearer camera than the shore: a 1.75 m body needs a 0.22 box here, not the shared 0.136. Props below are sized in metres on that same body (90.5 px/m at a 720 px plate) so the character, the pavilion, and the wall art share one world scale.",
+    "traveler_world_h": 0.22,
+    "px_per_m": 90.5,
+    "building_world_h_m": 3.74,
+    "slots": [
+      {
+        "id": "art.hall.building",
+        "w": 0.72,
+        "h": 0.47,
+        "world_h_m": 3.74
+      },
+      {
+        "id": "art.hall.prop.scroll-wall",
+        "w": 0.172,
+        "h": 0.125,
+        "world_h_m": 1.0
+      },
+      {
+        "id": "art.hall.prop.stamp-rail",
+        "w": 0.1,
+        "h": 0.052,
+        "world_h_m": 0.42
+      },
+      {
+        "id": "art.hall.prop.wrist-knot",
+        "w": 0.055,
+        "h": 0.055,
+        "world_h_m": 0.44
+      }
+    ]
   }
 }

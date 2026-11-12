@@ -19,18 +19,18 @@ let css:HTMLStyleElement;
 beforeEach(()=>{window.history.replaceState(null,'','/?loadtrace=1');css=document.createElement('style');css.textContent=readFileSync('src/styles.css','utf8');document.head.append(css);});
 afterEach(()=>{cleanup();css.remove();});
 function layered(y:number){return <>{passes.map(pass=><PlateStack key={pass} plate={scene} previous={null} pass={pass} feetY={y}/>)}</>;}
-function game(learned:boolean,y=.64,onInteract=(id:string)=>{void id;}){
+function game(learned:boolean,y=.64,onInteract=(id:string)=>{void id;},x=.5){
  const save=newGameState();if(learned)save.words['dba.word.betray'].state='learned';const hint=hintPresentation(save);
- return <WalkLayer scene={scene} drank={false} spots={visibleSpots(scene,save,hint)} hint={hint} paused={false} purr={false} knot="rest" remembered={{x:.5,y}} catPost={companionPost(scene,{})} onRemember={()=>{}} onExit={()=>{}} onInteract={onInteract} onAsk={()=>{}} onEscape={()=>{}}/>;
+ return <WalkLayer scene={scene} drank={false} spots={visibleSpots(scene,save,hint)} hint={hint} paused={false} purr={false} knot="rest" remembered={{x,y}} catPost={companionPost(scene,{})} onRemember={()=>{}} onExit={()=>{}} onInteract={onInteract} onAsk={()=>{}} onEscape={()=>{}}/>;
 }
 describe('hall wrist mural is wall art, not an occluding grounded hand',()=>{
- it.each([.64,.659999,.66,.660001,.74])('renders one actual wrist bitmap in back at feetY=%s',y=>{
+ it.each([.42,.439999,.44,.440001,.64])('renders one actual wrist bitmap in back at feetY=%s',y=>{
   const v=render(layered(y));const nodes=v.container.querySelectorAll(`[data-art-id="${id}"]`);
   expect(nodes).toHaveLength(1);const node=nodes[0] as HTMLElement;
   expect(node.closest('.plate-stack')?.className).toContain('pass-back');
   expect(node.querySelector('img')?.getAttribute('src')).toBe(slotAssetUrl(slot().asset!));
-  expect(slot()).toMatchObject({slot:'props',x:.5,y:.66,w:.22,h:.22,parallax:1,spot:'hall-tattoo'});
-  expect(node.style.left).toBe('50%');expect(node.style.top).toBe('66%');expect(node.style.width).toBe('22%');expect(node.style.height).toBe('22%');
+  expect(slot()).toMatchObject({slot:'props',x:.38,y:.44,w:.055,h:.055,parallax:1,spot:'hall-tattoo'});
+  expect(node.style.left).toBe('38%');expect(node.style.top).toBe('44%');expect(node.style.width).toBe('5.5%');expect(node.style.height).toBe('5.5%');
  });
  it('actual Hall game mounts the bitmap below the traveler instead of near z7',async()=>{
   const v=render(game(true));await flush();const art=v.getByTestId(`prop-${id}`);const traveler=v.getByTestId('traveler');
@@ -42,8 +42,8 @@ describe('hall wrist mural is wall art, not an occluding grounded hand',()=>{
  });
  it('keeps learned-betray hidden gate and the real hotspot click and E action',async()=>{
   const hidden=render(game(false));await flush();expect(hidden.container.querySelector(`[data-art-id="${id}"]`)).toBeNull();expect(hidden.queryByTestId('hall-tattoo')).toBeNull();hidden.unmount();
-  const heard=vi.fn();const v=render(game(true,.66,heard));await flush();const hot=v.getByTestId('hall-tattoo');
-  expect(hot.style.left).toBe('50%');expect(hot.style.top).toBe('66%');
+  const heard=vi.fn();const v=render(game(true,.44,heard,.4));await flush();const hot=v.getByTestId('hall-tattoo');
+  expect(hot.style.left).toBe('38%');expect(hot.style.top).toBe('44%');
   expect(v.getByTestId(`prop-${id}`).querySelector('img')?.getAttribute('src')).toBe(slotAssetUrl(slot().asset!));
   fireEvent.click(hot);expect(heard).toHaveBeenLastCalledWith('hall-tattoo');
   fireEvent.keyDown(window,{key:'e'});expect(heard).toHaveBeenCalledTimes(2);
