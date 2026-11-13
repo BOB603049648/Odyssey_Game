@@ -166,12 +166,6 @@ export function IslandScreen({
             {learned.length}/28
           </p>
         </div>
-        <div className="hud-compass" aria-hidden="true">
-          <span className="tick sw">SW</span>
-          <span className="tick nw">NW</span>
-          <span className="tick e">E</span>
-          <i className="rose" />
-        </div>
       </div>
       {save.overlay === 'chart' ? <ChartSealed onClose={() => dispatch({ type: 'close-overlay' })} /> : null}
       <OverlaySheet save={save} dispatch={dispatch} learned={learned} hint={hint} />

@@ -135,7 +135,7 @@ describe('shore ground vs sky layout', () => {
     expect(Math.max(...alphas)).toBeLessThanOrEqual(0.45);
   });
 
-  it('softens shore-only south lip, wrap vignette, fog-line, and viewport vignette without covering other scenes', () => {
+  it('keeps shore fog subtle and all scene foregrounds readable', () => {
     const lipStart = css.indexOf('.shore-stone-lip');
     const lip = css.slice(lipStart, lipStart + 600);
     expect(lip).toMatch(/rgba\(8,\s*7,\s*6,\s*0\.(0?[1-4]\d?|40)\)/);
@@ -146,14 +146,13 @@ describe('shore ground vs sky layout', () => {
     expect(fog).toMatch(/transparent 0%/);
     expect(fog).not.toMatch(/rgba\(8,\s*16,\s*20,\s*0\.82\)/);
     expect(css).toMatch(
-      /\.shore-wrap\[data-scene="dba\.scene\.shore"\]::before[^{]*\{[^}]*rgba\(0,\s*0,\s*0,\s*0\.(0?[1-3]\d?)\)/,
+      /\.shore-wrap::before[^{]*\{[^}]*rgba\(0,\s*0,\s*0,\s*0\.(0?[1-3]\d?)\)/,
     );
     expect(css).toMatch(
       /\.walk-viewport\[data-scene="dba\.scene\.shore"\]\s*\.world-vignette\s*\{[^}]*rgba\(0,\s*0,\s*0,\s*0\.(0?[1-2]\d?)\)/,
     );
-    // Other scenes keep the generic wrap/vignette; we only override shore.
-    const genericWrap = css.slice(css.indexOf('.shore-wrap::before'), css.indexOf('.shore-wrap::before') + 400);
-    expect(genericWrap).toMatch(/rgba\(0,\s*0,\s*0,\s*0\.62\)/);
+    // The shared world vignette must also leave the lower foreground readable.
+    expect(css).toMatch(/\.world-vignette\s*\{[^}]*rgba\(0,\s*0,\s*0,\s*0\.22\)/);
   });
 
 });

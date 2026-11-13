@@ -148,9 +148,8 @@ h1 {
   background:
     linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, transparent 26%, transparent 62%, rgba(0, 0, 0, 0.62) 100%);
 }
-/* Opened shore sky made the generic 0.62 south wash read as a black belt
-   (browser y≈538/576). Soften only this scene; other island scenes keep the wrap. */
-.shore-wrap[data-scene="dba.scene.shore"]::before {
+/* The scene already has ambient grading. Keep foreground props readable. */
+.shore-wrap::before {
   background:
     linear-gradient(180deg, rgba(0, 0, 0, 0.28) 0%, transparent 22%, transparent 78%, rgba(0, 0, 0, 0.2) 100%);
 }
@@ -1016,51 +1015,6 @@ h1 {
   background: linear-gradient(135deg, transparent 46%, rgba(230, 211, 164, 0.9) 48% 52%, transparent 54%);
 }
 
-.hud-compass {
-  position: absolute;
-  z-index: 3;
-  right: calc(22px + var(--safe-right));
-  bottom: calc(16px + var(--safe-bottom));
-  width: 132px;
-  height: 62px;
-  pointer-events: none;
-  color: rgba(243, 234, 220, 0.82);
-  font-size: 0.68rem;
-  letter-spacing: 0.14em;
-}
-
-.hud-compass .tick { position: absolute; }
-.hud-compass .sw { left: 0; bottom: 18px; }
-.hud-compass .nw { left: 28px; top: 0; }
-.hud-compass .e { left: 18px; bottom: 0; }
-.hud-compass .rose {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 52px;
-  height: 52px;
-  border: 1px solid rgba(243, 234, 220, 0.55);
-  border-radius: 50%;
-  background:
-    linear-gradient(rgba(243, 234, 220, 0.75), rgba(243, 234, 220, 0.75)) center/1px 70% no-repeat,
-    linear-gradient(rgba(243, 234, 220, 0.75), rgba(243, 234, 220, 0.75)) center/70% 1px no-repeat;
-}
-
-.hud-compass .rose::before,
-.hud-compass .rose::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 7px;
-  height: 7px;
-  border-top: 1px solid rgba(243, 234, 220, 0.8);
-  border-right: 1px solid rgba(243, 234, 220, 0.8);
-}
-
-.hud-compass .rose::before { transform: translate(-50%, -90%) rotate(-45deg); }
-.hud-compass .rose::after { transform: translate(-50%, 10%) rotate(135deg); }
-
 .hotspot.memory { left: 8%; bottom: 16%; }
 
 .shore-wrap[data-hotspots="on"] .hotspot,
@@ -1611,13 +1565,6 @@ h1 {
     font-size: 0.92rem;
   }
 
-  .hud-compass {
-    right: calc(8px + var(--safe-right));
-    bottom: calc(6px + var(--safe-bottom));
-    transform: scale(0.82);
-    transform-origin: bottom right;
-  }
-
   .companion-anchor {
     width: auto;
   }
@@ -2052,7 +1999,7 @@ h1 {
 .walk-viewport[data-scene="dba.scene.yard"] .world-ambient { opacity: 0.22; }
 .walk-viewport[data-scene="dba.scene.yard"] .world-strip { opacity: 0.16; }
 .world-vignette {
-  background: radial-gradient(ellipse at 50% 46%, transparent 42%, rgba(0, 0, 0, 0.42) 100%);
+  background: radial-gradient(ellipse at 50% 46%, transparent 52%, rgba(0, 0, 0, 0.22) 100%);
 }
 .walk-viewport[data-scene="dba.scene.shore"] .world-vignette {
   background: radial-gradient(ellipse at 50% 46%, transparent 58%, rgba(0, 0, 0, 0.16) 100%);
@@ -2513,6 +2460,42 @@ h1 {
   background: rgba(31,39,40,.5);
   box-shadow: 0 0 4px rgba(249,225,168,.35);
   border-radius: 50%;
+}
+
+/* Viewport controls share no transforms with the scrolling game world. */
+.stage-controls { position: absolute; inset: 0; z-index: 12; pointer-events: none; }
+.stage-interaction { position: absolute; bottom: calc(24px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); max-width: calc(100% - 260px); }
+.stage-action, .route-toggle, .route-panel button {
+  min-height: 44px;
+  border: 1px solid rgba(230,211,164,.46);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--bone);
+  background: rgba(16,27,30,.92);
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+.stage-action { display: flex; align-items: center; gap: 10px; justify-content: center; max-width: 100%; box-shadow: 0 2px 14px #0005; }
+.stage-action .glyph { flex: 0 0 24px; width: 24px; height: 24px; }
+.stage-action kbd { opacity: .65; font: inherit; font-size: 12px; border: 1px solid currentColor; border-radius: 3px; padding: 1px 5px; }
+.movement-help { margin: 0; color: #e6dfd0; font-size: 12px; line-height: 1.7; text-align: center; text-shadow: 0 1px 4px #000, 0 1px 8px #000; }
+.movement-help span { display: block; }
+.stage-routes { position: absolute; right: calc(24px + var(--safe-right)); bottom: calc(22px + var(--safe-bottom)); pointer-events: auto; }
+.route-toggle { display: flex; align-items: center; gap: 8px; }
+.route-toggle span { font-size: 22px; line-height: 1; }
+.route-panel { position: absolute; bottom: 54px; right: 0; width: 190px; display: grid; gap: 6px; padding: 12px; border: 1px solid var(--gold-line); border-radius: 10px; background: #101b1ef5; box-shadow: 0 8px 30px #0006; }
+.route-panel p { margin: 0 0 4px; color: #c9c4b8; font-size: 12px; }
+.route-panel button { display: flex; align-items: center; gap: 12px; text-align: left; background: #ffffff06; }
+.stage-action:hover, .route-toggle:hover, .route-panel button:hover { background: #30403f; }
+.stage-controls button:focus-visible { outline: 2px solid #f2d99c; outline-offset: 3px; }
+.walk-stick[aria-disabled="true"] { pointer-events: none; opacity: .3; }
+@media (pointer: coarse) {
+  .keyboard-help, .stage-action kbd { display: none !important; }
+  .stage-interaction { left: calc(142px + var(--safe-left)); right: calc(110px + var(--safe-right)); transform: none; max-width: none; bottom: calc(24px + var(--safe-bottom)); }
+  .stage-action { width: 100%; padding: 10px 8px; gap: 6px; }
+  .stage-routes { right: calc(14px + var(--safe-right)); }
+  .movement-help { font-size: 11px; }
 }
 .walk-viewport .scene-slot[data-cue="far"] .prop-cue { opacity: .4; }
 .walk-viewport .scene-slot[data-cue="near"] .prop-cue { opacity: 1; }

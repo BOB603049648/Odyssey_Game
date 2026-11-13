@@ -48,6 +48,7 @@ import { useFirstScreenReady } from './firstScreenReady';
 import { useAssetSrc } from './useAssetSrc';
 
 import { WalkStick } from './WalkStick';
+import { StageControls } from './StageControls';
 import { useCrossfade } from './useCrossfade';
 import { useShoreCuePresentation } from './useShoreCuePresentation';
 
@@ -346,7 +347,12 @@ export function WalkLayer({
         return;
       }
       if (pausedRef.current) return;
+      const target = event.target instanceof Element ? event.target : null;
+      if (target?.closest('input, textarea, select, [contenteditable="true"]')) return;
       if (isInteractKey(event)) {
+        // Native controls own Enter/Space, including a focused world hotspot.
+        // Otherwise pressing Enter on the HUD also dispatches a nearby action.
+        if ((event.key === 'Enter' || event.key === ' ') && target?.closest('button, a, [role="button"]')) return;
         if (event.repeat) return;
         const standing = nearestSpot(spotsRef.current, posRef.current, sceneRef.current);
         if (standing) {
@@ -380,7 +386,12 @@ export function WalkLayer({
     };
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
-    const onBlur = () => held.current.clear();
+    const onBlur = () => {
+      held.current.clear();
+      stickRef.current = null;
+      targetRef.current = null;
+      velocityRef.current = { x: 0, y: 0 };
+    };
     window.addEventListener('blur', onBlur);
     return () => {
       window.removeEventListener('keydown', onKeyDown);
@@ -964,12 +975,21 @@ export function WalkLayer({
         ) : null}
       <FirstScreenGate state={displayStatus} done={firstScreen.done} total={firstScreen.total} onRetry={firstScreen.retry} />
       <WalkStick
+        disabled={paused || displayStatus !== 'ready'}
         onVector={(vector) => {
           stickRef.current = vector;
           if (vector) targetRef.current = null;
         }}
       />
     </div>
+    {!paused && displayStatus === 'ready' ? <StageControls scene={scene} exits={exits}
+      nearby={spots.find(spot => spot.id === nearestSpot(spots, pos, scene)?.id) ?? null}
+      onTravel={gate => { if (!pausedRef.current) seek(gate); }}
+      onInteract={spot => {
+        if (pausedRef.current || !standsAt(sceneRef.current, spot, posRef.current)) return;
+        beginReach();
+        interactRef.current(spot.id);
+      }} /> : null}
     {hearthGate && hearthAt ? (
       <span
         className="hearth-name"

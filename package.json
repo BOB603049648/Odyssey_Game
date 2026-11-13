@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "content:check": "vitest run src/content/content-check.test.ts",
-    "test:browser": "node scripts/browser-smoke.mjs"
+    "test:browser": "node scripts/browser-smoke.mjs",
+    "test:controls": "node scripts/browser-controls.mjs"
   },
   "dependencies": {
     "@capacitor/core": "^7.4.3",

@@ -6,7 +6,10 @@ import { resolve } from 'node:path';
 const url = process.env.ODYSSEY_URL ?? 'http://127.0.0.1:4173/';
 const output = resolve(process.env.ODYSSEY_QA_DIR ?? 'artifacts/browser-smoke');
 await mkdir(output, { recursive: true });
-const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH,headless:true,args:['--no-sandbox']});
+const proxyServer = url.startsWith('https:') ? process.env.HTTPS_PROXY : process.env.HTTP_PROXY;
+const proxy = proxyServer && !['localhost', '127.0.0.1'].includes(new URL(url).hostname)
+  ? { server: proxyServer, bypass: process.env.NO_PROXY } : undefined;
+const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH,headless:true,args:['--no-sandbox'],proxy});
 const page=await browser.newPage({viewport:{width:1440,height:900}});
 page.setDefaultTimeout(20000);
 const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)errors.push(`${r.status()} ${r.url()}`)});
