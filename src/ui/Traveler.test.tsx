@@ -93,7 +93,7 @@ describe('traveler art', () => {
     expect(TRAVELER_FOOT.x).toBeCloseTo(0.5);
     expect(TRAVELER_SOLE).toBeCloseTo(995 / 1152);
     expect(TRAVELER_SOLE).toBeLessThan(TRAVELER_FOOT.y);
-    expect(mark.style.getPropertyValue('--sole-y')).toBe(`${TRAVELER_SOLE * 100}%`);
+    expect(mark.style.getPropertyValue('--sole-y')).toBe(`${TRAVELER_FOOT.y * 100}%`);
   });
 
   it('lays the body along the mat with the sole still on the foot point', () => {
@@ -177,10 +177,10 @@ describe('traveler art', () => {
     const view = render(<TravelerMark x={0.4} y={0.6} facing="left" moving />);
     const current = () => view.container.querySelector('[data-layer="current"]')?.getAttribute('src') ?? '';
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-facing')).toBe('left');
-    expect(current()).toMatch(/walk-side-01/);
+    expect(current()).toMatch(/stride-side-01/);
 
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="right" moving />);
-    expect(current()).toMatch(/walk-side-01/);
+    expect(current()).toMatch(/stride-side-01/);
 
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="back" moving={false} />);
     expect(current()).toMatch(/idle-back-01/);
@@ -219,17 +219,17 @@ describe('traveler art', () => {
     const walkFront = clipFrames('walk', 'front');
     expect(walkFront).toHaveLength(TRAVELER_FRAME_COUNTS.walk);
     expect(new Set(walkFront).size).toBe(4);
-    expect(walkFront.map((src) => src.match(/walk-front-0[1-4]/)?.[0])).toEqual([
-      'walk-front-01',
-      'walk-front-02',
-      'walk-front-03',
-      'walk-front-04',
+    expect(walkFront.map((src) => src.match(/stride-front-0[1-4]/)?.[0])).toEqual([
+      'stride-front-01',
+      'stride-front-02',
+      'stride-front-03',
+      'stride-front-04',
     ]);
     const idleSide = clipFrames('idle', 'side');
     expect(idleSide).toHaveLength(TRAVELER_FRAME_COUNTS.idle);
     expect(new Set(idleSide).size).toBe(2);
     const walkBack = clipFrames('walk', 'back');
-    expect(walkBack[0]).toMatch(/walk-back-01/);
+    expect(walkBack[0]).toMatch(/stride-back-01/);
     const idleBack = clipFrames('idle', 'back');
     expect(idleBack).toHaveLength(2);
     expect(new Set(idleBack).size).toBe(2);
@@ -448,7 +448,7 @@ describe('traveler art', () => {
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="left" moving />);
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-crossfade')).toBe('yes');
     expect(view.container.querySelector('[data-layer="out"]')).toBeTruthy();
-    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/walk-side-01/);
+    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/stride-side-01/);
     expect(view.container.querySelector('.traveler-shade')).toBeNull();
   });
 

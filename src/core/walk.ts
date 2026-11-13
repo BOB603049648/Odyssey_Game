@@ -1,4 +1,9 @@
 export const WORLD_SCALE = 1.15;
+export const WORLD_ASPECT = 16 / 9;
+/** Distance in stage-height units; normalized X spans a wider painted axis. */
+export function groundDistance(a: Point, b: Point): number {
+  return Math.hypot((a.x - b.x) * WORLD_ASPECT, a.y - b.y);
+}
 /** Artwork and authored coordinates share a 16:9 stage on every device. */
 export function worldSize(viewW: number, viewH: number, scale = WORLD_SCALE) {
   const h = Math.max(viewH, viewW * 9 / 16) * scale;
@@ -16,15 +21,15 @@ export function reachOf(dist: number, radius: number, glance = GLANCE_REACH): Re
   if (dist <= radius + glance) return 'glance';
   return 'far';
 }
-export const WALK_SPEED = 0.38;
+export const WALK_SPEED = 0.22;
 export const COMPANION_RING = 0.13;
 
 /** How fast wished speed is approached, and how long a release takes to settle. */
-export const VELOCITY_RISE = 3.4;
-export const VELOCITY_FALL = 2.2;
+export const VELOCITY_RISE = 14;
+export const VELOCITY_FALL = 20;
 /** Ground clicks ease off inside this distance so the last step is not a snap. */
-export const ARRIVE_WINDOW = 0.08;
-const STOP_SPEED = 0.012;
+export const ARRIVE_WINDOW = 0.045;
+const STOP_SPEED = 0.002;
 
 function easeAxis(from: number, to: number, dt: number): number {
   const braking = Math.abs(to) < Math.abs(from) || from * to < 0;
@@ -40,11 +45,11 @@ export function easeVelocity(current: Point, desired: Point, dt: number): Point 
 
 /** `input` is a stick or key vector already scaled by power (length 0–1). */
 export function desiredVelocity(input: Point | null, goal: Point | null, pos: Point, maxSpeed = WALK_SPEED): Point {
-  if (input) return { x: input.x * maxSpeed, y: input.y * maxSpeed };
+  if (input) return { x: input.x * maxSpeed / WORLD_ASPECT, y: input.y * maxSpeed };
   if (!goal) return { x: 0, y: 0 };
   const dx = goal.x - pos.x;
   const dy = goal.y - pos.y;
-  const dist = Math.hypot(dx, dy);
+  const dist = groundDistance(goal, pos);
   if (dist < 1e-5) return { x: 0, y: 0 };
   const power = Math.min(1, dist / ARRIVE_WINDOW);
   return { x: (dx / dist) * maxSpeed * power, y: (dy / dist) * maxSpeed * power };

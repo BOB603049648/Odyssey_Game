@@ -12,8 +12,10 @@ import type { IslandScene } from '../core/island';
 import type { HintLevel } from '../core/schema';
 import { BANDS, SPAWNS, SPOTS, closestSpot, gateAt, gatesFrom, nearestSpot, plantOnGround, standsAt, type GateEdge } from '../core/stage';
 import { stepWorld } from '../core/worldLoop';
+import { groundStep } from '../core/navigation';
 import {
   WALK_SPEED,
+  groundDistance,
   worldSize,
   cameraOffset,
   followCamera,
@@ -293,7 +295,10 @@ export function WalkLayer({
   }
 
   function apply(next: Point, isMoving: boolean, isBlocked: boolean, dx: number, dy: number, power = 1) {
-    const planted = plantOnGround(sceneRef.current, next);
+    const planted = groundStep(sceneRef.current, posRef.current, next);
+    const moved = groundDistance(planted, posRef.current) > 1e-6;
+    isBlocked ||= groundDistance(planted, next) > 1e-7;
+    isMoving &&= moved;
     const gate = gateAt(sceneRef.current, planted);
     if (gate) {
       velocityRef.current = { x: 0, y: 0 };
@@ -422,6 +427,7 @@ export function WalkLayer({
         const prevCat = catRef.current;
         const desired = postRef.current;
         const stepped = stepWorld({
+          scene: sceneRef.current,
           walker: { pos: from, velocity: lying ? { x: 0, y: 0 } : velocityRef.current, seek: lying ? null : targetRef.current },
           intent: { move: lying ? null : heldDirection(), seek: lying ? null : targetRef.current },
           band: BANDS[sceneRef.current],
@@ -436,7 +442,7 @@ export function WalkLayer({
         });
         velocityRef.current = stepped.walker.velocity;
         targetRef.current = stepped.walker.seek;
-        const speed = Math.hypot(stepped.walker.velocity.x, stepped.walker.velocity.y);
+        const speed = groundDistance(stepped.walker.velocity, { x: 0, y: 0 });
         if (stepped.walker.moving) {
           apply(
             stepped.walker.pos,
@@ -498,7 +504,7 @@ export function WalkLayer({
       if (sole && vp && img instanceof HTMLImageElement && humanRect && contactOrigin) {
         const ir = humanRect;
         const pose = vp.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose');
-        if (pose === 'lie' || ir.width < 2) {
+        if (pose === 'lie' || img.dataset.atlas || ir.width < 2) {
           sole.style.visibility = 'hidden';
         } else {
           sole.style.visibility = 'visible';

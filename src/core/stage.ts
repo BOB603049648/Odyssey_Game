@@ -117,7 +117,7 @@ export const YARD_FACADE = { minX: 0.4, maxX: 0.66, groundY: 0.92 } as const;
 export const YARD_RIGHT_STEP = { x: 0.62, y: 0.94 } as const;
 
 /** West mouth (camp arrival) and east mouth (path arrival). Fish racks at x 0.16 and 0.36 stay outside. */
-const YARD_APRONS = [
+export const YARD_APRONS = [
   { minX: 0.22, maxX: 0.34 },
   { minX: 0.68, maxX: 0.82 },
 ] as const;
@@ -128,6 +128,7 @@ const YARD_APRONS = [
  * footprint drop to the sand at the south lip.
  */
 export const SHORE_MARKER = { minX: 0.66, maxX: 0.82, sandY: 0.68 } as const;
+export const BRIDGE_KNOTS = [[.11,.43],[.24,.46],[.36,.50],[.52,.55],[.66,.61],[.77,.69]] as const;
 
 export function plantOnGround(scene: IslandScene, pos: Point): Point {
   const band = BANDS[scene];
@@ -137,7 +138,7 @@ export function plantOnGround(scene: IslandScene, pos: Point): Point {
     x = Math.max(.11, Math.min(.77, x));
     // Measured plank centerline in the 1280×720 bridge plate. The narrow
     // walkable ribbon prevents movement into the cliff or the empty ravine.
-    const knots = [[.11,.43],[.24,.46],[.36,.50],[.52,.55],[.66,.61],[.77,.69]];
+    const knots = BRIDGE_KNOTS;
     const end = knots.findIndex(([at]) => at >= x);
     const a = knots[Math.max(0,end-1)], b = knots[Math.max(0,end)];
     const center = a[1] + (b[1]-a[1]) * (b[0] === a[0] ? 0 : (x-a[0])/(b[0]-a[0]));

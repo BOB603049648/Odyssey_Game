@@ -1,4 +1,5 @@
 import companionStanding from '../assets/companion/nanaicha/nanaicha-hero.png';
+import { WALK_ATLAS, WALK_ATLAS_FILES } from './travelerWalkAtlas';
 
 /**
  * Compile-time URL map. Eager glob inlines hashed URLs in the app bundle
@@ -50,6 +51,7 @@ function preferUrl(mods: Record<string, string>): Map<string, string> {
 
 const slots = preferUrl(slotModules);
 const travelers = preferUrl(travelerModules);
+for (const file of WALK_ATLAS_FILES) travelers.set(file, `${WALK_ATLAS.url}#${file}`);
 const trajs = preferUrl(trajModules);
 // One complete, registered standing silhouette. The historical landings contain
 // missing bodies, embedded scenery and incompatible padding; do not ship them as

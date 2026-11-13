@@ -10,7 +10,8 @@
     "test": "vitest run",
     "content:check": "vitest run src/content/content-check.test.ts",
     "test:browser": "node scripts/browser-smoke.mjs",
-    "test:controls": "node scripts/browser-controls.mjs"
+    "test:controls": "node scripts/browser-controls.mjs",
+    "test:movement": "node scripts/browser-movement.mjs"
   },
   "dependencies": {
     "@capacitor/core": "^7.4.3",

@@ -1,19 +1,20 @@
 import { supportForSource, supportTransform, type TravelerSupport } from './travelerSupport';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { IslandScene } from '../core/island';
-import { WALK_SPEED } from '../core/walk';
+import { WALK_SPEED, groundDistance, WORLD_ASPECT } from '../core/walk';
 import { depthScale, worldToScreen } from '../core/world';
 import { punchHemUrl, wakeHemPunch } from './hemPunch';
 import { heldFrameIndex } from './travelerDisplay';
 import { forgetFrame, frameUrl, loadFrame } from './travelerArt';
 import { useAssetSrc } from './useAssetSrc';
+import { WALK_ATLAS, walkAtlasSource } from '../content/travelerWalkAtlas';
 
 export type TravelerFacing = 'front' | 'back' | 'left' | 'right';
 export type TravelerSheet = 'front' | 'side' | 'back';
 export type TravelerPose = 'idle' | 'walk' | 'interact' | 'reach' | 'lie';
 export type TravelerLocomotion = 'idle' | 'walk';
 
-/** v3 P0: walk is 4 × front/side/back; idle is 2 for front and side. Reach front is 2, side is 1. */
+/** Four registered walk poses per direction; legacy idle and reach clips remain. */
 export const TRAVELER_FRAME_COUNTS = {
   idle: 2,
   walk: 4,
@@ -26,9 +27,9 @@ export const REACH_HZ = 1.4;
 export const REACH_HOLD_MS = 720;
 
 const WALK_FILES: Record<TravelerSheet, readonly string[]> = {
-  front: ['walk-front-01.png', 'walk-front-02.png', 'walk-front-03.png', 'walk-front-04.png'],
-  side: ['walk-side-01.png', 'walk-side-02.png', 'walk-side-03.png', 'walk-side-04.png'],
-  back: ['walk-back-01.png', 'walk-back-02.png', 'walk-back-03.png', 'walk-back-04.png'],
+  front: ['stride-front-01.png', 'stride-front-02.png', 'stride-front-03.png', 'stride-front-04.png'],
+  side: ['stride-side-01.png', 'stride-side-02.png', 'stride-side-03.png', 'stride-side-04.png'],
+  back: ['stride-back-01.png', 'stride-back-02.png', 'stride-back-03.png', 'stride-back-04.png'],
 };
 
 const IDLE_FILES: Record<TravelerSheet, readonly string[]> = {
@@ -50,9 +51,9 @@ function frameSrc(file: string): string {
 /**
  * Full-speed walk cycles per second while covering WALK_SPEED.
  * Playback follows distance (`WALK_STRIDE`), so a slower stick does not skate.
- * The old 2.4 Hz read as a scramble at full speed.
+ * At full speed the new sheet completes 1.5 cycles per second on the shore.
  */
-export const WALK_CYCLE_HZ = 1.15;
+export const WALK_CYCLE_HZ = 1.5;
 export const WALK_STRIDE = WALK_SPEED / WALK_CYCLE_HZ;
 /**
  * Figure box height as a fraction of the world layer.
@@ -85,8 +86,8 @@ export const TRAVELER_FOOT = { x: 0.5, y: 1151 / 1152 } as const;
  */
 export const TRAVELER_SOLE = 995 / 1152;
 /** Overlap between frames inside one clip, and a slightly longer blend on a turn. */
-export const FRAME_BLEND_MS = 140;
-export const TURN_BLEND_MS = 220;
+export const FRAME_BLEND_MS = 45;
+export const TURN_BLEND_MS = 110;
 export const IDLE_CYCLE_HZ = 0.35;
 export const GAIT_RISE = 3.4;
 export const GAIT_FALL = 1.65;
@@ -99,10 +100,12 @@ export function sheetOf(facing: TravelerFacing): TravelerSheet {
 }
 
 export function facingFromMove(dx: number, dy: number, current: TravelerFacing): TravelerFacing {
-  const ax = Math.abs(dx);
+  const ax = Math.abs(dx) * WORLD_ASPECT;
   const ay = Math.abs(dy);
   if (ax < 0.001 && ay < 0.001) return current;
-  if (ax >= ay) return dx < 0 ? 'left' : 'right';
+  const side = current === 'left' || current === 'right';
+  // A small dead band around diagonals avoids flickering between two sheets.
+  if (ax >= ay * (side ? 0.85 : 1.15)) return dx < 0 ? 'left' : 'right';
   return dy < 0 ? 'back' : 'front';
 }
 
@@ -179,11 +182,14 @@ function useTravelerMotion(
   x: number,
   y: number,
   presentationFrozen: boolean,
+  height: number,
 ): Motion {
   const strideRef = useRef(stride);
   const overrideRef = useRef(override);
   const sheetRef = useRef(sheet);
   const posRef = useRef({ x, y });
+  const heightRef = useRef(height);
+  heightRef.current = height;
   strideRef.current = stride;
   overrideRef.current = override;
   sheetRef.current = sheet;
@@ -205,15 +211,17 @@ function useTravelerMotion(
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       const here = posRef.current;
-      const dist = Math.hypot(here.x - lastPos.x, here.y - lastPos.y);
+      const moved = groundDistance(here, lastPos);
+      const dist = moved < 0.1 ? moved : 0; // scene entry is not a step
       lastPos = here;
       const physicallyWalking = dist > 1e-6 && strideRef.current > 0.001;
       gait = stepGait(gait, physicallyWalking ? strideRef.current : 0, dt);
-      locomotion = physicallyWalking ? nextLocomotion(locomotion, gait) : 'idle';
+      locomotion = physicallyWalking ? 'walk' : 'idle';
       const requested: TravelerPose = overrideRef.current === 'auto' ? locomotion : overrideRef.current;
       const pose = poseForSheet(requested, sheetRef.current);
       if (pose === 'walk') {
-        if (dist > 1e-6) walkPhase = stepCycleByDistance(walkPhase, dist);
+        if (dist > 1e-6) walkPhase = stepCycleByDistance(walkPhase, dist,
+          WALK_STRIDE * heightRef.current / TRAVELER_HEIGHT * depthScale(here.y));
       } else if (pose === 'reach') {
         reachPhase = prevPose === 'reach' ? stepCycle(reachPhase, 1, dt, REACH_HZ) : 0;
       } else idlePhase = stepCycle(idlePhase, 1, dt, IDLE_CYCLE_HZ);
@@ -266,7 +274,7 @@ function useFramePresentation(blend:FrameBlend|null,contactCleanup:boolean):Fram
     // useAssetSrc can expose its previous state for one render when file changes.
     // Keep lastReady rather than apply the next frame's coordinates to that bitmap.
     if (loaded !== frameUrl(file)) return undefined;
-    if (import.meta.env.MODE === 'test') {
+    if (import.meta.env.MODE === 'test' || walkAtlasSource(loaded)) {
       setProcessed({file:frameFile,originalUrl:loaded,src:loaded});
       return undefined;
     }
@@ -323,13 +331,16 @@ function useFramePresentation(blend:FrameBlend|null,contactCleanup:boolean):Fram
   if (current) lastReady.current={shown:current,blend};
   const shown=current || lastReady.current?.shown || '';
   const shownBlend=current ? blend : lastReady.current?.blend ?? blend;
-  const support=contactCleanup && shownBlend.pose!=='lie'?supportForSource(shown):null;
+  const cell = walkAtlasSource(shown);
+  const support = cell ? { file: cell.file, x: cell.width / 2, y: cell.height, width: cell.width, height: cell.height }
+    : contactCleanup && shownBlend.pose !== 'lie' ? supportForSource(shown) : null;
   return {blend:shownBlend,shown,support,onError};
 }
 
 /** Pure bitmap/metadata view; async work belongs entirely to the persistent slot. */
 export function FramePictureView({picture,layer,onMount}:{picture:FramePresentation;layer:'out'|'current';onMount?:(node:HTMLSpanElement|null)=>void}) {
   const {blend,shown,support,onError}=picture;
+  const cell = walkAtlasSource(shown);
   return (
     <span
       ref={onMount}
@@ -338,13 +349,15 @@ export function FramePictureView({picture,layer,onMount}:{picture:FramePresentat
       data-support-frame={support?.file}
       data-support-x={support?.x}
       data-support-y={support?.y}
-      style={support ? { transform: supportTransform(support, blend.facing === 'left', TRAVELER_FOOT) } : undefined}
+      style={{ ...(support ? { transform: supportTransform(support, blend.facing === 'left', TRAVELER_FOOT) } : {}), ...(cell ? { overflow: 'hidden' } : {}) }}
     >
       {shown ? (
         <img
           className={layer === 'current' ? 'traveler-figure traveler-frame' : 'traveler-frame'}
           data-layer={layer}
           data-frame={blend.frame}
+          data-atlas={cell ? cell.file : undefined}
+          style={cell ? { position: 'absolute', width: `${WALK_ATLAS.width / cell.width * 100}%`, height: `${WALK_ATLAS.height / cell.height * 100}%`, left: `${-cell.x / cell.width * 100}%`, top: `${-cell.y / cell.height * 100}%`, maxWidth: 'none', objectFit: 'fill' } : undefined}
           src={shown}
           alt=""
           draggable={false}
@@ -388,7 +401,7 @@ export function useTravelerPresentation({
 }: TravelerProps) {
   const sheet = sheetOf(facing);
   const power = stride ?? (moving ? 1 : 0);
-  const motion = useTravelerMotion(power, pose, sheet, x, y, presentationFrozen);
+  const motion = useTravelerMotion(power, pose, sheet, x, y, presentationFrozen, height);
   const frames = clipFrames(motion.pose, sheet);
   const firstFile =
     motion.pose === 'walk'
@@ -428,7 +441,7 @@ export function useTravelerPresentation({
   const poseNow = pose === 'lie' ? 'lie' : motion.pose;
   const currentPicture=useFramePresentation(shown,contactCleanup)!;
   const outgoingPicture=useFramePresentation(outgoing,contactCleanup);
-  const supported=contactCleanup?currentPicture.support:null;
+  const supported=currentPicture.support;
   const planted = worldToScreen({ x, y }, TRAVELER_FOOT, poseNow === 'lie' ? 'rotate(-86deg)' : '');
   const fadeToken=fade.current.token;
   // Run once per native view mount, not every motion tick (which would double-advance CSS).

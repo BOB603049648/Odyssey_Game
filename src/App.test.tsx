@@ -48,6 +48,10 @@ function spot(scene: IslandScene, id: string): Point & { r: number } {
 
 async function cross(to: IslandScene, key: 'a' | 'd' | 'w' | 's') {
   await ready();
+  const from = document.querySelector('[data-scene]')?.getAttribute('data-scene');
+  // Take the visible sand / forecourt before moving past the solid props.
+  const floor = from === 'dba.scene.shore' && to === 'dba.scene.camp' ? .7 : from === 'dba.scene.yard' ? .925 : null;
+  if (floor !== null) for (let i = 0; i < 12 && here().y < floor; i++) fireEvent.keyDown(window, { key: 's' });
   for (let i = 0; i < 48; i += 1) {
     if (document.querySelector('[data-scene]')?.getAttribute('data-scene') === to) { await ready(); return; }
     fireEvent.keyDown(window, { key });

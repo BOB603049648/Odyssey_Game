@@ -4,6 +4,7 @@ import { BANDS, GATES, SHORE_MARKER, SPAWNS, SPOTS, crossed, gateAt, plantOnGrou
 import {
   KEY_STEP,
   WALK_SPEED,
+  WORLD_ASPECT,
   approachPlan,
   cameraOffset,
   followCamera,
@@ -82,14 +83,14 @@ describe('walk', () => {
 
     let velocity = { x: WALK_SPEED, y: 0 };
     for (let i = 0; i < 27; i += 1) velocity = easeVelocity(velocity, { x: 0, y: 0 }, 1 / 60);
-    expect(velocity.x).toBeGreaterThan(WALK_SPEED * 0.15);
+    expect(velocity.x).toBeLessThan(WALK_SPEED * 0.01);
     expect(velocity.x).toBeLessThan(WALK_SPEED * 0.7);
     for (let i = 0; i < 70; i += 1) velocity = easeVelocity(velocity, { x: 0, y: 0 }, 1 / 60);
     expect(velocity.x).toBeLessThan(WALK_SPEED * 0.08);
 
     const far = desiredVelocity(null, { x: 0.8, y: 0.5 }, { x: 0.2, y: 0.5 });
-    const near = desiredVelocity(null, { x: 0.23, y: 0.5 }, { x: 0.2, y: 0.5 });
-    expect(far.x).toBeCloseTo(WALK_SPEED, 2);
+    const near = desiredVelocity(null, { x: 0.21, y: 0.5 }, { x: 0.2, y: 0.5 });
+    expect(far.x * WORLD_ASPECT).toBeCloseTo(WALK_SPEED, 2);
     expect(near.x).toBeGreaterThan(0);
     expect(near.x).toBeLessThan(far.x * 0.6);
   });

@@ -17,7 +17,7 @@ npm run dev
 
 ## 怎么玩到离岛
 
-1. 新游戏，看完四步序章后「走上潮线」。用 WASD／方向键、地面点击或触屏摇杆走动；走近后再次点击物件、点底部操作按钮，或按 E／F 交互。焦点在游戏画面时也可按 Enter／空格；焦点在菜单按钮上时由该按钮响应。
+1. 新游戏，看完四步序章后「走上潮线」。用 WASD／方向键、地面点击或触屏摇杆走动；点击目的地会绕过石头与建筑、沿木桥行走，键盘与摇杆在障碍边缘受阻；走近后再次点击物件、点底部操作按钮，或按 E／F 交互。焦点在游戏画面时也可按 Enter／空格；焦点在菜单按钮上时由该按钮响应。
 2. 在雾岸走近漂木、裂符残片和木牌。进入木牌壁画后配对具体层，再依次解锁动作、关系和抽象层；28 个词都可学习，最右复用带可记熟。
 3. 返回雾岸，走近水瓢，选择已学的「水」。沿场景边缘出入口可往返棚火、经堂前坪、木经堂、雾径和夜营。前坪的「多／少」木牌可从台阶前交互。
 4. 喝过水，且学会饥饿、承诺、危险后，回雾岸走近「往东」。看完离岛和三段无字幕回忆后，可在夜营或案卷重看回忆。海图的甲骨角仍未开放。
@@ -51,9 +51,11 @@ npm run preview -- --host 127.0.0.1
 npm run test:browser
 # 手机路线、触屏交互、多指摇杆与键盘菜单检查：
 npm run test:controls
+# 行走四方向、冷加载、松手停止（首次需要 npx playwright install ffmpeg）
+npm run test:movement
 ```
 
-可用 `ODYSSEY_URL` 指定独立测试站、`CHROMIUM_PATH` 指定已安装的 Chromium。截图分别输出至被 Git 忽略的 `artifacts/browser-smoke/` 和 `artifacts/browser-controls/`。浏览器测试创建自己的无痕会话，不会改动日常浏览器的存档。
+可用 `ODYSSEY_URL` 指定独立测试站、`CHROMIUM_PATH` 指定已安装的 Chromium。截图输出至被 Git 忽略的 `artifacts/browser-smoke/`、`artifacts/browser-controls/` 和 `artifacts/browser-movement/`；行走检查还会保存视频与位移采样。浏览器测试创建自己的无痕会话，不会改动日常浏览器的存档。
 
 构建产物含 `version.json` 和 HTML 的 `odyssey-revision` 标记，可核对测试站的实际 Git 提交；`dirty: true` 表示从含未提交改动的工作区构建。
 

@@ -11,7 +11,7 @@ export function firstScreenAssetIds(scene = FIRST_SCREEN_SCENE, companion = FIRS
     .map((slot) => slot.asset)
     .filter((asset): asset is string => Boolean(asset));
   // A complete scene includes its actors, even after a cold resume elsewhere.
-  ids.push(FIRST_SCREEN_TRAVELER, companion);
+  ids.push(FIRST_SCREEN_TRAVELER, 'stride-front-01.png', companion);
   return [...new Set(ids)];
 }
 
