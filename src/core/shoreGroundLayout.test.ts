@@ -42,18 +42,18 @@ describe('shore ground vs sky layout', () => {
     expect(ground?.asset).toBe('art.shore.ground');
   });
 
-  it('keeps the existing south hang, walk band, spawn, gates, scale, and cat height', () => {
+  it('retains the legacy fade renderer with the new painted shore navigation bounds', () => {
     expect(GROUND_SOUTH_HANG).toBe(0.22);
     expect(plate).toContain('bottom: `${-GROUND_SOUTH_HANG * 100}%`');
     const band = BANDS['dba.scene.shore'];
-    expect(band).toEqual({ minX: 0.05, maxX: 0.96, minY: 0.48, maxY: 0.84 });
-    expect(SPAWNS['dba.scene.shore']).toEqual({ x: 0.42, y: 0.62 });
+    expect(band).toEqual({ minX: 0.05, maxX: 0.96, minY: 0.62, maxY: 0.88 });
+    expect(SPAWNS['dba.scene.shore']).toEqual({ x: 0.44, y: 0.72 });
     expect(WORLD_SCALE).toBe(1.15);
     expect(SHORE_CAT_HEIGHT).toBe(0.168);
     const shoreGates = GATES.filter((gate) => gate.from === 'dba.scene.shore');
     expect(shoreGates).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ to: 'dba.scene.camp', x: 0.9, y: 0.63, r: 0.04 }),
+        expect.objectContaining({ to: 'dba.scene.camp', x: 0.9, y: 0.74, r: 0.04 }),
         expect.objectContaining({ to: 'dba.scene.hall', x: 0.11, y: 0.7, r: 0.04 }),
       ]),
     );
@@ -63,11 +63,11 @@ describe('shore ground vs sky layout', () => {
     const slotH = 1 + GROUND_SOUTH_HANG;
     const tideWidth = IMAGE_TIDE_OPAQUE - IMAGE_TIDE_START;
     expect(SHORE_TIDE_FADE_END_WORLD).toBe(BANDS['dba.scene.shore'].minY);
-    expect(SHORE_TIDE_FADE_END_WORLD).toBe(0.48);
-    expect(SHORE_TIDE_FADE_START_WORLD).toBeCloseTo((0.48 / slotH - tideWidth) * slotH, 6);
+    expect(SHORE_TIDE_FADE_END_WORLD).toBe(0.62);
+    expect(SHORE_TIDE_FADE_START_WORLD).toBeCloseTo((0.62 / slotH - tideWidth) * slotH, 6);
     expect(SHORE_TIDE_FADE_END_WORLD - SHORE_TIDE_FADE_START_WORLD).toBeCloseTo(tideWidth * slotH, 6);
     // Full opacity is a short tail past minY so the 100% CSS stop is not a hairline on the tread.
-    expect(SHORE_TIDE_FADE_OPAQUE_WORLD).toBeCloseTo(0.48 + tideWidth * slotH, 6);
+    expect(SHORE_TIDE_FADE_OPAQUE_WORLD).toBeCloseTo(0.62 + tideWidth * slotH, 6);
     expect(SHORE_TIDE_FADE_OPAQUE_WORLD).toBeLessThan(SPAWNS['dba.scene.shore'].y);
     expect(SHORE_TIDE_BAND_EDGE_OPACITY).toBeGreaterThanOrEqual(0.9);
     expect(SHORE_TIDE_BAND_EDGE_OPACITY).toBeLessThan(1);
@@ -91,7 +91,7 @@ describe('shore ground vs sky layout', () => {
     expect(shoreGroundMaskOpacityAtWorldY(band.minY)).toBeGreaterThanOrEqual(0.9);
     expect(shoreGroundMaskOpacityAtWorldY(SHORE_TIDE_FADE_OPAQUE_WORLD)).toBe(1);
     expect(shoreGroundMaskOpacityAtWorldY(SPAWNS['dba.scene.shore'].y)).toBe(1);
-    expect(shoreGroundMaskOpacityAtWorldY(0.66)).toBe(1);
+    expect(shoreGroundMaskOpacityAtWorldY(0.72)).toBe(1);
     expect(shoreGroundMaskOpacityAtWorldY(band.maxY)).toBe(1);
     expect(shoreGroundMaskOpacityAtWorldY(1)).toBe(1);
   });
@@ -117,7 +117,7 @@ describe('shore ground vs sky layout', () => {
 
   it('does not put the mask 100% stop on the walk-band north edge', () => {
     const mask = shoreGroundMaskImage();
-    const edgePct = ((0.48 / (1 + GROUND_SOUTH_HANG)) * 100).toFixed(4);
+    const edgePct = ((0.62 / (1 + GROUND_SOUTH_HANG)) * 100).toFixed(4);
     expect(mask).toContain(`rgba(0, 0, 0, ${SHORE_TIDE_BAND_EDGE_OPACITY.toFixed(2)}) ${edgePct}%`);
     expect(mask).not.toMatch(new RegExp(`#000 ${edgePct}%`));
     expect(mask).toMatch(/#000 [0-9.]+%, #000 100%\)/);

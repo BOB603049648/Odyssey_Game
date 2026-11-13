@@ -51,6 +51,7 @@ import { useAssetSrc } from './useAssetSrc';
 
 import { WalkStick } from './WalkStick';
 import { StageControls } from './StageControls';
+import { WorldFeedback } from './WorldFeedback';
 import { useCrossfade } from './useCrossfade';
 import { useShoreCuePresentation } from './useShoreCuePresentation';
 
@@ -120,6 +121,7 @@ export function WalkLayer({
   flash = null,
   beat = null,
   presentationFrozen = false,
+  interactionSeq = 0,
 }: {
   scene: IslandScene;
   drank: boolean;
@@ -146,8 +148,10 @@ export function WalkLayer({
   beat?: SpotBeat | null;
   /** Static local fixture only. Does not pause asset/contact RAF work. */
   presentationFrozen?: boolean;
+  interactionSeq?: number;
 }) {
-  const firstScreen = useFirstScreenReady(scene, 'land-companion');
+  const painted = !presentationFrozen;
+  const firstScreen = useFirstScreenReady(scene, 'land-companion', painted);
   const viewportRef = useRef<HTMLDivElement>(null);
   const soleRef = useRef<HTMLImageElement>(null);
   const catSoleRef = useRef<HTMLImageElement>(null);
@@ -170,7 +174,10 @@ export function WalkLayer({
   const held = useRef(new Set<WalkKey>());
   const movingRef = useRef(false);
   const velocityRef = useRef<Point>({ x: 0, y: 0 });
-  const posRef = useRef<Point>(plantOnGround(scene, remembered ?? SPAWNS[scene]));
+  // Frozen composition fixtures can place feet on either side of a prop to test
+  // depth sorting. Live saves always pass through the current navigation mask.
+  const initialFoot = remembered ?? SPAWNS[scene];
+  const posRef = useRef<Point>(presentationFrozen ? initialFoot : plantOnGround(scene, initialFoot));
   const [pos, setPos] = useState<Point>(posRef.current);
   const [facing, setFacing] = useState<TravelerFacing>('front');
   const [moving, setMoving] = useState(false);
@@ -602,7 +609,7 @@ export function WalkLayer({
   // Keep the beat/guide/queue and the dedicated trajectory file untouched.
   const yardLandingFallback = scene === 'dba.scene.yard' && requestedCatSprite === 'land-yard-give';
   const targetCatSprite = yardLandingFallback ? 'fallback' : requestedCatSprite;
-  const groundAsset = sceneAssembly(scene)?.slots.find((slot) => slot.slot === 'ground')?.asset ?? null;
+  const groundAsset = painted && scene === 'dba.scene.shore' ? null : sceneAssembly(scene)?.slots.find((slot) => slot.slot === 'ground')?.asset ?? null;
   const { src: groundPlate, onError: onGroundError } = useAssetSrc(groundAsset, SLOT_SRC_API);
   const slotCat =
     scene === 'dba.scene.camp'
@@ -638,7 +645,7 @@ export function WalkLayer({
     id: catSprite === 'fallback' ? slotCat : catSprite,
     originalURL: shownCat.figure, api: catSprite === 'fallback' ? SLOT_SRC_API : TRAJ_SRC_API,
   } : null, () => { committedCat.current = shownCat; });
-  const flashId =
+  const flashId = painted && scene === 'dba.scene.shore' ? null :
     flash?.kind === 'driftwood'
       ? 'art.shore.prop.driftwood.interact'
       : flash?.kind === 'sleep'
@@ -649,8 +656,8 @@ export function WalkLayer({
   const { src: flashSrc, onError: onFlashError } = useAssetSrc(flashId, SLOT_SRC_API);
   useEffect(() => {
     const kit = sceneAssembly(scene);
-    preloadSceneAssets(kit?.slots.map((slot) => slot.asset) ?? []);
-  }, [scene]);
+    preloadSceneAssets(painted && scene === 'dba.scene.shore' ? ['art.shore.landscape'] : kit?.slots.map((slot) => slot.asset) ?? []);
+  }, [scene, painted]);
   // Only the explicitly frozen depth matrix shares a fixed reference camera; live camera is unchanged.
   const fixedFixtureCamera = presentationFrozen && getShoreVisualProfile().fixture?.startsWith('depth-')
     ? cameraOffset(SPAWNS['dba.scene.shore'], view.w, view.h) : null;
@@ -788,7 +795,7 @@ export function WalkLayer({
   const travelerNode = <TravelerView presentation={travelerPresentation}/>;
   const depthItems:GroundDepthNode[] = sharedDepth ? depthScenes.flatMap(plate => {
     const leaving = plate !== plates.current;
-    return groundDepthSlots(plate)
+    return groundDepthSlots(plate, painted)
       .filter(slot => leaving || !slot.spot || spotIds.includes(slot.spot))
       .map(slot => ({ id:`${plate}:${slot.id}`, footY:slot.y!, kind:'prop' as const, scene:plate,
         phase:leaving ? 'leaving' as const : plates.previous ? 'entering' as const : 'stable' as const,
@@ -829,6 +836,7 @@ export function WalkLayer({
         <div className="world-cam" data-testid="world-camera" style={{ transform: `translate3d(${-shownCam.x}px, ${-shownCam.y}px, 0)`, zIndex: 1 }}>
         <div ref={worldRef} className="world-layer" style={{ width: worldW, height: worldH, ['--world-w' as string]: `${worldW}px` }}>
           <PlateStack
+            painted={painted}
             plate={plates.current}
             previous={plates.previous}
             depthScenes={depthScenes}
@@ -843,6 +851,8 @@ export function WalkLayer({
           />
           {sharedDepth ? <GroundDepth items={depthItems}/> : null}
           <div className="walk-ground" data-testid="walk-ground" onPointerDown={onGround} />
+          {!presentationFrozen ? <WorldFeedback scene={scene} pos={pos} moving={moving} target={targetRef.current}
+            response={beat} sequence={interactionSeq} /> : null}
           {exits.map((gate) => {
             const at = pathExitPoint(gate);
             return (
@@ -920,6 +930,7 @@ export function WalkLayer({
           ) : null}
           {!sharedDepth ? travelerNode : null}
           <PlateStack
+            painted={painted}
             plate={plates.current}
             previous={plates.previous}
             depthScenes={depthScenes}
@@ -932,6 +943,7 @@ export function WalkLayer({
             beat={beat}
           />
           <PlateStack
+            painted={painted}
             plate={plates.current}
             previous={plates.previous}
             depthScenes={depthScenes}

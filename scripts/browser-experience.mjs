@@ -1,0 +1,72 @@
+import { chromium } from 'playwright';
+import assert from 'node:assert/strict';
+import { mkdir } from 'node:fs/promises';
+import { resolve } from 'node:path';
+const url = process.env.ODYSSEY_URL ?? 'http://127.0.0.1:4173/';
+const output = resolve(process.env.ODYSSEY_QA_DIR ?? 'artifacts/browser-experience');
+await mkdir(output, { recursive: true });
+const proxyServer = url.startsWith('https:') ? process.env.HTTPS_PROXY : process.env.HTTP_PROXY;
+const proxy = proxyServer && !['localhost','127.0.0.1'].includes(new URL(url).hostname) ? { server: proxyServer, bypass: process.env.NO_PROXY } : undefined;
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH, headless: true, args: ['--no-sandbox'], proxy });
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+const errors = [];
+page.on('pageerror', error => errors.push(error.message));
+page.on('response', response => { if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`); });
+const save = () => page.evaluate(() => JSON.parse(localStorage.getItem('odyssey.save.v1')));
+const pictureReady = async () => {
+  await page.waitForFunction(() => {
+    const pictures = [...document.querySelectorAll('.concept-picture img')];
+    return pictures.length > 0 && pictures.every(img => img.complete && img.naturalWidth > 0);
+  });
+  await page.waitForTimeout(600); // Entry veil and decoded image paint must settle before a visual capture.
+};
+try {
+  await page.goto(url);
+  await page.getByRole('button', { name: '新游戏', exact: true }).click();
+  for (let i = 0; i < 3; i++) await page.getByRole('button', { name: '下一幕', exact: true }).click();
+  await page.getByRole('button', { name: '走上潮线', exact: true }).click();
+  await page.locator('.scene-display').waitFor({ state: 'hidden' });
+  await page.waitForTimeout(1100);
+  assert.match(await page.getByTestId('current-goal').innerText(), /读懂陌生的刻痕/);
+  assert.equal(await page.getByTestId('painted-environment').count(), 1);
+  assert.equal(await page.locator('[data-assembly="painted"] .prop-body img').count(), 0, 'legacy cutouts cover the painting');
+  assert.equal(await page.locator('[data-assembly="painted"] [data-interactable="yes"]').count(), 5);
+  await page.screenshot({ path: resolve(output, 'opening-desktop.png') });
+  await page.getByTestId('island-mural').click();
+  await page.getByTestId('walk-destination').waitFor();
+  await page.waitForFunction(() => document.querySelector('[data-testid="island-mural"]')?.dataset.reach === 'near');
+  await page.waitForFunction(() => document.querySelector('[data-testid="traveler"]')?.dataset.moving === 'no');
+  await page.getByTestId('island-mural').click();
+  await page.getByTestId('cell-dba.word.water').click();
+  await pictureReady();
+  assert.equal(await page.locator('.story-tray button').count(), 3);
+  assert.equal(await page.locator('.story-tray svg.glyph').count(), 0);
+  await page.screenshot({ path: resolve(output, 'mural-context.png') });
+  await page.getByTestId('object-dba.word.water').click();
+  assert.equal(await page.getByTestId('mural-review').isDisabled(), true);
+  await page.getByTestId('cell-dba.word.sun').click();
+  await page.getByTestId('object-dba.word.sun').click();
+  await page.getByTestId('mural-review').click();
+  await pictureReady();
+  assert.equal(await page.locator('.review-answers button').count(), 2);
+  await page.getByTestId('review-dba.word.water').click();
+  assert.equal((await save()).words['dba.word.sun'].state, 'learned');
+  assert.equal((await save()).words['dba.word.sun'].wrong, 1);
+  await page.getByTestId('review-dba.word.sun').click();
+  assert.equal((await save()).words['dba.word.sun'].state, 'mastered');
+  await pictureReady();
+  await page.screenshot({ path: resolve(output, 'review-context.png') });
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+  await page.screenshot({ path: resolve(output, 'review-mobile.png') });
+  await page.getByRole('button', { name: '返回', exact: true }).click();
+  await page.locator('.scene-display').waitFor({ state: 'hidden' });
+  assert.match(await page.getByTestId('current-goal').innerText(), /让刻痕成为行动/);
+  await page.waitForTimeout(1100);
+  await page.screenshot({ path: resolve(output, 'opening-mobile.png') });
+  assert.deepEqual(errors, []);
+  console.log(JSON.stringify({ result: 'PASS', checks: ['live expedition objective', 'three illustrated meaning choices', 'decoded context paintings', 'review requires alternatives', 'wrong answer recorded', 'correct answer mastery', 'responsive mural and HUD'], errors }));
+} catch (error) {
+  await page.screenshot({ path: resolve(output, 'failure.png') });
+  console.error(error); process.exitCode = 1;
+} finally { await browser.close(); }

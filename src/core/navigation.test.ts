@@ -14,10 +14,10 @@ describe('continuous ground navigation', () => {
   });
 
   it('blocks a keyboard step at the marker without dropping the actor down its face', () => {
-    const from = { x: .659, y: .53 };
-    const next = groundStep('dba.scene.shore', from, { x: .67, y: .531 });
-    expect(next.x).toBeLessThan(.66);
-    expect(next.y).toBeLessThan(.532);
+    const from = { x: .709, y: .65 };
+    const next = groundStep('dba.scene.shore', from, { x: .72, y: .651 });
+    expect(next.x).toBeLessThan(.71);
+    expect(next.y).toBeLessThan(.652);
     expect(onGround('dba.scene.shore', next)).toBe(true);
   });
 
@@ -34,8 +34,12 @@ describe('continuous ground navigation', () => {
   });
 
   it.each([
-    ['dba.scene.shore', { x: .6, y: .52 }, { x: .86, y: .53 }],
-    ['dba.scene.shore', { x: .86, y: .53 }, { x: .6, y: .52 }],
+    ['dba.scene.shore', { x: .6, y: .65 }, { x: .87, y: .65 }],
+    ['dba.scene.shore', { x: .87, y: .65 }, { x: .6, y: .65 }],
+    ['dba.scene.shore', { x: .24, y: .72 }, { x: .46, y: .72 }],
+    ['dba.scene.shore', { x: .46, y: .72 }, { x: .24, y: .72 }],
+    ['dba.scene.shore', { x: .52, y: .64 }, { x: .69, y: .64 }],
+    ['dba.scene.shore', { x: .69, y: .64 }, { x: .52, y: .64 }],
     ['dba.scene.yard', { x: .16, y: .79 }, { x: .87, y: .79 }],
     ['dba.scene.yard', { x: .87, y: .79 }, { x: .16, y: .79 }],
     ['dba.scene.path', { x: .12, y: .43 }, { x: .76, y: .69 }],

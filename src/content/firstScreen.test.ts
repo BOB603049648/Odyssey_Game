@@ -4,6 +4,12 @@ import { FIRST_SCREEN_SCENE, firstScreenAssetIds, isFirstScreenRequired } from '
 import { SLOT_ASSETS } from './slotAssets';
 
 describe('first-screen asset contract', () => {
+  it('loads one complete painted environment and both actors for the live shore', () => {
+    const ids = firstScreenAssetIds('dba.scene.shore', 'land-companion', true);
+    expect(ids).toEqual(['art.shore.landscape', 'idle-front-01.png', 'stride-front-01.png', 'land-companion']);
+    expect(SLOT_ASSETS['art.shore.landscape']).toBe(true);
+    expect(ids).not.toContain('art.shore.prop.gourd');
+  });
   it('is the shore plates plus idle and the shared walk atlas, skipping empty slots and old animation frames', () => {
     expect(FIRST_SCREEN_SCENE).toBe('dba.scene.shore');
     const ids = firstScreenAssetIds();

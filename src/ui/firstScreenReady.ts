@@ -6,15 +6,15 @@ import { subscribeAssetUpdates } from '../content/assetUpdates';
 
 export type FirstScreenStatus = 'loading' | 'ready' | 'failed';
 
-export function useFirstScreenReady(scene: string, companion?: string): {
+export function useFirstScreenReady(scene: string, companion?: string, painted = false): {
   status: FirstScreenStatus;
   done: number;
   total: number;
   retry: () => void;
 } {
   const [tick, setTick] = useState(0);
-  const ids = firstScreenAssetIds(scene, companion);
-  const key = `${scene}::${companion ?? ''}::${tick}`;
+  const ids = firstScreenAssetIds(scene, companion, painted);
+  const key = `${scene}::${companion ?? ''}::${painted}::${tick}`;
   const [status, setStatus] = useState<FirstScreenStatus>('loading');
   const [done, setDone] = useState(0);
   const [activeKey, setActiveKey] = useState(key);
@@ -29,7 +29,7 @@ export function useFirstScreenReady(scene: string, companion?: string): {
     setActiveKey(key);
     setStatus('loading');
     setDone(0);
-    const required = firstScreenAssetIds(scene, companion);
+    const required = firstScreenAssetIds(scene, companion, painted);
     if (required.length === 0) {
       setStatus('ready');
       return undefined;
@@ -63,7 +63,7 @@ export function useFirstScreenReady(scene: string, companion?: string): {
       cancelled = true;
       stop();
     };
-  }, [key, scene, companion]);
+  }, [key, scene, companion, painted]);
 
   return { status: activeKey === key ? status : 'loading', done: activeKey === key ? done : 0, total: ids.length, retry };
 }

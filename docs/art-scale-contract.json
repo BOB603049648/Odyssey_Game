@@ -25,14 +25,15 @@
       {
         "scene": "dba.scene.shore",
         "id": "art.shore.prop.driftwood",
-        "h": 0.06,
+        "h": 0.07,
         "max_h": 0.3
       },
       {
         "scene": "dba.scene.shore",
         "id": "art.shore.prop.gourd",
-        "h": 0.055,
-        "max_h": 0.16
+        "h": 0.13,
+        "max_h": 0.16,
+        "note": "Painted shore: complete spring basin and dipper interaction area."
       },
       {
         "scene": "dba.scene.camp",

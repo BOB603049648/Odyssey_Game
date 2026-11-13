@@ -1,6 +1,7 @@
 import { LEXEMES } from '../content/catalog';
 import type { SaveData } from './schema';
 import { isLearnedState, reviewForMastery } from './words';
+import { meaningChoices } from './conceptChoices';
 
 export const ISLAND_SCENES = [
   'dba.scene.shore',
@@ -251,10 +252,23 @@ export function reviewTarget(state: SaveData): string | null {
   return next?.id ?? null;
 }
 
+export function reviewChoices(state: SaveData): string[] {
+  const target = reviewTarget(state);
+  if (!target) return [];
+  const known = LEXEMES.filter(lexeme => learned(state, lexeme.id));
+  if (known.length < 2) return [];
+  const layer = LEXEMES.find(lexeme => lexeme.id === target)?.layer;
+  const available = known.sort((a, b) => Number(b.layer === layer) - Number(a.layer === layer));
+  return meaningChoices(target, available.map(lexeme => lexeme.id), 4);
+}
+
 export function reviewTap(state: SaveData, wordId: string): SaveData {
   const target = reviewTarget(state);
   const word = target ? state.words[target] : undefined;
-  if (!target || !word || wordId !== target) return deny(state);
+  if (!target || !word) return deny(state);
+  if (wordId !== target) return deny({ ...state, words: {
+    ...state.words, [target]: reviewForMastery(word, { correct: false, pawUsed: state.companion.pawUsed }),
+  } });
   return {
     ...state,
     words: {

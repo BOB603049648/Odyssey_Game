@@ -27,6 +27,15 @@ beforeEach(() => {
 afterEach(() => cleanup());
 
 describe('first-screen readiness', () => {
+  it('requires the painted shore, exposes its failure, and recovers through retry', async () => {
+    art.load.mockImplementation((id: string) => id === 'art.shore.landscape' ? Promise.resolve(null) : Promise.resolve('ok'));
+    const { result } = renderHook(() => useFirstScreenReady('dba.scene.shore', 'land-companion', true));
+    await waitFor(() => expect(result.current.status).toBe('failed'));
+    expect(art.load).not.toHaveBeenCalledWith('art.shore.ground');
+    art.load.mockResolvedValue('recovered');
+    await act(async () => result.current.retry());
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+  });
   it.each(['shore','camp','yard','hall','path','night'])('waits for both actors on a cold %s resume', async name => {
     const human = deferred<string>();
     const guide = deferred<string>();

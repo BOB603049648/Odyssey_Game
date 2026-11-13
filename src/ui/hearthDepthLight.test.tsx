@@ -32,9 +32,9 @@ async function mount(hy=.64,mode:'candidate'|'legacy'|'baseline'|'camp'='candida
 beforeEach(()=>{vi.stubEnv('VITE_VISUAL_SAMPLE','1');vi.stubGlobal('fetch',vi.fn(()=>new Promise(()=>{})));});
 afterEach(()=>{cleanup();vi.unstubAllGlobals();vi.unstubAllEnvs();history.replaceState({},'','/');});
 describe('shore hearth pool keeps old prop-light ownership inside true D1 depth',()=>{
- for(const mode of ['legacy','candidate'] as const)for(const hy of [.64,.68,.72])it(`${mode} stone .68 vs human ${hy}: near shields pool, equality/back remains lit`,async()=>{
+ for(const mode of ['legacy','candidate'] as const)for(const hy of [.69,.73,.77])it(`${mode} stone .73 vs human ${hy}: near shields pool, equality/back remains lit`,async()=>{
   await mount(hy,mode);const stone=screen.getByTestId('prop-art.shore.prop.east-gap');const cue=screen.getByTestId('cue-art.shore.prop.east-gap');const pool=document.querySelector<HTMLElement>('.depth-hearth-emitter')??screen.getByTestId('exit-camp');
-  expect(compare(stone,pool)>0,JSON.stringify({stone:paintKey(stone),pool:paintKey(pool)})).toBe(.68>hy);expect(compare(cue,pool)>0).toBe(.68>hy);
+  expect(compare(stone,pool)>0,JSON.stringify({stone:paintKey(stone),pool:paintKey(pool)})).toBe(.73>hy);expect(compare(cue,pool)>0).toBe(.73>hy);
  });
  it('keeps emitter at same gate anchor and near state, with exactly one unchanged interactive exit',async()=>{
   await mount(.72);const button=screen.getByTestId('exit-camp');const pool=document.querySelector<HTMLElement>('.depth-hearth-emitter');expect(pool).not.toBeNull();

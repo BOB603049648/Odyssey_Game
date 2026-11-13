@@ -44,8 +44,8 @@ async function travel(to) {
   await ready();
 }
 async function learnBand() {
-  while (await page.locator('button[data-testid^="object-"]').count()) {
-    const id = (await page.locator('button[data-testid^="object-"]').first().getAttribute('data-testid')).slice(7);
+  while (await page.locator('.glyph-wall button[data-testid^="cell-"]').count()) {
+    const id = (await page.locator('.glyph-wall button[data-testid^="cell-"]').first().getAttribute('data-testid')).slice(5);
     await page.getByTestId(`cell-${id}`).click();
     await page.getByTestId(`object-${id}`).click();
   }

@@ -16,8 +16,9 @@ const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('response
 async function pointer(el){
  const b=await el.boundingBox();if(!b)throw new Error('No pointer target');const vp=page.viewportSize();
  const x=(Math.max(1,b.x)+Math.min(vp.width-1,b.x+b.width))/2, y=(Math.max(1,b.y)+Math.min(vp.height-1,b.y+b.height))/2;
- const hit=await el.evaluate((e,p)=>e.contains(document.elementFromPoint(p.x,p.y)),{x,y});if(!hit)throw new Error('Target occluded: '+await el.getAttribute('data-testid'));
- await page.mouse.click(x,y);
+ // Let Playwright wait for the camera/element to settle and check hit testing.
+ // A screen coordinate measured during the scene transition becomes stale.
+ await el.click({position:{x:x-b.x,y:y-b.y}});
 }
 const save=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('odyssey.save.v1')));
 async function closeSheet(){if(['casefile','lexicon','settings'].includes((await save()).overlay))await page.getByRole('button',{name:'合上',exact:true}).click();await page.getByRole('dialog').waitFor({state:'hidden'});}
@@ -25,7 +26,7 @@ async function ready(){await page.locator('.scene-display').waitFor({state:'hidd
 async function spot(id){await closeSheet();await ready();const el=page.getByTestId(id);await pointer(el);await page.waitForFunction(id=>document.querySelector(`[data-testid="${id}"]`)?.dataset.reach==='near',id);await page.waitForFunction(()=>document.querySelector('[data-testid="traveler"]')?.dataset.moving==='no');await page.waitForTimeout(700);await pointer(el);console.log('spot',id);}
 async function gate(to){await closeSheet();await ready();const from=(await page.getByTestId('walk-stage').getAttribute('data-scene')).split('.').at(-1);
  const keys={'shore:camp':'d','shore:hall':'a','camp:shore':'a','camp:yard':'d','camp:night':'w','yard:camp':'a','yard:path':'d','path:yard':'a','hall:shore':'s','night:camp':'s'};
- const floor=from==='shore' && to==='camp' ? .7 : from==='yard' ? .925 : null;
+ const floor=from==='shore' ? .79 : from==='yard' ? .925 : null;
  if(floor!==null && Number(await page.getByTestId('traveler').getAttribute('data-y'))<floor){await page.keyboard.down('s');try{await page.waitForFunction(floor=>Number(document.querySelector('[data-testid=traveler]')?.dataset.y)>=floor,floor);}finally{await page.keyboard.up('s');}}
  await page.keyboard.down(keys[`${from}:${to}`]);try{await page.waitForFunction(to=>document.querySelector('[data-testid="walk-stage"]')?.dataset.scene===`dba.scene.${to}`,to);}finally{await page.keyboard.up(keys[`${from}:${to}`]);}await ready();console.log('scene',to);}
 
@@ -38,8 +39,8 @@ await spot('shore-driftwood');
 await spot('island-mural');
 for(let band=0;band<4;band++){
 await page.getByRole('tab',{name:`壁画带 ${band+1}`,exact:true}).click();
-while(await page.locator('button[data-testid^="object-"]').count()){
- const id=(await page.locator('button[data-testid^="object-"]').first().getAttribute('data-testid')).slice(7);
+while(await page.locator('.glyph-wall button[data-testid^="cell-"]').count()){
+ const id=(await page.locator('.glyph-wall button[data-testid^="cell-"]').first().getAttribute('data-testid')).slice(5);
  await page.getByTestId(`cell-${id}`).click();await page.getByTestId(`object-${id}`).click();
 }
 }

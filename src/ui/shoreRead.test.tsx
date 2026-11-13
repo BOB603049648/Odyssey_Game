@@ -229,7 +229,7 @@ describe('shore readability', () => {
     );
     expect(screen.queryByTestId('approach-hint')).toBeNull();
     expect(screen.getByTestId('shore-driftwood').getAttribute('data-reach')).toBe('glance');
-    expect(screen.getByTestId('island-gourd').getAttribute('data-reach')).toBe('glance');
+    expect(screen.getByTestId('island-gourd').getAttribute('data-reach')).toBe('far');
     expect(screen.getByTestId('island-mural').getAttribute('data-reach')).toBe('glance');
     expect(screen.getByTestId('shore-stone').getAttribute('data-reach')).toBe('far');
     expect(screen.getByTestId('shore-depart').getAttribute('data-reach')).toBe('far');
@@ -331,16 +331,16 @@ describe('shore readability', () => {
     useGame.setState({ place: null });
   });
 
-  it('does not move sole, scale, shore band, or the #60 shore boxes', () => {
+  it('keeps actor scale and contact while aligning the shore interaction boxes to its painting', () => {
     expect(WORLD_SCALE).toBe(1.15);
-    expect(BANDS['dba.scene.shore']).toMatchObject({ minX: 0.05, maxX: 0.96, minY: 0.48, maxY: 0.84 });
+    expect(BANDS['dba.scene.shore']).toMatchObject({ minX: 0.05, maxX: 0.96, minY: 0.62, maxY: 0.88 });
     const kit = sceneAssembly('dba.scene.shore');
     const box = (id: string) => kit?.slots.find((slot) => slot.id === id);
-    expect(box('art.shore.prop.driftwood')).toMatchObject({ x: 0.33, y: 0.72, w: 0.13, h: 0.06 });
-    expect(box('art.shore.prop.gourd')).toMatchObject({ x: 0.58, y: 0.66, w: 0.045, h: 0.055 });
-    expect(box('art.shore.prop.mural-wall')).toMatchObject({ x: 0.3, y: 0.56, w: 0.15, h: 0.12 });
-    expect(box('art.shore.prop.east-gap')).toMatchObject({ x: 0.74, y: 0.68, w: 0.12, h: 0.18 });
-    expect(box('art.shore.prop.break-shard')).toMatchObject({ x: 0.18, y: 0.7, w: 0.06, h: 0.055 });
+    expect(box('art.shore.prop.driftwood')).toMatchObject({ x: 0.37, y: 0.75, w: 0.18, h: 0.07 });
+    expect(box('art.shore.prop.gourd')).toMatchObject({ x: 0.60, y: 0.70, w: 0.13, h: 0.13 });
+    expect(box('art.shore.prop.mural-wall')).toMatchObject({ x: 0.36, y: 0.62, w: 0.20, h: 0.18 });
+    expect(box('art.shore.prop.east-gap')).toMatchObject({ x: 0.78, y: 0.73, w: 0.16, h: 0.29 });
+    expect(box('art.shore.prop.break-shard')).toMatchObject({ x: 0.18, y: 0.73, w: 0.09, h: 0.06 });
     expect(css).toMatch(/\.sole-soft\s*\{[^}]*transparent calc\(89\.8% \* var\(--fit\)\)[^}]*92\.0%[^}]*94\.0%/);
     expect(css).toMatch(/\.sole-soft\s*\{[^}]*filter:\s*url\(#sole-warm\)/);
     expect(css).not.toMatch(/\.traveler img\s*\{[^}]*transparent 95\.2%/);

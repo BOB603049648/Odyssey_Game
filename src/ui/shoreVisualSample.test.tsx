@@ -62,7 +62,7 @@ describe('shore same-plane and separated cue', () => {
     candidate(); const save = newGameState(); const hint = { level: 0 as const, anchor: 'driftwood' as const, wordId: null, pose: 'idle' as const };
     const interact = vi.fn();
     render(<WalkLayer scene="dba.scene.shore" drank={false} spots={visibleSpots('dba.scene.shore', save, hint)} hint={hint}
-      paused={false} purr={false} knot="rest" remembered={{ x:.33, y:.72 }} catPost={companionPost('dba.scene.shore', {})} taught={true}
+      paused={false} purr={false} knot="rest" remembered={{ x:.37, y:.75 }} catPost={companionPost('dba.scene.shore', {})} taught={true}
       onRemember={() => {}} onExit={() => {}} onInteract={interact} onAsk={() => {}} onEscape={() => {}} />);
     fireEvent.keyDown(window, { key: 'e', code: 'KeyE' });
     expect(interact).toHaveBeenCalledWith('shore-driftwood'); interact.mockClear();

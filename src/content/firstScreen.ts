@@ -5,9 +5,9 @@ export const FIRST_SCREEN_TRAVELER = 'idle-front-01.png';
 /** Opening companion landing on shore, not a walk/leap cycle. */
 export const FIRST_SCREEN_TRAJ = 'land-companion';
 
-export function firstScreenAssetIds(scene = FIRST_SCREEN_SCENE, companion = FIRST_SCREEN_TRAJ): string[] {
+export function firstScreenAssetIds(scene = FIRST_SCREEN_SCENE, companion = FIRST_SCREEN_TRAJ, painted = false): string[] {
   const kit = sceneAssembly(scene);
-  const ids = (kit?.slots ?? [])
+  const ids = painted && scene === FIRST_SCREEN_SCENE ? ['art.shore.landscape'] : (kit?.slots ?? [])
     .map((slot) => slot.asset)
     .filter((asset): asset is string => Boolean(asset));
   // A complete scene includes its actors, even after a cold resume elsewhere.

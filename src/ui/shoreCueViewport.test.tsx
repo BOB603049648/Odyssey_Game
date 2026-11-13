@@ -22,7 +22,7 @@ const hint = { level:0 as const, anchor:'driftwood' as const, wordId:null, pose:
 function mount(scene = 'dba.scene.shore' as const) {
  const save = newGameState(); const interact = vi.fn(); const remember = vi.fn();
  const props = { scene, drank:false, spots:visibleSpots(scene,save,hint), hint, paused:false, purr:false, knot:'rest' as const,
-  remembered:{x:.33,y:.72}, catPost:companionPost(scene,{}), taught:true,
+  remembered:{x:.37,y:.75}, catPost:companionPost(scene,{}), taught:true,
   onRemember:remember, onExit:vi.fn(), onInteract:interact, onAsk:vi.fn(), onEscape:vi.fn() };
  const view = render(<WalkLayer {...props}/>);
  return { ...view, interact, props };
@@ -116,7 +116,7 @@ describe('candidate shore cue viewport presentation', () => {
  it('remeasures after real keyboard movement changes the camera/foot revision', () => {
   stick={x:14,y:262,width:112,height:112};mount();expect(cue().dataset.cueObscured).toBe('no');
   const oldY=screen.getByTestId('traveler').dataset.y;center={x:108,y:280};
-  fireEvent.keyDown(window,{key:'w',code:'KeyW'});
+  fireEvent.keyDown(window,{key:'s',code:'KeyS'});
   expect(screen.getByTestId('traveler').dataset.y).not.toBe(oldY);
   expect(cue().dataset.cueObscured).toBe('yes');
  });

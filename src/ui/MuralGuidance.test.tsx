@@ -25,6 +25,7 @@ it('explains selection, shows completion, and lets the player continue to the ne
   expect(screen.getByTestId('mural-guidance').textContent).toContain('这一带已记下');
   fireEvent.click(screen.getByTestId('mural-next-band'));
   expect(screen.getByRole('tab', { name: '壁画带 2' }).getAttribute('aria-selected')).toBe('true');
+  fireEvent.click(screen.getByTestId('cell-dba.word.give'));
   expect(screen.getByTestId('object-dba.word.give')).toBeTruthy();
   expect(document.querySelector('.gloss')).toBeNull();
 });

@@ -1,3 +1,4 @@
+import paintedShore from '../assets/art/painted/shore-scene.webp';
 import companionStanding from '../assets/companion/nanaicha/nanaicha-hero.png';
 import { WALK_ATLAS, WALK_ATLAS_FILES } from './travelerWalkAtlas';
 
@@ -50,6 +51,7 @@ function preferUrl(mods: Record<string, string>): Map<string, string> {
 }
 
 const slots = preferUrl(slotModules);
+slots.set('art.shore.landscape', paintedShore);
 const travelers = preferUrl(travelerModules);
 for (const file of WALK_ATLAS_FILES) travelers.set(file, `${WALK_ATLAS.url}#${file}`);
 const trajs = preferUrl(trajModules);

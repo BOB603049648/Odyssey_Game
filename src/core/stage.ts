@@ -16,8 +16,8 @@ export type Gate = {
   edge?: GateEdge;
 };
 
-/** North edge is the tide line. Feet stay on the sand, south of the cliff. */
-const shoreBand: Band = { minX: 0.05, maxX: 0.96, minY: 0.48, maxY: 0.84 };
+/** Painted shore: water and wall are north of .62; feet stay on the foreground sand. */
+const shoreBand: Band = { minX: 0.05, maxX: 0.96, minY: 0.62, maxY: 0.88 };
 /**
  * Porch planks only. The wall/deck seam sits near y 0.78; y 0.68 is the
  * door's right wall, so a foot there floats off the boards.
@@ -38,7 +38,7 @@ export const BANDS: Record<IslandScene, Band> = {
 };
 
 export const SPAWNS: Record<IslandScene, Point> = {
-  'dba.scene.shore': { x: 0.42, y: 0.62 },
+  'dba.scene.shore': { x: 0.44, y: 0.72 },
   'dba.scene.camp': { x: 0.46, y: 0.84 },
   /** In front of the steps. y 0.80 is the hall wall. */
   'dba.scene.yard': { x: 0.42, y: 0.92 },
@@ -48,7 +48,7 @@ export const SPAWNS: Record<IslandScene, Point> = {
 };
 
 export const GATES: readonly Gate[] = [
-  { from: 'dba.scene.shore', to: 'dba.scene.camp', x: 0.9, y: 0.63, r: 0.04, edge: 'east', arrival: { x: 0.34, y: 0.84 } },
+  { from: 'dba.scene.shore', to: 'dba.scene.camp', x: 0.9, y: 0.74, r: 0.04, edge: 'east', arrival: { x: 0.34, y: 0.84 } },
   { from: 'dba.scene.shore', to: 'dba.scene.hall', x: 0.11, y: 0.7, r: 0.04, edge: 'west', arrival: { x: 0.48, y: 0.6 } },
   { from: 'dba.scene.camp', to: 'dba.scene.shore', x: 0.1, y: 0.84, r: 0.04, edge: 'west', arrival: { x: 0.7, y: 0.62 } },
   { from: 'dba.scene.camp', to: 'dba.scene.yard', x: 0.9, y: 0.84, r: 0.04, edge: 'east', arrival: { x: 0.28, y: 0.92 } },
@@ -62,11 +62,11 @@ export const GATES: readonly Gate[] = [
 
 export const SPOTS: Record<IslandScene, readonly Spot[]> = {
   'dba.scene.shore': [
-    { id: 'island-mural', x: 0.3, y: 0.56, r: 0.09 },
-    { id: 'shore-stone', x: 0.18, y: 0.7, r: 0.05 },
-    { id: 'shore-driftwood', x: 0.33, y: 0.72, r: 0.05 },
-    { id: 'island-gourd', x: 0.58, y: 0.66, r: 0.07 },
-    { id: 'shore-depart', x: 0.74, y: 0.68, r: 0.05 },
+    { id: 'island-mural', x: 0.36, y: 0.62, r: 0.075 },
+    { id: 'shore-stone', x: 0.18, y: 0.73, r: 0.045 },
+    { id: 'shore-driftwood', x: 0.37, y: 0.75, r: 0.05 },
+    { id: 'island-gourd', x: 0.60, y: 0.70, r: 0.055 },
+    { id: 'shore-depart', x: 0.78, y: 0.73, r: 0.05 },
   ],
   'dba.scene.camp': [
     { id: 'camp-sleep', x: 0.42, y: 0.82, r: 0.016 },
@@ -123,11 +123,17 @@ export const YARD_APRONS = [
 ] as const;
 
 /**
- * East-gap marker stone. The plate art stays. Its opaque body runs about
- * y 0.42–0.67, so a foot at 0.57 is still on the crown. Feet inside the
- * footprint drop to the sand at the south lip.
+ * The painted eastern waystone occupies x .71–.85 above the sand lip at .72.
+ * Saved positions are planted in front; live keyboard/click routes use the
+ * same footprint to slide or walk around it without teleporting.
  */
-export const SHORE_MARKER = { minX: 0.66, maxX: 0.82, sandY: 0.68 } as const;
+export const SHORE_MARKER = { minX: 0.71, maxX: 0.85, sandY: 0.72 } as const;
+/** Ground occupied by the painted log pile and spring basin. The log can be
+ * passed on either side; the basin joins the rocky northern bank. */
+export const SHORE_PROP_FOOTPRINTS = [
+  { id: 'shore-driftwood', minX: 0.27, maxX: 0.43, minY: 0.70, maxY: 0.75 },
+  { id: 'island-gourd', minX: 0.55, maxX: 0.67, minY: 0, maxY: 0.70 },
+] as const;
 export const BRIDGE_KNOTS = [[.11,.43],[.24,.46],[.36,.50],[.52,.55],[.66,.61],[.77,.69]] as const;
 
 export function plantOnGround(scene: IslandScene, pos: Point): Point {
@@ -156,6 +162,13 @@ export function plantOnGround(scene: IslandScene, pos: Point): Point {
     y < SHORE_MARKER.sandY
   ) {
     y = SHORE_MARKER.sandY;
+  }
+  if (scene === 'dba.scene.shore') for (const box of SHORE_PROP_FOOTPRINTS) {
+    if (x <= box.minX || x >= box.maxX || y <= box.minY || y >= box.maxY) continue;
+    if (box.minY < band.minY) { y = box.maxY; continue; }
+    const edges = [{ x, y: box.minY }, { x, y: box.maxY }, { x: box.minX, y }, { x: box.maxX, y }];
+    edges.sort((a, b) => Math.hypot(a.x - x, (a.y - y) * 9 / 16) - Math.hypot(b.x - x, (b.y - y) * 9 / 16));
+    ({ x, y } = edges[0]);
   }
   return { x, y };
 }

@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import { LEXEMES } from '../content/catalog';
 import { isLayerUnlocked, learnedCount, requirementsMet } from '../core/conditions';
 import { hintPresentation } from '../core/hints';
-import { reviewTarget } from '../core/island';
+import { reviewChoices, reviewTarget } from '../core/island';
 import type { Action } from '../core/reduce';
 import type { MuralLayer, SaveData } from '../core/schema';
 import { isLearnedState } from '../core/words';
@@ -13,6 +14,8 @@ import { t } from './i18n';
 import { EnterVeil, PlateStack } from './Plate';
 import { useFeedbackFx } from './useFeedbackFx';
 import { useIdleHint } from './useIdleHint';
+import { ConceptScene } from './ConceptScene';
+import { meaningChoices } from '../core/conceptChoices';
 
 const LAYERS: MuralLayer[] = ['concrete', 'action', 'relation', 'abstract'];
 const BETRAY = 'dba.word.betray';
@@ -29,13 +32,19 @@ export function MuralScreen({
   useIdleHint(save, dispatch);
   const reviewing = save.muralMode === 'review';
   const target = reviewTarget(save);
-  const canReview = Object.values(save.words).some((word) => isLearnedState(word.state));
+  const choices = reviewChoices(save);
+  const [attempt, setAttempt] = useState<{ target: string; answer: string } | null>(null);
+  const canReview = Object.values(save.words).filter((word) => isLearnedState(word.state)).length >= 2;
   const cells = LEXEMES.filter((lexeme) => lexeme.layer === save.activeLayer);
   const objects = [...cells].reverse().filter((lexeme) => {
     const progress = save.words[lexeme.id];
     return progress && !isLearnedState(progress.state) && requirementsMet(lexeme, save.words);
   });
+  const question = objects.find(lexeme => lexeme.id === save.selectedCellId) ?? objects.at(-1);
   const learned = LEXEMES.filter((lexeme) => isLearnedState(save.words[lexeme.id]?.state));
+  const available = [...cells.filter(lexeme => requirementsMet(lexeme, save.words)), ...learned];
+  const orderedScenes = question ? meaningChoices(question.id, available.map(lexeme => lexeme.id), 3)
+    .map(id => LEXEMES.find(lexeme => lexeme.id === id)!) : [];
   const complete = cells.every(lexeme => isLearnedState(save.words[lexeme.id]?.state));
   const nextLayer = LAYERS.find(layer => LAYERS.indexOf(layer) > LAYERS.indexOf(save.activeLayer) &&
     isLayerUnlocked(layer, save.words, LEXEMES));
@@ -47,6 +56,7 @@ export function MuralScreen({
       <header className="bar">
         <div>
           <p className="eyebrow">{t('scene.mural')}</p>
+          <h1 className="mural-title">石壁上的生活</h1>
         </div>
         <div className="row">
           {isLearnedState(save.words[BETRAY]?.state) ? (
@@ -92,7 +102,7 @@ export function MuralScreen({
         </button>
       </div>
       <div className="mural-guidance" data-testid="mural-guidance">
-        <p role="status">{reviewing ? t('mural.reviewHelp') : complete
+        <p role="status">{reviewing ? (save.feedback.kind === 'no' ? t('mural.reviewMiss') : t('mural.reviewHelp')) : complete
           ? t(nextLayer ? 'mural.complete' : 'mural.allComplete')
           : t(save.selectedCellId ? 'mural.selected' : 'mural.instructions')}</p>
         {!reviewing ? <p className="mural-progress">{t('mural.progress')} {learnedCount(save.activeLayer, save.words, LEXEMES)}/{cells.length}</p> : null}
@@ -103,26 +113,21 @@ export function MuralScreen({
         </div> : null}
       </div>
       {reviewing ? (
-        <div className="grid" data-testid="review-wall">
-          {target ? (
-            <button
-              type="button"
-              className={`cell ${hintMark(hint, 'mural-cell', target)}`}
-              data-testid={`review-${target}`}
-              onClick={() => dispatch({ type: 'review-tap', wordId: target })}
-            >
-              <Glyph id={target} />
-              {save.settings.showGloss ? (
-                <span className="gloss">{LEXEMES.find((lexeme) => lexeme.id === target)?.gloss}</span>
-              ) : null}
-            </button>
-          ) : (
-            <p>{t('mural.review.empty')}</p>
-          )}
+        <div className="review-exercise" data-testid="review-wall">
+          {target && choices.length > 1 ? <>
+            <div className="review-question"><ConceptScene key={target} id={target} /></div>
+            <div className="review-answers">{choices.map(id => <button key={id} type="button"
+              className={`cell ${hintMark(hint, 'mural-cell', id)}${attempt?.target === target && attempt.answer === id && save.feedback.kind === 'no' ? ' incorrect' : ''}`}
+              data-testid={`review-${id}`} aria-label={`刻符 ${choices.indexOf(id) + 1}`}
+              onClick={() => { setAttempt({ target, answer: id }); dispatch({ type: 'review-tap', wordId: id }); }}>
+              <Glyph id={id} />
+              {save.settings.showGloss ? <span className="gloss">{LEXEMES.find(lexeme => lexeme.id === id)?.gloss}</span> : null}
+            </button>)}</div>
+          </> : <p>{t(target ? 'mural.reviewNeedMore' : 'mural.review.empty')}</p>}
         </div>
       ) : (
         <>
-          <div className="grid">
+          <div className="grid glyph-wall">
             {cells.map((lexeme) => {
               const known = isLearnedState(save.words[lexeme.id]?.state);
               const blurred = !requirementsMet(lexeme, save.words);
@@ -158,16 +163,17 @@ export function MuralScreen({
               );
             })}
           </div>
-          <div className="tray">
-            {objects.map((lexeme) => (
+          <div className="tray story-tray">
+            {orderedScenes.map((lexeme) => (
               <button
                 key={lexeme.id}
                 type="button"
                 className={`object ${hintMark(hint, 'mural-object', lexeme.id)}`}
+                disabled={!save.selectedCellId}
                 data-testid={`object-${lexeme.id}`}
                 onClick={() => dispatch({ type: 'match-object', wordId: lexeme.id })}
               >
-                <Glyph id={lexeme.id} />
+                <ConceptScene id={lexeme.id} />
                 {save.settings.showGloss ? <span className="gloss">{lexeme.gloss}</span> : null}
               </button>
             ))}

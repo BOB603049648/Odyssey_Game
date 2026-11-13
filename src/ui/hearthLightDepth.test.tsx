@@ -23,9 +23,9 @@ async function mount(variant:'candidate'|'legacy'|'baseline'|'camp',hy=.64){
 beforeEach(()=>{vi.stubEnv('VITE_VISUAL_SAMPLE','1');vi.stubGlobal('fetch',vi.fn(()=>new Promise(()=>{})));});
 afterEach(()=>{cleanup();vi.restoreAllMocks();vi.unstubAllGlobals();vi.unstubAllEnvs();history.replaceState({},'','/');});
 describe('candidate hearth pool retains legacy prop light ownership',()=>{
- for(const mode of ['legacy','candidate'] as const)for(const hy of [.64,.68,.72])it(`${mode} stone/cue .68 vs human ${hy}: near shields, equal/back receives`,async()=>{
+ for(const mode of ['legacy','candidate'] as const)for(const hy of [.69,.73,.77])it(`${mode} stone/cue .73 vs human ${hy}: near shields, equal/back receives`,async()=>{
   await mount(mode,hy);const stone=screen.getByTestId('prop-art.shore.prop.east-gap'),cue=screen.getByTestId('cue-art.shore.prop.east-gap');const emitter=document.querySelector<HTMLElement>('.depth-hearth-emitter')??screen.getByTestId('exit-camp');
-  expect(compare(paintKey(stone),paintKey(emitter))>0).toBe(.68>hy);expect(compare(paintKey(cue),paintKey(emitter))>0).toBe(.68>hy);
+  expect(compare(paintKey(stone),paintKey(emitter))>0).toBe(.73>hy);expect(compare(paintKey(cue),paintKey(emitter))>0).toBe(.73>hy);
  });
  it('moves only the decorative pool into existing full-world human unit; keeps seven real siblings and its gate coordinates',async()=>{
   await mount('candidate');const emitter=document.querySelector<HTMLElement>('.depth-hearth-emitter');expect(emitter).not.toBeNull();const button=screen.getByTestId('exit-camp');const humanUnit=screen.getByTestId('traveler').closest('.depth-unit')!;

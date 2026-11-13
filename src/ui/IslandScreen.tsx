@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { EVIDENCE, LEXEMES } from '../content/catalog';
 import { companionPost } from '../core/companionPost';
 import { hintPresentation } from '../core/hints';
-import { departureBlocker, isIslandScene, SURVIVAL_BEATS, type IslandScene } from '../core/island';
+import { departureBlocker, isIslandScene, SURVIVAL_BEATS } from '../core/island';
 import type { Action } from '../core/reduce';
 import type { SaveData } from '../core/schema';
 import { isLearnedState } from '../core/words';
@@ -22,6 +22,8 @@ import { useFeedbackFx } from './useFeedbackFx';
 import { useIdleHint } from './useIdleHint';
 import { sceneLook } from './cohesion';
 import { WalkLayer } from './WalkLayer';
+import { AdventureHud, JourneyMoment } from './AdventureHud';
+import './adventure.css';
 
 export { hintMark } from './hintMark';
 
@@ -29,15 +31,6 @@ export { hintMark } from './hintMark';
 export const SLEEP_LIE_MS = 1200;
 /** Short settle after the lie before the feet unlock. */
 export const SLEEP_RISE_MS = 400;
-
-const SCENE_TITLE: Record<IslandScene, MessageKey> = {
-  'dba.scene.shore': 'scene.shore',
-  'dba.scene.camp': 'scene.camp',
-  'dba.scene.yard': 'scene.yard',
-  'dba.scene.hall': 'scene.hall',
-  'dba.scene.path': 'scene.path',
-  'dba.scene.night': 'scene.night',
-};
 
 export function IslandScreen({
   save,
@@ -92,22 +85,9 @@ export function IslandScreen({
     : null;
 
   return (
-    <section className={shake ? 'island shake' : 'island'} style={{ ['--ambient' as string]: look.ambient }}>
+    <section className={`island adventure-island${shake ? ' shake' : ''}`} style={{ ['--ambient' as string]: look.ambient }}>
       <EnterVeil />
-      <div className="hud-actions row">
-        <button type="button" className="btn" onClick={onTitle}>
-          {t('menu.title')}
-        </button>
-        <button type="button" className="btn" onClick={() => dispatch({ type: 'open-overlay', overlay: 'lexicon' })}>
-          {t('menu.lexicon')}
-        </button>
-        <button type="button" className="btn" onClick={() => dispatch({ type: 'open-overlay', overlay: 'casefile' })}>
-          {t('menu.casefile')}
-        </button>
-        <button type="button" className="btn" onClick={() => dispatch({ type: 'open-overlay', overlay: 'settings' })}>
-          {t('menu.settings')}
-        </button>
-      </div>
+      <AdventureHud save={save} dispatch={dispatch} onTitle={onTitle} learned={learned.length} />
       <div
         className="shore-wrap"
         data-testid={scene === 'dba.scene.shore' ? 'shore' : 'scene'}
@@ -143,6 +123,7 @@ export function IslandScreen({
           onFar={(id) => dispatch({ type: 'spot-far', id })}
           onApproachHint={setApproachHint}
           beat={save.feedback.kind === 'none' || !save.feedback.spot ? null : { spot: save.feedback.spot, kind: save.feedback.kind }}
+          interactionSeq={save.feedback.seq}
           flash={flashSpot && flashKind ? { kind: flashKind, seq: save.feedback.seq, x: flashSpot.x, y: flashSpot.y } : null}
           onEscape={() => {
             if (save.overlay === 'depart' || save.overlay === 'memory') return;
@@ -160,19 +141,10 @@ export function IslandScreen({
           />
         ) : null}
         {save.memories.includes('dba.mem.rain-night') ? <MemoryRain /> : null}
-        <div className="hud-place">
-          <p className="eyebrow">{t(SCENE_TITLE[scene])}</p>
-          <p className="count" aria-label={`${learned.length}`}>
-            {learned.length}/28
-          </p>
-          <button type="button" className="btn journey-status" data-testid="journey-status"
-            onClick={() => dispatch({ type: 'open-overlay', overlay: 'casefile' })}>
-            {save.beats['dba.beat.depart'] ? t('journey.finished') : `${t('journey.title')} ${SURVIVAL_BEATS.filter(beat => save.beats[`dba.beat.${beat}`]).length}/4`}
-          </button>
-        </div>
       </div>
       {save.overlay === 'chart' ? <ChartSealed onClose={() => dispatch({ type: 'close-overlay' })} /> : null}
       <OverlaySheet save={save} dispatch={dispatch} learned={learned} hint={hint} />
+      <JourneyMoment save={save} />
       {save.overlay === 'none' && spoken && !(approachHint && line === 'spot.driftwood.far') ? (
         <p key={scene} className="diegetic-line" data-testid="spot-line" data-line={line}>
           {spoken}

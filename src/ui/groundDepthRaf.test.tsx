@@ -7,7 +7,7 @@ vi.mock('./hemPunch',async()=>({...await vi.importActual('./hemPunch'),punchHemU
 vi.mock('./travelerArt',async()=>{const u=await import('../content/assetUrls');return {frameUrl:(file:string)=>u.travelerFrameUrl(file),loadFrame:async(file:string)=>u.travelerFrameUrl(file),forgetFrame:vi.fn()};});
 let raf=new Map<number,FrameRequestCallback>(),seq=0,dx=0,dy=0,vx=20,vy=40;
 function step(time=1000){act(()=>{const f=[...raf.values()];raf.clear();f.forEach(cb=>cb(time));});}
-async function mount(paused=true,onExit=()=>{},x=.42){
+async function mount(paused=true,onExit=()=>{},x=.46){
  const {WalkLayer}=await import('./WalkLayer');const {visibleSpots}=await import('./spotViews');const {newGameState}=await import('../core/save');const {companionPost}=await import('../core/companionPost');const hint={level:0 as const,anchor:'driftwood' as const,wordId:null,pose:'idle' as const};
  const v=render(<WalkLayer scene="dba.scene.shore" drank={false} spots={visibleSpots('dba.scene.shore',newGameState(),hint)} hint={hint} paused={paused} purr={false} knot="rest" remembered={{x,y:.69}} catPost={{...companionPost('dba.scene.shore',{}),y:.80}} taught presentationFrozen onRemember={()=>{}} onExit={onExit} onInteract={()=>{}} onAsk={()=>{}} onEscape={()=>{}}/>);await act(async()=>{await Promise.resolve();});return v;
 }

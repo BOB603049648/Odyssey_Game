@@ -4,8 +4,9 @@ import { App } from './App';
 import { type IslandScene } from './core/island';
 import { reduce } from './core/reduce';
 import { newGameState } from './core/save';
-import { BANDS, SPOTS } from './core/stage';
-import { approachPlan, type Point } from './core/walk';
+import { groundStep } from './core/navigation';
+import { BANDS, SPOTS, gateAt } from './core/stage';
+import { stepKey, type Point, type WalkKey } from './core/walk';
 import { SAVE_KEY } from './platform/storage';
 import { useGame } from './stores/gameStore';
 import { MuralScreen } from './ui/MuralScreen';
@@ -37,7 +38,26 @@ function here(): Point {
 
 async function walkTo(scene: IslandScene, goal: Point, radius: number) {
   await ready();
-  await press(approachPlan(here(), goal, BANDS[scene], radius));
+  // Find a route for discrete test key presses. The old straight-line helper
+  // walked through props; each candidate now uses the actual collision step.
+  const queue: { pos: Point; keys: WalkKey[] }[] = [{ pos: here(), keys: [] }];
+  const visited = new Set<string>();
+  for (let i = 0; i < queue.length && i < 10000; i++) {
+    const node = queue[i];
+    if (Math.hypot(node.pos.x - goal.x, node.pos.y - goal.y) < radius) {
+      await press(node.keys);
+      expect(Math.hypot(here().x - goal.x, here().y - goal.y)).toBeLessThan(radius + .001);
+      return;
+    }
+    for (const key of ['a', 'd', 'w', 's'] as const) {
+      const next = groundStep(scene, node.pos, stepKey(node.pos, key, BANDS[scene]).pos);
+      const id = `${next.x.toFixed(5)}:${next.y.toFixed(5)}`;
+      if (visited.has(id) || gateAt(scene, next)) continue;
+      visited.add(id);
+      queue.push({ pos: next, keys: [...node.keys, key] });
+    }
+  }
+  throw new Error(`No keyboard route to ${JSON.stringify(goal)} from ${JSON.stringify(here())}`);
 }
 
 function spot(scene: IslandScene, id: string): Point & { r: number } {
@@ -50,7 +70,7 @@ async function cross(to: IslandScene, key: 'a' | 'd' | 'w' | 's') {
   await ready();
   const from = document.querySelector('[data-scene]')?.getAttribute('data-scene');
   // Take the visible sand / forecourt before moving past the solid props.
-  const floor = from === 'dba.scene.shore' && to === 'dba.scene.camp' ? .7 : from === 'dba.scene.yard' ? .925 : null;
+  const floor = from === 'dba.scene.shore' ? .79 : from === 'dba.scene.yard' ? .925 : null;
   if (floor !== null) for (let i = 0; i < 12 && here().y < floor; i++) fireEvent.keyDown(window, { key: 's' });
   for (let i = 0; i < 48; i += 1) {
     if (document.querySelector('[data-scene]')?.getAttribute('data-scene') === to) { await ready(); return; }
@@ -183,6 +203,9 @@ describe('playable slice', async () => {
     expect(screen.getByTestId('mural-review').hasAttribute('disabled')).toBe(true);
     fireEvent.click(screen.getByTestId('cell-dba.word.water'));
     fireEvent.click(screen.getByTestId('object-dba.word.water'));
+    expect(screen.getByTestId('mural-review').hasAttribute('disabled')).toBe(true);
+    fireEvent.click(screen.getByTestId('cell-dba.word.sun'));
+    fireEvent.click(screen.getByTestId('object-dba.word.sun'));
     expect(screen.getByTestId('mural-review').hasAttribute('disabled')).toBe(false);
     fireEvent.click(screen.getByTestId('mural-review'));
     expect(screen.getByTestId('review-dba.word.water')).toBeTruthy();

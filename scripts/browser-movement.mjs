@@ -23,6 +23,14 @@ try {
   for (let i = 0; i < 3; i++) await page.getByRole('button', { name: '下一幕', exact: true }).click();
   await page.getByRole('button', { name: '走上潮线', exact: true }).click();
   await page.locator('.scene-display').waitFor({ state: 'hidden' });
+  // Begin on the clear sand lane. The authored spawn is now beside a solid
+  // driftwood pile, so a four-direction animation probe must first walk clear.
+  const world = await page.getByTestId('world-root').locator('.world-layer').boundingBox();
+  await page.mouse.click(world.x + world.width * .49, world.y + world.height * .77);
+  await page.waitForFunction(() => {
+    const actor = document.querySelector('[data-testid="traveler"]');
+    return actor?.dataset.moving === 'no' && Math.abs(Number(actor.dataset.x) - .49) < .003 && Math.abs(Number(actor.dataset.y) - .77) < .003;
+  });
   await page.evaluate(() => {
     window.movementSamples = [];
     window.movementReleases = [];
@@ -41,10 +49,18 @@ try {
   // Real keyboard displacement and release in all four facings, with screenshots
   // taken from the live game, rather than a pose-only preview component.
   for (const [key, facing] of [['d','right'], ['a','left'], ['s','front'], ['w','back']]) {
+    if (key === 's') {
+      // Use the full north/south lane, rather than measuring a walk already at
+      // its southern boundary. This remains real input, with no save injection.
+      await page.keyboard.down('w');
+      await page.waitForFunction(() => Number(document.querySelector('[data-testid="traveler"]')?.dataset.y) <= .65);
+      await page.keyboard.up('w');
+      await page.waitForTimeout(400);
+    }
     await page.keyboard.down(key);
-    await page.waitForTimeout(650);
+    await page.waitForTimeout(350);
     await page.screenshot({ path: resolve(output, `walk-${facing}.png`) });
-    await page.waitForTimeout(450);
+    await page.waitForTimeout(750);
     await page.keyboard.up(key);
     // Sample at the input event, not in an earlier protocol round trip: video
     // encoding or a busy test host can delay keyup after that earlier read.

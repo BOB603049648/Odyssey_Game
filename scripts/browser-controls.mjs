@@ -48,7 +48,7 @@ try {
   await page.getByRole('button', { name: '路线', exact: true }).tap();
   await page.screenshot({ path: resolve(output, 'mobile-routes.png') });
   await page.keyboard.press('Escape');
-  assert.equal(await page.getByRole('navigation').count(), 0);
+  assert.equal(await page.locator('.route-panel').count(), 0);
   assert.equal((await save()).overlay, 'none');
 
   // Each direction is selected from the viewport UI; no keyboard travel or save injection.

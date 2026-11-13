@@ -343,7 +343,7 @@ function useWord(state: SaveData, wordId: string): SaveData {
       overlay: 'none',
       stepCounter: state.stepCounter + 1,
       companion: { level: 0, targetId: null, pawUsed: false },
-      feedback: { seq: state.feedback.seq + 1, kind: 'ok' },
+      feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: 'spot.gourd.ok', spot: 'island-gourd' },
     });
   }
   const word = state.words[wordId];

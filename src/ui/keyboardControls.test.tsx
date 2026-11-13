@@ -14,7 +14,7 @@ async function setup() {
   const noop = () => {};
   const view = render(<><button type="button">词库</button><input aria-label="文字输入" />
     <WalkLayer scene="dba.scene.shore" drank={false} paused={false} purr={false} knot="rest"
-      remembered={{ x: .33, y: .72 }} hint={hint} spots={visibleSpots('dba.scene.shore', newGameState(), hint)}
+      remembered={{ x: .37, y: .75 }} hint={hint} spots={visibleSpots('dba.scene.shore', newGameState(), hint)}
       catPost={companionPost('dba.scene.shore', {})} onRemember={noop} onExit={noop} onInteract={onInteract}
       onAsk={noop} onEscape={noop} taught />
   </>);

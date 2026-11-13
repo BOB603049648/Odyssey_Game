@@ -26,7 +26,7 @@ describe('one physical shore depth root',()=>{
   for(const [body,sole] of [['traveler','sole-soft'],['companion-anchor','cat-sole']])expect(screen.getByTestId(body).closest('[data-depth-id]')).toBe(screen.getByTestId(sole).closest('[data-depth-id]'));
   expect(screen.getByTestId('sole-layer').querySelectorAll('img')).toHaveLength(0);expect(screen.getByTestId('slot-building').closest('.ground-depth-root')).toBeNull();
  });
- for(const [id,y] of [['mural-wall',.56],['gourd',.66],['east-gap',.68],['break-shard',.70],['driftwood',.72]] as const) for(const hy of [y-.02,y+.02]) for(const cy of [y-.02,y+.02]) {
+ for(const [id,y] of [['mural-wall',.62],['gourd',.70],['east-gap',.73],['break-shard',.73],['driftwood',.75]] as const) for(const hy of [y-.02,y+.02]) for(const cy of [y-.02,y+.02]) {
   it(`real DOM rank ${id} H${hy} C${cy}`,async()=>{
    const {WalkLayer,props}=await setup('dba.scene.shore',hy,cy);render(<WalkLayer {...props}/>);
    const h=screen.getByTestId('traveler').closest<HTMLElement>('[data-depth-id]');const c=screen.getByTestId('companion-anchor').closest<HTMLElement>('[data-depth-id]');const p=screen.getByTestId('prop-art.shore.prop.'+id).closest<HTMLElement>('[data-depth-id]');expect(h).not.toBeNull();expect(c).not.toBeNull();expect(p).not.toBeNull();
@@ -59,14 +59,14 @@ describe('one physical shore depth root',()=>{
   const css=readFileSync('src/styles.css','utf8');const block=css.slice(css.indexOf('.sole-layer {'),css.indexOf('.foot-ellipse {'));expect(createHash('sha256').update(block).digest('hex')).toBe('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
   expect(css).toMatch(/\.ground-depth-root\s*\{[^}]*pointer-events:\s*none/s);expect(css).toMatch(/\.depth-unit\s*\{[^}]*inset:\s*0/s);expect(css).toMatch(/\.depth-unit\s+\.companion\s*\{[^}]*pointer-events:\s*auto/s);expect(css).toMatch(/prefers-reduced-motion: reduce[\s\S]*depth-unit/);
  });
- for(const [prop,x,y] of [['gourd',.58,.66],['east-gap',.74,.68],['driftwood',.33,.72]] as const)for(const side of ['bb','bf','fb','ff']){
+ for(const [prop,x,y] of [['gourd',.60,.70],['east-gap',.78,.73],['driftwood',.37,.75]] as const)for(const side of ['bb','bf','fb','ff']){
   it(`explicit memory-only fixed-camera fixture depth-${prop}-${side}`,async()=>{
    const name=`depth-${prop}-${side}`;history.replaceState({},'','/?shoreVisual=candidate&fixture='+name+'&freeze=1');
    const {getShoreVisualProfile,makeShoreFixture}=await import('../dev/shoreVisualProfile');expect(getShoreVisualProfile().fixture).toBe(name);
    const read=vi.spyOn(Storage.prototype,'getItem'),write=vi.spyOn(Storage.prototype,'setItem');
-   const fixture=makeShoreFixture(name as import('../dev/shoreVisualProfile').ShoreFixtureName,'S1');expect(fixture.traveler).toEqual({x:prop==='east-gap'?.63:x-.025,y:y+(side[0]==='b'?-.02:.02)});expect(fixture.catPost.x).toBe(prop==='east-gap'?.65:x+.025);expect(fixture.catPost.y).toBe(y+(side[1]==='b'?-.02:.02));
+   const fixture=makeShoreFixture(name as import('../dev/shoreVisualProfile').ShoreFixtureName,'S1');expect(fixture.traveler.x).toBeCloseTo(prop==='east-gap'?.68:x-.025,12);expect(fixture.traveler.y).toBeCloseTo(y+(side[0]==='b'?-.02:.02),12);expect(fixture.catPost.x).toBe(prop==='east-gap'?.70:x+.025);expect(fixture.catPost.y).toBe(y+(side[1]==='b'?-.02:.02));
    const {WalkLayer,props}=await setup();render(<WalkLayer {...props} remembered={fixture.traveler} catPost={fixture.catPost}/>);
-   const {cameraOffset,lookEast}=await import('../core/walk');const reference=lookEast(cameraOffset({x:.42,y:.62},1280,720),1280,true);
+   const {cameraOffset,lookEast}=await import('../core/walk');const reference=lookEast(cameraOffset({x:.44,y:.72},1280,720),1280,true);
    expect(screen.getByTestId('world-camera').style.transform).toBe(`translate3d(${-reference.x}px, ${-reference.y}px, 0)`);expect(read).not.toHaveBeenCalled();expect(write).not.toHaveBeenCalled();
   });
  }
