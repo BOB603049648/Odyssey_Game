@@ -26,3 +26,27 @@ Generation source identifiers, in the same order as the table, followed by the s
 - `exec-5f3f4fed-105b-44b2-81d5-4407f14ed809.png`
 
 The other five exploration environments and character animation assets are separate work; this pack does not replace them.
+
+## Prologue: After the storm
+
+Four full 1672×941 paintings share the shore's art direction. The tide-line shot uses the actual painted shore as its landscape reference; the companion has housecat proportions. The four canonical `art.pro.*` IDs are mapped to these files in `assetUrls.ts`; existing saves and memory scenes keep their IDs. The dedicated prologue renderer uses `object-fit: contain`, including on phones, and commits each cut only after decoding.
+
+| File | Generation source |
+| --- | --- |
+| prologue-storm.webp | exec-5f3a6673-a3a5-474a-81f5-4f932998a86a.png |
+| prologue-dark.webp | exec-b90aff0a-b5cc-4f3a-ac78-fd919f843574.png |
+| prologue-break.webp | exec-711a439b-107f-4b5d-b931-5f859937125f.png |
+| prologue-tide.webp | exec-7732c52a-a27f-46fe-b266-a38cf4ed85e9.png |
+
+Generated 2026-11-13 with the image-generation tool, using `shore-scene.webp` as a style/landscape reference. WebP encoding uses the same quality 88 conversion as above. The four files total about 1.36 MB; each next shot preloads only after the current one is ready. They are illustrations, not skeletal animation or video. Sound still uses the existing synthetic placeholder cue.
+
+Portrait compositions (`1024×1536`) are separate generated paintings, not crops of the wide shots:
+
+| File | Generation source |
+| --- | --- |
+| prologue-storm-portrait.webp | exec-d87c82cb-30f8-4ead-a7b4-55adb0f3c18b.png |
+| prologue-dark-portrait.webp | exec-afb1ef32-124d-4439-8bf2-474b9238ffa6.png |
+| prologue-break-portrait.webp | exec-dbe70417-b2c0-408d-8a36-785aec794c5a.png |
+| prologue-tide-portrait.webp | exec-f758c8ea-232c-4d52-9233-ab5172d85ee2.png |
+
+Each uses its corresponding wide shot as the image-generation reference. `ResizeObserver` selects the composition that fills more of the available stage without cropping. A phone with limited height may therefore use the wide painting. Rotation uses the same decode/retain/retry contract as advancing a shot; it never changes story progress. Only the chosen composition and its next shot are prefetched. The `.portrait` suffix exists only in the asset map, never in save scene IDs.

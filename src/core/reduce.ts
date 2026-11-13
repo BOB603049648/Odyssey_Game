@@ -28,6 +28,8 @@ import { isLearnedState, transitionWord } from './words';
 export type Action =
   | { type: 'new-game' }
   | { type: 'advance-prologue' }
+  | { type: 'previous-prologue' }
+  | { type: 'skip-prologue' }
   | { type: 'open-mural' }
   | { type: 'close-screen' }
   | { type: 'select-layer'; layer: MuralLayer }
@@ -85,6 +87,17 @@ function applyAction(state: SaveData, action: Action): SaveData {
       return touch({ ...state, settings: { showGloss: action.value } });
     case 'advance-prologue':
       return advancePrologue(state);
+    case 'previous-prologue':
+      if (state.screen !== 'prologue' || state.prologueStep <= 0) return state;
+      return touch({ ...state, prologueStep: state.prologueStep - 1,
+        currentScene: ['pro.scene.storm', 'pro.scene.dark', 'pro.scene.break'][state.prologueStep - 1] });
+    case 'skip-prologue': {
+      // Follow the same story transitions, including the first evidence. Rewatching
+      // never removes evidence; advancePrologue adds it at most once.
+      let next = state;
+      for (let i = 0; i < 4 && next.screen === 'prologue'; i += 1) next = advancePrologue(next);
+      return next;
+    }
     case 'open-mural':
       return openMural(state);
     case 'close-screen':

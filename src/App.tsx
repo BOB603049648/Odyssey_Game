@@ -38,6 +38,8 @@ export function App() {
           <PrologueScreen
             step={save.prologueStep}
             onAdvance={() => dispatch({ type: 'advance-prologue' })}
+            onBack={() => dispatch({ type: 'previous-prologue' })}
+            onSkip={() => dispatch({ type: 'skip-prologue' })}
           />
         ) : save.screen === 'mural' ? (
           <MuralScreen save={save} dispatch={dispatch} />

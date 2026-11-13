@@ -1,0 +1,94 @@
+.prologue.cinematic-prologue {
+  --prologue-accent: #c3b08c;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  justify-content: stretch;
+  padding: 0;
+  height: 100dvh;
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+  background: #0b1316;
+  isolation: isolate;
+}
+.prologue.cinematic-prologue::before { content: none; }
+.cinematic-prologue[data-mood="2"] { --prologue-accent: #e4ba72; }
+.cinematic-prologue[data-mood="3"] { --prologue-accent: #e6c99a; }
+.prologue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: max(12px, var(--safe-top)) max(5vw, var(--safe-right)) 8px max(5vw, var(--safe-left));
+  z-index: 3;
+}
+.prologue-chapter { font-size: 12px; letter-spacing: .28em; color: #c3c7c4; }
+.prologue-text-button { min-height: 44px; padding: 8px 12px; color: #c5c7bf; font-size: 13px; letter-spacing: .1em; }
+.prologue-text-button:hover:not(:disabled) { color: #fff0d4; }
+.prologue-stage { position: relative; min-height: 180px; overflow: hidden; background: #101b1e; }
+.prologue-ambience { position: absolute; inset: -35px; background-size: cover; background-position: center; filter: blur(28px) brightness(.38); opacity: .75; }
+.prologue-shot { position: absolute; inset: 0; display: flex; justify-content: center; pointer-events: none; }
+.prologue-shot img { width: 100%; height: 100%; object-fit: contain; object-position: center; }
+.prologue-shot-in { z-index: 1; animation: prologue-reveal 650ms ease-out both; }
+.prologue-shot-out { z-index: 0; }
+.prologue-atmosphere {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(180deg, #0b131626, transparent 12%, transparent 88%, #0b131666);
+}
+.prologue-load {
+  position: absolute; z-index: 3; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: max-content; max-width: calc(100% - 32px); padding: 18px 24px; text-align: center;
+  border: 1px solid #b5a88366; background: #0b1316ef; color: #f0e7d5; font-size: 14px;
+}
+.prologue-load p { margin: 0; line-height: 1.8; }
+.prologue-load button { margin-top: 14px; }
+.prologue-footer {
+  position: relative; z-index: 3; width: 100%; padding: 22px max(6vw, var(--safe-right)) max(14px, var(--safe-bottom)) max(6vw, var(--safe-left));
+  background: radial-gradient(ellipse at 50% 0, #1a2729, transparent 70%), #0b1316;
+}
+.prologue-narration { text-align: center; min-height: 107px; animation: prologue-words 450ms ease-out both; }
+.prologue-act { margin: 0 0 10px; font-size: 12px; letter-spacing: .3em; color: var(--prologue-accent); }
+.prologue-act > span { margin-right: 12px; font-variant-numeric: tabular-nums; opacity: .7; }
+.prologue-line { white-space: pre-line; margin: 0; color: #f0e8db; font-size: clamp(16px, 1.5vw, 21px); line-height: 1.9; letter-spacing: .08em; }
+.prologue-arrival { color: #c6c9bd; font-size: 12px; letter-spacing: .06em; margin: 9px 0 0; line-height: 1.7; }
+.prologue-controls { display: flex; align-items: center; justify-content: space-between; gap: 20px; max-width: 720px; margin: 12px auto 0; }
+.prologue-back { padding-left: 0; min-width: 100px; text-align: left; }
+.prologue-next { min-width: 142px; min-height: 46px; padding: 10px 24px; border: 1px solid #cdb58c88; background: #d7b67d13; color: #f2dfbc; font-size: 15px; letter-spacing: .14em; transition: background 180ms, border-color 180ms; }
+.prologue-next:hover:not(:disabled) { background: #d7b67d2b; border-color: #e2c594; }
+.prologue-next > span { display: inline-block; margin-left: 16px; }
+.prologue-progress .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.prologue-progress { display: flex; gap: 12px; list-style: none; padding: 0; margin: 0; }
+.prologue-progress li { height: 3px; width: 24px; background: #b9b5a740; transition: background 400ms; }
+.prologue-progress li[data-past="true"] { background: #b9b5a77a; }
+.prologue-progress li[aria-current="step"] { background: var(--prologue-accent); }
+.prologue-keys { text-align: center; font-size: 10px; letter-spacing: .08em; color: #a1aba8; margin: 10px 0 0; }
+@keyframes prologue-reveal { from { opacity: 0; } to { opacity: 1; } }
+@keyframes prologue-words { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (max-width: 600px) {
+  .prologue-header { padding-left: max(20px, var(--safe-left)); padding-right: max(12px, var(--safe-right)); }
+  .prologue-chapter { font-size: 11px; letter-spacing: .18em; }
+  .prologue-footer { padding: 24px max(22px, var(--safe-right)) max(24px, var(--safe-bottom)) max(22px, var(--safe-left)); }
+  .prologue-narration { text-align: left; min-height: 144px; }
+  .prologue-line { font-size: 17px; line-height: 1.9; letter-spacing: .03em; }
+  .prologue-controls { gap: 12px; margin-top: 14px; }
+  .prologue-back { min-width: 0; font-size: 12px; padding-right: 0; }
+  .prologue-next { min-width: 126px; padding: 10px 16px; font-size: 14px; }
+  .prologue-next > span { margin-left: 9px; }
+  .prologue-progress { gap: 6px; }
+  .prologue-progress li { width: 12px; }
+  .prologue-keys { display: none; }
+}
+@media (max-height: 600px) and (min-width: 601px) {
+  .prologue-header { padding-top: max(0px, var(--safe-top)); padding-bottom: 0; }
+  .prologue-footer { padding-top: 10px; padding-bottom: max(8px, var(--safe-bottom)); }
+  .prologue-narration { min-height: 0; padding-right: 170px; text-align: left; }
+  .prologue-act { margin-bottom: 4px; font-size: 10px; }
+  .prologue-line { font-size: 14px; line-height: 1.6; }
+  .prologue-controls { margin-top: 4px; max-width: none; }
+  .prologue-next { position: absolute; right: max(6vw, var(--safe-right)); top: 24px; }
+  .prologue-arrival { font-size: 11px; margin-top: 5px; }
+  .prologue-keys { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-prologue *, .cinematic-prologue *::before, .cinematic-prologue *::after { animation: none !important; transition: none !important; }
+}

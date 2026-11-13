@@ -1,4 +1,8 @@
 import paintedShore from '../assets/art/painted/shore-scene.webp';
+import prologueStorm from '../assets/art/painted/prologue-storm.webp';
+import prologueDark from '../assets/art/painted/prologue-dark.webp';
+import prologueBreak from '../assets/art/painted/prologue-break.webp';
+import prologueTide from '../assets/art/painted/prologue-tide.webp';
 import companionStanding from '../assets/companion/nanaicha/nanaicha-hero.png';
 import { WALK_ATLAS, WALK_ATLAS_FILES } from './travelerWalkAtlas';
 
@@ -7,6 +11,7 @@ import { WALK_ATLAS, WALK_ATLAS_FILES } from './travelerWalkAtlas';
  * so the client does not fetch a tiny JS wrapper per image. This does not
  * download the bitmaps themselves.
  */
+const prologuePortraits = import.meta.glob<string>('../assets/art/painted/prologue-*-portrait.webp', { eager: true, import: 'default' });
 const slotModules = import.meta.glob<string>(['../assets/art/slots/*.{png,webp,jpg,jpeg}', '!../assets/art/slots/art.shore.ground.clean.jpg'], {
   eager: true,
   import: 'default',
@@ -52,6 +57,15 @@ function preferUrl(mods: Record<string, string>): Map<string, string> {
 
 const slots = preferUrl(slotModules);
 slots.set('art.shore.landscape', paintedShore);
+// Keep narrative/save IDs stable while replacing the opening's old mixed styles.
+for (const [id, url] of Object.entries({
+  'art.pro.storm': prologueStorm, 'art.pro.dark': prologueDark,
+  'art.pro.break': prologueBreak, 'art.pro.tide': prologueTide,
+})) slots.set(id, url);
+for (const [path, url] of Object.entries(prologuePortraits)) {
+  const scene = /prologue-(\w+)-portrait\.webp$/.exec(path)?.[1];
+  if (scene) slots.set(`art.pro.${scene}.portrait`, url);
+}
 const travelers = preferUrl(travelerModules);
 for (const file of WALK_ATLAS_FILES) travelers.set(file, `${WALK_ATLAS.url}#${file}`);
 const trajs = preferUrl(trajModules);

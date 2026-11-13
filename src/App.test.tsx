@@ -414,10 +414,10 @@ describe('playable slice', async () => {
 
   it('steps the four prologue stills with the caption and no second cat', async () => {
     const frames = [
-      ['art.pro.storm', '船翻了。你是唯一浮上的人。', '下一幕'],
-      ['art.pro.dark', '黑水里，有一声猫叫。你的手自己伸了出去。', '下一幕'],
-      ['art.pro.break', '闪回抢进来：一只手对着长卷上裂开的符，做了「断」。你认得这个手势——像认得自己的手。', '下一幕'],
-      ['art.pro.tide', '潮线上伏着那只披着旧披风的猫。颈上旧绳还在。她回头看你半秒，朝雾岸迈了一步：跟过来。', '走上潮线'],
+      ['art.pro.storm', '浪头吞没了船。 你攥住一块浮木，耳边只剩风声。', '下一幕'],
+      ['art.pro.dark', '一声猫叫，穿过黑水。 你还没想清楚，手已经伸了出去。', '下一幕'],
+      ['art.pro.break', '闪回里，长卷上的符裂开了。 那只做出「断」的手……为什么像你自己的？', '下一幕'],
+      ['art.pro.tide', '醒来时，那只猫守在潮线上。 她回头望了你一眼，向石门走去。', '走上潮线'],
     ] as const;
     const view = render(<PrologueScreen step={0} onAdvance={() => undefined} />);
     for (const [art, caption, button] of frames) {

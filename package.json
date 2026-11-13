@@ -13,7 +13,8 @@
     "test:controls": "node scripts/browser-controls.mjs",
     "test:movement": "node scripts/browser-movement.mjs",
     "test:gameplay": "node scripts/browser-gameplay.mjs",
-    "test:experience": "node scripts/browser-experience.mjs"
+    "test:experience": "node scripts/browser-experience.mjs",
+    "test:prologue": "node scripts/browser-prologue.mjs"
   },
   "dependencies": {
     "@capacitor/core": "^7.4.3",

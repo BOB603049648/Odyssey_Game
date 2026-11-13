@@ -66,6 +66,33 @@ describe('prologue', () => {
     expect(state.screen).toBe('prologue');
     expect(state.evidence).toEqual([]);
   });
+
+  it.each([0, 1, 2, 3])('skips from frame %i with the same story evidence as watching', (frame) => {
+    let state = reduce(newGameState(), { type: 'new-game' });
+    for (let i = 0; i < frame; i++) state = reduce(state, { type: 'advance-prologue' });
+    state = reduce(state, { type: 'skip-prologue' });
+    const watched = atIsland();
+    expect(state.screen).toBe('island');
+    expect(state.currentScene).toBe(watched.currentScene);
+    expect(state.flags).toEqual(watched.flags);
+    expect(state.beats).toEqual(watched.beats);
+    expect(state.evidence).toEqual(watched.evidence);
+    expect(reduce(state, { type: 'skip-prologue' })).toBe(state);
+    expect(reduce(state, { type: 'previous-prologue' })).toBe(state);
+  });
+
+  it('lets players rewatch without losing or duplicating the first evidence', () => {
+    let state = reduce(newGameState(), { type: 'new-game' });
+    expect(reduce(state, { type: 'previous-prologue' })).toBe(state);
+    for (let i = 0; i < 3; i++) state = reduce(state, { type: 'advance-prologue' });
+    for (let i = 0; i < 3; i++) state = reduce(state, { type: 'previous-prologue' });
+    expect(state.currentScene).toBe('pro.scene.storm');
+    expect(state.prologueStep).toBe(0);
+    expect(state.evidence).toEqual(['dba.ev.a']);
+    state = reduce(state, { type: 'skip-prologue' });
+    expect(state.evidence).toEqual(['dba.ev.a']);
+    expect(state.words).toEqual(newGameState().words);
+  });
 });
 
 describe('island 1 teach loop', () => {
