@@ -35,8 +35,8 @@ describe('real production contact RAF under common depth',()=>{
   fireEvent.keyDown(window,{key:'s',code:'KeyS'});for(let i=0;i<90;i++)step(1000+i*16);fireEvent.keyUp(window,{key:'s',code:'KeyS'});
   expect(screen.getByTestId('traveler')).toBe(body);expect(screen.getByTestId('prop-art.shore.prop.break-shard')).toBe(prop);expect(document.querySelector('.nanaicha-ground')).toBe(cat);expect(body.closest('[data-depth-id]')).toBe(unit);expect(unit!.style.zIndex).not.toBe(rank);expect(vi.mocked(fetch).mock.calls.length).toBe(requests);
  });
- it('retains baseline viewport-space contact geometry',async()=>{
-  history.replaceState({},'','/?shoreVisual=baseline');await mount();step();expect(screen.getByTestId('sole-soft').style.left).toBe('280px');expect(screen.getByTestId('sole-soft').style.top).toBe('360px');expect(screen.getByTestId('sole-soft').parentElement).toBe(screen.getByTestId('sole-layer'));
+ it('uses world-space contacts even with the old baseline query',async()=>{
+  history.replaceState({},'','/?shoreVisual=baseline');await mount();step();expect(screen.getByTestId('sole-soft').style.left).toBe('500px');expect(screen.getByTestId('sole-soft').style.top).toBe('500px');expect(screen.getByTestId('sole-soft').closest('[data-depth-id]')).toBe(screen.getByTestId('traveler').closest('[data-depth-id]'));
  });
  it('real exit click seeks the unchanged gate and production movement emits onExit',async()=>{
   const exit=vi.fn();await mount(false,exit,.94);fireEvent.click(screen.getByTestId('exit-camp'));for(let i=0;i<100;i++)step(1000+i*16);expect(exit).toHaveBeenCalledWith('dba.scene.camp');

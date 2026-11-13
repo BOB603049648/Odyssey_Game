@@ -5,7 +5,7 @@ import { ShoreVisualSample } from '../dev/ShoreVisualSample';
 
 // The motion hook must run its real production RAF branch. Only the bitmap/canvas
 // operation is stubbed: jsdom has no real image decoding, so preserve URL identity.
-vi.mock('./hemPunch', () => ({ punchHemUrl: async (src: string) => src }));
+vi.mock('./hemPunch', async () => ({ ...await vi.importActual('./hemPunch'), punchHemUrl: async (src: string) => src }));
 let now = 0;
 let id = 0;
 let queued = new Map<number, FrameRequestCallback>();

@@ -54,9 +54,9 @@ export const GATES: readonly Gate[] = [
   { from: 'dba.scene.camp', to: 'dba.scene.yard', x: 0.9, y: 0.84, r: 0.04, edge: 'east', arrival: { x: 0.28, y: 0.92 } },
   { from: 'dba.scene.camp', to: 'dba.scene.night', x: 0.5, y: 0.8, r: 0.04, edge: 'north', arrival: { x: 0.55, y: 0.74 } },
   { from: 'dba.scene.yard', to: 'dba.scene.camp', x: 0.11, y: 0.8, r: 0.04, edge: 'west', arrival: { x: 0.72, y: 0.84 } },
-  { from: 'dba.scene.yard', to: 'dba.scene.path', x: 0.9, y: 0.78, r: 0.04, edge: 'east', arrival: { x: 0.3, y: 0.64 } },
+  { from: 'dba.scene.yard', to: 'dba.scene.path', x: 0.9, y: 0.78, r: 0.04, edge: 'east', arrival: { x: 0.3, y: 0.485 } },
   { from: 'dba.scene.hall', to: 'dba.scene.shore', x: 0.5, y: 0.8, r: 0.04, edge: 'south', arrival: { x: 0.28, y: 0.62 } },
-  { from: 'dba.scene.path', to: 'dba.scene.yard', x: 0.11, y: 0.64, r: 0.04, edge: 'west', arrival: { x: 0.72, y: 0.92 } },
+  { from: 'dba.scene.path', to: 'dba.scene.yard', x: 0.11, y: 0.43, r: 0.04, edge: 'west', arrival: { x: 0.72, y: 0.92 } },
   { from: 'dba.scene.night', to: 'dba.scene.camp', x: 0.5, y: 0.8, r: 0.04, edge: 'south', arrival: { x: 0.62, y: 0.84 } },
 ];
 
@@ -92,8 +92,8 @@ export const SPOTS: Record<IslandScene, readonly Spot[]> = {
     { id: 'hall-tattoo', x: 0.38, y: 0.44, r: 0.07 },
   ],
   'dba.scene.path': [
-    { id: 'path-stop', x: 0.3, y: 0.66, r: 0.06 },
-    { id: 'path-step', x: 0.66, y: 0.66, r: 0.06 },
+    { id: 'path-stop', x: 0.3, y: 0.485, r: 0.06 },
+    { id: 'path-step', x: 0.66, y: 0.61, r: 0.06 },
   ],
   'dba.scene.night': [
     { id: 'night-read', x: 0.36, y: 0.68, r: 0.05 },
@@ -131,8 +131,18 @@ export const SHORE_MARKER = { minX: 0.66, maxX: 0.82, sandY: 0.68 } as const;
 
 export function plantOnGround(scene: IslandScene, pos: Point): Point {
   const band = BANDS[scene];
-  const x = Math.min(band.maxX, Math.max(band.minX, pos.x));
+  let x = Math.min(band.maxX, Math.max(band.minX, pos.x));
   let y = Math.min(band.maxY, Math.max(band.minY, pos.y));
+  if (scene === 'dba.scene.path') {
+    x = Math.max(.11, Math.min(.77, x));
+    // Measured plank centerline in the 1280×720 bridge plate. The narrow
+    // walkable ribbon prevents movement into the cliff or the empty ravine.
+    const knots = [[.11,.43],[.24,.46],[.36,.50],[.52,.55],[.66,.61],[.77,.69]];
+    const end = knots.findIndex(([at]) => at >= x);
+    const a = knots[Math.max(0,end-1)], b = knots[Math.max(0,end)];
+    const center = a[1] + (b[1]-a[1]) * (b[0] === a[0] ? 0 : (x-a[0])/(b[0]-a[0]));
+    y = Math.max(center-.012, Math.min(center+.012,y));
+  }
   const onFacade = x > YARD_FACADE.minX && x < YARD_FACADE.maxX;
   const onApron = YARD_APRONS.some((span) => x > span.minX && x < span.maxX);
   if (scene === 'dba.scene.yard' && (onFacade || onApron) && y < YARD_FACADE.groundY) {

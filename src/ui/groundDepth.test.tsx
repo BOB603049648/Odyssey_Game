@@ -34,9 +34,9 @@ describe('one physical shore depth root',()=>{
    expect(screen.getByTestId('sole-soft').closest('[data-depth-id]')).toBe(h);expect(screen.getByTestId('cat-sole').closest('[data-depth-id]')).toBe(c);
   });
  }
- it.each(['baseline','camp'])('keeps legacy body/contact parents for %s',async(mode)=>{
+ it.each(['baseline','camp'])('uses shared world depth for %s',async(mode)=>{
   if(mode==='baseline')history.replaceState({},'','/?shoreVisual=baseline');const {WalkLayer,props}=await setup(mode==='camp'?'dba.scene.camp':'dba.scene.shore');render(<WalkLayer {...props}/>);
-  expect(document.querySelector('.ground-depth-root')).toBeNull();expect(screen.getByTestId('sole-soft').parentElement).toBe(screen.getByTestId('sole-layer'));
+  expect(document.querySelector('.ground-depth-root')).not.toBeNull();expect(screen.getByTestId('sole-soft').closest('[data-depth-id]')).toBe(screen.getByTestId('traveler').closest('[data-depth-id]'));
  });
  it('keeps E/click/ask/exit routes and original hotspot geometry',async()=>{
   const {WalkLayer,props,callbacks}=await setup('dba.scene.shore',.72,.66);render(<WalkLayer {...props} paused={false}/>);
@@ -47,13 +47,13 @@ describe('one physical shore depth root',()=>{
   vi.useFakeTimers();const {WalkLayer,props}=await setup(from);const {sceneAssembly}=await import('../content/catalog');const {visibleSpots}=await import('./spotViews');const {newGameState}=await import('../core/save');const {companionPost}=await import('../core/companionPost');
   const v=render(<WalkLayer {...props}/>);const dest=to as import('../core/island').IslandScene;
   v.rerender(<WalkLayer {...props} scene={dest} spots={visibleSpots(dest,newGameState(),hint)} catPost={companionPost(dest,{})}/>);
-  for(const scene of [from,to])for(const slot of sceneAssembly(scene as import('../core/island').IslandScene)!.slots.filter(s=>s.slot==='props'&&s.x!==undefined&&s.y!==undefined)){
+  for(const scene of [from,to])for(const slot of sceneAssembly(scene as import('../core/island').IslandScene)!.slots.filter(s=>s.slot==='props'&&s.depthMode!=='wall-art'&&s.x!==undefined&&s.y!==undefined)){
    const nodes=document.querySelectorAll(`[data-art-id="${slot.id}"]`);expect(nodes).toHaveLength(1);expect(nodes[0].closest('[data-depth-id]')).not.toBeNull();
   }
   expect(document.querySelector('.ground-depth-root [data-phase="leaving"]')).not.toBeNull();expect(document.querySelector('.ground-depth-root [data-phase="entering"]')).not.toBeNull();expect(screen.getAllByTestId('traveler')).toHaveLength(1);expect(screen.getAllByTestId('companion-anchor')).toHaveLength(1);
   act(()=>vi.advanceTimersByTime(979));expect(document.querySelector('.ground-depth-root [data-phase="leaving"]')).not.toBeNull();act(()=>vi.advanceTimersByTime(1));expect(document.querySelector('[data-phase="leaving"]')).toBeNull();
   for(const slot of sceneAssembly(from as import('../core/island').IslandScene)!.slots.filter(s=>s.slot==='props'))expect(document.querySelector(`[data-art-id="${slot.id}"]`)).toBeNull();
-  if(to==='dba.scene.camp')expect(document.querySelector('.ground-depth-root')).toBeNull();
+  expect(document.querySelector('.ground-depth-root')).not.toBeNull();
  });
  it('keeps the exact contact filter/masks and declares pointer/reduced-motion behavior',()=>{
   const css=readFileSync('src/styles.css','utf8');const block=css.slice(css.indexOf('.sole-layer {'),css.indexOf('.foot-ellipse {'));expect(createHash('sha256').update(block).digest('hex')).toBe('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');

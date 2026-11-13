@@ -1,6 +1,6 @@
 import type { CompanionPose, HintAnchor } from './hints';
 import type { IslandScene } from './island';
-import { BANDS, GATES, SPOTS, YARD_RIGHT_STEP } from './stage';
+import { BANDS, GATES, SPOTS, YARD_RIGHT_STEP, plantOnGround } from './stage';
 import { clampToBand, type Point } from './walk';
 
 /** Locked landings: opaque foot sits 8px above the 1152 canvas bottom. */
@@ -95,7 +95,7 @@ function gateAt(from: IslandScene, to: IslandScene): Point | null {
 
 /** Feet share the hotspot's ground y. Offset is horizontal so she does not cover the prop or the gate. */
 function plant(scene: IslandScene, at: Point, side: -1 | 1): Point {
-  return clampToBand({ x: at.x + side * 0.05, y: at.y }, BANDS[scene]);
+  return plantOnGround(scene, { x: at.x + side * 0.05, y: at.y });
 }
 
 function insideGate(scene: IslandScene, to: IslandScene): Point {
@@ -170,7 +170,8 @@ export function companionPost(
   }
 
   if (scene === 'dba.scene.night') {
-    const feet = plant(scene, spotAt(scene, 'night-read'), 1);
+    const scroll = spotAt(scene, 'night-read');
+    const feet = plantOnGround(scene, { x: scroll.x + 0.09, y: scroll.y });
     return { ...feet, look: 'old-layer', pose: 'curl', targetId: 'night-read', beat: 'N0', queue: 'guard' };
   }
 

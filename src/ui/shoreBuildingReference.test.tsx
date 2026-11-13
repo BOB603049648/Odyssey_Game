@@ -61,10 +61,10 @@ describe('shore gate fixed world foot calibrated at the authored spawn camera', 
     }
   });
   it('preserves the authored content foot, dimensions, pivot and shore movement constants', () => {
-    expect(authored).toEqual({x:.16,y:.6});expect(building).toMatchObject({w:.48,h:.36,parallax:.72});
-    expect(FOOT_PIVOT).toEqual({x:.5,y:1});expect(WORLD_SCALE).toBe(1.46);
+    expect(authored).toEqual({x:.17,y:.48});expect(building).toMatchObject({w:.33,h:.26,parallax:1});
+    expect(FOOT_PIVOT).toEqual({x:.5,y:1});expect(WORLD_SCALE).toBe(1.15);
     expect(BANDS[scene]).toEqual({minX:.05,maxX:.96,minY:.48,maxY:.84});
     const at=shot('baseline',{x:259.392,y:305.7344},1920,1072);
-    expect(at.foot).toEqual(authored);expect(at.width).toBe('48%');expect(at.height).toBe('36%');
+    expect(at.foot).toEqual(authored);expect(at.width).toBe('33%');expect(at.height).toBe('26%');
   });
 });

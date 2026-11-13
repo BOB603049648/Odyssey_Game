@@ -1,5 +1,6 @@
+vi.mock('./firstScreenReady',()=>({useFirstScreenReady:()=>({status:'ready',done:1,total:1,retry:()=>{}})}));
 import { cleanup, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SCENE_ASSEMBLIES } from '../content/catalog';
 import { BANDS, GATES, SPAWNS, SPOTS } from '../core/stage';
 import { PlateStack, drawsInFront } from './Plate';
@@ -52,8 +53,8 @@ describe('hotspot acceptance', () => {
     expect(gap?.slot).toBe('props');
     expect(kit('dba.scene.shore').slots.find((slot) => slot.slot === 'sky')?.id).not.toBe('art.shore.prop.east-gap');
     const gate = prop('art.shore.building', 'dba.scene.shore');
-    expect(gate).toMatchObject({ x: 0.16, y: 0.42, w: 0.48, h: 0.36 });
-    expect((gate?.y ?? 0) + (gate?.h ?? 0) / 2).toBeCloseTo(0.6);
+    expect(gate).toMatchObject({ x: 0.17, y: 0.35, w: 0.33, h: 0.26 });
+    expect((gate?.y ?? 0) + (gate?.h ?? 0) / 2).toBeCloseTo(0.48);
 
     expect(SPOTS['dba.scene.camp']).toHaveLength(8);
     expect(prop('art.camp.prop.fire', 'dba.scene.camp')?.spot).toBe('camp-sleep');
@@ -149,11 +150,11 @@ describe('hotspot acceptance', () => {
     const camp = render(<PlateStack plate="dba.scene.camp" previous={null} />);
     expect(screen.getByTestId('prop-art.camp.prop.sleep-mat').getAttribute('data-spot')).toBe('camp-sleep');
     expect(screen.getByTestId('prop-art.camp.prop.fire').getAttribute('data-spot')).toBe('camp-sleep');
-    expect(screen.getByTestId('prop-art.camp.prop.north-curtain').getAttribute('data-kind')).toBe('north-curtain');
+    expect(screen.getByTestId('prop-art.camp.prop.north-curtain').getAttribute('data-kind')).toBe('empty');
     expect(screen.getByTestId('slot-building').getAttribute('data-coplanar')).toBe('yes');
     expect(screen.getByTestId('slot-building').getAttribute('data-anchor')).toBe('foot');
     expect(screen.getByTestId('prop-art.camp.prop.sleep-mat').getAttribute('data-placeholder')).toBe('art');
-    expect(screen.getByTestId('prop-art.camp.prop.north-curtain').querySelector('img')).toBeTruthy();
+    expect(screen.getByTestId('prop-art.camp.prop.north-curtain').querySelector('img')).toBeNull();
     expect(screen.getByTestId('slot-far').querySelector('img')).toBeTruthy();
     expect(camp.container.querySelector('.plate-photo')).toBeNull();
     expect(camp.container.textContent).not.toContain('?');
@@ -212,38 +213,23 @@ describe('hotspot acceptance', () => {
       'slot-far',
       'slot-ground',
       'slot-building',
-      'slot-fg',
     ]) {
       expect(screen.getByTestId(id).getAttribute('data-placeholder')).toBe('art');
       expect(screen.getByTestId(id).querySelector('img')).toBeTruthy();
     }
+    expect(screen.getByTestId('slot-fg').querySelector('img')).toBeNull();
     expect(view.container.querySelector('.plate-photo')).toBeNull();
     const night = GATES.find((gate) => gate.from === 'dba.scene.camp' && gate.to === 'dba.scene.night');
     expect(night).toMatchObject({ x: 0.5, y: 0.8, r: 0.04, edge: 'north' });
   });
 
-  it('puts a curtain in front only when the traveler stands north of its hem', () => {
-    const campCurtain = prop('art.camp.prop.north-curtain', 'dba.scene.camp');
-    const nightCurtain = kit('dba.scene.night').slots.find((slot) => slot.kind === 'curtain');
-    expect(campCurtain && nightCurtain).toBeTruthy();
-    expect(drawsInFront(campCurtain!, 0.8)).toBe(false);
-    expect(drawsInFront(campCurtain!, 0.7)).toBe(true);
-    expect(drawsInFront(nightCurtain!, 0.8)).toBe(false);
-    expect(drawsInFront(nightCurtain!, 0.66)).toBe(true);
-
-    const south = render(<PlateStack plate="dba.scene.camp" previous={null} pass="near" feetY={0.8} />);
-    expect(south.container.querySelector('[data-kind="north-curtain"]')).toBeNull();
-    expect(south.container.querySelector('[data-kind="act-you"]')).toBeTruthy();
-    south.unmount();
-
-    const north = render(<PlateStack plate="dba.scene.camp" previous={null} pass="back" feetY={0.7} />);
-    expect(north.container.querySelector('[data-kind="north-curtain"]')).toBeNull();
-    north.unmount();
-    const covered = render(<PlateStack plate="dba.scene.night" previous={null} pass="fg" feetY={0.8} />);
-    expect(covered.container.querySelector('[data-kind="curtain"]')).toBeNull();
-    expect(covered.container.querySelector('[data-slot="fg"]')).toBeNull();
-    covered.unmount();
-    const behindCloth = render(<PlateStack plate="dba.scene.night" previous={null} pass="near" feetY={0.66} />);
-    expect(behindCloth.container.querySelector('[data-kind="curtain"]')).toBeTruthy();
+  it('keeps the doorway in the building art and omits duplicate curtain sprites', () => {
+    const camp = SCENE_ASSEMBLIES.find(scene => scene.id === 'dba.scene.camp')!;
+    const curtain = camp.slots.find(slot => slot.id === 'art.camp.prop.north-curtain')!;
+    expect(curtain.depthMode).toBe('wall-art');
+    expect(curtain.asset).toBeNull();
+    for (const y of [curtain.y!-.01,curtain.y!,curtain.y!+.01]) expect(drawsInFront(curtain,y)).toBe(false);
+    const night = SCENE_ASSEMBLIES.find(scene => scene.id === 'dba.scene.night')!;
+    expect(night.slots.find(slot => slot.slot === 'fg')?.asset).toBeNull();
   });
 });

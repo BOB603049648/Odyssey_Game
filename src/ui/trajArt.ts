@@ -34,6 +34,6 @@ if (import.meta.env.MODE === 'test') {
     eager: true,
     import: 'default',
   });
-  const ids = [...new Set(Object.keys(modules).map((path) => path.split('/').pop()!.replace(/\.(png|webp)$/, '')))];
+  const ids = [...new Set(['land-companion', ...Object.keys(modules).map((path) => path.split('/').pop()!.replace(/\.(png|webp)$/, ''))])];
   await Promise.all(ids.map((id) => loadTraj(id)));
 }

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { App } from './App';
 import { canDepart, type IslandScene } from './core/island';
 import { reduce } from './core/reduce';
@@ -21,7 +21,12 @@ beforeEach(() => {
   useGame.getState().resetForTests();
 });
 
-function press(keys: readonly string[]) {
+async function ready() {
+  await waitFor(() => expect(screen.getByTestId('walk-stage').dataset.display).toBe('ready'));
+}
+
+async function press(keys: readonly string[]) {
+  await ready();
   for (const key of keys) fireEvent.keyDown(window, { key });
 }
 
@@ -30,8 +35,9 @@ function here(): Point {
   return { x: Number(el.getAttribute('data-x')), y: Number(el.getAttribute('data-y')) };
 }
 
-function walkTo(scene: IslandScene, goal: Point, radius: number) {
-  press(approachPlan(here(), goal, BANDS[scene], radius));
+async function walkTo(scene: IslandScene, goal: Point, radius: number) {
+  await ready();
+  await press(approachPlan(here(), goal, BANDS[scene], radius));
 }
 
 function spot(scene: IslandScene, id: string): Point & { r: number } {
@@ -40,17 +46,18 @@ function spot(scene: IslandScene, id: string): Point & { r: number } {
   return found;
 }
 
-function cross(to: IslandScene, key: 'a' | 'd' | 'w' | 's') {
+async function cross(to: IslandScene, key: 'a' | 'd' | 'w' | 's') {
+  await ready();
   for (let i = 0; i < 48; i += 1) {
-    if (document.querySelector('[data-scene]')?.getAttribute('data-scene') === to) return;
+    if (document.querySelector('[data-scene]')?.getAttribute('data-scene') === to) { await ready(); return; }
     fireEvent.keyDown(window, { key });
   }
   const scene = document.querySelector('[data-scene]')?.getAttribute('data-scene');
   throw new Error(`did not enter ${to} from ${scene} at ${here().x},${here().y}`);
 }
 
-describe('playable slice', () => {
-  it('keeps playing after a failed save, warns the player, and retries on the next action', () => {
+describe('playable slice', async () => {
+  it('keeps playing after a failed save, warns the player, and retries on the next action', async () => {
     const saved = reduce(newGameState(), { type: 'new-game' });
     localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
     useGame.getState().resetForTests();
@@ -59,6 +66,7 @@ describe('playable slice', () => {
     });
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: '继续' }));
+    if (screen.queryByTestId('walk-stage')) await ready();
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     expect(screen.getByTestId('prologue').getAttribute('data-prologue-step')).toBe('1');
     expect(screen.getByRole('status').textContent).toContain('暂时无法保存进度');
@@ -69,7 +77,7 @@ describe('playable slice', () => {
     expect(JSON.parse(localStorage.getItem(SAVE_KEY)!).prologueStep).toBe(2);
   });
 
-  it('reaches both yard amount boards from the step by click and keyboard', () => {
+  it('reaches both yard amount boards from the step by click and keyboard', async () => {
     let save = reduce(newGameState(), { type: 'new-game' });
     for (let i = 0; i < 28; i++) save = reduce(save, { type: 'debug-learn-next' });
     save = reduce(save, { type: 'debug-scene', scene: 'dba.scene.yard' });
@@ -77,21 +85,22 @@ describe('playable slice', () => {
     useGame.getState().resetForTests();
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: '继续' }));
+    if (screen.queryByTestId('walk-stage')) await ready();
     fireEvent.click(screen.getByTestId('amount-more'));
     expect(useGame.getState().save.beats['dba.beat.amount']).toBeUndefined();
-    press(['d', 'w']);
+    await press(['d', 'w']);
     expect(here().y).toBe(0.92);
     expect(screen.getByTestId('walk-stage').getAttribute('data-near')).toContain('act:dba.word.amount:more');
     fireEvent.click(screen.getByTestId('amount-more'));
     expect(useGame.getState().save.beats['dba.beat.amount']).toBe(true);
     expect(screen.getByTestId('amount-more').getAttribute('data-result')).toBe('ok');
-    press(['d', 'd', 'e']);
+    await press(['d', 'd', 'e']);
     expect(here().y).toBe(0.92);
     expect(useGame.getState().save.feedback.spot).toBe('act:dba.word.amount:less');
     expect(useGame.getState().save.feedback.kind).toBe('no');
   });
 
-  it('starts with teaching glosses off and can learn water, then use it', () => {
+  it('starts with teaching glosses off and can learn water, then use it', async () => {
     render(<App />);
     expect(screen.getByRole('switch', { name: '显示教学义' }).getAttribute('aria-checked')).toBe('false');
 
@@ -100,6 +109,7 @@ describe('playable slice', () => {
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     fireEvent.click(screen.getByRole('button', { name: '走上潮线' }));
+    await ready();
     expect(screen.getByTestId('traveler')).toBeTruthy();
     expect(screen.queryByText('奈奈茶')).toBeNull();
     fireEvent.click(screen.getByTestId('island-mural'));
@@ -107,7 +117,7 @@ describe('playable slice', () => {
     expect(useGame.getState().save.screen).toBe('island');
 
     const mural = spot('dba.scene.shore', 'island-mural');
-    walkTo('dba.scene.shore', mural, mural.r);
+    await walkTo('dba.scene.shore', mural, mural.r);
     expect(screen.getByTestId('walk-stage').getAttribute('data-near')).toContain('island-mural');
     fireEvent.click(screen.getByTestId('island-mural'));
 
@@ -118,7 +128,7 @@ describe('playable slice', () => {
     fireEvent.click(screen.getByTestId('object-dba.word.water'));
     fireEvent.click(screen.getByRole('button', { name: '返回' }));
     const gourd = spot('dba.scene.shore', 'island-gourd');
-    walkTo('dba.scene.shore', gourd, gourd.r);
+    await walkTo('dba.scene.shore', gourd, gourd.r);
     fireEvent.click(screen.getByTestId('island-gourd'));
     fireEvent.click(screen.getByTestId('use-dba.word.water'));
 
@@ -127,23 +137,25 @@ describe('playable slice', () => {
     expect(useGame.getState().save.words['dba.word.water'].state).toBe('learned');
   });
 
-  it('continues a saved prologue after reload', () => {
+  it('continues a saved prologue after reload', async () => {
     const saved = reduce(reduce(newGameState(), { type: 'new-game' }), { type: 'advance-prologue' });
     localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
     useGame.getState().resetForTests();
 
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: '继续' }));
+    if (screen.queryByTestId('walk-stage')) await ready();
     expect(screen.getByTestId('prologue').getAttribute('data-prologue-step')).toBe('1');
   });
 
-  it('opens the camp, the case slots, and the review band', () => {
+  it('opens the camp, the case slots, and the review band', async () => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: '新游戏' }));
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     fireEvent.click(screen.getByRole('button', { name: '走上潮线' }));
+    await ready();
 
     fireEvent.click(screen.getByRole('button', { name: '案卷' }));
     expect(screen.getByText('签署手势')).toBeTruthy();
@@ -153,16 +165,16 @@ describe('playable slice', () => {
     expect(screen.queryByText('奈奈茶')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: '合上' }));
 
-    cross('dba.scene.camp', 'd');
+    await cross('dba.scene.camp', 'd');
     expect(screen.getByTestId('scene').getAttribute('data-scene')).toBe('dba.scene.camp');
     expect(screen.getByTestId('traveler')).toBeTruthy();
     expect(screen.getByTestId('camp-sleep')).toBeTruthy();
     expect(screen.queryByTestId('island-gourd')).toBeNull();
     expect(screen.queryByTestId('nav-camp')).toBeNull();
 
-    cross('dba.scene.shore', 'a');
+    await cross('dba.scene.shore', 'a');
     const mural = spot('dba.scene.shore', 'island-mural');
-    walkTo('dba.scene.shore', mural, mural.r);
+    await walkTo('dba.scene.shore', mural, mural.r);
     fireEvent.click(screen.getByTestId('island-mural'));
     expect(screen.getByTestId('mural-review').hasAttribute('disabled')).toBe(true);
     fireEvent.click(screen.getByTestId('cell-dba.word.water'));
@@ -173,7 +185,7 @@ describe('playable slice', () => {
     expect(screen.queryByText('水')).toBeNull();
   });
 
-  it('shows the Chinese gloss only after the player turns it on', () => {
+  it('shows the Chinese gloss only after the player turns it on', async () => {
     let save = reduce(newGameState(), { type: 'new-game' });
     for (let step = 0; step < 4; step += 1) save = reduce(save, { type: 'advance-prologue' });
     save = reduce(save, { type: 'open-mural' });
@@ -188,7 +200,7 @@ describe('playable slice', () => {
     expect(screen.getAllByText('水').length).toBeGreaterThan(0);
   });
 
-  it('plays the silent memory after leaving and replays it from the map, night, and case', () => {
+  it('plays the silent memory after leaving and replays it from the map, night, and case', async () => {
     let save = reduce(newGameState(), { type: 'new-game' });
     for (let step = 0; step < 4; step += 1) save = reduce(save, { type: 'advance-prologue' });
     for (let step = 0; step < 40 && !canDepart(save); step += 1) save = reduce(save, { type: 'debug-learn-next' });
@@ -199,6 +211,7 @@ describe('playable slice', () => {
 
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: '继续' }));
+    if (screen.queryByTestId('walk-stage')) await ready();
     expect(screen.getByTestId('depart-plate').getAttribute('data-chart')).toBe('chart.jgw');
     expect(screen.getByTestId('companion').getAttribute('data-pose')).toBe('fetch');
     expect(screen.queryByText('奈奈茶')).toBeNull();
@@ -230,10 +243,10 @@ describe('playable slice', () => {
     fireEvent.click(screen.getByRole('button', { name: '合上' }));
     expect(screen.queryByTestId('chart-sealed')).toBeNull();
 
-    cross('dba.scene.camp', 'd');
-    cross('dba.scene.night', 'w');
+    await cross('dba.scene.camp', 'd');
+    await cross('dba.scene.night', 'w');
     const memory = spot('dba.scene.night', 'night-memory');
-    walkTo('dba.scene.night', memory, memory.r);
+    await walkTo('dba.scene.night', memory, memory.r);
     fireEvent.click(screen.getByTestId('night-memory'));
     expect(screen.getByTestId('memory-plate')).toBeTruthy();
     closeMemory();
@@ -244,13 +257,14 @@ describe('playable slice', () => {
     expect(screen.queryByText('奈奈茶')).toBeNull();
   });
 
-  it('faces front, side, and back while walking', () => {
+  it('faces front, side, and back while walking', async () => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: '新游戏' }));
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     fireEvent.click(screen.getByRole('button', { name: '走上潮线' }));
+    await ready();
     const traveler = () => screen.getByTestId('traveler');
     expect(traveler().getAttribute('data-facing')).toBe('front');
     fireEvent.keyDown(window, { key: 'w' });
@@ -263,17 +277,18 @@ describe('playable slice', () => {
     expect(traveler().getAttribute('data-facing')).toBe('front');
   });
 
-  it('opens a hotspot underfoot with click, E, Enter, Space, and F', () => {
+  it('opens a hotspot underfoot with click, E, Enter, Space, and F', async () => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: '新游戏' }));
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     fireEvent.click(screen.getByRole('button', { name: '走上潮线' }));
+    await ready();
 
     const mural = spot('dba.scene.shore', 'island-mural');
     for (const key of ['e', 'Enter', ' ', 'f']) {
-      walkTo('dba.scene.shore', mural, mural.r);
+      await walkTo('dba.scene.shore', mural, mural.r);
       expect(screen.getByTestId('walk-stage').getAttribute('data-near')).toContain('island-mural');
       fireEvent.keyDown(window, { key });
       expect(screen.getByTestId('mural-review')).toBeTruthy();
@@ -286,7 +301,7 @@ describe('playable slice', () => {
     });
     expect(screen.getByTestId('scene').getAttribute('data-scene')).toBe('dba.scene.night');
     const read = spot('dba.scene.night', 'night-read');
-    walkTo('dba.scene.night', read, read.r);
+    await walkTo('dba.scene.night', read, read.r);
     expect(screen.getByTestId('walk-stage').getAttribute('data-near')).toContain('night-read');
     fireEvent.click(screen.getByTestId('night-read'));
     expect(screen.getByTestId('mural-review')).toBeTruthy();
@@ -294,7 +309,7 @@ describe('playable slice', () => {
     expect(useGame.getState().save.currentScene).toBe('dba.scene.night');
     fireEvent.click(screen.getByRole('button', { name: '返回' }));
 
-    walkTo('dba.scene.night', read, read.r);
+    await walkTo('dba.scene.night', read, read.r);
     fireEvent.keyDown(window, { key: 'Enter' });
     expect(screen.getByTestId('mural-review')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: '返回' }));
@@ -312,7 +327,7 @@ describe('playable slice', () => {
     act(() => {
       useGame.setState({ save: learned });
     });
-    walkTo('dba.scene.night', read, read.r);
+    await walkTo('dba.scene.night', read, read.r);
     fireEvent.keyDown(window, { key: 'f' });
     expect(screen.getByRole('dialog', { name: '案卷' })).toBeTruthy();
     expect(useGame.getState().save.evidence).toContain('dba.ev.main');
@@ -320,13 +335,14 @@ describe('playable slice', () => {
     expect(useGame.getState().save.beats['dba.beat.old-layer']).toBe(true);
   });
 
-  it('keeps the collar dark until the rope-knot evidence is in the case', () => {
+  it('keeps the collar dark until the rope-knot evidence is in the case', async () => {
     let save = reduce(newGameState(), { type: 'new-game' });
     for (let step = 0; step < 4; step += 1) save = reduce(save, { type: 'advance-prologue' });
     localStorage.setItem(SAVE_KEY, JSON.stringify(save));
     useGame.getState().resetForTests();
     const first = render(<App />);
     fireEvent.click(screen.getByRole('button', { name: '继续' }));
+    if (screen.queryByTestId('walk-stage')) await ready();
     expect(screen.getByTestId('companion').getAttribute('data-knot')).toBe('rest');
     first.unmount();
 
@@ -335,11 +351,12 @@ describe('playable slice', () => {
     useGame.getState().resetForTests();
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: '继续' }));
+    if (screen.queryByTestId('walk-stage')) await ready();
     expect(screen.getByTestId('companion').getAttribute('data-knot')).toBe('glow');
     expect(screen.queryByText('奈奈茶')).toBeNull();
   });
 
-  it('teaches approach once, on the driftwood', () => {
+  it('teaches approach once, on the driftwood', async () => {
     // shore：出生约两秒内能指 漂木 + 水瓢。教程只挂 shore-driftwood，写 taught-approach 后不再弹。
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: '新游戏' }));
@@ -347,28 +364,29 @@ describe('playable slice', () => {
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     fireEvent.click(screen.getByRole('button', { name: '走上潮线' }));
+    await ready();
     expect(screen.queryByTestId('approach-hint')).toBeNull();
     expect(screen.getByTestId('prop-art.shore.prop.driftwood')).toBeTruthy();
     expect(screen.getByTestId('prop-art.shore.prop.gourd')).toBeTruthy();
     expect(screen.queryByText('?')).toBeNull();
 
     const wood = spot('dba.scene.shore', 'shore-driftwood');
-    walkTo('dba.scene.shore', wood, wood.r);
+    await walkTo('dba.scene.shore', wood, wood.r);
     expect(screen.getByTestId('approach-hint').textContent).toBe('近一点。手才能够到。');
     expect(useGame.getState().save.flags['dba.flag.taught-approach']).toBe(true);
 
-    walkTo('dba.scene.shore', { x: 0.42, y: 0.62 }, 0.02);
+    await walkTo('dba.scene.shore', { x: 0.42, y: 0.62 }, 0.02);
     expect(screen.queryByTestId('approach-hint')).toBeNull();
-    walkTo('dba.scene.shore', wood, wood.r);
+    await walkTo('dba.scene.shore', wood, wood.r);
     expect(screen.queryByTestId('approach-hint')).toBeNull();
   });
 
-  it('steps the four prologue stills with the caption and no second cat', () => {
+  it('steps the four prologue stills with the caption and no second cat', async () => {
     const frames = [
       ['art.pro.storm', '船翻了。你是唯一浮上的人。', '下一幕'],
       ['art.pro.dark', '黑水里，有一声猫叫。你的手自己伸了出去。', '下一幕'],
       ['art.pro.break', '闪回抢进来：一只手对着长卷上裂开的符，做了「断」。你认得这个手势——像认得自己的手。', '下一幕'],
-      ['art.pro.tide', '潮线上伏着那只猫——比人还大。颈上旧绳还在。她回头看你半秒，朝雾岸迈了一步：跟过来。', '走上潮线'],
+      ['art.pro.tide', '潮线上伏着那只披着旧披风的猫。颈上旧绳还在。她回头看你半秒，朝雾岸迈了一步：跟过来。', '走上潮线'],
     ] as const;
     const view = render(<PrologueScreen step={0} onAdvance={() => undefined} />);
     for (const [art, caption, button] of frames) {

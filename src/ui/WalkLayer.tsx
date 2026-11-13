@@ -14,7 +14,7 @@ import { BANDS, SPAWNS, SPOTS, closestSpot, gateAt, gatesFrom, nearestSpot, plan
 import { stepWorld } from '../core/worldLoop';
 import {
   WALK_SPEED,
-  WORLD_SCALE,
+  worldSize,
   cameraOffset,
   followCamera,
   inRadius,
@@ -144,6 +144,7 @@ export function WalkLayer({
   /** Static local fixture only. Does not pause asset/contact RAF work. */
   presentationFrozen?: boolean;
 }) {
+  const firstScreen = useFirstScreenReady(scene, 'land-companion');
   const viewportRef = useRef<HTMLDivElement>(null);
   const soleRef = useRef<HTMLImageElement>(null);
   const catSoleRef = useRef<HTMLImageElement>(null);
@@ -197,7 +198,7 @@ export function WalkLayer({
   const viewRef = useRef(view);
   const plates = useCrossfade(scene, 980);
   const depthComparison = getShoreVisualProfile().fixture !== null && new URLSearchParams(window.location.search).get('depth') === 'legacy';
-  const depthScenes = !depthComparison && getShoreVisualProfile().variant === 'candidate' && (plates.current === 'dba.scene.shore' || plates.previous === 'dba.scene.shore')
+  const depthScenes = !depthComparison
     ? [plates.current, ...(plates.previous ? [plates.previous] : [])] : [];
   const sharedDepth = depthScenes.length > 0;
   viewRef.current = view;
@@ -571,8 +572,7 @@ export function WalkLayer({
   const {src:leap02} = useAssetSrc(warmLeap ? 'leap-02' : null, TRAJ_SRC_API);
   const guideReadyRef = useRef(false);
   guideReadyRef.current = !!leap01 && !!leap02;
-  const worldW = view.w * WORLD_SCALE;
-  const worldH = view.h * WORLD_SCALE;
+  const { w: worldW, h: worldH } = worldSize(view.w, view.h);
   const requestedCatSprite = companionFrameId(catPost.beat, clip);
   // Contract permits the complete scene prop as a temporary Y0 landing fallback.
   // Keep the beat/guide/queue and the dedicated trajectory file untouched.
@@ -631,7 +631,7 @@ export function WalkLayer({
   const fixedFixtureCamera = presentationFrozen && getShoreVisualProfile().fixture?.startsWith('depth-')
     ? cameraOffset(SPAWNS['dba.scene.shore'], view.w, view.h) : null;
   const rawCam = fixedFixtureCamera ?? (import.meta.env.MODE === 'test' ? cameraOffset(pos, view.w, view.h) : cam);
-  const shownCam = lookEast(rawCam, view.w, scene === 'dba.scene.shore');
+  const shownCam = lookEast(rawCam, view.w, scene === 'dba.scene.shore', undefined, view.h);
   const look = sceneLook(scene);
   const near = spots.filter((spot) => standsAt(scene, spot, pos)).map((spot) => spot.id);
   const glance = spots
@@ -647,7 +647,7 @@ export function WalkLayer({
   const spotIds = spots.map((spot) => spot.id);
   const sleepFoot = SPOTS[scene].find((spot) => spot.id === 'camp-sleep');
   const feetY = resting && sleepFoot ? sleepFoot.y : pos.y;
-  useShoreCuePresentation(viewportRef, scene === 'dba.scene.shore' && getShoreVisualProfile().variant === 'candidate',
+  useShoreCuePresentation(viewportRef, scene === 'dba.scene.shore',
     [shownCam.x, shownCam.y, feetY, plates.current, plates.previous, near.join(','), glance.join(','), spotIds.join(',')].join('|'));
   const exits = gatesFrom(scene);
   // The light is always present at this exit; only its name is proximity-gated.
@@ -694,18 +694,19 @@ export function WalkLayer({
   const catFoot=catGeometry.foot;
   const catScreen = worldToScreen({ x: cat.x, y: cat.y }, catFoot);
   const catInFront = !sharedDepth && cat.y > feetY + 0.012;
-  const firstScreen = useFirstScreenReady(scene);
-  const shoreCandidate = scene === 'dba.scene.shore' && getShoreVisualProfile().variant === 'candidate';
-  const catDiagnostic = shoreCandidate && getShoreVisualProfile().fixture !== null && new URLSearchParams(window.location.search).get('diagnostic') === '1';
+  const shoreCandidate = scene === 'dba.scene.shore';
+  const catDiagnostic = shoreCandidate && getShoreVisualProfile().variant === 'candidate' && getShoreVisualProfile().fixture !== null && new URLSearchParams(window.location.search).get('diagnostic') === '1';
 
 
   // These owners are unconditional for WalkLayer's lifetime; only their stateless views reparent.
   const travelerPresentation=useTravelerPresentation({
     x:resting && sleepFoot?sleepFoot.x:pos.x,y:feetY,facing,moving,stride,
     pose:resting?'lie':reaching?'reach':'auto',depthZ:catInFront?4:6,
-    presentationFrozen,contactCleanup:shoreCandidate,
+    presentationFrozen,contactCleanup:true,
     height:travelerHeight(scene),
   });
+  const displayStatus = firstScreen.status === 'ready' && (!travelerPresentation.current.shown || !companionPresentation.src) ? 'loading' : firstScreen.status;
+  pausedRef.current = paused || displayStatus !== 'ready';
   const catNode = (<div
             className="companion-anchor"
             data-testid="companion-anchor"
@@ -785,7 +786,7 @@ export function WalkLayer({
     <div
       ref={viewportRef}
       className="walk-viewport"
-      data-display={firstScreen.status}
+      data-display={displayStatus}
       data-testid="walk-stage"
       data-blocked={blocked ? 'yes' : 'no'}
       data-near={near.join(' ')}
@@ -842,6 +843,7 @@ export function WalkLayer({
           {spots.map((spot) => {
             const inside = near.includes(spot.id);
             const reach = inside ? 'near' : glance.includes(spot.id) ? 'glance' : 'far';
+            const art = sceneAssembly(scene)?.slots.find(slot => slot.spot === spot.id && slot.x === spot.x && slot.y === spot.y);
             return (
               <button
                 key={spot.id}
@@ -850,8 +852,11 @@ export function WalkLayer({
                 data-reach={reach}
                 data-testid={spot.testId}
                 data-result={beat && beat.spot === spot.id ? beat.kind : undefined}
-                style={{ left: pct(spot.x), top: pct(spot.y), right: 'auto', bottom: 'auto' }}
+                style={{ left: pct(spot.x), top: pct(spot.y), right: 'auto', bottom: 'auto',
+                  ...(art?.w && art.h ? { width: `max(44px, ${pct(art.w)})`, height: `max(44px, ${pct(art.h)})`, transform: 'translate(-50%, -100%)' } : {}),
+                }}
                 aria-label={spot.ariaLabel}
+                title={spot.ariaLabel}
                 onClick={(event) => {
                   event.stopPropagation();
                   if (pausedRef.current) return;
@@ -957,7 +962,7 @@ export function WalkLayer({
             {t('hint.approach')}
           </p>
         ) : null}
-      <FirstScreenGate state={firstScreen.status} done={firstScreen.done} total={firstScreen.total} onRetry={firstScreen.retry} />
+      <FirstScreenGate state={displayStatus} done={firstScreen.done} total={firstScreen.total} onRetry={firstScreen.retry} />
       <WalkStick
         onVector={(vector) => {
           stickRef.current = vector;

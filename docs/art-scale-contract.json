@@ -25,25 +25,25 @@
       {
         "scene": "dba.scene.shore",
         "id": "art.shore.prop.driftwood",
-        "h": 0.14,
+        "h": 0.06,
         "max_h": 0.3
       },
       {
         "scene": "dba.scene.shore",
         "id": "art.shore.prop.gourd",
-        "h": 0.15,
+        "h": 0.055,
         "max_h": 0.16
       },
       {
         "scene": "dba.scene.camp",
         "id": "art.camp.prop.fire",
-        "h": 0.14,
+        "h": 0.07,
         "max_h": 0.3
       },
       {
         "scene": "dba.scene.yard",
         "id": "art.yard.prop.grain-bags",
-        "h": 0.24,
+        "h": 0.085,
         "max_h": 0.3
       }
     ],
@@ -4822,27 +4822,27 @@
     "slots": [
       {
         "id": "art.hall.building",
-        "w": 0.72,
-        "h": 0.47,
-        "world_h_m": 3.74
+        "w": 0.5,
+        "h": 0.46,
+        "world_h_m": 3.66
       },
       {
         "id": "art.hall.prop.scroll-wall",
-        "w": 0.172,
-        "h": 0.125,
-        "world_h_m": 1.0
+        "w": 0.12,
+        "h": 0.08,
+        "world_h_m": 0.64
       },
       {
         "id": "art.hall.prop.stamp-rail",
-        "w": 0.1,
-        "h": 0.052,
-        "world_h_m": 0.42
+        "w": 0.09,
+        "h": 0.05,
+        "world_h_m": 0.4
       },
       {
         "id": "art.hall.prop.wrist-knot",
-        "w": 0.055,
-        "h": 0.055,
-        "world_h_m": 0.44
+        "w": 0.035,
+        "h": 0.06,
+        "world_h_m": 0.48
       }
     ]
   }

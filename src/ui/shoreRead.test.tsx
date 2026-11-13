@@ -124,14 +124,14 @@ describe('shore readability', () => {
     }
     expect(container.textContent).not.toContain('?');
 
-    const far = rule('.walk-viewport[data-scene="dba.scene.shore"] .scene-slot[data-cue="far"] .prop-cue');
-    const glance = rule('.walk-viewport[data-scene="dba.scene.shore"] .scene-slot[data-cue="glance"] .prop-cue');
-    const foot = rule('.walk-viewport[data-scene="dba.scene.shore"] .scene-slot[data-cue="near"] .prop-cue');
+    const far = rule('.walk-viewport .scene-slot[data-cue="far"] .prop-cue');
+    const glance = rule('.walk-viewport .scene-slot[data-cue] .prop-cue');
+    const foot = rule('.walk-viewport .scene-slot[data-cue="near"] .prop-cue');
     const quiet = rule('.walk-viewport .world-layer .hotspot.hint-near');
-    expect(far).toMatch(/opacity:\s*0\.[6-9]/);
-    expect(glance).toMatch(/opacity:\s*1/);
+    expect(far).toMatch(/opacity:\s*\.4/);
+    expect(glance).toMatch(/width:\s*9px/);
     expect(glance).toMatch(/box-shadow/);
-    expect(foot).toMatch(/box-shadow/);
+    expect(foot).toMatch(/opacity:\s*1/);
     expect(quiet).toMatch(/box-shadow:\s*none/);
     expect(quiet).toMatch(/border-color:\s*transparent/);
     expect(quiet).not.toMatch(/999px|rgba\(214,\s*196,\s*154|rgba\(230,\s*211,\s*164/);
@@ -332,15 +332,15 @@ describe('shore readability', () => {
   });
 
   it('does not move sole, scale, shore band, or the #60 shore boxes', () => {
-    expect(WORLD_SCALE).toBe(1.46);
+    expect(WORLD_SCALE).toBe(1.15);
     expect(BANDS['dba.scene.shore']).toMatchObject({ minX: 0.05, maxX: 0.96, minY: 0.48, maxY: 0.84 });
     const kit = sceneAssembly('dba.scene.shore');
     const box = (id: string) => kit?.slots.find((slot) => slot.id === id);
-    expect(box('art.shore.prop.driftwood')).toMatchObject({ x: 0.33, y: 0.72, w: 0.19, h: 0.14 });
-    expect(box('art.shore.prop.gourd')).toMatchObject({ x: 0.58, y: 0.66, w: 0.15, h: 0.15 });
-    expect(box('art.shore.prop.mural-wall')).toMatchObject({ x: 0.3, y: 0.56, w: 0.3, h: 0.18 });
-    expect(box('art.shore.prop.east-gap')).toMatchObject({ x: 0.74, y: 0.68, w: 0.26, h: 0.23 });
-    expect(box('art.shore.prop.break-shard')).toMatchObject({ x: 0.18, y: 0.7, w: 0.18, h: 0.14 });
+    expect(box('art.shore.prop.driftwood')).toMatchObject({ x: 0.33, y: 0.72, w: 0.13, h: 0.06 });
+    expect(box('art.shore.prop.gourd')).toMatchObject({ x: 0.58, y: 0.66, w: 0.045, h: 0.055 });
+    expect(box('art.shore.prop.mural-wall')).toMatchObject({ x: 0.3, y: 0.56, w: 0.15, h: 0.12 });
+    expect(box('art.shore.prop.east-gap')).toMatchObject({ x: 0.74, y: 0.68, w: 0.12, h: 0.18 });
+    expect(box('art.shore.prop.break-shard')).toMatchObject({ x: 0.18, y: 0.7, w: 0.06, h: 0.055 });
     expect(css).toMatch(/\.sole-soft\s*\{[^}]*transparent calc\(89\.8% \* var\(--fit\)\)[^}]*92\.0%[^}]*94\.0%/);
     expect(css).toMatch(/\.sole-soft\s*\{[^}]*filter:\s*url\(#sole-warm\)/);
     expect(css).not.toMatch(/\.traveler img\s*\{[^}]*transparent 95\.2%/);

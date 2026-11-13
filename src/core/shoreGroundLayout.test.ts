@@ -48,7 +48,7 @@ describe('shore ground vs sky layout', () => {
     const band = BANDS['dba.scene.shore'];
     expect(band).toEqual({ minX: 0.05, maxX: 0.96, minY: 0.48, maxY: 0.84 });
     expect(SPAWNS['dba.scene.shore']).toEqual({ x: 0.42, y: 0.62 });
-    expect(WORLD_SCALE).toBe(1.46);
+    expect(WORLD_SCALE).toBe(1.15);
     expect(SHORE_CAT_HEIGHT).toBe(0.168);
     const shoreGates = GATES.filter((gate) => gate.from === 'dba.scene.shore');
     expect(shoreGates).toEqual(

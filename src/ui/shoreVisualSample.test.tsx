@@ -1,3 +1,4 @@
+vi.mock('./firstScreenReady',()=>({useFirstScreenReady:()=>({status:'ready',done:1,total:1,retry:()=>{}})}));
 import { readFileSync } from 'node:fs';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -6,8 +7,7 @@ import { WalkLayer } from './WalkLayer';
 import { visibleSpots } from './spotViews';
 import { companionPost } from '../core/companionPost';
 import { newGameState } from '../core/save';
-import { cameraOffset, lookEast, WORLD_SCALE } from '../core/walk';
-import { SPAWNS } from '../core/stage';
+import { WORLD_SCALE } from '../core/walk';
 
 const css = readFileSync('src/styles.css', 'utf8');
 afterEach(() => { cleanup(); vi.unstubAllEnvs(); history.replaceState({}, '', '/'); });
@@ -26,12 +26,11 @@ describe('shore same-plane and separated cue', () => {
       const slot = building('dba.scene.shore', x, y);
       expect(slot.transform).toContain('translate3d(0px, 0px, 0)');
       expect(slot.parallax).toBe('1');
-      const reference = lookEast(cameraOffset(SPAWNS['dba.scene.shore'], 1, 1), 1, true);
-      expect(Number.parseFloat(slot.left) / 100).toBeCloseTo(.16 + .28 * reference.x / WORLD_SCALE, 12);
-      expect(Number.parseFloat(slot.top) / 100).toBeCloseTo(.6 + .28 * reference.y / WORLD_SCALE, 12);
-      expect(slot.width).toBe('48%'); expect(slot.height).toBe('36%');
+      expect(Number.parseFloat(slot.left) / 100).toBeCloseTo(.17, 12);
+      expect(Number.parseFloat(slot.top) / 100).toBeCloseTo(.48, 12);
+      expect(slot.width).toBe('33%'); expect(slot.height).toBe('26%');
     }
-    expect(WORLD_SCALE).toBe(1.46);
+    expect(WORLD_SCALE).toBe(1.15);
   });
   it('does not change ordinary builds or other-scene projections', () => {
     candidate('baseline'); const shore = building('dba.scene.shore', 120, 50); const camp = building('dba.scene.camp', 120, 50);
@@ -51,7 +50,7 @@ describe('shore same-plane and separated cue', () => {
     expect(css).toMatch(/shore-cue-breathe/);
     view.unmount(); candidate('baseline');
     render(<PlateStack plate="dba.scene.shore" previous={null} />);
-    expect(screen.getByTestId('cue-art.shore.prop.driftwood').parentElement?.className).toBe('prop-body');
+    expect(screen.getByTestId('cue-art.shore.prop.driftwood').parentElement?.className).toContain('scene-slot');
   });
   it('honors reduced motion with selectors as specific as the new cue animation', () => {
     const reduced = css.slice(css.lastIndexOf('@media (prefers-reduced-motion: reduce)'));

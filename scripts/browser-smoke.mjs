@@ -1,0 +1,61 @@
+import {chromium} from 'playwright';
+import assert from 'node:assert/strict';
+import { mkdir } from 'node:fs/promises';
+import { resolve } from 'node:path';
+
+const url = process.env.ODYSSEY_URL ?? 'http://127.0.0.1:4173/';
+const output = resolve(process.env.ODYSSEY_QA_DIR ?? 'artifacts/browser-smoke');
+await mkdir(output, { recursive: true });
+const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH,headless:true,args:['--no-sandbox']});
+const page=await browser.newPage({viewport:{width:1440,height:900}});
+page.setDefaultTimeout(20000);
+const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)errors.push(`${r.status()} ${r.url()}`)});
+async function pointer(el){
+ const b=await el.boundingBox();if(!b)throw new Error('No pointer target');const vp=page.viewportSize();
+ const x=(Math.max(1,b.x)+Math.min(vp.width-1,b.x+b.width))/2, y=(Math.max(1,b.y)+Math.min(vp.height-1,b.y+b.height))/2;
+ const hit=await el.evaluate((e,p)=>e.contains(document.elementFromPoint(p.x,p.y)),{x,y});if(!hit)throw new Error('Target occluded: '+await el.getAttribute('data-testid'));
+ await page.mouse.click(x,y);
+}
+const save=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('odyssey.save.v1')));
+async function closeSheet(){if(['casefile','lexicon','settings'].includes((await save()).overlay))await page.getByRole('button',{name:'合上',exact:true}).click();await page.getByRole('dialog').waitFor({state:'hidden'});}
+async function ready(){await page.locator('.scene-display').waitFor({state:'hidden'});}
+async function spot(id){await closeSheet();await ready();const el=page.getByTestId(id);await pointer(el);await page.waitForFunction(id=>document.querySelector(`[data-testid="${id}"]`)?.dataset.reach==='near',id);await page.waitForFunction(()=>document.querySelector('[data-testid="traveler"]')?.dataset.moving==='no');await page.waitForTimeout(700);await pointer(el);console.log('spot',id);}
+async function gate(to){await closeSheet();await ready();const from=(await page.getByTestId('walk-stage').getAttribute('data-scene')).split('.').at(-1);
+ const keys={'shore:camp':'d','shore:hall':'a','camp:shore':'a','camp:yard':'d','camp:night':'w','yard:camp':'a','yard:path':'d','path:yard':'a','hall:shore':'s','night:camp':'s'};
+ await page.keyboard.down(keys[`${from}:${to}`]);try{await page.waitForFunction(to=>document.querySelector('[data-testid="walk-stage"]')?.dataset.scene===`dba.scene.${to}`,to);}finally{await page.keyboard.up(keys[`${from}:${to}`]);}await ready();console.log('scene',to);}
+
+try{
+await page.goto(url);await page.getByRole('button',{name:'新游戏',exact:true}).click();
+for(let i=0;i<3;i++)await page.getByRole('button',{name:'下一幕',exact:true}).click();
+await page.getByRole('button',{name:'走上潮线',exact:true}).click();await ready();
+await page.screenshot({path:resolve(output, 'play-shore.png')});
+await spot('shore-driftwood');
+await spot('island-mural');
+for(let band=0;band<4;band++){
+await page.getByRole('tab',{name:`壁画带 ${band+1}`,exact:true}).click();
+while(await page.locator('button[data-testid^="object-"]').count()){
+ const id=(await page.locator('button[data-testid^="object-"]').first().getAttribute('data-testid')).slice(7);
+ await page.getByTestId(`cell-${id}`).click();await page.getByTestId(`object-${id}`).click();
+}
+}
+assert.equal(Object.values((await save()).words).filter(w=>w.state==='learned').length,28);
+console.log('learned 28 words');
+await page.getByRole('button',{name:'返回',exact:true}).click();await spot('island-gourd');await page.getByTestId('use-dba.word.water').click();
+assert.equal((await save()).beats['dba.beat.water'],true);
+await gate('camp');await spot('camp-sleep');await page.waitForFunction(()=>document.querySelector('[data-testid="walk-stage"]')?.dataset.resting==='yes');await page.waitForFunction(()=>document.querySelector('[data-testid="walk-stage"]')?.dataset.resting==='no');
+assert.equal((await save()).beats['dba.beat.sleep'],true);
+await gate('yard');await spot('amount-more');assert.equal((await save()).beats['dba.beat.amount'],true);assert.equal(await page.getByTestId('amount-more').getAttribute('data-result'),'ok');
+await spot('amount-less');assert.equal((await save()).feedback.spot,'act:dba.word.amount:less');assert.equal((await save()).feedback.kind,'no');
+await page.screenshot({path:resolve(output, 'play-yard.png')});
+await spot('yard-grab');await spot('yard-give');assert.equal((await save()).beats['dba.beat.food'],true);
+await gate('path');await spot('path-stop');assert.equal((await save()).beats['dba.beat.danger'],true);
+await gate('yard');await gate('camp');await gate('night');await spot('night-read');assert.ok((await save()).evidence.includes('dba.ev.main'));
+await gate('camp');await gate('shore');await gate('hall');await spot('hall-stamps');await spot('hall-tattoo');
+assert.ok((await save()).inventory.includes('dba.item.token'));assert.ok((await save()).evidence.includes('dba.ev.b'));
+await gate('shore');await spot('shore-depart');await page.getByTestId('depart-plate').waitFor();
+for(let i=0;i<3;i++)await page.getByRole('button',{name:'下一幕',exact:true}).click();
+await page.getByRole('button',{name:'合上',exact:true}).click();
+assert.equal((await save()).beats['dba.beat.depart'],true);assert.ok((await save()).chart.includes('chart.jgw'));
+await page.reload();await page.getByRole('button',{name:'继续',exact:true}).click();await ready();assert.equal((await save()).beats['dba.beat.depart'],true);
+assert.deepEqual(errors,[]);console.log(JSON.stringify({result:'PASS',errors,beats:(await save()).beats,evidence:(await save()).evidence}));
+}catch(e){await page.screenshot({path:resolve(output, 'play-failure.png')});console.error(e);console.log('state',await save());process.exitCode=1;}finally{await browser.close();}

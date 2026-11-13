@@ -1,4 +1,9 @@
-export const WORLD_SCALE = 1.46;
+export const WORLD_SCALE = 1.15;
+/** Artwork and authored coordinates share a 16:9 stage on every device. */
+export function worldSize(viewW: number, viewH: number, scale = WORLD_SCALE) {
+  const h = Math.max(viewH, viewW * 9 / 16) * scale;
+  return { w: h * 16 / 9, h };
+}
 export const KEY_STEP = 0.05;
 /** Two steps past a hotspot's click radius, it should still read as touchable. */
 export const GLANCE_REACH = KEY_STEP * 2;
@@ -151,8 +156,7 @@ export function followCamera(current: Point, goal: Point, blend: number): Point 
 }
 
 export function cameraOffset(focus: Point, viewW: number, viewH: number, scale = WORLD_SCALE): Point {
-  const worldW = viewW * scale;
-  const worldH = viewH * scale;
+  const { w: worldW, h: worldH } = worldSize(viewW, viewH, scale);
   const maxX = Math.max(0, worldW - viewW);
   const maxY = Math.max(0, worldH - viewH);
   // Feet sit below center so the textured plate continues under them.
@@ -180,10 +184,11 @@ export const CAMP_HEARTH_R = 0.14;
  */
 export const CAMP_HEARTH_GLOW_WEST = 0.22;
 
-export function lookEast(cam: Point, viewW: number, shore: boolean, scale = WORLD_SCALE): Point {
+export function lookEast(cam: Point, viewW: number, shore: boolean, scale = WORLD_SCALE, viewH = viewW * 9 / 16): Point {
   if (!shore || viewW < 1) return cam;
-  const maxX = Math.max(0, viewW * scale - viewW);
-  return { x: Math.min(maxX, cam.x + SHORE_LOOK_EAST * viewW * scale), y: cam.y };
+  const { w } = worldSize(viewW, viewH, scale);
+  const maxX = Math.max(0, w - viewW);
+  return { x: Math.min(maxX, cam.x + SHORE_LOOK_EAST * w), y: cam.y };
 }
 
 export function frameWorldX(camX: number, viewW: number, scale = WORLD_SCALE): { left: number; right: number } {

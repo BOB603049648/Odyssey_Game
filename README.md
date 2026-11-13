@@ -1,6 +1,6 @@
 # 奥德赛（Odyssey）
 
-本分支是**序章 + 东巴岛**的雾岸视觉快照（`snapshot/shore-visual-20261112`）。教学义默认关闭，画面上不出现向导的名字。后续岛屿和对峙尚未开放；本分支不代表正式发布。已知限制见 [快照问题记录](docs/snapshot-20261112-known-issues.md)。
+本分支基于雾岸视觉快照（`snapshot/shore-visual-20261112`），修复范围为**序章 + 东巴岛六个场景的显示与游玩**。教学义默认关闭，画面上不出现向导的名字。后续岛屿和对峙尚未开放。[项目排查、验证与部署说明](docs/playable-refactor-20261113.md)记录本次改动；剩余限制见[快照问题记录](docs/snapshot-20261112-known-issues.md)。
 
 ## 怎么打开
 
@@ -38,6 +38,20 @@ npm run build
 ```
 
 CI 同样安装这些依赖，并在合并请求中检查测试和生产构建。图片比较使用仓库自带的原始素材，无需原开发机目录。
+
+真实浏览器主线检查使用鼠标点击热点、键盘跨场景，并验证离岛后刷新存档：
+
+```bash
+npx playwright install chromium
+npm run build
+npm run preview -- --host 127.0.0.1
+# 保持预览服务器运行，在另一终端执行：
+npm run test:browser
+```
+
+可用 `ODYSSEY_URL` 指定独立测试站、`CHROMIUM_PATH` 指定已安装的 Chromium。截图输出至被 Git 忽略的 `artifacts/browser-smoke/`。浏览器测试创建自己的无痕会话，不会改动日常浏览器的存档。
+
+场景道具按实际透明边界布局。替换 `src/assets/art/slots/` 中的道具或建筑后，运行 `python scripts/measure_scene_art.py` 更新边界元数据，再核对游戏画面。
 
 存储被浏览器禁用或容量不足时，游戏会提示本次进度未能保存，当前页面内仍可继续游玩；下一次操作会重试。关闭或刷新前请确认提示已消失。
 

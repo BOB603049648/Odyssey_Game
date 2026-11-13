@@ -37,7 +37,7 @@ describe('explicit origin-pinned production candidate', () => {
     expect(slotAssetUrl('art.shore.ground')).toContain('art.shore.ground.clean');
     vi.stubGlobal('window', { location: new URL(origin+'/?shoreVisual=baseline') });
     expect(getShoreVisualProfile().variant).toBe('baseline');
-    expect(slotAssetUrl('art.shore.ground')).not.toContain('ground.clean');
+    expect(slotAssetUrl('art.shore.ground')).toContain('ground.clean');
   });
   it('entry admits pinned deployment fixtures before importing the persistent App store', () => {
     const entry = readFileSync('src/main.tsx','utf8');

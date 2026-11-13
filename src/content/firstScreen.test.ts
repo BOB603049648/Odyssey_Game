@@ -21,7 +21,7 @@ describe('first-screen asset contract', () => {
 
   it('every required first-screen plate exists on disk', () => {
     for (const id of firstScreenAssetIds()) {
-      if (id === 'idle-front-01.png' || id === 'land-shore-driftwood') continue;
+      if (id === 'idle-front-01.png' || id === 'land-companion') continue;
       expect(SLOT_ASSETS[id], id).toBe(true);
     }
   });

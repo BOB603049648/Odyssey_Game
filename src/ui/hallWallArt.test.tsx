@@ -29,15 +29,15 @@ describe('hall wrist mural is wall art, not an occluding grounded hand',()=>{
   expect(nodes).toHaveLength(1);const node=nodes[0] as HTMLElement;
   expect(node.closest('.plate-stack')?.className).toContain('pass-back');
   expect(node.querySelector('img')?.getAttribute('src')).toBe(slotAssetUrl(slot().asset!));
-  expect(slot()).toMatchObject({slot:'props',x:.38,y:.44,w:.055,h:.055,parallax:1,spot:'hall-tattoo'});
-  expect(node.style.left).toBe('38%');expect(node.style.top).toBe('44%');expect(node.style.width).toBe('5.5%');expect(node.style.height).toBe('5.5%');
+  expect(slot()).toMatchObject({slot:'props',x:.38,y:.44,w:.035,h:.06,parallax:1,spot:'hall-tattoo'});
+  expect(node.style.left).toBe('38%');expect(node.style.top).toBe('44%');expect(node.style.width).toBe('3.5000000000000004%');expect(node.style.height).toBe('6%');
  });
  it('actual Hall game mounts the bitmap below the traveler instead of near z7',async()=>{
   const v=render(game(true));await flush();const art=v.getByTestId(`prop-${id}`);const traveler=v.getByTestId('traveler');
   const plate=art.closest('.plate-stack')!;
-  expect(plate.parentElement).toBe(traveler.parentElement);
+  expect(plate.parentElement).toBe(traveler.closest('.ground-depth-root')!.parentElement);
   expect(art.querySelector('img')).not.toBeNull();
-  expect(Number(getComputedStyle(plate).zIndex)).toBeLessThan(Number(getComputedStyle(traveler).zIndex));
+  expect(Number(getComputedStyle(plate).zIndex)).toBeLessThan(Number(getComputedStyle(traveler.closest('.ground-depth-root')!).zIndex));
   expect(v.container.querySelector(`.pass-near [data-art-id="${id}"]`)).toBeNull();
  });
  it('keeps learned-betray hidden gate and the real hotspot click and E action',async()=>{
@@ -57,7 +57,7 @@ describe('hall wrist mural is wall art, not an occluding grounded hand',()=>{
  it('retains strict greater-than sorting for every other normal prop',()=>{
   for(const name of ['shore','camp','yard','hall','path','night']){
    const kit=sceneAssembly(`dba.scene.${name}`)!;
-   for(const s of kit.slots.filter(s=>s.slot==='props' && s.id!==id && s.y!==undefined)){
+   for(const s of kit.slots.filter(s=>s.slot==='props' && s.depthMode!=='wall-art' && s.y!==undefined)){
     expect(drawsInFront(s,s.y!-1e-6),s.id).toBe(true);
     expect(drawsInFront(s,s.y!),s.id).toBe(false);expect(drawsInFront(s,s.y!+1e-6),s.id).toBe(false);
    }

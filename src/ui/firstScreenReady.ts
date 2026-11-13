@@ -6,15 +6,15 @@ import { subscribeAssetUpdates } from '../content/assetUpdates';
 
 export type FirstScreenStatus = 'loading' | 'ready' | 'failed';
 
-export function useFirstScreenReady(scene: string): {
+export function useFirstScreenReady(scene: string, companion?: string): {
   status: FirstScreenStatus;
   done: number;
   total: number;
   retry: () => void;
 } {
   const [tick, setTick] = useState(0);
-  const ids = firstScreenAssetIds(scene);
-  const key = `${scene}::${tick}`;
+  const ids = firstScreenAssetIds(scene, companion);
+  const key = `${scene}::${companion ?? ''}::${tick}`;
   const [status, setStatus] = useState<FirstScreenStatus>('loading');
   const [done, setDone] = useState(0);
   const [activeKey, setActiveKey] = useState(key);
@@ -29,7 +29,7 @@ export function useFirstScreenReady(scene: string): {
     setActiveKey(key);
     setStatus('loading');
     setDone(0);
-    const required = firstScreenAssetIds(scene);
+    const required = firstScreenAssetIds(scene, companion);
     if (required.length === 0) {
       setStatus('ready');
       return undefined;
@@ -46,7 +46,7 @@ export function useFirstScreenReady(scene: string): {
     let finished = 0;
     void Promise.all(
       required.map((id) =>
-        loadNamedAsset(id).then((url) => {
+        loadNamedAsset(id).catch(() => null).then((url) => {
           if (!cancelled) {
             finished += 1;
             setDone(finished);
@@ -63,8 +63,7 @@ export function useFirstScreenReady(scene: string): {
       cancelled = true;
       stop();
     };
-  }, [key, scene]);
+  }, [key, scene, companion]);
 
-  void activeKey;
-  return { status, done, total: ids.length, retry };
+  return { status: activeKey === key ? status : 'loading', done: activeKey === key ? done : 0, total: ids.length, retry };
 }

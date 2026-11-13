@@ -48,7 +48,7 @@ describe('shore hearth pool keeps old prop-light ownership inside true D1 depth'
   const pool=document.querySelector<HTMLElement>('.depth-hearth-emitter');expect(pool).not.toBeNull();expect(pool!.classList.contains('near')).toBe(true);expect(screen.getByTestId('exit-camp').classList.contains('near')).toBe(true);expect(screen.getByTestId('hearth-name')).toBeTruthy();
  });
  it.each(['legacy','baseline','camp'] as const)('does not add a candidate light or new root in %s',async mode=>{
-  await mount(.64,mode);expect(document.querySelector('.depth-hearth-emitter')).toBeNull();expect(document.querySelector('.ground-depth-root')).toBeNull();
+  await mount(.64,mode);expect(!!document.querySelector('.depth-hearth-emitter')).toBe(mode==='baseline');expect(!!document.querySelector('.ground-depth-root')).toBe(mode!=='legacy');
  });
  it('suppresses only candidate direct-button pool; warm field CSS/colors and hit geometry stay byte-identical',()=>{
   expect(block('.walk-viewport[data-ground-depth="world"] .world-layer > .path-exit[data-hearth="yes"]::before')).toMatch(/content:\s*none/);

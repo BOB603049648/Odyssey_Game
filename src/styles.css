@@ -1772,17 +1772,6 @@ h1 {
 .walk-viewport[data-scene="dba.scene.shore"] .ground-fill {
   visibility: hidden;
 }
-/* Camp and yard building plates end in a hard vertical cut on the east.
-   Fade that edge into the ground plate so the modules meet. */
-.walk-viewport[data-scene="dba.scene.camp"] .scene-slot[data-slot="building"] .slot-asset,
-.walk-viewport[data-scene="dba.scene.yard"] .scene-slot[data-slot="building"] .slot-asset {
-  -webkit-mask-image: linear-gradient(90deg, #000 0 62%, transparent 80%);
-  mask-image: linear-gradient(90deg, #000 0 62%, transparent 80%);
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-}
 .prop-body {
   position: relative;
   width: 100%;
@@ -2388,29 +2377,6 @@ h1 {
   filter: blur(4px);
 }
 
-.walk-viewport[data-scene="dba.scene.shore"] .scene-slot[data-cue="far"] .prop-cue {
-  width: 52px;
-  height: 16px;
-  opacity: 0.82;
-  border-color: rgba(224, 210, 176, 0.85);
-  background: radial-gradient(ellipse at center, rgba(236, 226, 200, 0.7), rgba(140, 128, 100, 0.05) 72%);
-  box-shadow: 0 0 12px rgba(214, 196, 154, 0.55);
-}
-.walk-viewport[data-scene="dba.scene.shore"] .scene-slot[data-cue="glance"] .prop-cue {
-  width: 64px;
-  height: 18px;
-  opacity: 1;
-  border-color: rgba(236, 220, 180, 0.95);
-  background: radial-gradient(ellipse at center, rgba(244, 232, 204, 0.92), rgba(180, 150, 90, 0.12) 70%);
-  box-shadow: 0 0 18px rgba(232, 210, 160, 0.9);
-}
-.walk-viewport[data-scene="dba.scene.shore"] .scene-slot.lit .prop-cue,
-.walk-viewport[data-scene="dba.scene.shore"] .scene-slot[data-cue="near"] .prop-cue {
-  width: 72px;
-  height: 18px;
-  opacity: 1;
-  box-shadow: 0 0 22px rgba(236, 220, 180, 0.95);
-}
 .walk-viewport .world-layer .hotspot.near,
 .walk-viewport .world-layer .hotspot.hint-near {
   color: transparent;
@@ -2530,4 +2496,36 @@ h1 {
 .walk-viewport[data-cue-presentation="viewport"] .world-layer .hotspot:focus-visible {
   outline: 2px solid rgba(236, 220, 180, 0.95);
   outline-offset: 2px;
+}
+
+/* Production stage: one aspect ratio, subject bounds and depth order. */
+.walk-viewport, .world-root { overflow: clip; }
+.scene-slot .subject-art { overflow: hidden; }
+.walk-viewport .scene-grade { opacity: .16; }
+.walk-viewport .sole-soft.cat-sole { display: none; }
+.walk-viewport .companion-anchor::after { display: none; }
+.walk-viewport .scene-slot .prop-cue,
+.walk-viewport .scene-slot.lit .prop-cue,
+.walk-viewport .scene-slot[data-cue] .prop-cue {
+  width: 9px;
+  height: 9px;
+  border: 1px solid rgba(249,225,168,.8);
+  background: rgba(31,39,40,.5);
+  box-shadow: 0 0 4px rgba(249,225,168,.35);
+  border-radius: 50%;
+}
+.walk-viewport .scene-slot[data-cue="far"] .prop-cue { opacity: .4; }
+.walk-viewport .scene-slot[data-cue="near"] .prop-cue { opacity: 1; }
+.walk-viewport .world-layer .hotspot {
+  min-width: 44px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+}
+.walk-viewport .world-layer .hotspot:hover,
+.walk-viewport .world-layer .hotspot:focus-visible {
+  outline: 1px solid rgba(249,225,168,.7);
+  outline-offset: 2px;
+  border-radius: 50%;
 }

@@ -1,4 +1,4 @@
-import { getShoreVisualProfile } from '../dev/shoreVisualProfile';
+import companionStanding from '../assets/companion/nanaicha/nanaicha-hero.png';
 
 /**
  * Compile-time URL map. Eager glob inlines hashed URLs in the app bundle
@@ -9,8 +9,8 @@ const slotModules = import.meta.glob<string>(['../assets/art/slots/*.{png,webp,j
   eager: true,
   import: 'default',
 });
-// URL metadata only: excluded from allSlotIds, so baseline preload never requests it.
-const sampleGroundModules = import.meta.glob<string>('../assets/art/slots/art.shore.ground.clean.jpg', {
+// The repaired ground is reached through the canonical ground ID, never preloaded twice.
+const repairedGroundModules = import.meta.glob<string>('../assets/art/slots/art.shore.ground.clean.jpg', {
   eager: true,
   import: 'default',
 });
@@ -51,10 +51,26 @@ function preferUrl(mods: Record<string, string>): Map<string, string> {
 const slots = preferUrl(slotModules);
 const travelers = preferUrl(travelerModules);
 const trajs = preferUrl(trajModules);
+// One complete, registered standing silhouette. The historical landings contain
+// missing bodies, embedded scenery and incompatible padding; do not ship them as
+// animation fallbacks. Leap frames retain their independently reviewed artwork.
+trajs.set('land-companion', companionStanding);
+for (const id of [...trajs.keys()].filter(id => id.startsWith('land-'))) {
+  // Fragments keep each narrative record's recovery identity; the browser still
+  // downloads only the same content-hashed image, without query-string copies.
+  trajs.set(id, `${companionStanding}#${id}`);
+}
+for (const id of ['art.shore.prop.nanaicha', 'art.camp.prop.nanaicha', 'art.yard.prop.nanaicha']) {
+  slots.set(id, companionStanding);
+}
+
+export function isStandingCompanionUrl(url: string | undefined): boolean {
+  return !!url && (url === companionStanding || url.startsWith(`${companionStanding}#`));
+}
 
 export function slotAssetUrl(id: string): string | undefined {
-  if (stemOf(id) === 'art.shore.ground' && getShoreVisualProfile().variant === 'candidate') {
-    return Object.values(sampleGroundModules)[0];
+  if (stemOf(id) === 'art.shore.ground') {
+    return Object.values(repairedGroundModules)[0];
   }
   return slots.get(id) ?? slots.get(stemOf(id));
 }

@@ -1,5 +1,4 @@
 import { type CSSProperties } from 'react';
-import { getShoreVisualProfile } from '../dev/shoreVisualProfile';
 import { sceneAssembly } from '../content/catalog';
 import { forgetSlotAsset, loadSlotAsset, resolveSlotAsset } from '../content/slotAssets';
 import { useAssetSrc } from './useAssetSrc';
@@ -12,6 +11,7 @@ import type { Point } from '../core/walk';
 import { buildingFoot, FOOT_PIVOT, parallaxBleed, worldToScreen } from '../core/world';
 import { hasPngContact } from './cohesion';
 import { isStillId, StillFrame } from './stillFrames';
+import { SceneArt } from './SceneArt';
 
 const SLOT_ORDER: readonly SceneSlotName[] = ['sky', 'far', 'ground', 'building', 'props', 'fg'];
 
@@ -226,7 +226,7 @@ function SlotAssembly({
       data-ambient={kit.id}
       data-legacy-plate={kit.legacyPlate ?? 'none'}
       data-grade={kit.grade}
-      data-shore-visual={scene === 'dba.scene.shore' && getShoreVisualProfile().variant === 'candidate' ? 'candidate' : undefined}
+      data-shore-visual={scene === 'dba.scene.shore' ? 'candidate' : undefined}
     >
       {slots.flatMap((slot) => {
         const piece = (
@@ -281,7 +281,7 @@ export function SlotPiece({
   const interactable = Boolean(slot.spot);
   const cue = interactable ? (lit ? 'near' : glanced ? 'glance' : 'far') : undefined;
   const footed = (slot.slot === 'props' || slot.slot === 'building') && !isPortal(slot);
-  const shoreCandidate = scene === 'dba.scene.shore' && getShoreVisualProfile().variant === 'candidate';
+  const shoreCandidate = scene === 'dba.scene.shore';
   return (
     <div
       className={lit ? `scene-slot ${placed ? 'placed' : 'full'} lit` : `scene-slot ${placed ? 'placed' : 'full'}`}
@@ -294,14 +294,14 @@ export function SlotPiece({
       data-cue={cue}
       data-placeholder={src ? 'art' : 'block'}
       data-anchor={footed ? 'foot' : isPortal(slot) ? 'portal' : undefined}
-      data-coplanar={scenic || (shoreCandidate && placed && footed) ? 'yes' : undefined}
+      data-coplanar={scenic || (placed && footed && slot.parallax === 1) ? 'yes' : undefined}
       data-shadow={slot.slot === 'props' ? (hasPngContact(slot.asset ?? slot.id) ? 'png' : 'none') : undefined}
       data-result={beat && slot.spot === beat.spot ? beat.kind : undefined}
       data-testid={testId}
       style={slotStyle(slot, cam, shoreCandidate)}
     >
       <div className="prop-body">
-        {src ? (
+        {src && placed && slot.asset ? <SceneArt asset={slot.asset} src={src} onError={onError} /> : src ? (
           <img
             className={scene === 'dba.scene.shore' && slot.slot === 'ground' ? 'slot-asset shore-ground-plate' : 'slot-asset'}
             src={src}
@@ -408,7 +408,7 @@ function slotStyle(slot: SceneSlot, cam: Point, shoreCandidate = false): CSSProp
   const shift = `translate3d(${dx}px, ${dy}px, 0)`;
   if (!placed || slot.x === undefined || slot.y === undefined) {
     const bleed = parallax === 1 ? 0 : parallaxBleed(parallax);
-    if (slot.slot === 'ground') {
+    if (slot.slot === 'ground' && slot.asset === 'art.shore.ground') {
       // Hang the textured floor past the south edge so a parked camera
       // does not reveal empty grade fog under the feet.
       return { transform: shift, top: '0px', right: '0px', bottom: `${-GROUND_SOUTH_HANG * 100}%`, left: '0px' };

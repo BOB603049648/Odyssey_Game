@@ -3,17 +3,16 @@ import { sceneAssembly } from './catalog';
 export const FIRST_SCREEN_SCENE = 'dba.scene.shore';
 export const FIRST_SCREEN_TRAVELER = 'idle-front-01.png';
 /** Opening companion landing on shore, not a walk/leap cycle. */
-export const FIRST_SCREEN_TRAJ = 'land-shore-driftwood';
+export const FIRST_SCREEN_TRAJ = 'land-companion';
 
-export function firstScreenAssetIds(scene = FIRST_SCREEN_SCENE): string[] {
+export function firstScreenAssetIds(scene = FIRST_SCREEN_SCENE, companion = FIRST_SCREEN_TRAJ): string[] {
   const kit = sceneAssembly(scene);
   const ids = (kit?.slots ?? [])
     .map((slot) => slot.asset)
     .filter((asset): asset is string => Boolean(asset));
-  if (scene === FIRST_SCREEN_SCENE) {
-    ids.push(FIRST_SCREEN_TRAVELER, FIRST_SCREEN_TRAJ);
-  }
-  return ids;
+  // A complete scene includes its actors, even after a cold resume elsewhere.
+  ids.push(FIRST_SCREEN_TRAVELER, companion);
+  return [...new Set(ids)];
 }
 
 export function isFirstScreenRequired(id: string, scene = FIRST_SCREEN_SCENE): boolean {

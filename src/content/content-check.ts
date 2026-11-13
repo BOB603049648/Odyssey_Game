@@ -154,7 +154,7 @@ export function checkContent(): string[] {
       if (slot.slot === 'ground' && slot.parallax !== 1) errors.push(`${slot.id} ground must stay with the feet`);
       if (slot.slot === 'props' && slot.parallax !== 1) errors.push(`${slot.id} prop must stay on its hotspot`);
       if (slot.asset && !(slot.asset in SLOT_ASSETS)) errors.push(`${slot.id} asset ${slot.asset} is not in the slot manifest`);
-      if (delivered.has(slot.id) && slot.asset !== slot.id) errors.push(`${slot.id} is missing its delivered file`);
+      if (delivered.has(slot.id) && slot.kind !== 'empty' && slot.asset !== slot.id) errors.push(`${slot.id} is missing its delivered file`);
       if (slot.asset && !['dba.scene.shore', 'dba.scene.camp', 'dba.scene.yard', 'dba.scene.hall', 'dba.scene.path', 'dba.scene.night'].includes(sceneId)) {
         errors.push(`${sceneId} should stay on placeholders until art arrives`);
       }
