@@ -179,10 +179,13 @@ export function gatesFrom(scene: IslandScene): readonly Gate[] {
 }
 
 export function crossed(gate: Gate, pos: Point): boolean {
-  if (gate.edge === 'east') return pos.x >= gate.x;
-  if (gate.edge === 'west') return pos.x <= gate.x;
-  if (gate.edge === 'north') return pos.y <= gate.y;
-  if (gate.edge === 'south') return pos.y >= gate.y;
+  // Integrating a final step may yield 0.8999999999999999 for a 0.9 exit.
+  // Tolerate arithmetic rounding, without widening the playable exit region.
+  const epsilon = 1e-9;
+  if (gate.edge === 'east') return pos.x >= gate.x - epsilon;
+  if (gate.edge === 'west') return pos.x <= gate.x + epsilon;
+  if (gate.edge === 'north') return pos.y <= gate.y + epsilon;
+  if (gate.edge === 'south') return pos.y >= gate.y - epsilon;
   return Math.hypot(gate.x - pos.x, gate.y - pos.y) <= gate.r;
 }
 

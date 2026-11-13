@@ -1146,6 +1146,9 @@ h1 {
 .casefile figcaption { margin-top: 6px; }
 
 .mural-screen {
+  height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: calc(78px + var(--safe-top)) calc(4vw + var(--safe-right)) calc(28px + var(--safe-bottom)) calc(4vw + var(--safe-left));
   background: #14110e;
 }
@@ -1162,17 +1165,45 @@ h1 {
   align-items: center;
 }
 
+.plate-wash[data-plate="mural"] {
+  background: linear-gradient(90deg, rgba(14, 12, 9, .3), rgba(14, 12, 9, .88) 52%, rgba(14, 12, 9, .94)),
+    url('./assets/art/mural.jpg') center / cover;
+}
+
+.mural-guidance {
+  position: relative;
+  z-index: 3;
+  width: min(680px, 100%);
+  margin: 0 0 20px auto;
+  color: var(--bone);
+}
+.mural-guidance p { margin: 0 0 8px; }
+.mural-guidance .mural-progress { font-size: .85rem; color: var(--gold); }
+.journey-status { pointer-events: auto; margin-top: 8px; }
+.journey-checklist { grid-column: 1 / -1; }
+.journey-checklist h2 { font-size: 1rem; margin: 0 0 12px; }
+.journey-checklist ol { list-style: none; padding: 0; margin: 0; }
+.journey-checklist li { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+.journey-state { margin-left: auto; font-size: .85rem; }
+.journey-checklist [data-complete="yes"] { color: var(--gold); }
+.journey-optional { opacity: .75; font-size: .85rem; }
+
 .bands {
   position: relative;
   z-index: 3;
   grid-template-columns: repeat(5, 1fr);
-  width: min(520px, 100%);
+  width: min(680px, 100%);
   margin: 0 0 16px auto;
 }
 
 .band {
-  min-height: 8px;
-  height: 8px;
+  min-height: 48px;
+  height: auto;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 6px 2px;
+  font-size: .85rem;
   border-radius: 1px;
   background: rgba(8, 8, 8, 0.35);
   border-bottom: 1px solid var(--gold-line);
@@ -1184,9 +1215,10 @@ h1 {
 .band:disabled { opacity: 0.35; }
 .band.on {
   outline: none;
-  background: rgba(230, 211, 164, 0.72);
+  background: rgba(230, 211, 164, 0.16);
   box-shadow: 0 0 12px rgba(230, 211, 164, 0.35);
 }
+.band small { font-size: .75rem; }
 
 .grid, .tray, .choices, .lexicon {
   position: relative;
@@ -1296,9 +1328,13 @@ h1 {
 }
 
 .mural-screen .companion {
-  position: absolute;
-  right: calc(4vw + var(--safe-right));
-  bottom: calc(18px + var(--safe-bottom));
+  position: relative;
+  align-self: flex-end;
+  flex: 0 0 auto;
+  width: 160px;
+  margin: 24px 12px 0 0;
+  right: auto;
+  bottom: auto;
   z-index: 3;
 }
 
@@ -1627,12 +1663,12 @@ h1 {
   }
 
   .band {
-    min-height: 44px;
-    height: 44px;
+    min-height: 52px;
+    height: auto;
     background: transparent;
-    border-bottom: 0;
+    border-bottom: 1px solid var(--gold-line);
     display: grid;
-    align-items: end;
+    align-items: center;
   }
 
   .band .moss {
@@ -1643,7 +1679,8 @@ h1 {
   }
 
   .band.on {
-    background: transparent;
+    background: rgba(230, 211, 164, .16);
+    border-bottom-color: var(--gold);
     box-shadow: none;
   }
 
@@ -2182,6 +2219,15 @@ h1 {
 }
 .approach-hint {
   bottom: calc(72px + var(--safe-bottom));
+}
+.diegetic-line {
+  bottom: calc(94px + var(--safe-bottom));
+  width: calc(100% - 32px);
+  max-width: 32em;
+  padding: 6px 12px;
+  box-sizing: border-box;
+  text-align: center;
+  background: linear-gradient(90deg, transparent, #06080aa6 15%, #06080aa6 85%, transparent);
 }
 .approach-hint.once {
   font-size: 1.2rem;

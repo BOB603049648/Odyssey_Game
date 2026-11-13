@@ -78,11 +78,21 @@ export function giveSharedFish(state: SaveData): SaveData {
 
 export function forestChoice(state: SaveData, choice: 'step' | 'stop'): SaveData {
   if (state.currentScene !== 'dba.scene.path') return deny(state);
-  if (!learned(state, DANGER) || choice === 'step') return deny(state);
+  if (choice === 'step') return deny(state, 'spot.path.step', 'path-step');
+  if (!learned(state, DANGER)) return deny(state, 'spot.path.no', 'path-stop');
   return {
     ...state,
     beats: { ...state.beats, 'dba.beat.danger': true },
-    feedback: { seq: state.feedback.seq + 1, kind: 'ok' },
+    feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: 'spot.path.ok', spot: 'path-stop' },
+  };
+}
+
+export function inspectEmbers(state: SaveData): SaveData {
+  if (state.currentScene !== 'dba.scene.night') return deny(state);
+  return {
+    ...state,
+    flags: { ...state.flags, 'dba.flag.embers-seen': true },
+    feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: 'spot.ember.ok', spot: 'night-ember' },
   };
 }
 
@@ -176,18 +186,27 @@ export function shoreStone(state: SaveData): SaveData {
   };
 }
 
+/** Survival and application are the main route. Evidence remains optional.
+ * Preserve completion of older saves that finished before these checks existed.
+ */
+export const SURVIVAL_BEATS = ['water', 'food', 'sleep', 'danger'] as const;
+export function departureBlocker(state: SaveData): typeof SURVIVAL_BEATS[number] | 'words' | null {
+  if (state.beats['dba.beat.depart'] === true) return null;
+  for (const beat of SURVIVAL_BEATS) {
+    if (state.beats[`dba.beat.${beat}`] !== true) return beat;
+  }
+  if (!learned(state, HUNGER) || !learned(state, PROMISE) || !learned(state, DANGER)) return 'words';
+  return null;
+}
+
 export function canDepart(state: SaveData): boolean {
-  return (
-    state.beats['dba.beat.water'] === true &&
-    learned(state, HUNGER) &&
-    learned(state, PROMISE) &&
-    learned(state, DANGER)
-  );
+  return departureBlocker(state) === null;
 }
 
 export function departEast(state: SaveData): SaveData {
   if (state.currentScene !== 'dba.scene.shore') return deny(state);
-  if (!canDepart(state)) return deny(state, 'spot.depart.no', 'shore-depart');
+  const missing = departureBlocker(state);
+  if (missing) return deny(state, `spot.depart.${missing}`, 'shore-depart');
   const chart = state.chart.includes('chart.jgw') ? state.chart : [...state.chart, 'chart.jgw'];
   const memories = state.memories.includes('dba.mem.rain-night')
     ? state.memories

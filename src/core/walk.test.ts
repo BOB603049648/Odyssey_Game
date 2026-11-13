@@ -120,6 +120,16 @@ describe('walk', () => {
 });
 
 describe('shore and camp layout', () => {
+  it('crosses every edge after floating-point rounding but never from a visible distance away', () => {
+    for (const gate of GATES.filter(gate => gate.edge)) {
+      const axis = gate.edge === 'east' || gate.edge === 'west' ? 'x' : 'y';
+      const inside = gate.edge === 'east' || gate.edge === 'south' ? -1 : 1;
+      expect(crossed(gate, { x: gate.x, y: gate.y, [axis]: gate[axis] + inside * Number.EPSILON })).toBe(true);
+      expect(crossed(gate, { x: gate.x, y: gate.y, [axis]: gate[axis] + inside * .0001 })).toBe(false);
+    }
+    expect(gateAt('dba.scene.shore', { x: 0.8999999999999999, y: .63 })?.to).toBe('dba.scene.camp');
+  });
+
   it('keeps spawns, spots, and gates inside the walkable band', () => {
     expect(BANDS['dba.scene.camp'].minY).toBeGreaterThanOrEqual(0.8);
     expect(BANDS['dba.scene.yard'].minY).toBeGreaterThanOrEqual(0.76);

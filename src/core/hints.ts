@@ -1,6 +1,6 @@
 import { HINT_PLANS, LEXEMES } from '../content/catalog';
 import { isLayerUnlocked, requirementsMet } from './conditions';
-import { canDepart } from './island';
+import { canDepart, reviewTarget } from './island';
 import type { HintLevel, HintPlanContent, SaveData } from './schema';
 import { isLearnedState } from './words';
 
@@ -91,6 +91,7 @@ export function hintCap(state: SaveData): HintLevel {
 
 export function hintTarget(state: SaveData): string | null {
   if (state.overlay === 'use-word') return WATER;
+  if (state.screen === 'mural' && state.muralMode === 'review') return reviewTarget(state);
   if (state.screen === 'mural' && state.selectedCellId) {
     const selected = state.words[state.selectedCellId];
     if (selected && !isLearnedState(selected.state)) return state.selectedCellId;

@@ -136,7 +136,7 @@ describe('island 1 scenes', () => {
     expect(empty.feedback.line).toBe('spot.gourd.no');
     expect(empty.beats['dba.beat.water']).toBeUndefined();
     const held = reduce(shore, { type: 'depart' });
-    expect(held.feedback.line).toBe('spot.depart.no');
+    expect(held.feedback.line).toBe('spot.depart.water');
     expect(held.beats['dba.beat.depart']).toBeUndefined();
 
     const camp = reduce(shore, { type: 'goto-scene', scene: 'dba.scene.camp' });
@@ -182,6 +182,11 @@ describe('island 1 scenes', () => {
     state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.shore' });
     expect(reduce(state, { type: 'depart' }).beats['dba.beat.depart']).toBeUndefined();
     state = reduce(state, { type: 'use-word', wordId: 'dba.word.water' });
+    state = learn(state, 'dba.word.share');
+    state = reduce(reduce(state, { type: 'goto-scene', scene: 'dba.scene.camp' }), { type: 'sleep-at-camp' });
+    state = reduce(reduce(state, { type: 'goto-scene', scene: 'dba.scene.yard' }), { type: 'give-fish' });
+    state = reduce(reduce(state, { type: 'goto-scene', scene: 'dba.scene.path' }), { type: 'forest-choice', choice: 'stop' });
+    state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.shore' });
     state = reduce(state, { type: 'depart' });
     expect(state.beats['dba.beat.depart']).toBe(true);
     expect(state.chart).toContain('chart.jgw');

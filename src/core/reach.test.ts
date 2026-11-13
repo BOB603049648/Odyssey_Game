@@ -33,6 +33,10 @@ function learnLayer(state: SaveData, layer: MuralLayer): SaveData {
 function readyToLeave(state = ashore()): SaveData {
   let next = learnLayer(learnLayer(learnLayer(state, 'concrete'), 'action'), 'relation');
   next = learn(learn(next, 'dba.word.hunger'), 'dba.word.promise');
+  next = learn(next, 'dba.word.share');
+  next = reduce(reduce(next, { type: 'goto-scene', scene: 'dba.scene.camp' }), { type: 'sleep-at-camp' });
+  next = reduce(reduce(next, { type: 'goto-scene', scene: 'dba.scene.yard' }), { type: 'give-fish' });
+  next = reduce(reduce(next, { type: 'goto-scene', scene: 'dba.scene.path' }), { type: 'forest-choice', choice: 'stop' });
   next = reduce(next, { type: 'goto-scene', scene: 'dba.scene.shore' });
   return reduce(next, { type: 'use-word', wordId: 'dba.word.water' });
 }

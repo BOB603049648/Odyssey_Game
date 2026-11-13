@@ -12,6 +12,10 @@ export function useFeedbackFx(feedback: SaveData['feedback']): { shake: boolean;
       skip.current = false;
       return;
     }
+    // The previous timer is cancelled when feedback changes. Clear both effects
+    // first so a quick wrong→right answer cannot leave the old effect latched.
+    setShake(false);
+    setPurr(false);
     if (feedback.kind === 'ok') {
       playPurr();
       setPurr(true);

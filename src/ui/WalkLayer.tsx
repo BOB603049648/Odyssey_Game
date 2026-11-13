@@ -198,6 +198,12 @@ export function WalkLayer({
   const driftSeek = useRef(0);
   const restingRef = useRef(resting);
   restingRef.current = resting;
+  useEffect(() => {
+    if (!resting) return;
+    targetRef.current = null;
+    held.current.clear();
+    stickRef.current = null;
+  }, [resting]);
   const viewRef = useRef(view);
   const plates = useCrossfade(scene, 980);
   const depthComparison = getShoreVisualProfile().fixture !== null && new URLSearchParams(window.location.search).get('depth') === 'legacy';
@@ -416,7 +422,6 @@ export function WalkLayer({
         const lying = restingRef.current;
         if (lying) {
           velocityRef.current = { x: 0, y: 0 };
-          targetRef.current = null;
           if (movingRef.current) {
             movingRef.current = false;
             setMoving(false);
@@ -441,7 +446,9 @@ export function WalkLayer({
           },
         });
         velocityRef.current = stepped.walker.velocity;
-        targetRef.current = stepped.walker.seek;
+        // A route selected while resting waits for the rise instead of being
+        // discarded every frame. Clear only the old intent when rest starts.
+        if (!lying) targetRef.current = stepped.walker.seek;
         const speed = groundDistance(stepped.walker.velocity, { x: 0, y: 0 });
         if (stepped.walker.moving) {
           apply(

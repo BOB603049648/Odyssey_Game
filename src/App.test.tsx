@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { App } from './App';
-import { canDepart, type IslandScene } from './core/island';
+import { type IslandScene } from './core/island';
 import { reduce } from './core/reduce';
 import { newGameState } from './core/save';
 import { BANDS, SPOTS } from './core/stage';
@@ -207,8 +207,12 @@ describe('playable slice', async () => {
   it('plays the silent memory after leaving and replays it from the map, night, and case', async () => {
     let save = reduce(newGameState(), { type: 'new-game' });
     for (let step = 0; step < 4; step += 1) save = reduce(save, { type: 'advance-prologue' });
-    for (let step = 0; step < 40 && !canDepart(save); step += 1) save = reduce(save, { type: 'debug-learn-next' });
+    for (let step = 0; step < 28; step += 1) save = reduce(save, { type: 'debug-learn-next' });
     save = reduce(save, { type: 'use-word', wordId: 'dba.word.water' });
+    save = reduce(reduce(save, { type: 'goto-scene', scene: 'dba.scene.camp' }), { type: 'sleep-at-camp' });
+    save = reduce(reduce(save, { type: 'goto-scene', scene: 'dba.scene.yard' }), { type: 'give-fish' });
+    save = reduce(reduce(save, { type: 'goto-scene', scene: 'dba.scene.path' }), { type: 'forest-choice', choice: 'stop' });
+    save = reduce(save, { type: 'goto-scene', scene: 'dba.scene.shore' });
     save = reduce(save, { type: 'depart' });
     localStorage.setItem(SAVE_KEY, JSON.stringify(save));
     useGame.getState().resetForTests();

@@ -19,6 +19,7 @@ import {
   shoreStone,
   sitDriftwood,
   sleepAtCamp,
+  inspectEmbers,
 } from './island';
 import { newGameState } from './save';
 import type { EndingContent, HintLevel, MuralLayer, SaveData, WordProgress } from './schema';
@@ -60,11 +61,23 @@ export type Action =
   | { type: 'scene-act'; wordId: string; part?: 'a' | 'b' | 'more' | 'less' }
   | { type: 'grab-fish' }
   | { type: 'shore-stone' }
+  | { type: 'inspect-embers' }
   | { type: 'spot-far'; id: string };
 
 const WATER = 'dba.word.water';
 
 export function reduce(state: SaveData, action: Action): SaveData {
+  const next = applyAction(state, action);
+  if (action.type === 'request-hint') return next;
+  const contextChanged = next.screen !== state.screen || next.currentScene !== state.currentScene ||
+    next.activeLayer !== state.activeLayer || next.muralMode !== state.muralMode || next.overlay !== state.overlay;
+  const targetChanged = next.companion.level > 0 && next.companion.targetId !== hintTarget(next);
+  return contextChanged || targetChanged
+    ? { ...next, companion: { level: 0, targetId: null, pawUsed: false } }
+    : next;
+}
+
+function applyAction(state: SaveData, action: Action): SaveData {
   switch (action.type) {
     case 'new-game':
       return beginPrologue(state.settings.showGloss);
@@ -138,6 +151,8 @@ export function reduce(state: SaveData, action: Action): SaveData {
       return touch(grabFish(state));
     case 'shore-stone':
       return touch(shoreStone(state));
+    case 'inspect-embers':
+      return touch(inspectEmbers(state));
     case 'spot-far':
       return touch(farSpot(state, action.id));
     default:
@@ -208,6 +223,7 @@ function openMural(state: SaveData): SaveData {
         activeLayer,
         muralMode: 'learn',
         selectedCellId: null,
+        feedback: { seq: state.feedback.seq, kind: 'none' },
       },
       activeLayer,
     ),
@@ -297,10 +313,12 @@ function matchObject(state: SaveData, wordId: string): SaveData {
 }
 
 function requestHint(state: SaveData): SaveData {
-  const cap = hintCap(state);
-  if (state.companion.level >= cap) return state;
-  const level = (state.companion.level + 1) as HintLevel;
   const targetId = hintTarget(state);
+  if (!targetId) return state;
+  const cap = hintCap(state);
+  const current = state.companion.targetId === targetId ? state.companion.level : 0;
+  if (current >= cap) return state;
+  const level = (current + 1) as HintLevel;
   return touch({
     ...state,
     companion: { level, targetId, pawUsed: level === 3 },
@@ -309,7 +327,10 @@ function requestHint(state: SaveData): SaveData {
 }
 
 function pokeGourd(state: SaveData): SaveData {
-  if (isLearnedState(state.words[WATER]?.state) && state.beats['dba.beat.water'] !== true) {
+  if (state.beats['dba.beat.water'] === true) {
+    return mark(state, { feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: 'spot.gourd.again', spot: 'island-gourd' } });
+  }
+  if (isLearnedState(state.words[WATER]?.state)) {
     return touch({ ...state, overlay: 'use-word', screen: 'island', currentScene: 'dba.scene.shore' });
   }
   return mark(state, { feedback: { seq: state.feedback.seq + 1, kind: 'no', line: 'spot.gourd.no', spot: 'island-gourd' } });

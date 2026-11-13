@@ -1,5 +1,5 @@
 import { LEXEMES } from '../content/catalog';
-import { isLayerUnlocked, requirementsMet } from '../core/conditions';
+import { isLayerUnlocked, learnedCount, requirementsMet } from '../core/conditions';
 import { hintPresentation } from '../core/hints';
 import { reviewTarget } from '../core/island';
 import type { Action } from '../core/reduce';
@@ -36,6 +36,9 @@ export function MuralScreen({
     return progress && !isLearnedState(progress.state) && requirementsMet(lexeme, save.words);
   });
   const learned = LEXEMES.filter((lexeme) => isLearnedState(save.words[lexeme.id]?.state));
+  const complete = cells.every(lexeme => isLearnedState(save.words[lexeme.id]?.state));
+  const nextLayer = LAYERS.find(layer => LAYERS.indexOf(layer) > LAYERS.indexOf(save.activeLayer) &&
+    isLayerUnlocked(layer, save.words, LEXEMES));
 
   return (
     <section className={shake ? 'mural-screen shake' : 'mural-screen'}>
@@ -70,7 +73,8 @@ export function MuralScreen({
               className={!reviewing && save.activeLayer === layer ? 'band on' : 'band'}
               onClick={() => dispatch({ type: 'select-layer', layer })}
             >
-              <span className="moss" />
+              <span>{t('mural.band')} {index + 1}</span>
+              <small>{open ? `${learnedCount(layer, save.words, LEXEMES)}/${LEXEMES.filter(l => l.layer === layer).length}` : t('mural.locked')}</small>
             </button>
           );
         })}
@@ -84,15 +88,26 @@ export function MuralScreen({
           data-testid="mural-review"
           onClick={() => dispatch({ type: 'select-review' })}
         >
-          <span className="moss" />
+          <span>{t('mural.review')}</span>
         </button>
+      </div>
+      <div className="mural-guidance" data-testid="mural-guidance">
+        <p role="status">{reviewing ? t('mural.reviewHelp') : complete
+          ? t(nextLayer ? 'mural.complete' : 'mural.allComplete')
+          : t(save.selectedCellId ? 'mural.selected' : 'mural.instructions')}</p>
+        {!reviewing ? <p className="mural-progress">{t('mural.progress')} {learnedCount(save.activeLayer, save.words, LEXEMES)}/{cells.length}</p> : null}
+        {!reviewing && complete ? <div className="row">
+          {nextLayer ? <button type="button" className="btn primary" data-testid="mural-next-band"
+            onClick={() => dispatch({ type: 'select-layer', layer: nextLayer })}>{t('mural.nextBand')}</button> : null}
+          <button type="button" className="btn" onClick={() => dispatch({ type: 'close-screen' })}>{t('mural.return')}</button>
+        </div> : null}
       </div>
       {reviewing ? (
         <div className="grid" data-testid="review-wall">
           {target ? (
             <button
               type="button"
-              className="cell"
+              className={`cell ${hintMark(hint, 'mural-cell', target)}`}
               data-testid={`review-${target}`}
               onClick={() => dispatch({ type: 'review-tap', wordId: target })}
             >

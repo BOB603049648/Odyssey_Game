@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { EVIDENCE, LEXEMES } from '../content/catalog';
 import { companionPost } from '../core/companionPost';
 import { hintPresentation } from '../core/hints';
-import { isIslandScene, type IslandScene } from '../core/island';
+import { departureBlocker, isIslandScene, SURVIVAL_BEATS, type IslandScene } from '../core/island';
 import type { Action } from '../core/reduce';
 import type { SaveData } from '../core/schema';
 import { isLearnedState } from '../core/words';
@@ -165,11 +165,15 @@ export function IslandScreen({
           <p className="count" aria-label={`${learned.length}`}>
             {learned.length}/28
           </p>
+          <button type="button" className="btn journey-status" data-testid="journey-status"
+            onClick={() => dispatch({ type: 'open-overlay', overlay: 'casefile' })}>
+            {save.beats['dba.beat.depart'] ? t('journey.finished') : `${t('journey.title')} ${SURVIVAL_BEATS.filter(beat => save.beats[`dba.beat.${beat}`]).length}/4`}
+          </button>
         </div>
       </div>
       {save.overlay === 'chart' ? <ChartSealed onClose={() => dispatch({ type: 'close-overlay' })} /> : null}
       <OverlaySheet save={save} dispatch={dispatch} learned={learned} hint={hint} />
-      {spoken && !(approachHint && line === 'spot.driftwood.far') ? (
+      {save.overlay === 'none' && spoken && !(approachHint && line === 'spot.driftwood.far') ? (
         <p key={scene} className="diegetic-line" data-testid="spot-line" data-line={line}>
           {spoken}
         </p>
@@ -207,6 +211,7 @@ function interact(id: string, dispatch: (action: Action) => void) {
   if (id === 'path-stop') return dispatch({ type: 'forest-choice', choice: 'stop' });
   if (id === 'path-step') return dispatch({ type: 'forest-choice', choice: 'step' });
   if (id === 'night-read') return dispatch({ type: 'read-old-layer' });
+  if (id === 'night-ember') return dispatch({ type: 'inspect-embers' });
   if (id === 'night-memory') return dispatch({ type: 'open-memory' });
   if (!id.startsWith('act:')) return;
   const [wordId, part] = id.slice(4).split(':');
@@ -310,9 +315,10 @@ function CaseFile({ save, onMemory }: { save: SaveData; onMemory: () => void }) 
   const slots = EVIDENCE.filter((item) => item.island === 'dba');
   const held = slots.filter((item) => save.evidence.includes(item.id));
   const remembered = save.memories.includes('dba.mem.rain-night');
-  if (held.length === 0 && !remembered) return <p>{t('casefile.empty')}</p>;
   return (
     <div className="casefile">
+      <JourneyChecklist save={save} />
+      {held.length === 0 && !remembered ? <p>{t('casefile.empty')}</p> : null}
       {slots.map((item) => {
         const has = save.evidence.includes(item.id);
         const label = has ? t(item.labelKey as MessageKey) : t('casefile.emptySlot');
@@ -347,6 +353,23 @@ function CaseFile({ save, onMemory }: { save: SaveData; onMemory: () => void }) 
       ) : null}
     </div>
   );
+}
+
+function JourneyChecklist({ save }: { save: SaveData }) {
+  const completed = save.beats['dba.beat.depart'] === true;
+  const blocker = departureBlocker(save);
+  return <section className="journey-checklist" data-testid="journey-checklist" aria-label={t('journey.title')}>
+    <h2>{t('journey.title')}</h2>
+    {completed ? <p>{t('journey.finishedHelp')}</p> : <>
+      <ol>{SURVIVAL_BEATS.map(beat => <li key={beat} data-complete={save.beats[`dba.beat.${beat}`] ? 'yes' : 'no'}>
+        <span aria-hidden="true">{save.beats[`dba.beat.${beat}`] ? '✓' : '○'}</span>
+        {t(`journey.${beat}`)}
+        <span className="journey-state">{t(save.beats[`dba.beat.${beat}`] ? 'journey.done' : 'journey.pending')}</span>
+      </li>)}</ol>
+      <p>{blocker ? t(`spot.depart.${blocker}`) : t('journey.ready')}</p>
+    </>}
+    <p className="journey-optional">{t('journey.optional')}</p>
+  </section>;
 }
 
 function BreakMark() {
