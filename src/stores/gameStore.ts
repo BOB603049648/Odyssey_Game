@@ -12,6 +12,7 @@ export type Place = Point & { scene: string };
 
 interface GameStore {
   save: SaveData;
+  saveFailed: boolean;
   place: Place | null;
   setPlace: (place: Place | null) => void;
   dispatch: (action: Action) => void;
@@ -20,14 +21,15 @@ interface GameStore {
 
 export const useGame = create<GameStore>((set, get) => ({
   save: storage.load() ?? newGameState(),
+  saveFailed: false,
   place: null,
   setPlace: (place) => set({ place }),
   dispatch: (action) => {
     const next = reduce(get().save, action);
-    storage.save(next);
-    set({ save: next, place: action.type === 'new-game' ? null : get().place });
+    const saved = storage.save(next);
+    set({ save: next, saveFailed: !saved, place: action.type === 'new-game' ? null : get().place });
   },
   resetForTests: () => {
-    set({ save: storage.load() ?? newGameState(), place: null });
+    set({ save: storage.load() ?? newGameState(), saveFailed: false, place: null });
   },
 }));

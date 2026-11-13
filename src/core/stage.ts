@@ -149,9 +149,15 @@ export function plantOnGround(scene: IslandScene, pos: Point): Point {
   return { x, y };
 }
 
-/** Hotspot reach. The depart stone cannot be stood on, so the sand lip in front of it still counts. */
+/** Raised props can be reached from the ground directly in front of them. */
 export function standsAt(scene: IslandScene, spot: Spot, pos: Point): boolean {
   if (inRadius(pos, spot, spot.r)) return true;
+  // The amount boards sit on the facade, 0.04 above the walkable step.
+  // Keep their art anchors and the facade collision; reach from the step.
+  if (scene === 'dba.scene.yard' &&
+      (spot.id === 'act:dba.word.amount:more' || spot.id === 'act:dba.word.amount:less')) {
+    return inRadius(pos, plantOnGround(scene, spot), spot.r);
+  }
   if (scene !== 'dba.scene.shore' || spot.id !== 'shore-depart') return false;
   const sand = plantOnGround(scene, spot);
   return Math.hypot(pos.x - sand.x, pos.y - sand.y) <= 0.045;

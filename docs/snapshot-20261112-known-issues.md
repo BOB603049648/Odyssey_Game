@@ -38,17 +38,48 @@ human visual pass in the running game before they can be called accepted.
 - Traveler alternating walk-phase art is still missing. The engine already cycles all four walk
   frames by distance (`clipFrames` / `stepCycleByDistance`); the delivered frames do not alternate
   the legs, so this needs new keyframes rather than an engine change.
-- Yard amount reachability is not done.
-- Full chapter playthrough is not accepted.
+- Human visual/playthrough acceptance is still pending; the automated chapter route below passes.
 - Cat alpha is only certified for the shore prop; camp/yard props and the trajectory landings keep
   smaller closed slits (between paws, under the belly) that were deliberately left alone.
 
 Display and load recovery work in this tree must not be read as “the picture is complete and normal.”
 
-## Environment gaps in a fresh clone
+## Fresh-clone and gameplay repairs (2026-11-13)
 
-- `src/ui/catRecoveryOwnerProduction.test.tsx` imports `/workspace/odyssey-visual-sample-20261111/...`
-  and `scripts/test_shore_cat_face_alpha.py` reads `/workspace/playtest/...`. Both fail outside the
-  original machine and make `npm run build` (tsc) fail. They predate this working tree.
-- `displayReview.test.tsx`, `hearthDepthLight.test.tsx` and `hearthLightDepth.test.tsx` also fail in
-  a fresh clone before any of the changes above.
+- Replaced the absolute imports in `catRecoveryOwnerProduction.test.tsx` with repository-relative imports.
+- Checked in the three pre-restoration shore trajectory originals from commit `b57f27b` under
+  `docs/assets/nanaicha/shore-face-originals/`. The alpha regression now uses these fixtures,
+  preserving its face, foot, opaque-pixel and eye checks. Eye colour arithmetic uses signed
+  channels so the blue threshold cannot wrap at 255.
+- The optional restoration script takes explicit `--raw-dir` and `--evidence-dir` arguments;
+  recreating the restoration still requires the artist's original softfix JPEGs. Tests do not.
+- Declared the Python bitmap-test dependencies and installed them in both CI workflows.
+  Pull-request CI now runs the production build as well as the tests.
+- Yard amount boards can be activated from the ground immediately in front of the facade;
+  their art anchors, walk mask and separate interaction radii are preserved. Successful
+  "more" feedback now targets the actual `act:dba.word.amount:more` hotspot.
+- Storage reads, writes, and access to the browser's storage getter are guarded. Invalid
+  saves and quota failures preserve the last valid saved payload. The running session
+  continues with a visible save warning and retries persistence on the next action.
+
+The baseline run in this fresh clone reproduced only the absolute-import and missing-fixture
+failures (81 files passed, 2 failed). `displayReview.test.tsx`, `hearthDepthLight.test.tsx`, and
+`hearthLightDepth.test.tsx` passed here; the earlier report of their failure was not reproduced.
+
+### Verification
+
+- `npm test`: 83 files, 584 tests passed.
+- `npm run content:check` and `npm run build`: passed.
+- The separate `vite.display-review.config.ts` build passed with its persistent-store exclusion check.
+- Chromium against the production build: new game → all 28 words → water → camp sleep →
+  yard more/less and wrong/share choices → path stop → night evidence → hall token/tattoo →
+  departure and all three memory frames → reload and continue. All expected beats and all
+  three island evidence items persisted; no page exceptions or failed HTTP responses.
+  This automated traversal uses DOM hotspot activation and keyboard travel, not a human
+  assessment of the artwork or every pointer/touch target.
+- Chromium mobile checks: 390×844 portrait and 844×390 landscape loaded without horizontal
+  page overflow. A context whose `localStorage` getter throws still reached the shore,
+  opened/closed the case file and displayed the unsaved-progress warning.
+
+The art and animation limitations above remain open; this repair does not replace keyframes
+or certify the entire visual presentation.

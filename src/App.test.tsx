@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { App } from './App';
 import { canDepart, type IslandScene } from './core/island';
@@ -13,6 +13,7 @@ import { PrologueScreen } from './ui/PrologueScreen';
 
 afterEach(() => {
   cleanup();
+  vi.restoreAllMocks();
 });
 
 beforeEach(() => {
@@ -49,6 +50,47 @@ function cross(to: IslandScene, key: 'a' | 'd' | 'w' | 's') {
 }
 
 describe('playable slice', () => {
+  it('keeps playing after a failed save, warns the player, and retries on the next action', () => {
+    const saved = reduce(newGameState(), { type: 'new-game' });
+    localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
+    useGame.getState().resetForTests();
+    const write = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('Full', 'QuotaExceededError');
+    });
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: '继续' }));
+    fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
+    expect(screen.getByTestId('prologue').getAttribute('data-prologue-step')).toBe('1');
+    expect(screen.getByRole('status').textContent).toContain('暂时无法保存进度');
+    expect(JSON.parse(localStorage.getItem(SAVE_KEY)!).prologueStep).toBe(0);
+    write.mockRestore();
+    fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
+    expect(screen.queryByRole('status')).toBeNull();
+    expect(JSON.parse(localStorage.getItem(SAVE_KEY)!).prologueStep).toBe(2);
+  });
+
+  it('reaches both yard amount boards from the step by click and keyboard', () => {
+    let save = reduce(newGameState(), { type: 'new-game' });
+    for (let i = 0; i < 28; i++) save = reduce(save, { type: 'debug-learn-next' });
+    save = reduce(save, { type: 'debug-scene', scene: 'dba.scene.yard' });
+    localStorage.setItem(SAVE_KEY, JSON.stringify(save));
+    useGame.getState().resetForTests();
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: '继续' }));
+    fireEvent.click(screen.getByTestId('amount-more'));
+    expect(useGame.getState().save.beats['dba.beat.amount']).toBeUndefined();
+    press(['d', 'w']);
+    expect(here().y).toBe(0.92);
+    expect(screen.getByTestId('walk-stage').getAttribute('data-near')).toContain('act:dba.word.amount:more');
+    fireEvent.click(screen.getByTestId('amount-more'));
+    expect(useGame.getState().save.beats['dba.beat.amount']).toBe(true);
+    expect(screen.getByTestId('amount-more').getAttribute('data-result')).toBe('ok');
+    press(['d', 'd', 'e']);
+    expect(here().y).toBe(0.92);
+    expect(useGame.getState().save.feedback.spot).toBe('act:dba.word.amount:less');
+    expect(useGame.getState().save.feedback.kind).toBe('no');
+  });
+
   it('starts with teaching glosses off and can learn water, then use it', () => {
     render(<App />);
     expect(screen.getByRole('switch', { name: '显示教学义' }).getAttribute('aria-checked')).toBe('false');

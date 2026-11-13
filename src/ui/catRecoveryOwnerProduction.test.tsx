@@ -4,18 +4,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Only platform/pixel boundaries are controlled. The resource hook, decoded cache,
 // load gate, production RAF, nextGuide, Companion owner and views are all real.
-vi.mock('/workspace/odyssey-visual-sample-20261111/src/ui/soleClip', () => ({ clippedBootUrl: () => null, catContactUrl: () => null }));
-vi.mock('/workspace/odyssey-visual-sample-20261111/src/ui/hemPunch', async () => ({ ...await vi.importActual('/workspace/odyssey-visual-sample-20261111/src/ui/hemPunch'), punchHemUrl: async (src: string) => src }));
+vi.mock('./soleClip', () => ({ clippedBootUrl: () => null, catContactUrl: () => null }));
+vi.mock('./hemPunch', async () => ({ ...await vi.importActual('./hemPunch'), punchHemUrl: async (src: string) => src }));
 let clock = 0, sequence = 0, blobSequence = 0;
 let callbacks = new Map<number, FrameRequestCallback>();
 const modes = new Map<string, 'pending' | 'fail'>();
 const decodes = new Map<string, { resolve: () => void; reject: (error: Error) => void }[]>();
 const fetches = new Map<string, (response: Response) => void>();
 let attempts = new Map<string, number>();
-let WalkLayer: typeof import('/workspace/odyssey-visual-sample-20261111/src/ui/WalkLayer')['WalkLayer'];
-let urls: typeof import('/workspace/odyssey-visual-sample-20261111/src/content/assetUrls');
-let post: typeof import('/workspace/odyssey-visual-sample-20261111/src/core/companionPost')['companionPost'];
-let traj: typeof import('/workspace/odyssey-visual-sample-20261111/src/ui/trajArt');
+let WalkLayer: typeof import('./WalkLayer')['WalkLayer'];
+let urls: typeof import('../content/assetUrls');
+let post: typeof import('../core/companionPost')['companionPost'];
+let traj: typeof import('./trajArt');
 
 class ControlledImage {
   onload: (() => void) | null = null;
@@ -54,8 +54,8 @@ beforeEach(async () => {
   vi.spyOn(performance, 'now').mockImplementation(() => clock);
   vi.spyOn(window, 'requestAnimationFrame').mockImplementation(fn => { callbacks.set(++sequence, fn); return sequence; });
   vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(id => { callbacks.delete(id); });
-  WalkLayer = (await import('/workspace/odyssey-visual-sample-20261111/src/ui/WalkLayer')).WalkLayer; urls = await import('/workspace/odyssey-visual-sample-20261111/src/content/assetUrls'); post = (await import('/workspace/odyssey-visual-sample-20261111/src/core/companionPost')).companionPost; traj = await import('/workspace/odyssey-visual-sample-20261111/src/ui/trajArt');
-  (await import('/workspace/odyssey-visual-sample-20261111/src/content/loadGate')).setLoadRetryDelayForTests(() => 0);
+  WalkLayer = (await import('./WalkLayer')).WalkLayer; urls = await import('../content/assetUrls'); post = (await import('../core/companionPost')).companionPost; traj = await import('./trajArt');
+  (await import('../content/loadGate')).setLoadRetryDelayForTests(() => 0);
 });
 afterEach(() => { cleanup(); vi.clearAllTimers(); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
@@ -76,7 +76,7 @@ describe('B-lite production recovery regression',()=>{
  });
  it('a later pre-error fetch cannot overwrite or revoke an already successful new cache job',async()=>{
   await mountS0();const source=urls.trajAssetUrl('land-shore-driftwood')!,old=fetches.get(source)!;
-  const {forgetCatSrc,loadCatSrc}=await import('/workspace/odyssey-visual-sample-20261111/src/ui/catImage');
+  const {forgetCatSrc,loadCatSrc}=await import('./catImage');
   forgetCatSrc(source);const fresh=loadCatSrc(source);const freshResolve=fetches.get(source)!;
   await act(async()=>{freshResolve({ok:true,blob:async()=>new Blob(['n'.repeat(64)])} as Response);});await flush();
   const newBlob=await fresh;expect(newBlob).toBe('blob:cat-landing-1');
@@ -98,7 +98,7 @@ describe('B-lite production recovery regression',()=>{
    return layer(beat,true);
   }
   const view=render(<Parent beat="S0"/>);await flush();
-  await act(async()=>{const slot=await import('/workspace/odyssey-visual-sample-20261111/src/content/slotAssets');await traj.loadTraj('land-camp-fireside');await slot.loadSlotAsset('art.camp.prop.nanaicha');});await flush();
+  await act(async()=>{const slot=await import('../content/slotAssets');await traj.loadTraj('land-camp-fireside');await slot.loadSlotAsset('art.camp.prop.nanaicha');});await flush();
   const camp=urls.trajAssetUrl('land-camp-fireside')!,shore=urls.trajAssetUrl('land-shore-driftwood')!;
   view.rerender(<Parent beat="C1"/>);await flush();
   expect(delivered).toBe(1);expect(traj.trajUrl('land-camp-fireside')).toBeUndefined();expect(traj.trajUrl('land-shore-driftwood')).toBe(shore);

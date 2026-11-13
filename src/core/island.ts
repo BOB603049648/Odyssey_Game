@@ -126,7 +126,7 @@ export function sceneAct(state: SaveData, wordId: string, part?: 'a' | 'b' | 'mo
   const spec = SCENE_ACTS[wordId] ?? (wordId === 'dba.word.amount'
     ? { scene: 'dba.scene.yard' as const, beat: 'dba.beat.amount' }
     : undefined);
-  const spot = `act:${wordId}`;
+  const spot = wordId === 'dba.word.amount' ? `act:${wordId}:more` : `act:${wordId}`;
   if (!spec || state.currentScene !== spec.scene) return deny(state);
   if (!learned(state, wordId)) return deny(state, 'spot.act.no', spot);
   const line = spec.scene === 'dba.scene.camp' ? 'spot.act.ok' : undefined;

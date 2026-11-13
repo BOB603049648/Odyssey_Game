@@ -6,11 +6,13 @@ import { IslandScreen } from './ui/IslandScreen';
 import { MuralScreen } from './ui/MuralScreen';
 import { PrologueScreen } from './ui/PrologueScreen';
 import { TitleScreen } from './ui/TitleScreen';
+import { t } from './ui/i18n';
 
 const DevTools = import.meta.env.DEV ? lazy(() => import('./dev/DevTools').then((mod) => ({ default: mod.DevTools }))) : null;
 
 export function App() {
   const save = useGame((state) => state.save);
+  const saveFailed = useGame((state) => state.saveFailed);
   const dispatch = useGame((state) => state.dispatch);
   const [atTitle, setAtTitle] = useState(true);
 
@@ -44,6 +46,11 @@ export function App() {
         )}
         {atTitle ? null : <Cutscenes save={save} dispatch={dispatch} />}
       </main>
+      {saveFailed ? (
+        <p className="save-warning" role="status">
+          {t('save.failed')}
+        </p>
+      ) : null}
       {DevTools ? (
         <Suspense fallback={null}>
           <DevTools save={save} dispatch={dispatch} />

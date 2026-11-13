@@ -98,5 +98,6 @@
   "mural.band": "壁画带",
   "scene.loading": "画面载入中",
   "scene.loadFailed": "画面未能载入。",
-  "scene.retry": "重试"
+  "scene.retry": "重试",
+  "save.failed": "暂时无法保存进度，可继续游玩；关闭或刷新页面可能丢失本次进度。"
 }

@@ -1,0 +1,3 @@
+# Bitmap regression checks invoked by npm test (Python 3.12).
+numpy>=1.26,<3
+Pillow>=10,<14

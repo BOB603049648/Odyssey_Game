@@ -10,9 +10,7 @@ import numpy as np
 
 # Reuse helpers
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from restore_shore_cat_interior import FRAMES, interior_holes, foot_y
-
-ROLLBACK = Path("/workspace/playtest/cat-face-restore-20261110/rollback-originals")
+from restore_shore_cat_interior import FRAMES, ROLLBACK, interior_holes, foot_y
 
 
 def load(p):
@@ -27,7 +25,7 @@ def tight_zero_frac(arr, box):
 
 def has_blue_eyes(arr, box):
     x0, y0, x1, y1 = box
-    r, g, b, a = [arr[y0 : y1 + 1, x0 : x1 + 1, i] for i in range(4)]
+    r, g, b, a = [arr[y0 : y1 + 1, x0 : x1 + 1, i].astype(np.int16) for i in range(4)]
     m = (a >= 16) & (b > 100) & (b > r + 40) & (b > g + 20)
     return int(m.sum())
 

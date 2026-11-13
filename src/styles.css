@@ -31,6 +31,24 @@ body {
   overscroll-behavior: none;
 }
 
+.save-warning {
+  position: fixed;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  margin: 0;
+  padding: .65rem 1rem;
+  border: 1px solid #bda573;
+  border-radius: .4rem;
+  background: #29251f;
+  color: #fff0d0;
+  font-size: .875rem;
+  pointer-events: none;
+}
+
 button, input { font: inherit; color: inherit; }
 
 button {
