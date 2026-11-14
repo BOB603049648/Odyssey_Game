@@ -18,6 +18,7 @@ await cp(resolve(root,'docs/releases/v0.1.md'),resolve(stage,'RELEASE.md'));
 await cp(resolve(root,'docs/design/v0.1.3-playable-world-plan.md'),resolve(stage,'PLAYABLE-WORLD.md'));
 await cp(resolve(root,'docs/design/v0.1.4-wayfinding.md'),resolve(stage,'WAYFINDING.md'));
 await cp(resolve(root,'docs/design/v0.1.5-exploration-learning.md'),resolve(stage,'LEARNING-JOURNEY.md'));
+await cp(resolve(root,'docs/design/v0.1.6-bridge-reasoning.md'),resolve(stage,'BRIDGE-REASONING.md'));
 await cp(resolve(root,'src/assets/audio/README.md'),resolve(stage,'AUDIO-CREDITS.md'));
 await cp(resolve(root,'src/assets/art/painted/README.md'),resolve(stage,'ART-CREDITS.md'));
 await cp(resolve(root,'src/assets/traveler/actions-README.md'),resolve(stage,'ACTION-ART.md'));

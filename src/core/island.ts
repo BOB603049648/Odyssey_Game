@@ -3,6 +3,7 @@ import type { SaveData } from './schema';
 import { isLearnedState, reviewForMastery } from './words';
 import { meaningChoices } from './conceptChoices';
 import { applyPuzzleAction } from './puzzles';
+import { completeBridgeReturn, inspectBridgeApproach } from './bridge';
 
 export const ISLAND_SCENES = [
   'dba.scene.shore',
@@ -30,14 +31,15 @@ export function gotoScene(state: SaveData, scene: string): SaveData {
   if (!isIslandScene(scene)) return state;
   if (state.screen === 'title' || state.screen === 'prologue') return state;
   const changed = state.currentScene !== scene;
+  const next = completeBridgeReturn(state, scene);
   return {
-    ...state,
+    ...next,
     screen: 'island',
     currentScene: scene,
     overlay: 'none',
     selectedCellId: null,
     muralMode: 'learn',
-    feedback: changed ? { seq: state.feedback.seq, kind: 'none' } : state.feedback,
+    feedback: changed && next === state ? { seq: state.feedback.seq, kind: 'none' } : next.feedback,
   };
 }
 
@@ -71,14 +73,7 @@ export function giveSharedFish(state: SaveData): SaveData {
 }
 
 export function forestChoice(state: SaveData, choice: 'step' | 'stop'): SaveData {
-  if (state.currentScene !== 'dba.scene.path') return deny(state);
-  if (choice === 'step') return deny(state, 'spot.path.step', 'path-step');
-  if (!learned(state, DANGER)) return deny(state, 'spot.path.no', 'path-stop');
-  return {
-    ...state,
-    beats: { ...state.beats, 'dba.beat.danger': true },
-    feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: 'spot.path.ok', spot: 'path-stop' },
-  };
+  return inspectBridgeApproach(state, choice === 'step');
 }
 
 export function inspectEmbers(state: SaveData): SaveData {

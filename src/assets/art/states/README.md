@@ -21,3 +21,8 @@ Generation originals are retained in the workspace:
 - Portion: `exec-43e6d173-3bde-437a-a371-ca4f73a58003.png`
 
 Production files were encoded with FFmpeg/libwebp (quality 86–88; portion reduced to 768 px width). No color keying or background-removal filter was used. Character animation sources and measurements are documented with the traveler and companion assets separately.
+
+
+## v0.1.6 桥边观察
+
+新增 `bridge-inspection.webp`，用于雾径的桥板、扶绳观察近景。基于现有雾径绘景生成，保持原场景布局；制作原图、说明、编码参数和哈希见 `docs/assets/bridge/README.md`。

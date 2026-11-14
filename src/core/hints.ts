@@ -4,6 +4,7 @@ import { canDepart, reviewTarget } from './island';
 import type { HintLevel, HintPlanContent, SaveData } from './schema';
 import { isLearnedState } from './words';
 import { puzzleState } from './puzzles';
+import { bridgeState } from './bridge';
 
 export type HintAnchor =
   | 'mural-entrance'
@@ -63,7 +64,7 @@ export function hintSituation(state: SaveData): HintPlanContent['when'] | null {
   if (state.currentScene === 'dba.scene.yard' && puzzles.food.stage !== 'done') {
     return 'yard-give';
   }
-  if (state.currentScene === 'dba.scene.path' && learned(state, 'dba.word.danger') && state.beats['dba.beat.danger'] !== true) {
+  if (state.currentScene === 'dba.scene.path' && learned(state, 'dba.word.danger') && state.beats['dba.beat.danger'] !== true && bridgeState(state).stage !== 'agreed') {
     return 'path-stop';
   }
   if (

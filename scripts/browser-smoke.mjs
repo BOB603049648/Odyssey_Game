@@ -1,3 +1,4 @@
+import { signalAtBridge } from './bridge-journey.mjs';
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import { mkdir } from 'node:fs/promises';
@@ -67,8 +68,8 @@ assert.equal(await page.getByTestId('food-self-bowl').getAttribute('data-count')
 assert.equal(await page.getByTestId('food-companion-bowl').getAttribute('data-count'),'2');
 await page.getByRole('button',{name:'回到前坪',exact:true}).click();
 await spot('yard-give');assert.equal((await save()).beats['dba.beat.food'],true);
-await gate('path');await spot('path-stop');assert.equal((await save()).beats['dba.beat.danger'],true);
-await gate('yard');await gate('camp');await gate('night');await spot('night-read');assert.ok((await save()).evidence.includes('dba.ev.main'));
+await gate('path');await spot('path-stop');await signalAtBridge(page);assert.notEqual((await save()).beats['dba.beat.danger'],true);
+await gate('yard');assert.equal((await save()).beats['dba.beat.danger'],true);await gate('camp');await gate('night');await spot('night-read');assert.ok((await save()).evidence.includes('dba.ev.main'));
 await gate('camp');await gate('shore');await gate('hall');await spot('hall-stamps');await spot('hall-tattoo');
 assert.ok((await save()).inventory.includes('dba.item.token'));assert.ok((await save()).evidence.includes('dba.ev.b'));
 await gate('shore');await spot('shore-depart');await page.getByTestId('depart-plate').waitFor();

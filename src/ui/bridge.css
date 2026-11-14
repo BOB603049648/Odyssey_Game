@@ -1,0 +1,51 @@
+.bridge-dialog { width: min(1120px, 100%); max-height: 100%; overflow: auto; overscroll-behavior: contain; scroll-padding-top: 104px; color: #eee4cf; background: #152320; border: 1px solid #c6a47266; box-shadow: 0 24px 80px #0009; }
+.bridge-header { position: sticky; top: 0; z-index: 4; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 22px; background: #152320f5; border-bottom: 1px solid #c6a47233; }
+.bridge-header .eyebrow { margin: 0 0 5px; color: #c6a472; font-size: 10px; }
+.bridge-header h2 { margin: 0; font-size: 24px; font-weight: 400; letter-spacing: .05em; }
+.bridge-header > .btn { flex-shrink: 0; min-height: 44px; }
+.bridge-layout { display: grid; grid-template-columns: 1.2fr 1fr; align-items: start; }
+.bridge-observation { position: sticky; top: 90px; min-width: 0; }
+.bridge-closeup { position: relative; aspect-ratio: 3 / 2; background: #453d2b; }
+.bridge-closeup > img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.bridge-clue { position: absolute; min-width: 72px; min-height: 44px; border: 1px solid #e9ca8aaa; background: #182322db; color: #f7e7c6; border-radius: 2px; transform: translate(-50%, -50%); font-size: 12px; }
+.bridge-boards { left: 49%; top: 63%; }.bridge-rope { left: 76%; top: 31%; }
+.bridge-clue[aria-pressed="true"] { border-color: #8ba49a; color: #c3d0bf; }
+.bridge-carving { position: absolute; left: 5%; top: 34%; width: 11%; min-width: 38px; min-height: 44px; padding: 2px; background: #442c1255; border: none; color: #2c2016; }
+.bridge-carving .glyph { width: 100%; height: auto; filter: drop-shadow(0 1px 0 #d5ae6c); }
+.bridge-notes { padding: 14px 20px; color: #c9cebd; font-size: 13px; line-height: 1.8; }
+.bridge-notes p { margin: 0 0 9px; }.bridge-notes span { color: #dfbf81; }
+.bridge-controls { padding: 18px 22px 24px; min-width: 0; }
+.bridge-controls h3 { margin: 0 0 10px; font-size: 18px; font-weight: 400; color: #ebd4a0; }
+.bridge-invitation p, .bridge-result p { font-size: 14px; line-height: 1.9; color: #c9cebd; }
+.bridge-instruction { margin: 0 0 12px; font-size: 12px; line-height: 1.7; color: #aebdaf; }
+.bridge-reading { margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid #c6a47244; }
+.bridge-dialog summary { min-height: 44px; padding: 10px 0; cursor: pointer; font-size: 12px; color: #dfbf81; }
+.bridge-reading-question { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+.bridge-reading-question > .glyph { width: 45px; height: 45px; flex-shrink: 0; }
+.bridge-reading-question p { font-size: 12px; line-height: 1.8; margin: 0; }
+.bridge-reading-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.bridge-reading-options > button { padding: 0; text-align: left; color: inherit; background: #111e20; border: 1px solid #a9956944; }
+.bridge-reading-options .concept-story { min-height: 0; padding: 8px; font-size: 11px; line-height: 1.6; }
+.bridge-phrase { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.bridge-slot { display: grid; justify-items: center; gap: 10px; min-height: 98px; padding: 12px; border: 1px solid #a9956955; background: #111e20; color: #e4cd97; }
+.bridge-slot span { font-size: 12px; }.bridge-slot .glyph { width: 36px; height: 36px; }.bridge-slot i { font-style: normal; font-size: 24px; line-height: 36px; }
+.bridge-slot[aria-pressed="true"] { border-color: #e4cd97; background: #dec68b15; }
+.bridge-word-bank { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 7px; }
+.bridge-word-bank > button { display: grid; justify-items: center; gap: 4px; min-height: 50px; padding: 6px 3px; border: 1px solid #a9956955; background: #111e20; color: #e4cd97; }
+.bridge-word-bank .glyph { width: 32px; height: 32px; }.bridge-word-bank small { font-size: 11px; }
+.bridge-dialog button:focus-visible, .bridge-dialog summary:focus-visible { outline: 2px solid #edd595; outline-offset: 2px; }
+.bridge-compose-tools { display: flex; align-items: start; flex-wrap: wrap; gap: 6px 16px; margin: 10px 0 14px; }
+.bridge-compose-tools > .btn { min-height: 44px; font-size: 12px; }
+.bridge-recall { flex: 1; min-width: 140px; }.bridge-recall .concept-scene { max-width: 240px; }
+.bridge-signal { width: 100%; min-height: 48px; }
+.bridge-feedback { padding: 12px 14px; margin: 16px 0 0; border-left: 2px solid #c8af7a; background: #0c191bbb; font-size: 13px; line-height: 1.8; }
+.bridge-feedback[data-kind="no"] { border-color: #c19372; }
+.bridge-image-error { padding: 12px 20px; font-size: 12px; line-height: 1.7; }.bridge-image-error button { display: block; min-height: 44px; color: #dfbf81; }
+.bridge-closeup.art-failed > img { opacity: 0; }
+@media (max-width: 700px) {
+  .bridge-header { padding: 12px; gap: 8px; }.bridge-header h2 { font-size: 18px; }.bridge-header > .btn { font-size: 12px; padding: 8px; }
+  .bridge-layout { grid-template-columns: 1fr; }.bridge-observation { position: static; }
+  .bridge-notes { padding: 12px 14px 2px; font-size: 12px; }.bridge-controls { padding: 14px; }
+  .bridge-word-bank { grid-template-columns: repeat(3, minmax(0, 1fr)); }.bridge-word-bank .glyph { width: 36px; height: 36px; }
+}
+@media (max-height: 500px) { .bridge-observation { position: static; }.bridge-header { padding: 8px 16px; }.bridge-header h2 { font-size: 18px; } }

@@ -1,3 +1,4 @@
+import { returnFromBridge } from './core/__fixtures__/bridgeJourney';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { App } from './App';
@@ -275,7 +276,7 @@ describe('playable slice', async () => {
     save = reduce(reduce(save, { type: 'goto-scene', scene: 'dba.scene.camp' }), { type: 'sleep-at-camp' });
     save = reduce(save, { type: 'goto-scene', scene: 'dba.scene.yard' });
     for (const move of ['inspect', 'take', 'move-to-companion', 'move-to-companion', 'offer'] as const) save = reduce(save, { type: 'puzzle-act', puzzle: 'food', move });
-    save = reduce(reduce(save, { type: 'goto-scene', scene: 'dba.scene.path' }), { type: 'forest-choice', choice: 'stop' });
+    save = returnFromBridge(reduce(save, { type: 'goto-scene', scene: 'dba.scene.path' }));
     save = reduce(save, { type: 'goto-scene', scene: 'dba.scene.shore' });
     save = reduce(save, { type: 'depart' });
     localStorage.setItem(SAVE_KEY, JSON.stringify(save));

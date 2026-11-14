@@ -70,13 +70,13 @@ describe('player action feedback', () => {
     expect(reduce(ashore(), { type: 'inspect-embers' }).flags['dba.flag.embers-seen']).toBeUndefined();
   });
 
-  it('explains a dangerous step and a successful stop at the corresponding prop', () => {
+  it('explains the dangerous step and opens observation without prematurely completing survival', () => {
     const state = reduce(ashore(), { type: 'goto-scene', scene: 'dba.scene.path' });
     expect(reduce(state, { type: 'forest-choice', choice: 'step' }).feedback).toMatchObject({ kind: 'no', spot: 'path-step', line: 'spot.path.step' });
-    expect(reduce(state, { type: 'forest-choice', choice: 'stop' }).feedback).toMatchObject({ kind: 'no', spot: 'path-stop', line: 'spot.path.no' });
+    expect(reduce(state, { type: 'forest-choice', choice: 'stop' }).feedback).toMatchObject({ kind: 'ok', spot: 'path-stop', line: 'spot.bridge.inspect' });
     state.words['dba.word.danger'].state = 'learned';
     const next = reduce(state, { type: 'forest-choice', choice: 'stop' });
-    expect(next.feedback).toMatchObject({ kind: 'ok', spot: 'path-stop', line: 'spot.path.ok' });
-    expect(next.beats['dba.beat.danger']).toBe(true);
+    expect(next.feedback).toMatchObject({ kind: 'ok', spot: 'path-stop', line: 'spot.bridge.inspect' });
+    expect(next.beats['dba.beat.danger']).toBeUndefined();
   });
 });

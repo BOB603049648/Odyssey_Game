@@ -6,6 +6,7 @@ import { isLearnedState } from '../core/words';
 import { t, type MessageKey } from './i18n';
 import { hintMark } from './hintMark';
 import { puzzleState } from '../core/puzzles';
+import { bridgeState } from '../core/bridge';
 
 const BETRAY = 'dba.word.betray';
 
@@ -91,7 +92,9 @@ export function visibleSpots(
       if (!spec) throw new Error(`Missing spot view ${spot.id}`);
       const dynamic = spot.id === 'island-gourd' ? puzzles.water === 'empty' ? '拿起空瓢' : puzzles.water === 'filled' ? '喝下清泉' : '清泉与水瓢'
         : spot.id === 'yard-grab' ? puzzles.food.stage === 'unseen' ? '查看篮中的食物' : puzzles.food.stage === 'inspected' ? '取出四份食物' : puzzles.food.stage === 'done' ? '已经分好的晚餐' : '分一份晚餐'
-        : spot.id.startsWith('act:dba.word.amount:') && (puzzles.food.stage === 'taken' || puzzles.food.stage === 'allocating') ? '分一份晚餐' : null;
+        : spot.id.startsWith('act:dba.word.amount:') && (puzzles.food.stage === 'taken' || puzzles.food.stage === 'allocating') ? '分一份晚餐'
+        : spot.id === 'path-stop' ? bridgeState(save).stage === 'done' ? '重看旧桥' : '观察桥边的痕迹'
+        : spot.id === 'path-step' ? '查看脚下的桥板' : null;
       return {
         ...spot,
         className: `${spec.className} ${hintMark(hint, hintSpotId(scene, hint.anchor as HintAnchor) === spot.id ? hint.anchor : spec.hintAnchor ?? spot.id, spec.hintWord)}`.trim(),

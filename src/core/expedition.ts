@@ -2,6 +2,7 @@ import { canDepart, type IslandScene } from './island';
 import type { SaveData } from './schema';
 import { isLearnedState } from './words';
 import { puzzleState } from './puzzles';
+import { bridgeState } from './bridge';
 
 export type ExpeditionGoal = { title: string; detail: string; destination: IslandScene; spot: string };
 /** A short narrative intention, derived from the same saved actions as the chapter. */
@@ -11,6 +12,10 @@ export function expeditionGoal(save: SaveData): ExpeditionGoal {
     destination: 'dba.scene.shore', spot: 'island-mural' });
   const puzzles = puzzleState(save);
   if (save.beats['dba.beat.depart']) return { title: '余音未散', detail: '重访岛上的人和物，或在案卷中重看回忆。', destination: 'dba.scene.night', spot: 'night-memory' };
+  const bridge = bridgeState(save);
+  if (bridge.stage === 'agreed' && save.currentScene === 'dba.scene.path') return {
+    title: '一起回到稳固的地面', detail: '向导已经转向来路。沿左侧路口回到前坪，让刚才的决定成为行动。', destination: 'dba.scene.yard', spot: 'path-west',
+  };
   if (puzzles.water === 'empty') return { title: '带上一只空瓢', detail: '泉池边的瓢还是空的。先拿起来，看看哪里能接到清水。', destination: 'dba.scene.shore', spot: 'island-gourd' };
   if (puzzles.water === 'carried') return learned('water')
     ? { title: '找到能喝的水', detail: '潮水有咸味，岩缝间却流着清泉。把空瓢带到泉口。', destination: 'dba.scene.shore', spot: 'water-spring' }
@@ -26,7 +31,8 @@ export function expeditionGoal(save: SaveData): ExpeditionGoal {
     ? { title: '把这一半递出去', detail: '两只碗里已经各有两份。将留好的那一半递给同行者。', destination: 'dba.scene.yard', spot: 'yard-give' }
     : wall('两只碗已经各有一半。壁画里人与人相处的情景，还藏着把心意递出去的方法。');
   if (!save.beats['dba.beat.danger']) return learned('danger')
-    ? { title: '有时，停下才是前进', detail: '前坪东侧通往雾径。观察桥板和向导，再决定下一步。', destination: 'dba.scene.path', spot: 'path-stop' }
+    ? { title: bridge.stage === 'planning' ? '让同行者明白你的决定' : '有时，停下才是前进',
+      detail: bridge.stage === 'planning' ? '桥边木牌留下了停留的刻痕。想一想眼前发生了什么，再向同行者示意。' : '前坪东侧通往雾径。观察桥板和扶绳，找到决定下一步的依据。', destination: 'dba.scene.path', spot: 'path-stop' }
     : wall('雾径上的刻痕还没有读懂。再看一看第三带的情景。');
   if (!canDepart(save)) return wall('身体已经安定下来。壁画深处的饥饿与约定，还在等待你理解。');
   return { title: '向雾的另一边', detail: '这些刻痕已经与你的经历连在一起。回到雾岸，往东走。', destination: 'dba.scene.shore', spot: 'shore-depart' };

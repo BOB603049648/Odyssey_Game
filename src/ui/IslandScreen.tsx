@@ -31,6 +31,8 @@ import { puzzleState } from '../core/puzzles';
 import { worldState } from '../core/worldState';
 import { FoodTable } from './FoodTable';
 import { FieldLexicon } from './FieldLexicon';
+import { BRIDGE, bridgeState } from '../core/bridge';
+import { BridgePuzzle } from './BridgePuzzle';
 import './adventure.css';
 
 export { hintMark } from './hintMark';
@@ -54,21 +56,25 @@ export function IslandScreen({
   const drank = save.beats['dba.beat.water'] === true;
   const puzzles = puzzleState(save);
   const [foodTableOpen, setFoodTableOpen] = useState(false);
+  const [bridgeOpen, setBridgeOpen] = useState(false);
+  const bridge = bridgeState(save);
+  const bridgeVisible = bridgeOpen && scene === 'dba.scene.path' && save.overlay === 'none';
   const [navigation, setNavigation] = useState<NavigationStatus | null>(null);
   const foodTableVisible = foodTableOpen && scene === 'dba.scene.yard' && save.overlay === 'none';
   const remembered = place?.scene === scene ? { x: place.x, y: place.y } : null;
-  const paused = save.overlay !== 'none' || completionPending(save) || foodTableVisible;
+  const paused = save.overlay !== 'none' || completionPending(save) || foodTableVisible || bridgeVisible;
   const [readyScene, setReadyScene] = useState<string | null>(null);
   const onReady = useCallback((scene: string, ready: boolean) => setReadyScene(ready ? scene : null), []);
   const onActivity = useIdleHint(save, dispatch, !paused && readyScene === scene);
-  useEffect(() => { setFoodTableOpen(false); }, [scene, save.createdAt]);
+  useEffect(() => { setFoodTableOpen(false); setBridgeOpen(false); }, [scene, save.createdAt]);
+  useEffect(() => { if (bridge.stage === 'agreed') setBridgeOpen(false); }, [bridge.stage]);
   const [skipWelcome, setSkipWelcome] = useState(false);
   useEffect(() => {
     if (save.flags['dba.flag.driftwood'] === true) return undefined;
     const id = window.setTimeout(() => setSkipWelcome(true), 12000);
     return () => window.clearTimeout(id);
   }, [save.flags['dba.flag.driftwood']]);
-  const catPost = companionPost(scene, save.beats, save.flags, { skipWelcome });
+  const catPost = companionPost(scene, save.beats, { ...save.flags, [BRIDGE.agreed]: bridge.stage === 'agreed' }, { skipWelcome });
   const line = save.feedback.line;
   const [approachHint, setApproachHint] = useState(false);
   const spoken = line?.startsWith('spot.') ? t(line as MessageKey) : null;
@@ -84,6 +90,10 @@ export function IslandScreen({
     ? SPOTS[flashScene].find((spot) => spot.id === (flashKind === 'driftwood' ? 'shore-driftwood' : flashKind === 'sleep' ? 'camp-sleep' : 'yard-give'))
     : null;
   const onInteract = (id: string) => {
+    if (id === 'path-stop' || id === 'path-step') {
+      dispatch({ type: 'forest-choice', choice: id === 'path-step' ? 'step' : 'stop' });
+      setBridgeOpen(true); return;
+    }
     if (id === 'water-spring' || id === 'water-sea') {
       dispatch({ type: 'puzzle-act', puzzle: 'water', move: id === 'water-spring' ? 'fill' : 'try-sea' }); return;
     }
@@ -112,6 +122,7 @@ export function IslandScreen({
         data-sleep-beat={save.beats['dba.beat.sleep'] ? 'done' : 'open'}
         data-food-beat={save.beats['dba.beat.food'] ? 'done' : 'open'}
         data-danger-beat={save.beats['dba.beat.danger'] ? 'done' : 'open'}
+        data-bridge-stage={bridge.stage}
         data-old-layer={save.beats['dba.beat.old-layer'] ? 'done' : 'open'}
         data-depart={save.beats['dba.beat.depart'] ? 'done' : 'open'}
         data-bone-cell={save.flags['dba.flag.bone-cell'] === true ? 'yes' : 'no'}
@@ -144,6 +155,7 @@ export function IslandScreen({
           interactionSeq={save.feedback.seq}
           flash={flashSpot && flashKind ? { kind: flashKind, seq: save.feedback.seq, x: flashSpot.x, y: flashSpot.y } : null}
           onEscape={() => {
+            if (bridgeVisible) { setBridgeOpen(false); return; }
             if (foodTableVisible) { setFoodTableOpen(false); return; }
             if (save.overlay === 'depart' || save.overlay === 'memory') return;
             if (save.overlay !== 'none') dispatch({ type: 'close-overlay' });
@@ -168,6 +180,7 @@ export function IslandScreen({
       {save.overlay === 'chart' ? <ChartSealed onClose={() => dispatch({ type: 'close-overlay' })} /> : null}
       <OverlaySheet save={save} dispatch={dispatch} learned={learned} hint={hint} />
       {foodTableVisible ? <FoodTable food={puzzles.food} dispatch={dispatch} onClose={() => setFoodTableOpen(false)} /> : null}
+      {bridgeVisible ? <BridgePuzzle save={save} dispatch={dispatch} onClose={() => setBridgeOpen(false)} /> : null}
       <JourneyMoment save={save} />
       <div className="stage-feedback-stack">
       <NavigationNotice message={!paused && navigation?.scene === scene ? navigation.message : null} kind={navigation?.kind ?? 'exit'} />

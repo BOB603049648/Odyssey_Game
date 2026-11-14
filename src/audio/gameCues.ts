@@ -9,6 +9,12 @@ export function gameCues(previous: SaveData, next: SaveData): GameCue[] {
   if (previous.createdAt !== next.createdAt || next.screen === 'prologue' || previous.screen === 'prologue') return [];
   const cues: GameCue[] = [];
   const changed = next.feedback.seq !== previous.feedback.seq;
+  if (changed && next.feedback.kind === 'ok' && next.feedback.spot?.startsWith('bridge-')) {
+    if (next.feedback.spot === 'bridge-boards' || next.feedback.spot === 'bridge-rope') cues.push({ id: 'wood-creak', level: .5 });
+    if (next.feedback.spot === 'bridge-select') cues.push({ id: 'select', level: .55 });
+    if (next.feedback.spot === 'bridge-lesson' && isLearnedState(next.words['dba.word.wait']?.state) && !isLearnedState(previous.words['dba.word.wait']?.state)) cues.push({ id: 'word-learn', level: .8 });
+    if (next.feedback.spot === 'bridge-signal') cues.push({ id: 'cat-call', level: .65 });
+  }
   if (changed && next.feedback.kind === 'ok' &&
       (next.feedback.spot === 'food-self' || next.feedback.spot === 'food-companion') &&
       puzzleState(previous).food.self !== puzzleState(next).food.self) cues.push({ id: 'place', level: .55 });

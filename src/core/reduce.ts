@@ -25,9 +25,11 @@ import { newGameState } from './save';
 import type { EndingContent, HintLevel, MuralLayer, SaveData, WordProgress } from './schema';
 import { isLearnedState, transitionWord } from './words';
 import { applyPuzzleAction, useGourd, useWaterWord, type PuzzleAction } from './puzzles';
+import { applyBridgeAction, type BridgeAction } from './bridge';
 
 export type Action =
   | PuzzleAction
+  | BridgeAction
   | { type: 'new-game' }
   | { type: 'dismiss-completion' }
   | { type: 'advance-prologue' }
@@ -123,6 +125,8 @@ function applyAction(state: SaveData, action: Action): SaveData {
       return touch(useWaterWord(state, action.wordId));
     case 'puzzle-act':
       return touch(applyPuzzleAction(state, action));
+    case 'bridge-act':
+      return touch(applyBridgeAction(state, action));
     case 'goto-scene':
       return touch(gotoScene(state, action.scene));
     case 'sit-driftwood':

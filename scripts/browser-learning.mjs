@@ -1,3 +1,4 @@
+import { signalAtBridge } from './bridge-journey.mjs';
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -99,10 +100,10 @@ try {
   const food = await study('food-return'); assert.equal(food.at(-1), 'dba.word.share');
   assert.equal(known(await read()), 16);
   await travel('camp'); await travel('yard'); await spot('yard-give'); assert.equal((await read()).beats['dba.beat.food'], true);
-  await travel('path'); await spot('path-stop'); assert.equal((await read()).beats['dba.beat.danger'], true);
-  await travel('yard'); await travel('camp'); await travel('shore'); await spot('island-mural');
+  await travel('path'); await spot('path-stop'); await signalAtBridge(page); assert.notEqual((await read()).beats['dba.beat.danger'], true);
+  await travel('yard'); assert.equal((await read()).beats['dba.beat.danger'], true); await travel('camp'); await travel('shore'); await spot('island-mural');
   assert.deepEqual(await study('departure-return'), ['dba.word.hunger', 'dba.word.promise']);
-  assert.equal(known(await read()), 18);
+  assert.equal(known(await read()), 19);
   await button('词库').click(); await page.getByTestId('lexicon-dba.word.promise').click();
   assert.equal(await page.getByTestId('lexicon-memory').getAttribute('data-word'), 'dba.word.promise');
   assert.equal(await page.getByTestId('lexicon-dba.word.betray').count(), 0);
@@ -113,8 +114,8 @@ try {
   await button('留在岛上探索').click(); completed = await read();
   assert.equal(completed.beats['dba.beat.depart'], true);
   await page.reload(); await button('继续').click(); await ready();
-  assert.equal(known(await read()), 18); assert.equal((await read()).beats['dba.beat.depart'], true);
-  results.push({ check: 'complete-first-island-and-reload', learned: 18 });
+  assert.equal(known(await read()), 19); assert.equal((await read()).beats['dba.beat.depart'], true);
+  results.push({ check: 'complete-first-island-and-reload', learned: 19 });
   await p.context.close();
 
   const mobile = await setup(true, waterLesson);

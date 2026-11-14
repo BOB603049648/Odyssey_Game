@@ -1,3 +1,4 @@
+import { returnFromBridge } from './__fixtures__/bridgeJourney';
 import { describe, expect, it } from 'vitest';
 import { LEXEMES } from '../content/catalog';
 import { guidePose, hintCap } from './hints';
@@ -39,7 +40,7 @@ function readyToLeave(state = ashore()): SaveData {
   for (const move of ['inspect', 'take', 'move-to-companion', 'move-to-companion', 'offer'] as const) {
     next = reduce(next, { type: 'puzzle-act', puzzle: 'food', move });
   }
-  next = reduce(reduce(next, { type: 'goto-scene', scene: 'dba.scene.path' }), { type: 'forest-choice', choice: 'stop' });
+  next = returnFromBridge(reduce(next, { type: 'goto-scene', scene: 'dba.scene.path' }));
   next = reduce(next, { type: 'goto-scene', scene: 'dba.scene.shore' });
   for (const move of ['take', 'fill', 'drink'] as const) {
     next = reduce(next, { type: 'puzzle-act', puzzle: 'water', move });

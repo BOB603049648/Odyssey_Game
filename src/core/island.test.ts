@@ -1,3 +1,4 @@
+import { returnFromBridge } from './__fixtures__/bridgeJourney';
 import { describe, expect, it } from 'vitest';
 import { LEXEMES } from '../content/catalog';
 import { reduce } from './reduce';
@@ -148,7 +149,7 @@ describe('island 1 scenes', () => {
     expect(missed.beats['dba.beat.eat']).toBeUndefined();
   });
 
-  it('opens the forest only when the player stops after learning danger', () => {
+  it('requires an understood plan and safe return after learning danger', () => {
     let state = reduce(ashore(), { type: 'goto-scene', scene: 'dba.scene.path' });
     expect(reduce(state, { type: 'forest-choice', choice: 'stop' }).beats['dba.beat.danger']).toBeUndefined();
     state = learnLayer(learnLayer(ashore(), 'concrete'), 'action');
@@ -156,6 +157,8 @@ describe('island 1 scenes', () => {
     state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.path' });
     expect(reduce(state, { type: 'forest-choice', choice: 'step' }).beats['dba.beat.danger']).toBeUndefined();
     state = reduce(state, { type: 'forest-choice', choice: 'stop' });
+    expect(state.beats['dba.beat.danger']).toBeUndefined();
+    state = returnFromBridge(state);
     expect(state.beats['dba.beat.danger']).toBe(true);
   });
 
@@ -193,7 +196,7 @@ describe('island 1 scenes', () => {
     for (const move of ['inspect', 'take', 'move-to-companion', 'move-to-companion', 'offer'] as const) {
       state = reduce(state, { type: 'puzzle-act', puzzle: 'food', move });
     }
-    state = reduce(reduce(state, { type: 'goto-scene', scene: 'dba.scene.path' }), { type: 'forest-choice', choice: 'stop' });
+    state = returnFromBridge(reduce(state, { type: 'goto-scene', scene: 'dba.scene.path' }));
     state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.shore' });
     state = reduce(state, { type: 'depart' });
     expect(state.beats['dba.beat.depart']).toBe(true);

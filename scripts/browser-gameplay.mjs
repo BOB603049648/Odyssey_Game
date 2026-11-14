@@ -1,3 +1,4 @@
+import { signalAtBridge } from './bridge-journey.mjs';
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -104,8 +105,8 @@ try {
   await spot('yard-give'); assert.equal((await save()).beats['dba.beat.food'], true);
   await travel('path'); await spot('path-step');
   assert.equal((await save()).feedback.line, 'spot.path.step');
-  await spot('path-stop'); assert.equal((await save()).beats['dba.beat.danger'], true);
-  await travel('yard'); await travel('camp'); await travel('night');
+  await signalAtBridge(page); assert.notEqual((await save()).beats['dba.beat.danger'], true);
+  await travel('yard'); assert.equal((await save()).beats['dba.beat.danger'], true); await travel('camp'); await travel('night');
   await spot('night-ember'); assert.equal((await save()).feedback.line, 'spot.ember.ok');
   await travel('camp'); await travel('shore');
   await page.getByTestId('journey-status').click();

@@ -14,7 +14,7 @@ export function useGameAudio(save: SaveData, active: boolean, visible: boolean, 
   useEffect(() => {
     if (!enabled) return;
     const scope = soundScope(); owner.current = scope;
-    for (const id of ['select','answer-right','answer-wrong','word-learn','milestone','pickup','paper','cat-call','cat-purr'] as const) void loadSound(id);
+    for (const id of ['select','answer-right','answer-wrong','word-learn','milestone','pickup','paper','cat-call','cat-purr','wood-creak'] as const) void loadSound(id);
     return () => { scope.dispose(); owner.current = null; };
   }, [enabled]);
   useEffect(() => {

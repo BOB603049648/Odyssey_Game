@@ -1,3 +1,4 @@
+import { returnFromBridge } from './__fixtures__/bridgeJourney';
 import { describe, expect, it } from 'vitest';
 import { LEXEMES } from '../content/catalog';
 import { isLayerUnlocked, requirementsMet } from './conditions';
@@ -55,11 +56,13 @@ describe('learning in the context of exploration', () => {
     expect(food.lesson).toMatchObject({ kind: 'explore', goal: { spot: 'yard-give' } });
     save = food.save; save.beats['dba.beat.food'] = true;
     expect(learningJourney(save)).toMatchObject({ kind: 'explore', goal: { spot: 'path-stop' } });
-    save.beats['dba.beat.danger'] = true;
+    save.screen = 'island'; save.currentScene = 'dba.scene.path';
+    save = returnFromBridge(save);
+    expect(save.beats['dba.beat.danger']).toBe(true);
     const depart = followClues(save);
     expect(depart.learned).toEqual(['dba.word.hunger', 'dba.word.promise']);
     expect(depart.lesson).toMatchObject({ kind: 'explore', goal: { spot: 'shore-depart' } });
-    expect(Object.values(depart.save.words).filter(word => word.state === 'learned')).toHaveLength(18);
+    expect(Object.values(depart.save.words).filter(word => word.state === 'learned')).toHaveLength(19);
     expect(depart.save.words['dba.word.betray'].state).not.toBe('learned');
   });
 

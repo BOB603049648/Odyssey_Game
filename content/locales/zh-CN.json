@@ -199,5 +199,20 @@
   "spot.food.noSelf": "另一只碗已经盛满，你却还没有给自己留下一份。",
   "spot.food.noCompanion": "食物都留在自己面前，同行者的碗还是空的。",
   "puzzle.water.spring": "在泉嘴接水",
-  "puzzle.water.sea": "试一试潮水"
+  "puzzle.water.sea": "试一试潮水",
+  "spot.bridge.inspect": "木牌旁的路面看似完整。俯身看看桥板和扶绳，再决定怎样走。",
+  "spot.bridge.boards": "木板的裂口延伸到了支架。踩下去时，支撑也会一起让开。",
+  "spot.bridge.rope": "绳子的纤维已经断开。即使扶住护栏，也不能保证站稳。",
+  "spot.bridge.observeFirst": "先看清桥板和绳结，别只凭一块木牌就做决定。",
+  "spot.bridge.unknown": "你还没有读懂表示险兆的刻痕。观察会留下，可以先回石壁理解它。",
+  "spot.bridge.read": "它仍在路口望着你。这枚刻痕说的，是把脚步留在这里。",
+  "spot.bridge.misread": "它没有闭眼，也没有离去。再看看它把脚步留在哪里。",
+  "spot.bridge.compose": "先说明眼前的状况，再表达接下来的打算。刻符可以换，示意后才行动。",
+  "spot.bridge.incomplete": "还缺一半意思：眼前发生了什么，你又打算怎样回应？",
+  "spot.bridge.wrongReason": "向导看了看裂开的木板，又望向你。这次要说明的，是脚下的路出了什么问题。",
+  "spot.bridge.wrongIntent": "向导没有向前。松开的木板仍在颤动，你的打算还没有让它安心。",
+  "spot.bridge.agreed": "它听懂了，停住脚步，朝来路退去。跟上它，一起回到稳固的地面。",
+  "spot.bridge.protect": "它明白你想护住彼此，转向来路等你。一起从左侧路口退回前坪。",
+  "spot.bridge.return": "决定已经说清楚了。沿左侧路口回前坪，别再走向松开的桥板。",
+  "spot.bridge.done": "你们一起退回了稳固的地面。认出险兆，也把这个决定付诸行动。"
 }
