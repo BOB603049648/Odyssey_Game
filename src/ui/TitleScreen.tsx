@@ -46,7 +46,7 @@ export function TitleScreen({
           </button>
         </div>
         <p className="release-label">v{RELEASE_VERSION} · {RELEASE_SCOPE}</p>
-        <AudioSettings />
+        <AudioSettings compact />
         <GlossSwitch checked={showGloss} onChange={onToggleGloss} />
         <button className="title-save-tools" type="button" onClick={() => setManageSave(true)}>存档与恢复</button>
       </div>

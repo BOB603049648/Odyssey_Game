@@ -12,7 +12,7 @@ class FakeContext extends EventTarget {
   constructor() { super(); contexts.push(this); }
   createGain() { const gain = node(); this.gains.push(gain); return gain; }
   createDynamicsCompressor() { return { ...node(), threshold: param(), knee: param(), ratio: param(), attack: param(), release: param() }; }
-  createBufferSource() { const source = { ...node(), start: vi.fn(), stop: vi.fn() }; this.sources.push(source); return source; }
+  createBufferSource() { const source = { ...node(), playbackRate: param(), start: vi.fn(), stop: vi.fn() }; this.sources.push(source); return source; }
 }
 beforeEach(() => { vi.resetModules(); contexts = []; localStorage.clear(); vi.stubGlobal('AudioContext', FakeContext); });
 afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); });
@@ -53,6 +53,16 @@ describe('shared sound mixer', () => {
       document.dispatchEvent(new MouseEvent('click')); expect(context.resume).toHaveBeenCalledTimes(2);
     } finally { remove(); }
   });
+  it('migrates old preferences and controls music without muting environment or effects', async () => {
+    localStorage.setItem('odyssey.audio.v1', JSON.stringify({muted:false,volume:.4}));
+    const mixer=await import('./mixer'); await mixer.primeAudio();
+    expect(mixer.audioSnapshot()).toMatchObject({volume:.4,music:.55,ambience:.8,effects:1});
+    mixer.setAudioPreferences({music:0,effects:.5});
+    expect(contexts[0].gains[1].gain.linearRampToValueAtTime).toHaveBeenLastCalledWith(0,10.08);
+    expect(contexts[0].gains[2].gain.linearRampToValueAtTime).toHaveBeenLastCalledWith(.8,10.08);
+    expect(contexts[0].gains[3].gain.linearRampToValueAtTime).toHaveBeenLastCalledWith(.5,10.08);
+    expect(JSON.parse(localStorage.getItem('odyssey.audio.v1')!)).toMatchObject({volume:.4,music:0,effects:.5});
+  });
   it('remembers mute, avoids creating audio while muted, and clamps volume', async () => {
     localStorage.setItem('odyssey.audio.v1', JSON.stringify({ muted: true, volume: .4 }));
     const mixer = await import('./mixer');
@@ -84,6 +94,14 @@ describe('shared sound mixer', () => {
 });
 
 describe('decoded sound ownership', () => {
+  it('bounds decoded ambience memory while retaining recently used sounds', async () => {
+    const mixer=await import('./mixer');await mixer.primeAudio();
+    contexts[0].decodeAudioData.mockResolvedValue({duration:48,length:4*1024*1024,numberOfChannels:2} as never);
+    const fetch=vi.fn().mockResolvedValue({ok:true,arrayBuffer:async()=>new ArrayBuffer(1)});vi.stubGlobal('fetch',fetch);
+    const {loadSound}=await import('./sounds');
+    await loadSound('shore');await loadSound('camp');await loadSound('camp');expect(fetch).toHaveBeenCalledTimes(2);
+    await loadSound('shore');expect(fetch).toHaveBeenCalledTimes(3);
+  });
   it('never starts a late decoded voice after its owner leaves', async () => {
     const mixer = await import('./mixer'); mixer.primeAudio();
     let resolve!: (value: unknown) => void;
@@ -107,6 +125,6 @@ describe('decoded sound ownership', () => {
     expect(contexts[0].sources[0].stop).toHaveBeenCalledTimes(1);
     contexts[0].sources[0].onended!();
     expect(contexts[0].sources[0].disconnect).toHaveBeenCalledOnce();
-    expect(contexts[0].gains[1].disconnect).toHaveBeenCalledOnce();
+    expect(contexts[0].gains.at(-1)!.disconnect).toHaveBeenCalledOnce();
   });
 });

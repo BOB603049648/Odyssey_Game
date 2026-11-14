@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, renderHook } from '@testing-library/react';
 import { usePrologueSound, useSoundscape } from './useSoundscape';
 const mock = vi.hoisted(() => ({ play: vi.fn(), load: vi.fn(), audio: { status: 'ready', muted: false, volume: .7 } }));
-vi.mock('./mixer', () => ({ audioSnapshot: () => mock.audio, subscribeAudio: () => () => {} }));
-vi.mock('./sounds', () => ({ playSound: (...args: unknown[]) => mock.play(...args), loadSound: (...args: unknown[]) => mock.load(...args) }));
+vi.mock('./mixer', () => ({ audioSnapshot: () => mock.audio, initializeAudioPreferences: () => {}, subscribeAudio: () => () => {} }));
+vi.mock('./sounds', () => ({ playSound: (...args: unknown[]) => mock.play(...args), loadSound: (...args: unknown[]) => mock.load(...args), soundChannel: () => 'ambience' }));
 beforeEach(() => { vi.useFakeTimers(); mock.play.mockReset().mockImplementation(() => Promise.resolve({ stop: vi.fn() })); mock.load.mockReset().mockResolvedValue(null); });
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 

@@ -1,7 +1,7 @@
 {
   "name": "odyssey-game",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -18,7 +18,8 @@
     "test:cinematic": "node scripts/browser-cinematic.mjs",
     "test:release": "node scripts/browser-v01.mjs",
     "release:pack": "node scripts/pack-release.mjs",
-    "test:audio": "node scripts/browser-audio.mjs"
+    "test:audio": "node scripts/browser-audio.mjs",
+    "test:foley": "node scripts/browser-foley.mjs"
   },
   "dependencies": {
     "@capacitor/core": "^7.4.3",

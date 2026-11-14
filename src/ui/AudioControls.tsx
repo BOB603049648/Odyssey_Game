@@ -21,7 +21,7 @@ export function AudioToggle({ compact = false }: { compact?: boolean }) {
     </svg> {label}
   </button>;
 }
-export function AudioSettings() {
+export function AudioSettings({ compact = false }: { compact?: boolean }) {
   const audio = useAudio();
   return <div className="audio-settings">
     <AudioToggle />
@@ -34,7 +34,17 @@ export function AudioSettings() {
       setAudioPreferences({ muted: false, volume: audio.volume || .7 });
       void primeAudio().then(ready => { if (ready) playAudioTest(); });
     }}>{t('audio.test')}</button>
+    <details className="audio-channel-details" open={!compact}><summary>分项音量</summary>
+    <div className="audio-channel-controls">
+      {(['effects','ambience','music'] as const).map(channel => <label key={channel}>
+        {t(`audio.${channel}`)}
+        <input type="range" min="0" max="100" step="5" value={Math.round((audio[channel] ?? 1)*100)}
+          aria-label={t(`audio.${channel}`)} onChange={event => { setAudioPreferences({ [channel]: Number(event.target.value)/100 }); void primeAudio(); }} />
+        <output>{Math.round((audio[channel] ?? 1)*100)}%</output>
+      </label>)}
+    </div></details>
     <p className="audio-help">{t('audio.testHelp')}</p>
+    <details className="audio-credits"><summary>声音来源</summary><p>录音素材：Fantozzi、mikeask、OwlishMedia、qubodup、pauliuw、Ted Kerr、PagDev、Kerzoven、jasinski、kindland、remaxim（CC0）。主题旋律与提示音为本项目程序合成。完整来源与加工记录随发布包附带。</p></details>
   </div>;
 }
 

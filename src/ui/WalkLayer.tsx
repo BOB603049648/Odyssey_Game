@@ -1,3 +1,4 @@
+import { useTravelerAudio } from '../audio/useTravelerAudio';
 import { useCatRecordRecovery } from './useCatRecordRecovery';
 import { getShoreVisualProfile } from '../dev/shoreVisualProfile';
 import { catDisplaySnapshot, lookupCatDisplay, writeCatDisplayAttributes } from './catDisplay';
@@ -749,6 +750,7 @@ export function WalkLayer({
   });
   const displayStatus = firstScreen.status === 'ready' && (!travelerPresentation.current.shown || !companionPresentation.src) ? 'loading' : firstScreen.status;
   pausedRef.current = paused || displayStatus !== 'ready';
+  useTravelerAudio(travelerPresentation, scene, pausedRef.current, interactionSeq, beat);
   const catNode = (<div
             className="companion-anchor"
             data-testid="companion-anchor"

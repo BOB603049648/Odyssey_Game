@@ -99,7 +99,9 @@ try {
   await page.getByRole('button', { name: '跳过序章', exact: true }).click();
   await page.locator('[data-testid="walk-stage"][data-display="ready"]').waitFor(); await page.waitForTimeout(600); await audible();
   assert.equal(await page.evaluate(() => window.__sound.voices.filter(v => v.live && v.loop).length), 1, 'shore has one ambience, no ghost storm');
-  await page.getByRole('button', { name: '标题', exact: true }).click(); await silent();
+  await page.getByRole('button', { name: '标题', exact: true }).click();
+  await page.waitForFunction(() => { const live=window.__sound.voices.filter(v=>v.live); return live.length===1 && live[0].loop && live[0].duration>31 && live[0].duration<33; });
+  await audible();
   // A fresh context has no decoded cache; sound failure must not block pictures.
   await context.close();
   const failureContext = await browser.newContext();

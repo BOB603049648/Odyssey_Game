@@ -1,3 +1,5 @@
+import { useGameAudio } from './audio/useGameAudio';
+import { useSceneDetails } from './audio/useSceneDetails';
 import './ui/release.css';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { installAudioRecovery, primeAudio } from './audio/mixer';
@@ -6,7 +8,7 @@ import type { SoundId } from './audio/sounds';
 import { useSoundscape } from './audio/useSoundscape';
 import { usePagePresentation } from './ui/useCinematicClock';
 import { useGame } from './stores/gameStore';
-import { Cutscenes } from './ui/Cutscenes';
+import { completionPending, Cutscenes } from './ui/Cutscenes';
 import { IslandScreen } from './ui/IslandScreen';
 import { MuralScreen } from './ui/MuralScreen';
 import { PrologueScreen } from './ui/PrologueScreen';
@@ -18,15 +20,20 @@ const DevTools = import.meta.env.DEV ? lazy(() => import('./dev/DevTools').then(
 export function App() {
   useEffect(installAudioRecovery, []);
   const save = useGame((state) => state.save);
+  const saveGeneration = useGame(state => state.saveGeneration);
   const saveFailed = useGame((state) => state.saveFailed);
   const dispatch = useGame((state) => state.dispatch);
   const [atTitle, setAtTitle] = useState(true);
   const { visible } = usePagePresentation();
   const ambient: Record<string, SoundId> = {
-    'dba.scene.shore': 'shore', 'dba.scene.camp': 'camp', 'dba.scene.yard': 'shore',
+    'dba.scene.shore': 'shore', 'dba.scene.camp': 'camp', 'dba.scene.yard': 'yard',
     'dba.scene.hall': 'hall', 'dba.scene.path': 'forest', 'dba.scene.night': 'night',
   };
   const soundscape = save.overlay === 'memory' ? 'memory' : ambient[save.currentScene] ?? null;
+  const music = atTitle ? 'theme-title' : completionPending(save) ? 'theme-resolve' : save.overlay === 'memory' ? 'theme-memory' : null;
+  useSoundscape(music, visible, undefined, 0, atTitle);
+  useGameAudio(save, !atTitle, visible, saveGeneration);
+  useSceneDetails(!atTitle && save.screen === 'island' ? save.currentScene : null, visible && save.overlay === 'none' && !completionPending(save));
   const sound = useSoundscape(!atTitle && save.screen !== 'prologue' ? soundscape : null, visible);
 
   return (

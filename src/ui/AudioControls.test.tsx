@@ -3,7 +3,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { AudioSettings, AudioToggle } from './AudioControls';
 const mock = vi.hoisted(() => ({ audio: { muted: false, volume: .7, status: 'idle' }, listeners: new Set<() => void>(), prime: vi.fn(), test: vi.fn() }));
 vi.mock('../audio/mixer', () => ({
-  audioSnapshot: () => mock.audio,
+  audioSnapshot: () => mock.audio, initializeAudioPreferences: () => {},
   subscribeAudio: (listener: () => void) => { mock.listeners.add(listener); return () => mock.listeners.delete(listener); },
   setAudioPreferences: (value: object) => { mock.audio = { ...mock.audio, ...value }; mock.listeners.forEach(listener => listener()); },
   primeAudio: () => mock.prime(),
@@ -22,7 +22,7 @@ it('restores audible volume from zero and unmutes when the player raises the sli
   const view = render(<AudioSettings />);
   fireEvent.click(view.getByRole('button', { name: '声音关' })); expect(mock.audio.volume).toBe(.7);
   fireEvent.click(view.getByRole('button', { name: '声音开' })); expect(mock.audio.muted).toBe(true);
-  fireEvent.change(view.getByRole('slider'), { target: { value: '50' } });
+  fireEvent.change(view.getByRole('slider', { name: '音量' }), { target: { value: '50' } });
   expect(mock.audio).toMatchObject({ muted: false, volume: .5 });
 });
 it('plays the output check only after the audio device resumes', async () => {

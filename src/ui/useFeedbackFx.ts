@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { playPurr, playThunk } from '../audio/placeholder';
 import type { SaveData } from '../core/schema';
 
 export function useFeedbackFx(feedback: SaveData['feedback']): { shake: boolean; purr: boolean } {
@@ -17,13 +16,11 @@ export function useFeedbackFx(feedback: SaveData['feedback']): { shake: boolean;
     setShake(false);
     setPurr(false);
     if (feedback.kind === 'ok') {
-      const stopPurr = playPurr();
       setPurr(true);
       const timer = window.setTimeout(() => setPurr(false), 560);
-      return () => { window.clearTimeout(timer); stopPurr?.(); };
+      return () => window.clearTimeout(timer);
     }
     if (feedback.kind === 'no') {
-      playThunk();
       setShake(true);
       const timer = window.setTimeout(() => setShake(false), 420);
       return () => window.clearTimeout(timer);

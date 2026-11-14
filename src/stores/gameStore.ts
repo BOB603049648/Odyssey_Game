@@ -13,6 +13,7 @@ export type Place = Point & { scene: string };
 interface GameStore {
   save: SaveData;
   saveFailed: boolean;
+  saveGeneration: number;
   place: Place | null;
   setPlace: (place: Place | null) => void;
   dispatch: (action: Action) => void;
@@ -23,6 +24,7 @@ interface GameStore {
 export const useGame = create<GameStore>((set, get) => ({
   save: storage.load() ?? newGameState(),
   saveFailed: false,
+  saveGeneration: 0,
   place: null,
   setPlace: (place) => set({ place }),
   dispatch: (action) => {
@@ -32,10 +34,10 @@ export const useGame = create<GameStore>((set, get) => ({
   },
   restore: (save) => {
     if (!storage.save(save)) return false;
-    set({ save, saveFailed: false, place: null });
+    set({ save, saveFailed: false, place: null, saveGeneration: get().saveGeneration + 1 });
     return true;
   },
   resetForTests: () => {
-    set({ save: storage.load() ?? newGameState(), saveFailed: false, place: null });
+    set({ save: storage.load() ?? newGameState(), saveFailed: false, place: null, saveGeneration: get().saveGeneration + 1 });
   },
 }));

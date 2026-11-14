@@ -21,14 +21,14 @@ it('releases both visual effects after quickly alternating wrong and right answe
   expect(view.result.current).toEqual({ shake: false, purr: false });
 });
 
-it('cancels a recorded purr when feedback changes or the screen unmounts', () => {
+it('leaves audio ownership to game events instead of purring on every successful answer', () => {
   const stop = vi.fn();
   vi.mocked(playPurr).mockReturnValue(stop);
   const view = renderHook(({ feedback }) => useFeedbackFx(feedback), { initialProps: { feedback: { seq: 0, kind: 'none' } as SaveData['feedback'] } });
   view.rerender({ feedback: { seq: 1, kind: 'ok' } });
   view.rerender({ feedback: { seq: 2, kind: 'no' } });
-  expect(stop).toHaveBeenCalledTimes(1);
+  expect(playPurr).not.toHaveBeenCalled();
   view.rerender({ feedback: { seq: 3, kind: 'ok' } });
   view.unmount();
-  expect(stop).toHaveBeenCalledTimes(2);
+  expect(playPurr).not.toHaveBeenCalled();
 });

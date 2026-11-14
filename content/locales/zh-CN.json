@@ -170,5 +170,8 @@
   "prologue.playback": "演出控制",
   "audio.test": "试听声音",
   "audio.testHelp": "试听会播放两声提示音；若听不到，请检查设备的媒体音量和音频输出。",
-  "audio.paused": "声音暂未播放，点此恢复。"
+  "audio.paused": "声音暂未播放，点此恢复。",
+  "audio.effects": "动作与反馈",
+  "audio.ambience": "环境",
+  "audio.music": "音乐"
 }

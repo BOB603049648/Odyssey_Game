@@ -2567,3 +2567,12 @@ h1 {
 .audio-help { flex-basis: 100%; margin: 0; font-size: 12px; line-height: 1.6; }
 .audio-recovery-note { position: fixed; z-index: 90; top: calc(78px + var(--safe-top, 0px)); left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100vw - 24px); box-sizing: border-box; display: flex; align-items: center; gap: 12px; padding: 4px 12px; border: 1px solid #cdb58c66; border-radius: 8px; color: #eee5d0; background: #152224f2; font-size: 12px; }
 .audio-recovery-note button { min-height: 44px; flex-shrink: 0; color: #f1d398; }
+
+.audio-channel-controls { flex-basis: 100%; display: grid; gap: 2px; }
+.audio-channel-controls label { justify-content: space-between; }
+.audio-credits { flex-basis: 100%; font-size: 11px; line-height: 1.6; }
+.audio-credits summary { cursor: pointer; padding: 6px 0; }
+.audio-credits p { margin: 6px 0; }
+.audio-channel-details { flex-basis: 100%; }
+.audio-channel-details > summary { cursor: pointer; min-height: 32px; line-height: 32px; }
+.audio-channel-details[open] > summary { margin-bottom: 6px; }

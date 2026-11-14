@@ -1,0 +1,20 @@
+import { cleanup, renderHook } from '@testing-library/react';
+import { afterEach, expect, it, vi } from 'vitest';
+import { newGameState } from '../core/save';
+import { reduce } from '../core/reduce';
+import { useGameAudio } from './useGameAudio';
+const mock=vi.hoisted(()=>({play:vi.fn(),stop:vi.fn(),dispose:vi.fn()}));
+vi.mock('./useSoundscape',()=>({useAudio:()=>({status:'ready',muted:false,volume:.7})}));
+vi.mock('./sounds',()=>({loadSound:vi.fn()}));
+vi.mock('./soundScope',()=>({soundScope:()=>({...mock,after:vi.fn()})}));
+afterEach(cleanup);
+it('plays new actions but suppresses rewards from restoring the same journey and returning from background',()=>{
+ const shore=reduce(reduce(newGameState(),{type:'new-game'}),{type:'skip-prologue'});
+ const mural=reduce(shore,{type:'open-mural'});
+ const selected=reduce(mural,{type:'select-cell',wordId:'dba.word.sun'});
+ const view=renderHook(({save,generation,visible})=>useGameAudio(save,true,visible,generation),{initialProps:{save:mural,generation:0,visible:true}});
+ expect(mock.play).not.toHaveBeenCalled();view.rerender({save:selected,generation:0,visible:true});expect(mock.play).toHaveBeenLastCalledWith('select',expect.anything());
+ const learned=reduce(selected,{type:'match-object',wordId:'dba.word.sun'});
+ mock.play.mockClear();view.rerender({save:learned,generation:1,visible:true});expect(mock.play).not.toHaveBeenCalled();
+ view.rerender({save:learned,generation:1,visible:false});expect(mock.dispose).toHaveBeenCalled();view.rerender({save:learned,generation:1,visible:true});expect(mock.play).not.toHaveBeenCalled();
+});

@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type MutableRefObject } from 'react';
-import { audioSnapshot, subscribeAudio } from './mixer';
-import { loadSound, playSound, type SoundId, type SoundVoice } from './sounds';
+import { audioSnapshot, subscribeAudio, initializeAudioPreferences } from './mixer';
+import { loadSound, playSound, soundChannel, type SoundId, type SoundVoice } from './sounds';
 
-export const useAudio = () => useSyncExternalStore(subscribeAudio, audioSnapshot);
+export function useAudio(active = true) {
+  const audio = useSyncExternalStore(subscribeAudio, audioSnapshot);
+  useEffect(() => { if (active) initializeAudioPreferences(); }, [active]);
+  return audio;
+}
 const SCAPES: SoundId[] = ['storm', 'rescue', 'memory', 'shore'];
-export function useSoundscape(id: SoundId | null, running: boolean, time?: MutableRefObject<number>, resetKey = 0) {
+export function useSoundscape(id: SoundId | null, running: boolean, time?: MutableRefObject<number>, resetKey = 0, loop = true) {
   const audio = useAudio();
-  const enabled = audio.status === 'ready' && !audio.muted && audio.volume > 0;
+  const enabled = audio.status === 'ready' && !audio.muted && audio.volume > 0 && (audio[id ? soundChannel(id) : 'ambience'] ?? 1) > 0;
   const [status, setStatus] = useState<'silent' | 'loading' | 'playing' | 'failed'>('silent');
   const [revision, setRevision] = useState(0);
   const retry = useCallback(() => setRevision(value => value + 1), []);
@@ -18,7 +22,7 @@ export function useSoundscape(id: SoundId | null, running: boolean, time?: Mutab
     let attempts = 0;
     async function start() {
       setStatus('loading');
-      voice = await playSound(id!, { loop: true, offset: () => time?.current ?? 0, valid: () => live });
+      voice = await playSound(id!, { loop, offset: () => time?.current ?? 0, valid: () => live });
       if (!live) { voice?.stop(0); return; }
       if (voice) {
         setStatus('playing');
@@ -32,7 +36,7 @@ export function useSoundscape(id: SoundId | null, running: boolean, time?: Mutab
     }
     void start();
     return () => { live = false; clearTimeout(timer); voice?.stop(); };
-  }, [id, running, enabled, time, revision, resetKey]);
+  }, [id, running, enabled, time, revision, resetKey, loop]);
   return { status, retry };
 }
 
