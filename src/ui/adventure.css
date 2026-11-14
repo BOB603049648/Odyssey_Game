@@ -136,3 +136,16 @@
   .footstep-trace, .world-response { display: none; }
   .mural-screen .story-tray .object { transition: none; }
 }
+
+/* Navigation cues share the painted floor; only the selected route is traced. */
+.walk-ground[data-walkable="no"] { cursor: not-allowed; }
+.adventure-island .wayfinding-exit span { opacity: .82; padding: 3px 9px; background: #172822cc; border-bottom: 1px solid #cbb68170; border-radius: 2px; font-size: 11px; letter-spacing: .08em; }
+.adventure-island .wayfinding-exit.near span,
+.adventure-island .wayfinding-exit:focus-visible span { opacity: 1; color: #ffe4a8; border-color: #e9c67c; }
+.adventure-island .wayfinding-exit:focus-visible { outline: 1px solid #e9c67c; outline-offset: 2px; border-radius: 50%; }
+.adventure-island .hearth-name { visibility: hidden; }
+.adventure-island .route-panel { width: min(230px, calc(100vw - 32px)); max-height: max(120px, calc(100dvh - 155px)); overflow-y: auto; overscroll-behavior: contain; }
+.route-panel .route-ground-help { font-size: 11px; line-height: 1.6; color: #c7c5ac; }
+.route-panel .route-guide-toggle { border: 1px solid #cbb68144; font-size: 12px; }
+.route-panel .route-guide-toggle[aria-pressed="true"] { background: #d7bd7d20; border-color: #cbb681aa; }
+@media (max-width: 900px) { .adventure-island .held-vessel { display: none; } }

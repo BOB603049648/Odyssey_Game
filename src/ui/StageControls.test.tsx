@@ -44,3 +44,23 @@ it('closes the route panel when the scene changes', () => {
   view.rerender(<StageControls {...view.props} scene="dba.scene.camp" exits={gatesFrom('dba.scene.camp')} />);
   expect(view.queryByRole('navigation')).toBeNull();
 });
+it('previews the ground while routes are open and pins it without selecting an exit', () => {
+  const onOpenChange = vi.fn();
+  const onToggleGuide = vi.fn();
+  const onTravel = vi.fn();
+  const props = { scene: 'dba.scene.shore' as const, exits, nearby: null, onTravel, onInteract: vi.fn(), onOpenChange, onToggleGuide };
+  const view = render(<StageControls {...props} guidePinned={false} />);
+  expect(onOpenChange).toHaveBeenLastCalledWith(false);
+  fireEvent.click(view.getByRole('button', { name: '路线' }));
+  expect(onOpenChange).toHaveBeenLastCalledWith(true);
+  expect(document.activeElement).toBe(view.getByTestId('route-camp'));
+  fireEvent.click(view.getByTestId('toggle-ground-guide'));
+  expect(onToggleGuide).toHaveBeenCalledOnce();
+  expect(onTravel).not.toHaveBeenCalled();
+  expect(view.queryByRole('navigation')).not.toBeNull();
+  view.rerender(<StageControls {...props} guidePinned />);
+  expect(view.getByTestId('toggle-ground-guide').getAttribute('aria-pressed')).toBe('true');
+  fireEvent.keyDown(view.getByTestId('toggle-ground-guide'), { key: 'Escape' });
+  expect(onOpenChange).toHaveBeenLastCalledWith(false);
+  expect(view.queryByRole('navigation')).toBeNull();
+});

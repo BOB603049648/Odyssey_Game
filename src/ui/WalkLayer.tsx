@@ -16,9 +16,9 @@ import { companionFrameId, trajClip, type GuidePhase, type TrajClip } from '../c
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
 import type { HintLevel } from '../core/schema';
-import { BANDS, SPAWNS, SPOTS, closestSpot, gateAt, gatesFrom, nearestSpot, plantOnGround, standsAt, type GateEdge } from '../core/stage';
+import { BANDS, SPAWNS, SPOTS, closestSpot, gateApproach, gateCrossing, gatesFrom, nearestSpot, plantOnGround, standsAt, type Gate, type GateEdge } from '../core/stage';
 import { stepWorld } from '../core/worldLoop';
-import { groundStep } from '../core/navigation';
+import { groundRoute, groundStep, groundTargetPoint, selectGroundTarget } from '../core/navigation';
 import {
   WALK_SPEED,
   groundDistance,
@@ -58,10 +58,28 @@ import { useAssetSrc } from './useAssetSrc';
 import { WalkStick } from './WalkStick';
 import { StageControls } from './StageControls';
 import { WorldFeedback } from './WorldFeedback';
+import { GroundGuide, NavigationNotice } from './Wayfinding';
 import { useCrossfade } from './useCrossfade';
 import { useShoreCuePresentation } from './useShoreCuePresentation';
 
 type Hint = { level: HintLevel; anchor: HintAnchor; wordId: string | null; pose: CompanionPose };
+export type NavigationStatus = { scene: IslandScene; message: string; kind: 'blocked' | 'exit' | 'travel' };
+type TravelPlan = { gate: Gate; phase: 'approach' | 'cross' };
+const GATE_DIRECTION = { east: '右侧', west: '左侧', north: '上方', south: '下方' };
+const GATE_ARROW = { east: '→', west: '←', north: '↑', south: '↓' };
+
+function groundRefusal(scene: IslandScene, point: Point): string {
+  if (scene === 'dba.scene.path') return '桥外没有落脚的地方，请沿桥板走。';
+  if (scene === 'dba.scene.shore') {
+    if (point.x > .55 && point.x < .67 && point.y >= .62) return '泉池里不能落脚，走到池边再接水。';
+    if (point.x > .27 && point.x < .43 && point.y >= .7 && point.y < .75) return '漂木挡住了这里，点旁边的沙地可以绕过去。';
+    return '那里没有可走的沙地，请沿岸边走。';
+  }
+  if (scene === 'dba.scene.camp') return '这里没有落脚处，请沿铺位前方的小路走。';
+  if (scene === 'dba.scene.yard') return '这里不能通行，请沿建筑前方的庭院和台阶走。';
+  if (scene === 'dba.scene.hall') return '那里不是可走的地板，请留在经堂前方的空地。';
+  return '这里不能落脚，请沿桌案和火塘前方的地面走。';
+}
 
 function isInteractKey(event: KeyboardEvent): boolean {
   const key = event.key;
@@ -129,6 +147,7 @@ export function WalkLayer({
   presentationFrozen = false,
   interactionSeq = 0,
   worldState,
+  onNavigationNotice,
 }: {
   scene: IslandScene;
   drank: boolean;
@@ -157,6 +176,7 @@ export function WalkLayer({
   presentationFrozen?: boolean;
   interactionSeq?: number;
   worldState?: WorldState;
+  onNavigationNotice?: (notice: NavigationStatus | null) => void;
 }) {
   const painted = !presentationFrozen;
   const { visible, reduced } = usePagePresentation();
@@ -177,6 +197,13 @@ export function WalkLayer({
   const farRef = useRef(onFar);
   const escapeRef = useRef(onEscape);
   const targetRef = useRef<Point | null>(null);
+  const travelRef = useRef<TravelPlan | null>(null);
+  const [travel, setTravel] = useState<TravelPlan | null>(null);
+  const [guidePinned, setGuidePinned] = useState(false);
+  const [routesOpen, setRoutesOpen] = useState(false);
+  const [rejectedGround, setRejectedGround] = useState<{ scene: IslandScene; point: Point; message: string } | null>(null);
+  const noticeRef = useRef(onNavigationNotice);
+  noticeRef.current = onNavigationNotice;
   const stickRef = useRef<Point | null>(null);
   const smoothRef = useRef<Point | null>(null);
   const entryRef = useRef<string | null>(null);
@@ -212,6 +239,11 @@ export function WalkLayer({
   const worldPaused = paused || !visible || firstScreen.status !== 'ready';
   const performancePaused = worldPaused || presentationFrozen;
   const body = useCharacterAction(!performancePaused, scene);
+  useEffect(() => {
+    if (!rejectedGround || worldPaused) return;
+    const timer = window.setTimeout(() => setRejectedGround(null), 2600);
+    return () => window.clearTimeout(timer);
+  }, [rejectedGround, worldPaused]);
   const handledResponse = useRef(interactionSeq);
   useEffect(() => {
     if (handledResponse.current === interactionSeq) return;
@@ -230,8 +262,17 @@ export function WalkLayer({
   const restingRef = useRef(restingNow);
   restingRef.current = restingNow;
   useEffect(() => {
+    if (worldPaused) window.clearTimeout(driftSeek.current);
+  }, [worldPaused]);
+  useEffect(() => () => window.clearTimeout(driftSeek.current), []);
+  useEffect(() => {
     if (!restingNow) return;
+    window.clearTimeout(driftSeek.current);
     targetRef.current = null;
+    travelRef.current = null;
+    setTravel(null);
+    setRoutesOpen(false);
+    setRejectedGround(null);
     held.current.clear();
     stickRef.current = null;
   }, [restingNow]);
@@ -259,6 +300,10 @@ export function WalkLayer({
     sceneRef.current = scene;
     posRef.current = next;
     targetRef.current = null;
+    travelRef.current = null;
+    setTravel(null);
+    setRoutesOpen(false);
+    setRejectedGround(null);
     stickRef.current = null;
     smoothRef.current = null;
     velocityRef.current = { x: 0, y: 0 };
@@ -294,19 +339,24 @@ export function WalkLayer({
     return () => rememberRef.current(sceneRef.current, posRef.current);
   }, []);
 
+  function resizeView(w: number, h: number) {
+    if (w <= 1 || h <= 1) return;
+    if (viewRef.current.w === w && viewRef.current.h === h && smoothRef.current) return;
+    const nextView = { w, h };
+    // Camera offsets are pixels in this world's scale. An old portrait offset
+    // cannot be eased across a newly sized landscape world, even while paused.
+    const nextCam = cameraOffset(posRef.current, w, h);
+    viewRef.current = nextView;
+    smoothRef.current = nextCam;
+    setView(nextView);
+    setCam(nextCam);
+  }
+
   useEffect(() => {
     const el = viewportRef.current;
     if (!el) return undefined;
-    const read = () => {
-      const w = el.clientWidth;
-      const h = el.clientHeight;
-      if (w > 1 && h > 1) setView({ w, h });
-    };
+    const read = () => resizeView(el.clientWidth, el.clientHeight);
     read();
-    if (import.meta.env.MODE !== 'test' && !smoothRef.current && el.clientWidth > 1) {
-      smoothRef.current = cameraOffset(posRef.current, el.clientWidth, el.clientHeight);
-      setCam(smoothRef.current);
-    }
     if (typeof ResizeObserver === 'undefined') return undefined;
     const observer = new ResizeObserver(read);
     observer.observe(el);
@@ -332,16 +382,19 @@ export function WalkLayer({
   }
 
   function apply(next: Point, isMoving: boolean, isBlocked: boolean, dx: number, dy: number, power = 1) {
+    if (pending.current) return;
     const planted = groundStep(sceneRef.current, posRef.current, next);
     const moved = groundDistance(planted, posRef.current) > 1e-6;
     isBlocked ||= groundDistance(planted, next) > 1e-7;
     isMoving &&= moved;
-    const gate = gateAt(sceneRef.current, planted);
+    const gate = gateCrossing(sceneRef.current, posRef.current, planted);
     if (gate) {
       velocityRef.current = { x: 0, y: 0 };
       pending.current = gate.arrival;
       entryRef.current = entrySide(gate.edge);
       targetRef.current = null;
+      travelRef.current = null;
+      setTravel(null);
       stickRef.current = null;
       held.current.clear();
       rememberRef.current(gate.to, gate.arrival);
@@ -357,16 +410,53 @@ export function WalkLayer({
     setStride(isMoving ? Math.min(1, Math.max(0, power)) : 0);
     setBlocked(isBlocked);
     movingRef.current = isMoving;
+    const plan = travelRef.current;
+    if (plan?.phase === 'approach' && groundDistance(planted, gateApproach(plan.gate)) < .0016) {
+      const nextPlan: TravelPlan = { gate: plan.gate, phase: 'cross' };
+      travelRef.current = nextPlan;
+      setTravel(nextPlan);
+      targetRef.current = { x: plan.gate.x, y: plan.gate.y };
+    }
   }
 
   function beginReach(point?: Point) {
+    stopWalking();
+    setRejectedGround(null);
     setFacing(current => point && point.x < posRef.current.x - .005 ? 'left' : point && point.x > posRef.current.x + .005 ? 'right' : current === 'left' ? 'left' : 'right');
     body.begin('reach');
   }
 
   function interruptForMovement() {
+    window.clearTimeout(driftSeek.current);
     body.cancel();
     if (!resting) restingRef.current = false;
+    if (travelRef.current) { travelRef.current = null; setTravel(null); }
+    setRejectedGround(null);
+  }
+
+  function stopWalking() {
+    window.clearTimeout(driftSeek.current);
+    targetRef.current = null;
+    travelRef.current = null;
+    setTravel(null);
+    held.current.clear();
+    stickRef.current = null;
+    velocityRef.current = { x: 0, y: 0 };
+    movingRef.current = false;
+    setMoving(false);
+    setStride(0);
+  }
+
+  function travelTo(gate: Gate) {
+    if (pausedRef.current || pending.current || gate.from !== sceneRef.current) return;
+    interruptForMovement();
+    held.current.clear();
+    stickRef.current = null;
+    const approach = gateApproach(gate);
+    const next: TravelPlan = { gate, phase: groundDistance(posRef.current, approach) < .0016 ? 'cross' : 'approach' };
+    travelRef.current = next;
+    setTravel(next);
+    targetRef.current = next.phase === 'cross' ? { x: gate.x, y: gate.y } : approach;
   }
 
   function seek(point: Point) {
@@ -384,7 +474,21 @@ export function WalkLayer({
     if (!rect) return;
     const point = pointerToWorld(event.clientX, event.clientY, rect);
     if (!point) return;
-    seek(point);
+    const choice = selectGroundTarget(sceneRef.current, posRef.current, point);
+    if (choice.kind === 'rejected') {
+      stopWalking();
+      setRejectedGround({ scene: sceneRef.current, point,
+        message: choice.reason === 'off-ground' ? groundRefusal(sceneRef.current, point) : '这里暂时走不到，试试另一处地面。' });
+      return;
+    }
+    seek(choice.goal);
+  }
+
+  function onGroundHover(event: React.PointerEvent<HTMLDivElement>) {
+    if (event.pointerType !== 'mouse') return;
+    const rect = worldRef.current?.getBoundingClientRect();
+    const point = rect && pointerToWorld(event.clientX, event.clientY, rect);
+    event.currentTarget.dataset.walkable = point && groundTargetPoint(sceneRef.current, point) ? 'yes' : 'no';
   }
 
   useEffect(() => {
@@ -436,10 +540,13 @@ export function WalkLayer({
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
     const onBlur = () => {
+      window.clearTimeout(driftSeek.current);
       held.current.clear();
       stickRef.current = null;
       targetRef.current = null;
       velocityRef.current = { x: 0, y: 0 };
+      travelRef.current = null;
+      setTravel(null);
     };
     window.addEventListener('blur', onBlur);
     return () => {
@@ -522,9 +629,7 @@ export function WalkLayer({
         if (stepped.guide.cat.x !== prevCat.x || stepped.guide.cat.y !== prevCat.y) setCat(stepped.guide.cat);
         const frameEl = viewportRef.current;
         if (frameEl && frameEl.clientWidth > 1 && (frameEl.clientWidth !== viewRef.current.w || frameEl.clientHeight !== viewRef.current.h)) {
-          const nextView = { w: frameEl.clientWidth, h: frameEl.clientHeight };
-          viewRef.current = nextView;
-          setView(nextView);
+          resizeView(frameEl.clientWidth, frameEl.clientHeight);
         }
         const frameView = viewRef.current;
         const goalCam = cameraOffset(posRef.current, frameView.w, frameView.h);
@@ -783,6 +888,23 @@ export function WalkLayer({
   });
   const displayStatus = firstScreen.status === 'ready' && (!travelerPresentation.current.shown || !companionPresentation.src) ? 'loading' : firstScreen.status;
   pausedRef.current = worldPaused || displayStatus !== 'ready';
+  const navigationVisible = !pausedRef.current && !presentationFrozen;
+  const selectedTravel = travel?.gate.from === scene ? travel : null;
+  const rejected = rejectedGround?.scene === scene ? rejectedGround : null;
+  const closeGate = exits.filter(gate => groundDistance(pos, gate) <= .14)
+    .sort((a, b) => groundDistance(pos, a) - groundDistance(pos, b))[0];
+  const navigationKind = rejected ? 'blocked' : selectedTravel ? 'travel' : 'exit';
+  const navigationMessage = !navigationVisible ? null : rejected ? rejected.message
+    : selectedTravel ? `正在前往${gateLabel(selectedTravel.gate.to)} · 走过路口进入，可用方向键或摇杆停下改向。`
+    : closeGate ? `${closeGate.edge ? GATE_DIRECTION[closeGate.edge] : '前方'}路口通往${gateLabel(closeGate.to)} · 走过路口进入。` : null;
+  useEffect(() => {
+    noticeRef.current?.(navigationMessage ? { scene, message: navigationMessage, kind: navigationKind } : null);
+  }, [scene, navigationMessage, navigationKind]);
+  const remainingRoute = navigationVisible && targetRef.current
+    ? [pos, ...groundRoute(scene, pos, targetRef.current)] : [];
+  if (remainingRoute.length && selectedTravel?.phase === 'approach') {
+    remainingRoute.push(...groundRoute(scene, gateApproach(selectedTravel.gate), selectedTravel.gate));
+  }
   useTravelerAudio(travelerPresentation, scene, pausedRef.current, body.sequence, beat);
   const catNode = (<div
             className="companion-anchor"
@@ -872,6 +994,8 @@ export function WalkLayer({
       data-cam-x={shownCam.x.toFixed(1)}
       data-cam-y={shownCam.y.toFixed(1)}
       data-scene={scene}
+      data-nav-target={selectedTravel?.gate.to ?? ''}
+      data-nav-phase={selectedTravel?.phase ?? ''}
       data-ground-depth={sharedDepth ? 'world' : undefined}
       data-cat-contact-source={shoreCandidate ? 'actual' : undefined}
       data-arrive={arrive ?? 'no'}
@@ -899,9 +1023,11 @@ export function WalkLayer({
             beat={beat}
           />
           {worldState && !presentationFrozen ? <WorldStateLayer scene={scene} state={worldState} paused={pausedRef.current} /> : null}
+          {!presentationFrozen ? <GroundGuide scene={scene} visible={navigationVisible && (guidePinned || routesOpen)}
+            route={remainingRoute} blocked={navigationVisible ? rejected?.point : null} /> : null}
           {sharedDepth ? <GroundDepth items={depthItems}/> : null}
-          <div className="walk-ground" data-testid="walk-ground" onPointerDown={onGround} />
-          {!presentationFrozen ? <WorldFeedback scene={scene} pos={pos} moving={moving} target={targetRef.current}
+          <div className="walk-ground" data-testid="walk-ground" onPointerDown={onGround} onPointerMove={onGroundHover} />
+          {!presentationFrozen ? <WorldFeedback scene={scene} pos={pos} moving={moving} target={selectedTravel ? null : targetRef.current}
             response={beat} sequence={interactionSeq} /> : null}
           {exits.map((gate) => {
             const at = pathExitPoint(gate);
@@ -909,18 +1035,19 @@ export function WalkLayer({
               <button
                 key={gate.to}
                 type="button"
-                className={pathExitNear(pos, gate) ? 'path-exit near' : 'path-exit'}
+                className={`path-exit${!presentationFrozen ? ' wayfinding-exit' : ''}${pathExitNear(pos, gate) ? ' near' : ''}`}
                 data-hearth={gate.from === 'dba.scene.shore' && gate.to === 'dba.scene.camp' ? 'yes' : 'no'}
                 data-testid={`exit-${gate.to.split('.').at(-1)}`}
+                data-gate-x={gate.x} data-gate-y={gate.y} data-gate-radius={gate.r} data-gate-edge={gate.edge}
                 style={{ left: pct(at.x), top: pct(at.y) }}
                 aria-label={gateLabel(gate.to)}
                 onClick={(event) => {
                   event.stopPropagation();
-                  if (!pausedRef.current) seek(gate);
+                  travelTo(gate);
                 }}
               >
                 <i />
-                <span aria-hidden="true">{gateLabel(gate.to)}</span>
+                <span aria-hidden="true">{!presentationFrozen && gate.edge ? `${GATE_ARROW[gate.edge]} ` : ''}{gateLabel(gate.to)}</span>
               </button>
             );
           })}
@@ -949,8 +1076,9 @@ export function WalkLayer({
                     window.clearTimeout(driftSeek.current);
                     const lineFirst = spot.id === 'shore-driftwood' && !taughtRef.current;
                     if (lineFirst) {
+                      stopWalking();
                       driftSeek.current = window.setTimeout(() => {
-                        if (sceneRef.current !== 'dba.scene.shore') return;
+                        if (sceneRef.current !== 'dba.scene.shore' || pausedRef.current || pending.current) return;
                         seek(spot);
                       }, 720);
                     } else {
@@ -1060,12 +1188,15 @@ export function WalkLayer({
     </div>
     {!paused && displayStatus === 'ready' ? <StageControls scene={scene} exits={exits}
       nearby={spots.find(spot => spot.id === nearestSpot(spots, pos, scene)?.id) ?? null}
-      onTravel={gate => { if (!pausedRef.current) seek(gate); }}
+      guidePinned={guidePinned} onToggleGuide={() => setGuidePinned(value => !value)}
+      onOpenChange={open => { setRoutesOpen(open); if (open) stopWalking(); }}
+      onTravel={travelTo}
       onInteract={spot => {
         if (pausedRef.current || !standsAt(sceneRef.current, spot, posRef.current)) return;
         beginReach(spot);
         interactRef.current(spot.id);
       }} /> : null}
+    {!onNavigationNotice ? <NavigationNotice message={navigationMessage} kind={navigationKind} /> : null}
     {hearthGate && hearthAt ? (
       <span
         className="hearth-name"

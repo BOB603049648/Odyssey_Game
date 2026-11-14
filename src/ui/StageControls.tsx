@@ -8,21 +8,28 @@ import { gateLabel, type SpotView } from './spotViews';
 const ARROW = { east: '→', west: '←', north: '↑', south: '↓' };
 
 /** Viewport controls stay reachable when a phone camera crops the world exits. */
-export function StageControls({ scene, exits, nearby, onTravel, onInteract }: {
+export function StageControls({ scene, exits, nearby, onTravel, onInteract, guidePinned = false, onToggleGuide, onOpenChange }: {
   scene: IslandScene;
   exits: readonly Gate[];
   nearby: SpotView | null;
   onTravel: (gate: Gate) => void;
   onInteract: (spot: SpotView) => void;
+  guidePinned?: boolean;
+  onToggleGuide?: () => void;
+  onOpenChange?: (open: boolean) => void;
 }) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const toggle = useRef<HTMLButtonElement>(null);
   const routes = useRef<HTMLDivElement>(null);
+  const openChanged = useRef(onOpenChange);
+  openChanged.current = onOpenChange;
+  useEffect(() => { openChanged.current?.(open); }, [open]);
+  useEffect(() => () => openChanged.current?.(false), []);
   useEffect(() => setOpen(false), [scene]);
   useEffect(() => {
     if (!open) return;
-    routes.current?.querySelector('button')?.focus({ preventScroll: true });
+    routes.current?.querySelector<HTMLButtonElement>('button[data-gate-edge]')?.focus({ preventScroll: true });
     const dismiss = (event: PointerEvent) => {
       if (!routes.current?.contains(event.target as Node)) setOpen(false);
     };
@@ -51,7 +58,15 @@ export function StageControls({ scene, exits, nearby, onTravel, onInteract }: {
     }}>
       {open ? <nav id={panelId} className="route-panel" aria-label={t('controls.destinations')}>
         <p>{t('controls.travelHelp')}</p>
+        {onToggleGuide ? <>
+          <p className="route-ground-help">浅金色地面可以行走，物件和海水留在范围外。</p>
+          <button type="button" className="route-guide-toggle" data-testid="toggle-ground-guide"
+            aria-pressed={guidePinned} onClick={onToggleGuide}>
+            <span aria-hidden="true">{guidePinned ? '✓' : '◇'}</span>固定地面引导
+          </button>
+        </> : null}
         {exits.map(gate => <button key={gate.to} type="button" data-testid={`route-${gate.to.split('.').at(-1)}`}
+          data-gate-x={gate.x} data-gate-y={gate.y} data-gate-radius={gate.r} data-gate-edge={gate.edge}
           onClick={() => { setOpen(false); toggle.current?.focus({ preventScroll: true }); onTravel(gate); }}>
           <span aria-hidden="true">{gate.edge ? ARROW[gate.edge] : '◇'}</span>{gateLabel(gate.to)}
         </button>)}

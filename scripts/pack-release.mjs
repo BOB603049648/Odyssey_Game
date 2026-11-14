@@ -16,6 +16,7 @@ await mkdir(output,{recursive:true});await rm(stage,{recursive:true,force:true})
 await cp(resolve(root,'dist'),stage,{recursive:true});
 await cp(resolve(root,'docs/releases/v0.1.md'),resolve(stage,'RELEASE.md'));
 await cp(resolve(root,'docs/design/v0.1.3-playable-world-plan.md'),resolve(stage,'PLAYABLE-WORLD.md'));
+await cp(resolve(root,'docs/design/v0.1.4-wayfinding.md'),resolve(stage,'WAYFINDING.md'));
 await cp(resolve(root,'src/assets/audio/README.md'),resolve(stage,'AUDIO-CREDITS.md'));
 await cp(resolve(root,'src/assets/art/painted/README.md'),resolve(stage,'ART-CREDITS.md'));
 await cp(resolve(root,'src/assets/traveler/actions-README.md'),resolve(stage,'ACTION-ART.md'));

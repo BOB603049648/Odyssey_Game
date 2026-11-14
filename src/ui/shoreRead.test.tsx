@@ -293,7 +293,7 @@ describe('shore readability', () => {
     );
     const camp = screen.getByTestId('exit-camp');
     expect(camp.className).toContain('near');
-    expect(camp.querySelector('span')?.textContent).toBe('棚火');
+    expect(camp.querySelector('span')?.textContent).toBe('→ 棚火');
     const name = screen.getByTestId('hearth-name');
     expect(name.textContent).toBe('棚火');
     expect(screen.getByTestId('world-root').contains(name)).toBe(false);

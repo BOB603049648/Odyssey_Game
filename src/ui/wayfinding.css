@@ -1,0 +1,123 @@
+/* The same camera and collision outline as the feet, shown only on request.
+ * No grid, pulsing fill or extra hit area is placed over the painted scene. */
+.ground-guide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+.ground-guide * { pointer-events: none; }
+.ground-guide-area {
+  stroke: #dcc78f;
+  stroke-opacity: .28;
+  stroke-width: .9;
+  stroke-linejoin: round;
+}
+.ground-guide-plan { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.ground-guide-route-shadow { stroke: #1b2825; stroke-opacity: .28; stroke-width: 3; }
+.ground-guide-route { stroke: #f0dca7; stroke-opacity: .82; stroke-width: 1.7; stroke-dasharray: 2 8; }
+.ground-guide-destination { stroke: #f1dfb3; stroke-width: 1; opacity: .9; }
+.ground-guide-destination-center { fill: #f1dfb3; stroke: none; }
+.ground-guide-blocked { fill: none; stroke: #dfbca0; stroke-width: 1.2; stroke-linecap: round; opacity: .85; }
+.ground-guide-blocked ellipse { stroke-opacity: .5; }
+
+.navigation-notice {
+  position: absolute;
+  left: 50%;
+  bottom: calc(194px + var(--safe-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(34em, calc(100% - 48px - var(--safe-left, 0px) - var(--safe-right, 0px)));
+  margin: 0;
+  padding: 9px 18px;
+  border: 0;
+  border-radius: 2px;
+  color: #efdfb8;
+  background: linear-gradient(90deg, #15201d00, #15201de8 12%, #15201de8 88%, #15201d00);
+  font-size: 13px;
+  line-height: 1.7;
+  letter-spacing: .04em;
+  text-align: center;
+  text-wrap: pretty;
+  text-shadow: 0 1px 5px #091612;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity .16s ease;
+}
+.navigation-notice[data-visible="no"] { opacity: 0; padding-block: 0; }
+.navigation-notice[data-kind="blocked"] { color: #e7d4bb; }
+.navigation-notice-mark { width: 16px; height: 16px; flex: 0 0 16px; fill: none; stroke: currentColor; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; opacity: .85; }
+.navigation-notice[data-kind="blocked"] .navigation-notice-mark { transform: rotate(45deg); opacity: .65; }
+
+/* Preferred integration: put the notice and existing spoken line in this
+ * viewport-space stack. Their actual heights determine the gap on any screen. */
+.stage-feedback-stack {
+  position: absolute;
+  z-index: 15;
+  left: calc(16px + var(--safe-left, 0px));
+  right: calc(16px + var(--safe-right, 0px));
+  bottom: calc(102px + var(--safe-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.stage-feedback-stack > .navigation-notice,
+.adventure-island .stage-feedback-stack > .diegetic-line {
+  position: static;
+  transform: none;
+  inset: auto;
+  margin: 0;
+  max-width: min(34em, 100%);
+}
+.stage-feedback-stack > .navigation-notice[data-visible="no"] { position: absolute; }
+/* Route choices need an unobstructed reading area on narrow viewports. Keep
+ * current dialogue and navigation state, then reveal them when the menu closes. */
+.adventure-island:has(.route-toggle[aria-expanded="true"]) .stage-feedback-stack { visibility: hidden; }
+
+@media (max-width: 700px) {
+  .navigation-notice {
+    bottom: calc(204px + var(--safe-bottom, 0px));
+    max-width: calc(100% - 32px - var(--safe-left, 0px) - var(--safe-right, 0px));
+    gap: 7px;
+    padding: 8px 12px;
+    font-size: 12px;
+    line-height: 1.65;
+    letter-spacing: .02em;
+  }
+  .stage-feedback-stack { bottom: calc(112px + var(--safe-bottom, 0px)); gap: 6px; }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  /* Short viewports leave the center and bottom clear for feet and controls. */
+  .navigation-notice {
+    top: calc(82px + var(--safe-top, 0px));
+    right: calc(20px + var(--safe-right, 0px));
+    bottom: auto;
+    left: auto;
+    max-width: min(42%, 420px);
+    transform: none;
+    font-size: 12px;
+  }
+  .stage-feedback-stack > .navigation-notice {
+    position: fixed;
+    top: calc(82px + var(--safe-top, 0px));
+    right: calc(20px + var(--safe-right, 0px));
+    bottom: auto;
+    left: auto;
+    max-width: min(42%, 420px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .navigation-notice { transition: none; }
+}

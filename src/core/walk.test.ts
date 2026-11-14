@@ -129,7 +129,8 @@ describe('shore and camp layout', () => {
       expect(crossed(gate, { x: gate.x, y: gate.y, [axis]: gate[axis] + inside * Number.EPSILON })).toBe(true);
       expect(crossed(gate, { x: gate.x, y: gate.y, [axis]: gate[axis] + inside * .0001 })).toBe(false);
     }
-    expect(gateAt('dba.scene.shore', { x: 0.8999999999999999, y: .63 })?.to).toBe('dba.scene.camp');
+    expect(gateAt('dba.scene.shore', { x: 0.8999999999999999, y: .74 })?.to).toBe('dba.scene.camp');
+    expect(gateAt('dba.scene.shore', { x: .9, y: .63 })).toBeNull();
   });
 
   it('keeps spawns, spots, and gates inside the walkable band', () => {
@@ -222,15 +223,15 @@ describe('shore and camp layout', () => {
     }
   });
 
-  it('reaches the camp edge from any height on the tide line', () => {
-    for (const y of [0.52, 0.62, 0.74]) {
+  it('crosses east only through the camp path mouth, not along the tide-line wall', () => {
+    for (const y of [0.62, 0.74, 0.84]) {
       let pos = { x: SPAWNS['dba.scene.shore'].x, y };
       let found = false;
-      for (let i = 0; i < 24; i += 1) {
-        pos = stepKey(pos, 'd', BANDS['dba.scene.shore']).pos;
+      for (let i = 0; i < 70; i += 1) {
+        pos = stepKey(pos, 'd', BANDS['dba.scene.shore'], .01).pos;
         if (gateAt('dba.scene.shore', pos)?.to === 'dba.scene.camp') found = true;
       }
-      expect(found).toBe(true);
+      expect(found).toBe(y === .74);
       expect(pos.x).toBeLessThanOrEqual(BANDS['dba.scene.shore'].maxX);
     }
   });

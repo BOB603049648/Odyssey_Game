@@ -7,9 +7,9 @@ vi.mock('./hemPunch',async()=>({...await vi.importActual('./hemPunch'),punchHemU
 vi.mock('./travelerArt',async()=>{const u=await import('../content/assetUrls');return {frameUrl:(file:string)=>u.travelerFrameUrl(file),loadFrame:async(file:string)=>u.travelerFrameUrl(file),forgetFrame:vi.fn()};});
 let raf=new Map<number,FrameRequestCallback>(),seq=0,dx=0,dy=0,vx=20,vy=40;
 function step(time=1000){act(()=>{const f=[...raf.values()];raf.clear();f.forEach(cb=>cb(time));});}
-async function mount(paused=true,onExit=()=>{},x=.46){
+async function mount(paused=true,onExit=()=>{},x=.46,taught=true,scene:'dba.scene.shore'|'dba.scene.hall'='dba.scene.shore'){
  const {WalkLayer}=await import('./WalkLayer');const {visibleSpots}=await import('./spotViews');const {newGameState}=await import('../core/save');const {companionPost}=await import('../core/companionPost');const hint={level:0 as const,anchor:'driftwood' as const,wordId:null,pose:'idle' as const};
- const v=render(<WalkLayer scene="dba.scene.shore" drank={false} spots={visibleSpots('dba.scene.shore',newGameState(),hint)} hint={hint} paused={paused} purr={false} knot="rest" remembered={{x,y:.69}} catPost={{...companionPost('dba.scene.shore',{}),y:.80}} taught presentationFrozen onRemember={()=>{}} onExit={onExit} onInteract={()=>{}} onAsk={()=>{}} onEscape={()=>{}}/>);await act(async()=>{await Promise.resolve();});return v;
+ const v=render(<WalkLayer scene={scene} drank={false} spots={visibleSpots(scene,newGameState(),hint)} hint={hint} paused={paused} purr={false} knot="rest" remembered={{x,y:.69}} catPost={{...companionPost(scene,{}),y:.80}} taught={taught} presentationFrozen onRemember={()=>{}} onExit={onExit} onInteract={()=>{}} onAsk={()=>{}} onEscape={()=>{}}/>);await act(async()=>{await Promise.resolve();});return v;
 }
 beforeEach(()=>{
  vi.resetModules();vi.stubEnv('MODE','production');vi.stubEnv('VITE_VISUAL_SAMPLE','1');vi.stubEnv('VITE_SHORE_DEPLOY_ORIGIN','');history.replaceState({},'','/?shoreVisual=candidate');raf=new Map();seq=0;dx=dy=0;vx=20;vy=40;
@@ -21,7 +21,7 @@ beforeEach(()=>{
   if(this.classList.contains('walk-viewport'))return new DOMRect(vx,vy,1280,720);return new DOMRect(0,0,0,0);
  });
 });
-afterEach(()=>{cleanup();vi.restoreAllMocks();vi.unstubAllGlobals();vi.unstubAllEnvs();history.replaceState({},'','/');});
+afterEach(()=>{cleanup();vi.useRealTimers();vi.restoreAllMocks();vi.unstubAllGlobals();vi.unstubAllEnvs();history.replaceState({},'','/');});
 describe('real production contact RAF under common depth',()=>{
  it('keeps human/cat world geometry invariant through camera and viewport-origin shifts; mirror unchanged',async()=>{
   const read=vi.spyOn(Storage.prototype,'getItem'),write=vi.spyOn(Storage.prototype,'setItem');await mount();const img=document.querySelector<HTMLImageElement>('.traveler-figure')!;expect(img).not.toBeNull();img.parentElement!.dataset.mirror='yes';step();
@@ -38,11 +38,46 @@ describe('real production contact RAF under common depth',()=>{
  it('uses world-space contacts even with the old baseline query',async()=>{
   history.replaceState({},'','/?shoreVisual=baseline');await mount();step();expect(screen.getByTestId('sole-soft').style.left).toBe('500px');expect(screen.getByTestId('sole-soft').style.top).toBe('500px');expect(screen.getByTestId('sole-soft').closest('[data-depth-id]')).toBe(screen.getByTestId('traveler').closest('[data-depth-id]'));
  });
- it('real exit click seeks the unchanged gate and production movement emits onExit',async()=>{
-  const exit=vi.fn();await mount(false,exit,.94);fireEvent.click(screen.getByTestId('exit-camp'));for(let i=0;i<100;i++)step(1000+i*16);expect(exit).toHaveBeenCalledWith('dba.scene.camp');
+ it('real exit click returns inside the mouth before production movement crosses outward once',async()=>{
+  const exit=vi.fn();await mount(false,exit,.94);fireEvent.click(screen.getByTestId('exit-camp'));
+  // This start is beyond the gate line but above its mouth: approaching from
+  // the side must first walk inward, not immediately change scenes.
+  for(let i=0;i<100;i++)step(1000+i*16);
+  expect(exit).not.toHaveBeenCalled();
+  for(let i=100;i<300;i++)step(1000+i*16);
+  expect(exit).toHaveBeenCalledExactlyOnceWith('dba.scene.camp');
  });
  it('a newly unmatched contact source hides only the stale contact, then recovers without body removal',async()=>{
   await mount();step();const img=document.querySelector<HTMLImageElement>('.traveler-figure')!;const sole=screen.getByTestId('sole-soft');const {clippedBootUrl}=await import('./soleClip');Object.defineProperty(img,'currentSrc',{configurable:true,value:'blob:http://localhost/new-current'});vi.mocked(clippedBootUrl).mockReturnValueOnce(null as unknown as string);step(2000);expect(sole.style.visibility).toBe('hidden');expect(img.isConnected).toBe(true);step(3000);expect(sole.style.visibility).toBe('visible');expect(sole.dataset.base).toBe('blob:http://localhost/new-current');
+ });
+ it('a delayed first approach cannot replace a newer route',async()=>{
+  vi.useFakeTimers({toFake:['setTimeout','clearTimeout']});
+  await mount(false,()=>{},.7,false);
+  fireEvent.click(screen.getByTestId('shore-driftwood'));
+  fireEvent.click(screen.getByTestId('exit-camp'));
+  expect(screen.getByTestId('walk-stage').dataset.navTarget).toBe('dba.scene.camp');
+  act(()=>vi.advanceTimersByTime(800));
+  expect(screen.getByTestId('walk-stage').dataset.navTarget).toBe('dba.scene.camp');
+ });
+ it('keeps the world and feet in frame when rotating a paused viewport without a game tick',async()=>{
+  let width=390,height=844,resize:()=>void=()=>{};
+  vi.spyOn(HTMLElement.prototype,'clientWidth','get').mockImplementation(function(this:HTMLElement){return this.classList.contains('walk-viewport')?width:0;});
+  vi.spyOn(HTMLElement.prototype,'clientHeight','get').mockImplementation(function(this:HTMLElement){return this.classList.contains('walk-viewport')?height:0;});
+  vi.stubGlobal('ResizeObserver',class {constructor(callback:()=>void){resize=callback;}observe(){}disconnect(){}});
+  await mount(true,()=>{},.48,true,'dba.scene.hall');
+  const check=()=>{
+   const stage=screen.getByTestId('walk-stage');
+   const world=stage.querySelector<HTMLElement>('.world-layer')!;
+   const w=parseFloat(world.style.width),h=parseFloat(world.style.height);
+   const x=Number(stage.dataset.camX),y=Number(stage.dataset.camY);
+   expect(x).toBeGreaterThanOrEqual(0);expect(y).toBeGreaterThanOrEqual(0);
+   expect(w-x).toBeGreaterThanOrEqual(width-.1);expect(h-y).toBeGreaterThanOrEqual(height-.1);
+   expect(.48*w-x).toBeGreaterThan(0);expect(.48*w-x).toBeLessThan(width);
+   expect(.69*h-y).toBeGreaterThan(0);expect(.69*h-y).toBeLessThan(height);
+  };
+  check();
+  width=844;height=390;act(()=>resize());check();
+  width=390;height=844;act(()=>resize());check();
  });
 
 });

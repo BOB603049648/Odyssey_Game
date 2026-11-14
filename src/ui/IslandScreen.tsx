@@ -24,7 +24,8 @@ import { useFadePresence } from './useCrossfade';
 import { useFeedbackFx } from './useFeedbackFx';
 import { useIdleHint } from './useIdleHint';
 import { sceneLook } from './cohesion';
-import { WalkLayer } from './WalkLayer';
+import { WalkLayer, type NavigationStatus } from './WalkLayer';
+import { NavigationNotice } from './Wayfinding';
 import { AdventureHud, JourneyMoment } from './AdventureHud';
 import { puzzleState } from '../core/puzzles';
 import { worldState } from '../core/worldState';
@@ -53,6 +54,7 @@ export function IslandScreen({
   const drank = save.beats['dba.beat.water'] === true;
   const puzzles = puzzleState(save);
   const [foodTableOpen, setFoodTableOpen] = useState(false);
+  const [navigation, setNavigation] = useState<NavigationStatus | null>(null);
   const foodTableVisible = foodTableOpen && scene === 'dba.scene.yard' && save.overlay === 'none';
   const remembered = place?.scene === scene ? { x: place.x, y: place.y } : null;
   const paused = save.overlay !== 'none' || completionPending(save) || foodTableVisible;
@@ -132,6 +134,7 @@ export function IslandScreen({
           catPost={catPost}
           onFar={(id) => dispatch({ type: 'spot-far', id })}
           onApproachHint={setApproachHint}
+          onNavigationNotice={setNavigation}
           beat={save.feedback.kind === 'none' || !save.feedback.spot ? null : { spot: save.feedback.spot, kind: save.feedback.kind }}
           interactionSeq={save.feedback.seq}
           flash={flashSpot && flashKind ? { kind: flashKind, seq: save.feedback.seq, x: flashSpot.x, y: flashSpot.y } : null}
@@ -161,11 +164,14 @@ export function IslandScreen({
       <OverlaySheet save={save} dispatch={dispatch} learned={learned} hint={hint} />
       {foodTableVisible ? <FoodTable food={puzzles.food} dispatch={dispatch} onClose={() => setFoodTableOpen(false)} /> : null}
       <JourneyMoment save={save} />
+      <div className="stage-feedback-stack">
+      <NavigationNotice message={!paused && navigation?.scene === scene ? navigation.message : null} kind={navigation?.kind ?? 'exit'} />
       {save.overlay === 'none' && spoken && !(approachHint && line === 'spot.driftwood.far') ? (
         <p key={scene} className="diegetic-line" data-testid="spot-line" data-line={line}>
           {spoken}
         </p>
       ) : null}
+      </div>
     </section>
   );
 }

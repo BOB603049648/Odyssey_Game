@@ -1,11 +1,101 @@
 import type { IslandScene } from './island';
-import { BANDS, BRIDGE_KNOTS, SHORE_MARKER, SHORE_PROP_FOOTPRINTS, YARD_APRONS, YARD_FACADE, plantOnGround } from './stage';
-import { groundDistance, type Point } from './walk';
+import { BANDS, BRIDGE_KNOTS, NIGHT_FOOTPRINTS, SHORE_MARKER, SHORE_PROP_FOOTPRINTS, YARD_APRONS, YARD_FACADE, plantOnGround } from './stage';
+import { groundDistance, WORLD_ASPECT, type Point } from './walk';
 
 const MARGIN = 0.003;
 const lerp = (a: Point, b: Point, t: number): Point => ({ x: a.x + (b.x-a.x)*t, y: a.y + (b.y-a.y)*t });
 export function onGround(scene: IslandScene, pos: Point): boolean {
   return groundDistance(pos, plantOnGround(scene, pos)) < 1e-7;
+}
+
+/** About three artwork pixels: tolerate an imprecise edge tap, not a tap in the sea. */
+export const GROUND_TARGET_TOLERANCE = .004;
+
+/** Cheap enough for pointer hover; rejected ground never becomes a distant projected goal. */
+export function groundTargetPoint(scene: IslandScene, requested: Point): Point | null {
+  if (!Number.isFinite(requested.x) || !Number.isFinite(requested.y)) return null;
+  if (onGround(scene, requested)) return requested;
+  const planted = plantOnGround(scene, requested);
+  return groundDistance(requested, planted) <= GROUND_TARGET_TOLERANCE ? planted : null;
+}
+
+export type GroundTarget =
+  | { kind: 'accepted'; goal: Point; route: Point[] }
+  | { kind: 'rejected'; reason: 'off-ground' | 'unreachable' };
+
+export function selectGroundTarget(scene: IslandScene, from: Point, requested: Point): GroundTarget {
+  const goal = groundTargetPoint(scene, requested);
+  if (!goal) return { kind: 'rejected', reason: 'off-ground' };
+  if (!onGround(scene, from)) return { kind: 'rejected', reason: 'unreachable' };
+  const route = groundRoute(scene, from, goal);
+  let previous = from;
+  for (const next of route) {
+    if (!onGround(scene, next) || !clearSegment(scene, previous, next)) return { kind: 'rejected', reason: 'unreachable' };
+    previous = next;
+  }
+  return groundDistance(previous, goal) < 1e-7
+    ? { kind: 'accepted', goal, route }
+    : { kind: 'rejected', reason: 'unreachable' };
+}
+
+const guidePaths = new Map<IslandScene, string>();
+const GUIDE_STEP = .004;
+const GUIDE_X_STEP = GUIDE_STEP / WORLD_ASPECT;
+
+/** Conservative ground contours in 1280×720 artwork coordinates. Render with
+ * evenodd fill: the same collision predicate cuts holes around solid props.
+ * Cache the finished outline, not a second independently authored walk mask. */
+export function groundGuidePath(scene: IslandScene): string {
+  const cached = guidePaths.get(scene);
+  if (cached !== undefined) return cached;
+  const band = BANDS[scene];
+  const x0 = Math.ceil(band.minX / GUIDE_X_STEP), x1 = Math.floor(band.maxX / GUIDE_X_STEP);
+  const y0 = Math.ceil(band.minY / GUIDE_STEP), y1 = Math.floor(band.maxY / GUIDE_STEP);
+  const cells = new Set<string>();
+  const key = (x: number, y: number) => `${x},${y}`;
+  for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+    const left = x * GUIDE_X_STEP, right = (x + 1) * GUIDE_X_STEP;
+    const top = y * GUIDE_STEP, bottom = (y + 1) * GUIDE_STEP;
+    const xs = [left, (left + right) / 2, right];
+    // The bridge is piecewise linear: include a bend inside a cell so its
+    // outer corner cannot be advertised as walkable across the ravine.
+    if (scene === 'dba.scene.path') for (const [bend] of BRIDGE_KNOTS) if (bend > left && bend < right) xs.push(bend);
+    if (xs.every(atX => [top, (top + bottom) / 2, bottom].every(atY => onGround(scene, { x: atX, y: atY })))) cells.add(key(x, y));
+  }
+  type Edge = { from: Point; to: Point; direction: number; used: boolean };
+  const starts = new Map<string, Edge[]>(), edges: Edge[] = [];
+  function add(from: Point, to: Point, direction: number) {
+    const edge = { from, to, direction, used: false };
+    edges.push(edge);
+    const id = key(from.x, from.y), existing = starts.get(id) ?? [];
+    existing.push(edge); starts.set(id, existing);
+  }
+  for (const cell of cells) {
+    const [x, y] = cell.split(',').map(Number);
+    if (!cells.has(key(x, y - 1))) add({ x, y }, { x: x + 1, y }, 0);
+    if (!cells.has(key(x + 1, y))) add({ x: x + 1, y }, { x: x + 1, y: y + 1 }, 1);
+    if (!cells.has(key(x, y + 1))) add({ x: x + 1, y: y + 1 }, { x, y: y + 1 }, 2);
+    if (!cells.has(key(x - 1, y))) add({ x, y: y + 1 }, { x, y }, 3);
+  }
+  const pixel = (point: Point) => `${Number((point.x * GUIDE_X_STEP * 1280).toFixed(3))} ${Number((point.y * GUIDE_STEP * 720).toFixed(3))}`;
+  const outlines: string[] = [];
+  for (const first of edges) {
+    if (first.used) continue;
+    let edge = first;
+    const points = [first.from];
+    while (!edge.used) {
+      edge.used = true;
+      const candidates = starts.get(key(edge.to.x, edge.to.y)) ?? [];
+      const next = [1, 0, 3, 2].map(turn => candidates.find(candidate => !candidate.used && candidate.direction === (edge.direction + turn) % 4)).find(Boolean);
+      if (!next) break;
+      if (next.direction !== edge.direction) points.push(edge.to);
+      edge = next;
+    }
+    outlines.push(`M${points.map(pixel).join('L')}Z`);
+  }
+  const path = outlines.join('');
+  guidePaths.set(scene, path);
+  return path;
 }
 
 /** Sampling is finer than the narrowest authored obstruction, including the bridge. */
@@ -27,7 +117,8 @@ export function groundRoute(scene: IslandScene, from: Point, requested: Point): 
   }
   const blocks = scene === 'dba.scene.shore'
     ? [{ ...SHORE_MARKER, groundY: SHORE_MARKER.sandY }]
-    : scene === 'dba.scene.yard' ? [YARD_FACADE, ...YARD_APRONS.map(a => ({ ...a, groundY: YARD_FACADE.groundY }))] : [];
+    : scene === 'dba.scene.yard' ? [YARD_FACADE, ...YARD_APRONS.map(a => ({ ...a, groundY: YARD_FACADE.groundY }))]
+    : scene === 'dba.scene.night' ? NIGHT_FOOTPRINTS : [];
   const nodes = [from, goal, ...blocks.flatMap(b => [
     { x: b.minX - MARGIN, y: b.groundY + MARGIN },
     { x: b.maxX + MARGIN, y: b.groundY + MARGIN },

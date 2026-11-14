@@ -5,7 +5,7 @@ import { type IslandScene } from './core/island';
 import { reduce } from './core/reduce';
 import { newGameState } from './core/save';
 import { groundStep } from './core/navigation';
-import { BANDS, SPOTS, gateAt } from './core/stage';
+import { BANDS, GATES, SPOTS, gateAt, gateCrossing } from './core/stage';
 import { stepKey, type Point, type WalkKey } from './core/walk';
 import { SAVE_KEY } from './platform/storage';
 import { useGame } from './stores/gameStore';
@@ -53,7 +53,7 @@ async function walkTo(scene: IslandScene, goal: Point, radius: number) {
     for (const key of ['a', 'd', 'w', 's'] as const) {
       const next = groundStep(scene, node.pos, stepKey(node.pos, key, BANDS[scene]).pos);
       const id = `${next.x.toFixed(5)}:${next.y.toFixed(5)}`;
-      if (visited.has(id) || gateAt(scene, next)) continue;
+      if (visited.has(id) || gateAt(scene, next) || gateCrossing(scene, node.pos, next)) continue;
       visited.add(id);
       queue.push({ pos: next, keys: [...node.keys, key] });
     }
@@ -69,16 +69,34 @@ function spot(scene: IslandScene, id: string): Point & { r: number } {
 
 async function cross(to: IslandScene, key: 'a' | 'd' | 'w' | 's') {
   await ready();
-  const from = document.querySelector('[data-scene]')?.getAttribute('data-scene');
-  // Take the visible sand / forecourt before moving past the solid props.
-  const floor = from === 'dba.scene.shore' ? .79 : from === 'dba.scene.yard' ? .925 : null;
-  if (floor !== null) for (let i = 0; i < 12 && here().y < floor; i++) fireEvent.keyDown(window, { key: 's' });
-  for (let i = 0; i < 48; i += 1) {
-    if (document.querySelector('[data-scene]')?.getAttribute('data-scene') === to) { await ready(); return; }
-    fireEvent.keyDown(window, { key });
+  const from = screen.getByTestId('walk-stage').dataset.scene as IslandScene;
+  const gate = GATES.find(gate => gate.from === from && gate.to === to);
+  if (!gate) throw new Error(`No path from ${from} to ${to}`);
+  const exitKey = gate.edge === 'east' ? 'd' : gate.edge === 'west' ? 'a' : gate.edge === 'north' ? 'w' : 's';
+  expect(key).toBe(exitKey);
+  // Find actual keyboard steps around the props and through this finite mouth.
+  // Reaching some other part of the scene edge is no longer an exit.
+  const queue: { pos: Point; keys: WalkKey[] }[] = [{ pos: here(), keys: [] }];
+  const visited = new Set<string>();
+  for (let i = 0; i < queue.length && i < 10000; i++) {
+    const node = queue[i];
+    for (const move of ['a', 'd', 'w', 's'] as const) {
+      const next = groundStep(from, node.pos, stepKey(node.pos, move, BANDS[from]).pos);
+      const crossing = gateCrossing(from, node.pos, next);
+      if (crossing) {
+        if (crossing.to !== to || move !== exitKey) continue;
+        await press([...node.keys, move]);
+        await waitFor(() => expect(screen.getByTestId('walk-stage').dataset.scene).toBe(to));
+        await ready();
+        return;
+      }
+      const id = `${next.x.toFixed(5)}:${next.y.toFixed(5)}`;
+      if (visited.has(id)) continue;
+      visited.add(id);
+      queue.push({ pos: next, keys: [...node.keys, move] });
+    }
   }
-  const scene = document.querySelector('[data-scene]')?.getAttribute('data-scene');
-  throw new Error(`did not enter ${to} from ${scene} at ${here().x},${here().y}`);
+  throw new Error(`No keyboard route through ${from} → ${to} from ${JSON.stringify(here())}`);
 }
 
 describe('playable slice', async () => {

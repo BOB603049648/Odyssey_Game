@@ -1,5 +1,5 @@
 import type { IslandScene } from './island';
-import { inRadius, type Band, type Point } from './walk';
+import { groundDistance, inRadius, WORLD_ASPECT, type Band, type Point } from './walk';
 
 export type Spot = { id: string; x: number; y: number; r: number };
 
@@ -12,7 +12,7 @@ export type Gate = {
   y: number;
   r: number;
   arrival: Point;
-  /** The whole band edge, so a traveler on any part of the path still crosses. */
+  /** Outward direction through a finite doorway, centered on x/y. */
   edge?: GateEdge;
 };
 
@@ -52,7 +52,7 @@ export const GATES: readonly Gate[] = [
   { from: 'dba.scene.shore', to: 'dba.scene.hall', x: 0.11, y: 0.7, r: 0.04, edge: 'west', arrival: { x: 0.48, y: 0.6 } },
   { from: 'dba.scene.camp', to: 'dba.scene.shore', x: 0.1, y: 0.84, r: 0.04, edge: 'west', arrival: { x: 0.7, y: 0.62 } },
   { from: 'dba.scene.camp', to: 'dba.scene.yard', x: 0.9, y: 0.84, r: 0.04, edge: 'east', arrival: { x: 0.28, y: 0.92 } },
-  { from: 'dba.scene.camp', to: 'dba.scene.night', x: 0.5, y: 0.8, r: 0.04, edge: 'north', arrival: { x: 0.55, y: 0.74 } },
+  { from: 'dba.scene.camp', to: 'dba.scene.night', x: 0.5, y: 0.8, r: 0.04, edge: 'north', arrival: { x: 0.55, y: 0.75 } },
   { from: 'dba.scene.yard', to: 'dba.scene.camp', x: 0.11, y: 0.8, r: 0.04, edge: 'west', arrival: { x: 0.72, y: 0.84 } },
   { from: 'dba.scene.yard', to: 'dba.scene.path', x: 0.9, y: 0.78, r: 0.04, edge: 'east', arrival: { x: 0.3, y: 0.485 } },
   { from: 'dba.scene.hall', to: 'dba.scene.shore', x: 0.5, y: 0.8, r: 0.04, edge: 'south', arrival: { x: 0.28, y: 0.62 } },
@@ -137,6 +137,11 @@ export const SHORE_PROP_FOOTPRINTS = [
   { id: 'island-gourd', minX: 0.55, maxX: 0.67, minY: 0, maxY: 0.70 },
 ] as const;
 export const BRIDGE_KNOTS = [[.11,.43],[.24,.46],[.36,.50],[.52,.55],[.66,.61],[.77,.69]] as const;
+/** Reading table, hearth and cloak rock stand above their southern ground line. */
+export const NIGHT_FOOTPRINTS = [
+  { minX: .14, maxX: .42, groundY: .75 },
+  { minX: .55, maxX: .88, groundY: .75 },
+] as const;
 
 export function plantOnGround(scene: IslandScene, pos: Point): Point {
   const band = BANDS[scene];
@@ -144,8 +149,8 @@ export function plantOnGround(scene: IslandScene, pos: Point): Point {
   let y = Math.min(band.maxY, Math.max(band.minY, pos.y));
   // The night reading table, hearth and cloak rock are solid, painted objects.
   // Approach from their southern feet, never walk through the table top.
-  if (scene === 'dba.scene.night' && ((x >= .14 && x <= .42) || (x >= .55 && x <= .88))) {
-    y = Math.max(.75, y);
+  if (scene === 'dba.scene.night') for (const footprint of NIGHT_FOOTPRINTS) {
+    if (x >= footprint.minX && x <= footprint.maxX) y = Math.max(footprint.groundY, y);
   }
   if (scene === 'dba.scene.path') {
     x = Math.max(.11, Math.min(.77, x));
@@ -198,15 +203,62 @@ export function gatesFrom(scene: IslandScene): readonly Gate[] {
   return GATES.filter((gate) => gate.from === scene);
 }
 
+/** Radius and depth are stage-height distances, including horizontal exits. */
+export function gateRegion(gate: Gate): Band {
+  const halfX = gate.r / WORLD_ASPECT;
+  return {
+    minX: gate.edge === 'east' ? gate.x : gate.x - halfX,
+    maxX: gate.edge === 'west' ? gate.x : gate.x + halfX,
+    minY: gate.edge === 'south' ? gate.y : gate.y - gate.r,
+    maxY: gate.edge === 'north' ? gate.y : gate.y + gate.r,
+  };
+}
+
+/** Reach the inside of the doorway before walking outward across its line. */
+export function gateApproach(gate: Gate): Point {
+  const distance = .06;
+  return plantOnGround(gate.from, {
+    x: gate.x + (gate.edge === 'east' ? -distance / WORLD_ASPECT : gate.edge === 'west' ? distance / WORLD_ASPECT : 0),
+    y: gate.y + (gate.edge === 'south' ? -distance : gate.edge === 'north' ? distance : 0),
+  });
+}
+
 export function crossed(gate: Gate, pos: Point): boolean {
   // Integrating a final step may yield 0.8999999999999999 for a 0.9 exit.
   // Tolerate arithmetic rounding, without widening the playable exit region.
   const epsilon = 1e-9;
-  if (gate.edge === 'east') return pos.x >= gate.x - epsilon;
-  if (gate.edge === 'west') return pos.x <= gate.x + epsilon;
-  if (gate.edge === 'north') return pos.y <= gate.y + epsilon;
-  if (gate.edge === 'south') return pos.y >= gate.y - epsilon;
-  return Math.hypot(gate.x - pos.x, gate.y - pos.y) <= gate.r;
+  if (!Number.isFinite(pos.x) || !Number.isFinite(pos.y)) return false;
+  if (!gate.edge) return groundDistance(gate, pos) <= gate.r;
+  const region = gateRegion(gate);
+  return pos.x >= region.minX - epsilon && pos.x <= region.maxX + epsilon
+    && pos.y >= region.minY - epsilon && pos.y <= region.maxY + epsilon;
+}
+
+function outwardDistance(gate: Gate, pos: Point): number {
+  if (gate.edge === 'east') return (pos.x - gate.x) * WORLD_ASPECT;
+  if (gate.edge === 'west') return (gate.x - pos.x) * WORLD_ASPECT;
+  if (gate.edge === 'south') return pos.y - gate.y;
+  return gate.y - pos.y;
+}
+
+/** A parallel brush past the mouth, or a step farther along the wall, is not an exit. */
+export function isMovingThroughGate(gate: Gate, from: Point, to: Point): boolean {
+  if (![from.x, from.y, to.x, to.y].every(Number.isFinite)) return false;
+  if (!gate.edge) return !crossed(gate, from) && crossed(gate, to);
+  const before = outwardDistance(gate, from), after = outwardDistance(gate, to);
+  const epsilon = 1e-9;
+  // Test the swept line, not only the destination: a long frame can move past
+  // the finite preview rectangle while still walking through the actual mouth.
+  if (after - before <= epsilon || before > epsilon || after < -epsilon) return false;
+  const t = Math.max(0, Math.min(1, -before / (after - before)));
+  const crossing = { x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t };
+  const across = gate.edge === 'east' || gate.edge === 'west'
+    ? Math.abs(crossing.y - gate.y) : Math.abs(crossing.x - gate.x) * WORLD_ASPECT;
+  return across <= gate.r + epsilon;
+}
+
+export function gateCrossing(scene: IslandScene, from: Point, to: Point): Gate | null {
+  return gatesFrom(scene).find(gate => isMovingThroughGate(gate, from, to)) ?? null;
 }
 
 export function gateAt(scene: IslandScene, pos: Point): Gate | null {
