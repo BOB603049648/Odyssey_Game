@@ -1,3 +1,4 @@
+import { returnFromBridge } from './__fixtures__/bridgeJourney';
 import { describe, expect, it } from 'vitest';
 import { LEXEMES } from '../content/catalog';
 import { reduce } from './reduce';
@@ -85,6 +86,9 @@ describe('island 1 scenes', () => {
     expect(state.flags['dba.flag.taught-approach']).toBeUndefined();
 
     state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.yard' });
+    for (const move of ['inspect', 'take', 'move-to-companion', 'move-to-companion'] as const) {
+      state = reduce(state, { type: 'puzzle-act', puzzle: 'food', move });
+    }
     const refused = reduce(state, { type: 'give-fish' });
     expect(refused.beats['dba.beat.food']).toBeUndefined();
     expect(refused.feedback.line).toBe('spot.give.no');
@@ -133,10 +137,10 @@ describe('island 1 scenes', () => {
       expect(far.feedback.seq).toBe(shore.feedback.seq + 1);
     }
     const empty = reduce(shore, { type: 'poke-gourd' });
-    expect(empty.feedback.line).toBe('spot.gourd.no');
+    expect(empty.feedback.line).toBe('spot.water.take');
     expect(empty.beats['dba.beat.water']).toBeUndefined();
     const held = reduce(shore, { type: 'depart' });
-    expect(held.feedback.line).toBe('spot.depart.no');
+    expect(held.feedback.line).toBe('spot.depart.water');
     expect(held.beats['dba.beat.depart']).toBeUndefined();
 
     const camp = reduce(shore, { type: 'goto-scene', scene: 'dba.scene.camp' });
@@ -145,7 +149,7 @@ describe('island 1 scenes', () => {
     expect(missed.beats['dba.beat.eat']).toBeUndefined();
   });
 
-  it('opens the forest only when the player stops after learning danger', () => {
+  it('requires an understood plan and safe return after learning danger', () => {
     let state = reduce(ashore(), { type: 'goto-scene', scene: 'dba.scene.path' });
     expect(reduce(state, { type: 'forest-choice', choice: 'stop' }).beats['dba.beat.danger']).toBeUndefined();
     state = learnLayer(learnLayer(ashore(), 'concrete'), 'action');
@@ -153,6 +157,8 @@ describe('island 1 scenes', () => {
     state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.path' });
     expect(reduce(state, { type: 'forest-choice', choice: 'step' }).beats['dba.beat.danger']).toBeUndefined();
     state = reduce(state, { type: 'forest-choice', choice: 'stop' });
+    expect(state.beats['dba.beat.danger']).toBeUndefined();
+    state = returnFromBridge(state);
     expect(state.beats['dba.beat.danger']).toBe(true);
   });
 
@@ -181,7 +187,17 @@ describe('island 1 scenes', () => {
 
     state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.shore' });
     expect(reduce(state, { type: 'depart' }).beats['dba.beat.depart']).toBeUndefined();
-    state = reduce(state, { type: 'use-word', wordId: 'dba.word.water' });
+    for (const move of ['take', 'fill', 'drink'] as const) {
+      state = reduce(state, { type: 'puzzle-act', puzzle: 'water', move });
+    }
+    state = learn(state, 'dba.word.share');
+    state = reduce(reduce(state, { type: 'goto-scene', scene: 'dba.scene.camp' }), { type: 'sleep-at-camp' });
+    state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.yard' });
+    for (const move of ['inspect', 'take', 'move-to-companion', 'move-to-companion', 'offer'] as const) {
+      state = reduce(state, { type: 'puzzle-act', puzzle: 'food', move });
+    }
+    state = returnFromBridge(reduce(state, { type: 'goto-scene', scene: 'dba.scene.path' }));
+    state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.shore' });
     state = reduce(state, { type: 'depart' });
     expect(state.beats['dba.beat.depart']).toBe(true);
     expect(state.chart).toContain('chart.jgw');

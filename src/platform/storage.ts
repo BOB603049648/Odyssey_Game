@@ -1,11 +1,11 @@
 import { parseSave } from '../core/migrate';
-import type { SaveData } from '../core/schema';
+import { saveDataSchema, type SaveData } from '../core/schema';
 
 export const SAVE_KEY = 'odyssey.save.v1';
 
 export interface StorageAdapter {
   load(): SaveData | null;
-  save(data: SaveData): void;
+  save(data: SaveData): boolean;
   clear(): void;
 }
 
@@ -32,23 +32,40 @@ export function createMemoryStorage(): StorageAdapter & { backing: KeyValue } {
 export function createWebStorage(storage: KeyValue): StorageAdapter {
   return {
     load() {
-      const raw = storage.getItem(SAVE_KEY);
-      if (!raw) return null;
       try {
+        const raw = storage.getItem(SAVE_KEY);
+        if (!raw) return null;
         return parseSave(JSON.parse(raw));
       } catch {
         return null;
       }
     },
     save(data) {
-      storage.setItem(SAVE_KEY, JSON.stringify(data));
+      try {
+        const parsed = saveDataSchema.safeParse(data);
+        if (!parsed.success) return false;
+        storage.setItem(SAVE_KEY, JSON.stringify(parsed.data));
+        return true;
+      } catch {
+        return false;
+      }
     },
     clear() {
-      storage.removeItem(SAVE_KEY);
+      try {
+        storage.removeItem(SAVE_KEY);
+      } catch {
+        // A denied storage operation must not crash the running game.
+      }
     },
   };
 }
 
 export function webStorage(): StorageAdapter {
-  return createWebStorage(window.localStorage);
+  // Even reading window.localStorage can throw in restricted browsers.
+  // Resolve it inside the adapter's guarded operations, and retry next time.
+  return createWebStorage({
+    getItem: (key) => window.localStorage.getItem(key),
+    setItem: (key, value) => window.localStorage.setItem(key, value),
+    removeItem: (key) => window.localStorage.removeItem(key),
+  });
 }

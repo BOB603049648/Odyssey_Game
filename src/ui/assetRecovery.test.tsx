@@ -34,7 +34,7 @@ beforeEach(() => {
     set src(src: string) {
       control.requests.push(src);
       if (control.hanging) return;
-      const ok = control.succeeds;
+      const ok = src !== url || control.succeeds;
       queueMicrotask(() => ok ? this.onload?.() : this.onerror?.());
     }
   });

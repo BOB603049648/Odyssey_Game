@@ -1,0 +1,17 @@
+.game-dialog { width: min(520px, calc(100vw - 32px)); max-height: calc(100dvh - 40px); overflow: auto; box-sizing: border-box; padding: clamp(22px, 5vw, 38px); border: 1px solid #b7a16b80; border-radius: 16px; color: #eee5d0; background: linear-gradient(145deg, #253231, #131d20); box-shadow: 0 24px 90px #0009; line-height: 1.8; }
+.game-dialog::backdrop { background: #071014bb; backdrop-filter: blur(7px); }
+.game-dialog h2 { margin: 0 0 14px; font-weight: 500; letter-spacing: .08em; }
+.game-dialog .row { flex-wrap: wrap; margin-top: 22px; gap: 12px; }
+.release-label { font-size: 12px; opacity: .65; letter-spacing: .1em; }
+.save-tools { margin-top: 22px; padding-top: 14px; border-top: 1px solid #b7a16b40; }
+.save-tools h3 { font-weight: 500; margin-bottom: 8px; }
+.save-tools p { font-size: 14px; line-height: 1.7; }
+.title-save-tools { max-width: 420px; margin: 12px auto 0; text-align: left; }
+.title-save-tools { cursor: pointer; font-size: 13px; text-align: center; opacity: .75; }
+.completion-stats { display: flex; justify-content: space-between; border-block: 1px solid #b7a16b40; padding: 16px 0; gap: 12px; }
+.completion-stats span { display: grid; font-size: 12px; color: #bfc6be; }
+.completion-stats strong { color: #e3c984; font-size: 27px; font-weight: 500; }
+.control-guide { margin-block: 24px; line-height: 1.8; }
+.control-guide p { margin: 6px 0; }
+
+.title-screen .title-block { max-height: calc(100dvh - 100px); overflow-y: auto; width: min(100%, 620px); padding: 10px 16px; scrollbar-width: thin; }

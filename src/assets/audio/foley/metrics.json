@@ -1,0 +1,227 @@
+{
+  "step-sand-1": {
+    "seconds": 0.433,
+    "rms": 0.0331,
+    "peak": 0.55
+  },
+  "step-sand-2": {
+    "seconds": 0.406,
+    "rms": 0.0322,
+    "peak": 0.55
+  },
+  "step-sand-3": {
+    "seconds": 0.32,
+    "rms": 0.0355,
+    "peak": 0.55
+  },
+  "step-sand-4": {
+    "seconds": 0.339,
+    "rms": 0.0283,
+    "peak": 0.55
+  },
+  "step-sand-5": {
+    "seconds": 0.3,
+    "rms": 0.0302,
+    "peak": 0.55
+  },
+  "step-sand-6": {
+    "seconds": 0.329,
+    "rms": 0.0454,
+    "peak": 0.55
+  },
+  "step-stone-1": {
+    "seconds": 0.352,
+    "rms": 0.0499,
+    "peak": 0.4575
+  },
+  "step-stone-2": {
+    "seconds": 0.357,
+    "rms": 0.0459,
+    "peak": 0.55
+  },
+  "step-stone-3": {
+    "seconds": 0.314,
+    "rms": 0.0588,
+    "peak": 0.55
+  },
+  "step-stone-4": {
+    "seconds": 0.32,
+    "rms": 0.0608,
+    "peak": 0.55
+  },
+  "step-stone-5": {
+    "seconds": 0.331,
+    "rms": 0.0703,
+    "peak": 0.55
+  },
+  "step-stone-6": {
+    "seconds": 0.342,
+    "rms": 0.0573,
+    "peak": 0.55
+  },
+  "step-wood-1": {
+    "seconds": 0.335,
+    "rms": 0.0849,
+    "peak": 0.55
+  },
+  "step-wood-2": {
+    "seconds": 0.335,
+    "rms": 0.0698,
+    "peak": 0.55
+  },
+  "step-wood-3": {
+    "seconds": 0.335,
+    "rms": 0.0922,
+    "peak": 0.55
+  },
+  "step-wood-4": {
+    "seconds": 0.335,
+    "rms": 0.0911,
+    "peak": 0.55
+  },
+  "cloth-1": {
+    "seconds": 0.228,
+    "rms": 0.045,
+    "peak": 0.3353
+  },
+  "cloth-2": {
+    "seconds": 0.268,
+    "rms": 0.045,
+    "peak": 0.252
+  },
+  "cloth-3": {
+    "seconds": 0.298,
+    "rms": 0.045,
+    "peak": 0.28
+  },
+  "drink-1": {
+    "seconds": 0.39,
+    "rms": 0.0471,
+    "peak": 0.55
+  },
+  "drink-2": {
+    "seconds": 0.31,
+    "rms": 0.0586,
+    "peak": 0.55
+  },
+  "drink-3": {
+    "seconds": 0.264,
+    "rms": 0.0901,
+    "peak": 0.55
+  },
+  "water-draw-1": {
+    "seconds": 0.12,
+    "rms": 0.0582,
+    "peak": 0.55
+  },
+  "water-draw-2": {
+    "seconds": 0.303,
+    "rms": 0.0359,
+    "peak": 0.55
+  },
+  "sit": {
+    "seconds": 0.386,
+    "rms": 0.065,
+    "peak": 0.3346
+  },
+  "pickup": {
+    "seconds": 0.228,
+    "rms": 0.0738,
+    "peak": 0.55
+  },
+  "place": {
+    "seconds": 0.258,
+    "rms": 0.065,
+    "peak": 0.4027
+  },
+  "paper": {
+    "seconds": 0.742,
+    "rms": 0.0176,
+    "peak": 0.55
+  },
+  "bird-1": {
+    "seconds": 2.676,
+    "rms": 0.0276,
+    "peak": 0.22
+  },
+  "bird-2": {
+    "seconds": 2.019,
+    "rms": 0.02,
+    "peak": 0.22
+  },
+  "bird-3": {
+    "seconds": 3.0,
+    "rms": 0.0337,
+    "peak": 0.22
+  },
+  "wood-creak": {
+    "seconds": 0.45,
+    "rms": 0.045,
+    "peak": 0.2552
+  },
+  "theme-title": {
+    "seconds": 32.0,
+    "rms": 0.0462,
+    "peak": 0.24
+  },
+  "theme-memory": {
+    "seconds": 24.0,
+    "rms": 0.0505,
+    "peak": 0.24
+  },
+  "theme-resolve": {
+    "seconds": 12.0,
+    "rms": 0.0462,
+    "peak": 0.24
+  },
+  "select": {
+    "seconds": 0.65,
+    "rms": 0.0748,
+    "peak": 0.1588
+  },
+  "answer-right": {
+    "seconds": 0.78,
+    "rms": 0.0749,
+    "peak": 0.2281
+  },
+  "word-learn": {
+    "seconds": 0.97,
+    "rms": 0.0749,
+    "peak": 0.2404
+  },
+  "milestone": {
+    "seconds": 1.3,
+    "rms": 0.0749,
+    "peak": 0.2589
+  },
+  "answer-wrong": {
+    "seconds": 0.77,
+    "rms": 0.0749,
+    "peak": 0.2238
+  },
+  "camp": {
+    "seconds": 48.0,
+    "rms": 0.0163,
+    "peak": 0.35
+  },
+  "forest": {
+    "seconds": 48.0,
+    "rms": 0.0309,
+    "peak": 0.35
+  },
+  "night": {
+    "seconds": 48.0,
+    "rms": 0.036,
+    "peak": 0.2224
+  },
+  "shore": {
+    "seconds": 48.0,
+    "rms": 0.0301,
+    "peak": 0.35
+  },
+  "yard": {
+    "seconds": 48.0,
+    "rms": 0.033,
+    "peak": 0.2995
+  }
+}

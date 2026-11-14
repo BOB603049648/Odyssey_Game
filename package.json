@@ -1,14 +1,30 @@
 {
   "name": "odyssey-game",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.6",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "content:check": "vitest run src/content/content-check.test.ts"
+    "content:check": "vitest run src/content/content-check.test.ts",
+    "test:browser": "node scripts/browser-smoke.mjs",
+    "test:controls": "node scripts/browser-controls.mjs",
+    "test:movement": "node scripts/browser-movement.mjs",
+    "test:gameplay": "node scripts/browser-gameplay.mjs",
+    "test:experience": "node scripts/browser-experience.mjs",
+    "test:prologue": "node scripts/browser-prologue.mjs",
+    "test:cinematic": "node scripts/browser-cinematic.mjs",
+    "test:release": "node scripts/browser-v01.mjs",
+    "release:pack": "node scripts/pack-release.mjs",
+    "test:audio": "node scripts/browser-audio.mjs",
+    "test:foley": "node scripts/browser-foley.mjs",
+    "test:puzzles": "node scripts/browser-puzzles.mjs",
+    "test:performance": "node scripts/browser-performance.mjs",
+    "test:wayfinding": "node scripts/browser-wayfinding.mjs",
+    "test:learning": "node scripts/browser-learning.mjs",
+    "test:bridge": "node scripts/browser-bridge.mjs"
   },
   "dependencies": {
     "@capacitor/core": "^7.4.3",
@@ -24,6 +40,7 @@
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
     "jsdom": "^26.0.0",
+    "playwright": "^1.65.0",
     "typescript": "^5.7.3",
     "vite": "^6.2.0",
     "vitest": "^3.0.5"

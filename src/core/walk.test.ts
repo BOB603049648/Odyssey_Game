@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { ISLAND_SCENES } from './island';
 import { BANDS, GATES, SHORE_MARKER, SPAWNS, SPOTS, crossed, gateAt, plantOnGround, standsAt } from './stage';
+import { visibleSpots } from '../ui/spotViews';
+import { newGameState } from './save';
 import {
   KEY_STEP,
   WALK_SPEED,
+  WORLD_ASPECT,
   approachPlan,
   cameraOffset,
   followCamera,
@@ -57,8 +60,8 @@ describe('walk', () => {
     expect(cameraOffset({ x: 0, y: 0.5 }, 1000, 500, 1.5).x).toBe(0);
     expect(cameraOffset({ x: 1, y: 0.5 }, 1000, 500, 1.5).x).toBe(500);
     expect(cameraOffset({ x: 0.5, y: 0 }, 1000, 500, 1.5).y).toBe(0);
-    expect(cameraOffset({ x: 0.5, y: 1 }, 1000, 500, 1.5).y).toBe(250);
-    expect(cameraOffset({ x: 0.5, y: 0.5 }, 1000, 500, 1.5)).toEqual({ x: 250, y: 65 });
+    expect(cameraOffset({ x: 0.5, y: 1 }, 1000, 500, 1.5).y).toBe(343.75);
+    expect(cameraOffset({ x: 0.5, y: 0.5 }, 1000, 500, 1.5)).toEqual({ x: 250, y: 111.875 });
   });
 
   it('eases the camera toward the traveler instead of jumping', () => {
@@ -82,14 +85,14 @@ describe('walk', () => {
 
     let velocity = { x: WALK_SPEED, y: 0 };
     for (let i = 0; i < 27; i += 1) velocity = easeVelocity(velocity, { x: 0, y: 0 }, 1 / 60);
-    expect(velocity.x).toBeGreaterThan(WALK_SPEED * 0.15);
+    expect(velocity.x).toBeLessThan(WALK_SPEED * 0.01);
     expect(velocity.x).toBeLessThan(WALK_SPEED * 0.7);
     for (let i = 0; i < 70; i += 1) velocity = easeVelocity(velocity, { x: 0, y: 0 }, 1 / 60);
     expect(velocity.x).toBeLessThan(WALK_SPEED * 0.08);
 
     const far = desiredVelocity(null, { x: 0.8, y: 0.5 }, { x: 0.2, y: 0.5 });
-    const near = desiredVelocity(null, { x: 0.23, y: 0.5 }, { x: 0.2, y: 0.5 });
-    expect(far.x).toBeCloseTo(WALK_SPEED, 2);
+    const near = desiredVelocity(null, { x: 0.21, y: 0.5 }, { x: 0.2, y: 0.5 });
+    expect(far.x * WORLD_ASPECT).toBeCloseTo(WALK_SPEED, 2);
     expect(near.x).toBeGreaterThan(0);
     expect(near.x).toBeLessThan(far.x * 0.6);
   });
@@ -119,6 +122,17 @@ describe('walk', () => {
 });
 
 describe('shore and camp layout', () => {
+  it('crosses every edge after floating-point rounding but never from a visible distance away', () => {
+    for (const gate of GATES.filter(gate => gate.edge)) {
+      const axis = gate.edge === 'east' || gate.edge === 'west' ? 'x' : 'y';
+      const inside = gate.edge === 'east' || gate.edge === 'south' ? -1 : 1;
+      expect(crossed(gate, { x: gate.x, y: gate.y, [axis]: gate[axis] + inside * Number.EPSILON })).toBe(true);
+      expect(crossed(gate, { x: gate.x, y: gate.y, [axis]: gate[axis] + inside * .0001 })).toBe(false);
+    }
+    expect(gateAt('dba.scene.shore', { x: 0.8999999999999999, y: .74 })?.to).toBe('dba.scene.camp');
+    expect(gateAt('dba.scene.shore', { x: .9, y: .63 })).toBeNull();
+  });
+
   it('keeps spawns, spots, and gates inside the walkable band', () => {
     expect(BANDS['dba.scene.camp'].minY).toBeGreaterThanOrEqual(0.8);
     expect(BANDS['dba.scene.yard'].minY).toBeGreaterThanOrEqual(0.76);
@@ -129,14 +143,14 @@ describe('shore and camp layout', () => {
     expect(plantOnGround('dba.scene.yard', { x: 0.36, y: 0.76 }).y).toBeCloseTo(0.76);
     expect(plantOnGround('dba.scene.shore', { x: 0.74, y: 0.48 }).y).toBe(SHORE_MARKER.sandY);
     expect(plantOnGround('dba.scene.shore', { x: 0.74, y: 0.57 }).y).toBe(SHORE_MARKER.sandY);
-    expect(plantOnGround('dba.scene.shore', { x: 0.42, y: 0.5 }).y).toBeCloseTo(0.5);
-    expect(plantOnGround('dba.scene.shore', { x: 0.5, y: 0.5 }).y).toBeCloseTo(0.5);
-    expect(plantOnGround('dba.scene.shore', { x: 0.74, y: 0.7 }).y).toBeCloseTo(0.7);
+    expect(plantOnGround('dba.scene.shore', { x: 0.42, y: 0.5 }).y).toBeCloseTo(0.62);
+    expect(plantOnGround('dba.scene.shore', { x: 0.5, y: 0.5 }).y).toBeCloseTo(0.62);
+    expect(plantOnGround('dba.scene.shore', { x: 0.74, y: 0.7 }).y).toBeCloseTo(0.72);
     expect(plantOnGround('dba.scene.shore', { x: 0.74, y: 0.75 }).y).toBeCloseTo(0.75);
     const depart = SPOTS['dba.scene.shore'].find((spot) => spot.id === 'shore-depart');
-    expect(depart?.x).toBeCloseTo(0.74);
-    expect(depart?.y).toBeCloseTo(0.68);
-    expect(BANDS['dba.scene.shore'].minY).toBeCloseTo(0.48);
+    expect(depart?.x).toBeCloseTo(0.78);
+    expect(depart?.y).toBeCloseTo(0.73);
+    expect(BANDS['dba.scene.shore'].minY).toBeCloseTo(0.62);
     expect(depart && standsAt('dba.scene.shore', depart, { x: 0.74, y: SHORE_MARKER.sandY })).toBe(true);
     expect(depart && standsAt('dba.scene.shore', depart, { x: 0.4, y: SHORE_MARKER.sandY })).toBe(false);
     const fishA = SPOTS['dba.scene.yard'].find((spot) => spot.id === 'act:dba.word.size:a');
@@ -166,12 +180,22 @@ describe('shore and camp layout', () => {
         expect(spot.y).toBeGreaterThanOrEqual(band.minY);
         expect(spot.y).toBeLessThanOrEqual(band.maxY);
       }
-      for (let i = 0; i < SPOTS[scene].length; i += 1) {
-        for (let j = i + 1; j < SPOTS[scene].length; j += 1) {
-          const a = SPOTS[scene][i];
-          const b = SPOTS[scene][j];
+      // A held cup exposes the spring instead of the cup on the same stone.
+      // Test every actual shore layout; hidden alternate states cannot conflict.
+      const layouts = scene === 'dba.scene.shore' ? ['empty', 'carried', 'filled', 'done'].map(stage => {
+        const save = newGameState(); save.flags['dba.puzzle.water'] = stage;
+        if (stage === 'done') save.beats['dba.beat.water'] = true;
+        return visibleSpots(scene, save, { level: 0, anchor: 'mural-entrance', wordId: null });
+      }) : [SPOTS[scene]];
+      for (const spots of layouts) for (let i = 0; i < spots.length; i += 1) {
+        for (let j = i + 1; j < spots.length; j += 1) {
+          const a = spots[i];
+          const b = spots[j];
           // Centers stay outside each other. The west mural and shard sit close on the sand.
-          expect(distance(a, b)).toBeGreaterThan(Math.max(a.r, b.r));
+          expect(distance(a, b), `${scene}: ${a.id} overlaps ${b.id}`).toBeGreaterThan(Math.max(a.r, b.r));
+          if (a.id.startsWith('water-') || b.id.startsWith('water-')) {
+            expect(distance(a, b), `${a.id}/${b.id} allows two water interactions at once`).toBeGreaterThan(a.r + b.r);
+          }
         }
       }
     }
@@ -199,15 +223,15 @@ describe('shore and camp layout', () => {
     }
   });
 
-  it('reaches the camp edge from any height on the tide line', () => {
-    for (const y of [0.52, 0.62, 0.74]) {
+  it('crosses east only through the camp path mouth, not along the tide-line wall', () => {
+    for (const y of [0.62, 0.74, 0.84]) {
       let pos = { x: SPAWNS['dba.scene.shore'].x, y };
       let found = false;
-      for (let i = 0; i < 24; i += 1) {
-        pos = stepKey(pos, 'd', BANDS['dba.scene.shore']).pos;
+      for (let i = 0; i < 70; i += 1) {
+        pos = stepKey(pos, 'd', BANDS['dba.scene.shore'], .01).pos;
         if (gateAt('dba.scene.shore', pos)?.to === 'dba.scene.camp') found = true;
       }
-      expect(found).toBe(true);
+      expect(found).toBe(y === .74);
       expect(pos.x).toBeLessThanOrEqual(BANDS['dba.scene.shore'].maxX);
     }
   });

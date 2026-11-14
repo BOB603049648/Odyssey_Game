@@ -1,54 +1,35 @@
-# Snapshot 2026-11-12 — known issues (not accepted as fixed)
+# 快照当前状态与剩余问题
 
-This branch is a source snapshot of the local visual-sample tree at the I2 freeze
-(approved 358-file manifest SHA256
-`b40de4153c9cc29dc722c4de55bb7e9ab4e3133df5020d7de2627712b22d6b39`).
-It is not a production release, not a merge to `main`, and not visual or playable acceptance.
+本分支来自 `snapshot/shore-visual-20261112`。截至 v0.1.3（2026-11-14）的修复与验证以[显示与游玩修复记录](playable-refactor-20261113.md)为准，旧版素材与实验结论保留在 Git 历史中。
 
-## Addressed in this working tree (2026-11-13)
+## 已修复
 
-These were fixed at the source/asset level and are now guarded by tests. They still need a
-human visual pass in the running game before they can be called accepted.
+- v0.1.3 将取水、分食改为有中间阶段与可见结果的场景操作，新增旅人站坐／起身和向导观察／抬爪／坐卧，修正交互动作的暂停时钟；局部物件变化、泉水与火光等环境活动已接入。具体步骤见[本轮方案](design/v0.1.3-playable-world-plan.md)。
+- v0.1.2 增加三地面 16 个脚步变体、身体/饮水拟音、独立游戏反馈、48 秒场景音景、间歇自然声、三段配乐及分项混音。
+- v0.1.1 修复音频中断恢复、零音量与未解锁状态、场景声音失败提示，以及行走中插入待机帧和图集图片切换；标题与设置支持独立声音试听。浏览器音频信号验证通过不代表已覆盖实体设备的扬声器与系统输出路由。
+- v0.1 补齐动作图集、序章关节动画、统一六场景绘景、分场景声音、首章完成页、存档备份/恢复和新游戏保护。部署包与范围见 [v0.1 发布说明](releases/v0.1.md)。
 
-- **木经堂 (hall) scale.** The `art.hall.building` pavilion is no longer a full-bleed second
-  architecture pasted over the hall; it is placed as the shrine at the end of the aisle
-  (`x .5 y .315 w .72 h .47`, feet on the wall line at `.55`). The traveler reads `0.22` of the
-  plate height in this scene instead of the shared `0.136`, so a 1.75 m body matches the ~3.7 m
-  pillars. Scroll, stamp rail and wrist mural are trimmed to their subject and sized in metres
-  on the same body (1.0 m / 0.42 m / 0.44 m at 90.5 px/m). Contract: `docs/art-scale-contract.json`
-  → `hall_scale`; enforced by `checkScaleContract`.
-- **Giant wrist mural.** The delivered `art.hall.prop.wrist-knot.png` was an opaque 16:9 photo of
-  a forearm: it composited a black rectangle 1.6× the traveler. It is now a 512² round cutout with
-  the black ground keyed out and a soft rim, hung at mural scale beside the betrayal scroll.
-  Original kept at `docs/assets/hall/art.hall.prop.wrist-knot.original.png`.
-- **Cat alpha / transparent body (shore cat).** The shore cutout had a 4.5k px hole where the face
-  is and a 2.7k px hole along the cloak flank, both closed interiors, so the guide composited with
-  a hole for a face. `scripts/restore_cat_interior_alpha.py` fills only closed interiors ≥ 800 px,
-  colouring them from the rim plus the lit fur above the hole; opaque pixels and the foot anchor
-  are byte-identical. Guard: `scripts/test_cat_interior_alpha.py`.
-- **Black-leap art.** Both mid-air frames carried a baked elliptical ground shadow although the
-  cat is airborne (leap-02's was fused to a paw), and both were delivered at roughly half the
-  landing luminance, so the hop read as a black cutout against the fog. `scripts/fix_leap_frames.py`
-  removes the wide bottom discs and lifts the tone into the landing family. Guard:
-  `scripts/test_leap_frames.py`.
+- 六场景统一比例、主体边界、人物脚点与道具遮挡；删除裁掉木屋半边的旧渐变样式。
+- 向导不再加载带孔洞或黑剪影的历史落地素材；棚火木屋重新修复门口。
+- 新步态按实际位移播放；起停、斜向速度统一；点击自动绕过障碍，键盘与摇杆碰撞不再瞬移。
+- 雾径行走与热点对齐桥面；前坪“多/少”可达；鼠标热点覆盖道具。
+- 六场景等待角色和场景图片加载完成，错误可重试；存储禁用时提示并允许本次游玩。
+- 测试不依赖原开发机路径；图片回归依赖和原始对照素材已纳入仓库与 CI。
+- 主线离岛需完成取水、分食、休息、避险；案卷显示旅程清单与下一步，证物保持可漏收。
+- 壁画恢复背景、层级与进度提示；手机抽象层可滚动完成；切题清理过期提示，重复取水和夜营余烬给出正确反馈。
 
-## Still unfixed / not certified
+- 雾岸改为整体绘制的环境，行走范围、物件点击区与场景一致；新增行走落点、脚印、交互回响和随进度变化的目标。
+- 全部 28 词接入统一画风的情景画；学习提供三种含义对照，复用提供多个刻符答案并记录错题。
 
-- Arrival / held stretch is not finished.
-- Traveler alternating walk-phase art is still missing. The engine already cycles all four walk
-  frames by distance (`clipFrames` / `stepCycleByDistance`); the delivered frames do not alternate
-  the legs, so this needs new keyframes rather than an engine change.
-- Yard amount reachability is not done.
-- Full chapter playthrough is not accepted.
-- Cat alpha is only certified for the shore prop; camp/yard props and the trajectory landings keep
-  smaller closed slits (between paws, under the belly) that were deliberately left alone.
+## 剩余限制
 
-Display and load recovery work in this tree must not be read as “the picture is complete and normal.”
+- 当前只实现序章与东巴岛六场景。海图其他岛屿、最终对峙尚未开放。
+- 壁画与复用保留情景识别；取水与分食已有多步操作。更复杂的线索组合、可选解法和跨场景谜题尚未展开。
+- 存档保留场景与剧情进度，刷新后人物站位回到场景默认落点；精确站位暂未持久化。
+- 人物保持三方向四帧行走，伸手和饮水为简化逐帧动作，新增八帧站坐／起身过渡；完整八方向表演、更多道具专属动作仍可细化。
+- 向导已有独立观察、抬爪、坐下和蜷卧图集，跳跃保留；完整进食、伸展等连续表演仍可增加。
+- 六场景是统一 2D 绘景配局部动效与状态贴片；尚无可自由推动或破坏的环境系统。
+- 手机浏览器已检查横竖屏布局及触屏移动，未覆盖所有设备。仓库只有 Capacitor 配置，没有 iOS/Android 原生工程。
+- 阿里云固定测试站为 `http://47.252.94.138/test/`，以 `version.json` 核对部署提交；仓库修复不等于线上已更新。
 
-## Environment gaps in a fresh clone
-
-- `src/ui/catRecoveryOwnerProduction.test.tsx` imports `/workspace/odyssey-visual-sample-20261111/...`
-  and `scripts/test_shore_cat_face_alpha.py` reads `/workspace/playtest/...`. Both fail outside the
-  original machine and make `npm run build` (tsc) fail. They predate this working tree.
-- `displayReview.test.tsx`, `hearthDepthLight.test.tsx` and `hearthLightDepth.test.tsx` also fail in
-  a fresh clone before any of the changes above.
+已验证的浏览器主线从新游戏到离岛、三份证物、刷新继续完整通过。复现步骤与部署说明见修复记录。

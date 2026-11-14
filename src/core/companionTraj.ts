@@ -39,7 +39,7 @@ export function trajClip(elapsedMs: number, travel?: { phase: GuidePhase; cat: P
 export function companionFrameId(beat: CatBeat, clip: TrajClip): string {
   if (clip === 'leap-01') return 'leap-01';
   if (clip === 'leap-02') return 'leap-02';
-  return LAND_BY_BEAT[beat] ?? 'fallback';
+  return LAND_BY_BEAT[beat] ?? 'land-companion';
 }
 
 /** Stop, look toward the next mark, then travel. A scene change plants her already looking. */

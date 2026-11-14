@@ -7,7 +7,7 @@ import type { ComponentType } from 'react';
 import { slotAssetUrl } from '../content/assetUrls';
 import * as decoded from '../content/decodedImage';
 import { forgetSlotAsset } from '../content/slotAssets';
-import { cameraOffset, lookEast, WORLD_SCALE } from '../core/walk';
+import { cameraOffset, lookEast, worldSize } from '../core/walk';
 import { saveDataSchema } from '../core/schema';
 
 const ROOT = process.cwd();
@@ -172,7 +172,7 @@ describe('storage-free display-only entrance', () => {
     const callbacks=new Set<ResizeObserverCallback>();vi.stubGlobal('ResizeObserver',class{constructor(public callback:ResizeObserverCallback){}observe(){callbacks.add(this.callback);}disconnect(){callbacks.delete(this.callback);}});
     const view=render(<DisplayReview search="?view=shore&camera=right"/>);await flush();
     const initial=view.getByTestId('walk-stage');const pos=makeDisplayPreset('shore','visible','right').pos;
-    const check=()=>{const stage=view.getByTestId('walk-stage');const cam=lookEast(cameraOffset(pos,w,h),w,true);expect(stage.getAttribute('data-cam-x')).toBe(cam.x.toFixed(1));expect(stage.getAttribute('data-cam-y')).toBe(cam.y.toFixed(1));expect((view.container.querySelector('.world-layer') as HTMLElement).style.width).toBe(`${w*WORLD_SCALE}px`);};check();
+    const check=()=>{const stage=view.getByTestId('walk-stage');const cam=lookEast(cameraOffset(pos,w,h),w,true,undefined,h);expect(stage.getAttribute('data-cam-x')).toBe(cam.x.toFixed(1));expect(stage.getAttribute('data-cam-y')).toBe(cam.y.toFixed(1));expect((view.container.querySelector('.world-layer') as HTMLElement).style.width).toBe(`${worldSize(w,h).w}px`);};check();
     w=390;h=844;await act(async()=>{window.dispatchEvent(new Event('resize'));for(const cb of [...callbacks])cb([],{} as ResizeObserver);});await flush();
     expect(view.getByTestId('walk-stage')).not.toBe(initial);check();
     const portrait=view.getByTestId('walk-stage');w=844;h=390;

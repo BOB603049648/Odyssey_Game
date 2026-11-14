@@ -1,3 +1,9 @@
+import { useTravelerAudio } from '../audio/useTravelerAudio';
+import { useCharacterAction } from './characterActionTimeline';
+import { companionPerformanceKind, useCompanionPerformance } from './companionPerformance';
+import { usePagePresentation } from './useCinematicClock';
+import type { WorldState } from '../core/worldState';
+import { WorldStateLayer } from './WorldStateLayer';
 import { useCatRecordRecovery } from './useCatRecordRecovery';
 import { getShoreVisualProfile } from '../dev/shoreVisualProfile';
 import { catDisplaySnapshot, lookupCatDisplay, writeCatDisplayAttributes } from './catDisplay';
@@ -10,11 +16,13 @@ import { companionFrameId, trajClip, type GuidePhase, type TrajClip } from '../c
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
 import type { HintLevel } from '../core/schema';
-import { BANDS, SPAWNS, SPOTS, closestSpot, gateAt, gatesFrom, nearestSpot, plantOnGround, standsAt, type GateEdge } from '../core/stage';
+import { BANDS, SPAWNS, SPOTS, closestSpot, gateApproach, gateCrossing, gatesFrom, nearestSpot, plantOnGround, standsAt, type Gate, type GateEdge } from '../core/stage';
 import { stepWorld } from '../core/worldLoop';
+import { groundRoute, groundStep, groundTargetPoint, selectGroundTarget } from '../core/navigation';
 import {
   WALK_SPEED,
-  WORLD_SCALE,
+  groundDistance,
+  worldSize,
   cameraOffset,
   followCamera,
   inRadius,
@@ -43,15 +51,35 @@ import { forgetTraj, loadTraj, trajUrl } from './trajArt';
 import { contactLift, contactOpacity, depthScale, worldToScreen } from '../core/world';
 import { catContactUrl, clippedBootUrl } from './soleClip';
 import { FirstScreenGate } from './FirstScreenGate';
-import { facingFromMove, REACH_HOLD_MS, TravelerView, travelerHeight, useTravelerPresentation, type TravelerFacing } from './Traveler';
+import { facingFromMove, TravelerView, travelerHeight, useTravelerPresentation, type TravelerFacing } from './Traveler';
 import { useFirstScreenReady } from './firstScreenReady';
 import { useAssetSrc } from './useAssetSrc';
 
 import { WalkStick } from './WalkStick';
+import { StageControls } from './StageControls';
+import { WorldFeedback } from './WorldFeedback';
+import { GroundGuide, NavigationNotice } from './Wayfinding';
 import { useCrossfade } from './useCrossfade';
 import { useShoreCuePresentation } from './useShoreCuePresentation';
 
 type Hint = { level: HintLevel; anchor: HintAnchor; wordId: string | null; pose: CompanionPose };
+export type NavigationStatus = { scene: IslandScene; message: string; kind: 'blocked' | 'exit' | 'travel' };
+type TravelPlan = { gate: Gate; phase: 'approach' | 'cross' };
+const GATE_DIRECTION = { east: '右侧', west: '左侧', north: '上方', south: '下方' };
+const GATE_ARROW = { east: '→', west: '←', north: '↑', south: '↓' };
+
+function groundRefusal(scene: IslandScene, point: Point): string {
+  if (scene === 'dba.scene.path') return '桥外没有落脚的地方，请沿桥板走。';
+  if (scene === 'dba.scene.shore') {
+    if (point.x > .55 && point.x < .67 && point.y >= .62) return '泉池里不能落脚，走到池边再接水。';
+    if (point.x > .27 && point.x < .43 && point.y >= .7 && point.y < .75) return '漂木挡住了这里，点旁边的沙地可以绕过去。';
+    return '那里没有可走的沙地，请沿岸边走。';
+  }
+  if (scene === 'dba.scene.camp') return '这里没有落脚处，请沿铺位前方的小路走。';
+  if (scene === 'dba.scene.yard') return '这里不能通行，请沿建筑前方的庭院和台阶走。';
+  if (scene === 'dba.scene.hall') return '那里不是可走的地板，请留在经堂前方的空地。';
+  return '这里不能落脚，请沿桌案和火塘前方的地面走。';
+}
 
 function isInteractKey(event: KeyboardEvent): boolean {
   const key = event.key;
@@ -117,6 +145,11 @@ export function WalkLayer({
   flash = null,
   beat = null,
   presentationFrozen = false,
+  interactionSeq = 0,
+  worldState,
+  onNavigationNotice,
+  onActivity,
+  onReady,
 }: {
   scene: IslandScene;
   drank: boolean;
@@ -143,7 +176,15 @@ export function WalkLayer({
   beat?: SpotBeat | null;
   /** Static local fixture only. Does not pause asset/contact RAF work. */
   presentationFrozen?: boolean;
+  interactionSeq?: number;
+  worldState?: WorldState;
+  onNavigationNotice?: (notice: NavigationStatus | null) => void;
+  onActivity?: () => void;
+  onReady?: (scene: IslandScene, ready: boolean) => void;
 }) {
+  const painted = !presentationFrozen;
+  const { visible, reduced } = usePagePresentation();
+  const firstScreen = useFirstScreenReady(scene, 'land-companion', painted);
   const viewportRef = useRef<HTMLDivElement>(null);
   const soleRef = useRef<HTMLImageElement>(null);
   const catSoleRef = useRef<HTMLImageElement>(null);
@@ -160,13 +201,25 @@ export function WalkLayer({
   const farRef = useRef(onFar);
   const escapeRef = useRef(onEscape);
   const targetRef = useRef<Point | null>(null);
+  const travelRef = useRef<TravelPlan | null>(null);
+  const [travel, setTravel] = useState<TravelPlan | null>(null);
+  const [guidePinned, setGuidePinned] = useState(false);
+  const [routesOpen, setRoutesOpen] = useState(false);
+  const [rejectedGround, setRejectedGround] = useState<{ scene: IslandScene; point: Point; message: string } | null>(null);
+  const noticeRef = useRef(onNavigationNotice);
+  noticeRef.current = onNavigationNotice;
+  const activityRef = useRef(onActivity);
+  activityRef.current = onActivity;
   const stickRef = useRef<Point | null>(null);
   const smoothRef = useRef<Point | null>(null);
   const entryRef = useRef<string | null>(null);
   const held = useRef(new Set<WalkKey>());
   const movingRef = useRef(false);
   const velocityRef = useRef<Point>({ x: 0, y: 0 });
-  const posRef = useRef<Point>(plantOnGround(scene, remembered ?? SPAWNS[scene]));
+  // Frozen composition fixtures can place feet on either side of a prop to test
+  // depth sorting. Live saves always pass through the current navigation mask.
+  const initialFoot = remembered ?? SPAWNS[scene];
+  const posRef = useRef<Point>(presentationFrozen ? initialFoot : plantOnGround(scene, initialFoot));
   const [pos, setPos] = useState<Point>(posRef.current);
   const [facing, setFacing] = useState<TravelerFacing>('front');
   const [moving, setMoving] = useState(false);
@@ -189,22 +242,57 @@ export function WalkLayer({
   const [arrive, setArrive] = useState<string | null>(null);
   const [cam, setCam] = useState<Point>({ x: 0, y: 0 });
   const [teachLine, setTeachLine] = useState(false);
-  const [reaching, setReaching] = useState(false);
-  const reachTimer = useRef(0);
+  const worldPaused = paused || !visible || firstScreen.status !== 'ready';
+  const performancePaused = worldPaused || presentationFrozen;
+  const body = useCharacterAction(!performancePaused, scene);
+  useEffect(() => {
+    if (!rejectedGround || worldPaused) return;
+    const timer = window.setTimeout(() => setRejectedGround(null), 2600);
+    return () => window.clearTimeout(timer);
+  }, [rejectedGround, worldPaused]);
+  const handledResponse = useRef(interactionSeq);
+  useEffect(() => {
+    if (handledResponse.current === interactionSeq) return;
+    handledResponse.current = interactionSeq;
+    if (beat?.kind !== 'ok') return;
+    if (beat.spot === 'food-inspect' || beat.spot === 'food-self' || beat.spot === 'food-companion') { body.cancel(); return; }
+    if (beat.spot === 'camp-sleep') body.begin('rest');
+    else if (beat.spot === 'island-gourd' || beat.spot === 'act:dba.word.drink') body.begin('drink');
+    else if (beat.spot === 'water-take' || beat.spot === 'water-spring' || beat.spot === 'food-take' || beat.spot === 'yard-give') body.begin('reach');
+    const targetId = beat.spot === 'water-take' ? 'island-gourd' : beat.spot === 'food-take' ? 'yard-grab' : beat.spot;
+    const target = spotsRef.current.find(spot => spot.id === targetId);
+    if (target) setFacing(current => target.x < posRef.current.x - .005 ? 'left' : target.x > posRef.current.x + .005 ? 'right' : current === 'left' ? 'left' : 'right');
+  }, [interactionSeq, beat?.kind, beat?.spot, body.begin, body.cancel]);
+  const restingNow = resting || body.kind === 'rest';
   const driftSeek = useRef(0);
-  const restingRef = useRef(resting);
-  restingRef.current = resting;
+  const restingRef = useRef(restingNow);
+  restingRef.current = restingNow;
+  useEffect(() => {
+    if (worldPaused) window.clearTimeout(driftSeek.current);
+  }, [worldPaused]);
+  useEffect(() => () => window.clearTimeout(driftSeek.current), []);
+  useEffect(() => {
+    if (!restingNow) return;
+    window.clearTimeout(driftSeek.current);
+    targetRef.current = null;
+    travelRef.current = null;
+    setTravel(null);
+    setRoutesOpen(false);
+    setRejectedGround(null);
+    held.current.clear();
+    stickRef.current = null;
+  }, [restingNow]);
   const viewRef = useRef(view);
   const plates = useCrossfade(scene, 980);
   const depthComparison = getShoreVisualProfile().fixture !== null && new URLSearchParams(window.location.search).get('depth') === 'legacy';
-  const depthScenes = !depthComparison && getShoreVisualProfile().variant === 'candidate' && (plates.current === 'dba.scene.shore' || plates.previous === 'dba.scene.shore')
+  const depthScenes = !depthComparison
     ? [plates.current, ...(plates.previous ? [plates.previous] : [])] : [];
   const sharedDepth = depthScenes.length > 0;
   viewRef.current = view;
 
   spotsRef.current = spots;
   hintRef.current = hint;
-  pausedRef.current = paused;
+  pausedRef.current = worldPaused;
   rememberRef.current = onRemember;
   exitRef.current = onExit;
   interactRef.current = onInteract;
@@ -218,6 +306,10 @@ export function WalkLayer({
     sceneRef.current = scene;
     posRef.current = next;
     targetRef.current = null;
+    travelRef.current = null;
+    setTravel(null);
+    setRoutesOpen(false);
+    setRejectedGround(null);
     stickRef.current = null;
     smoothRef.current = null;
     velocityRef.current = { x: 0, y: 0 };
@@ -253,19 +345,24 @@ export function WalkLayer({
     return () => rememberRef.current(sceneRef.current, posRef.current);
   }, []);
 
+  function resizeView(w: number, h: number) {
+    if (w <= 1 || h <= 1) return;
+    if (viewRef.current.w === w && viewRef.current.h === h && smoothRef.current) return;
+    const nextView = { w, h };
+    // Camera offsets are pixels in this world's scale. An old portrait offset
+    // cannot be eased across a newly sized landscape world, even while paused.
+    const nextCam = cameraOffset(posRef.current, w, h);
+    viewRef.current = nextView;
+    smoothRef.current = nextCam;
+    setView(nextView);
+    setCam(nextCam);
+  }
+
   useEffect(() => {
     const el = viewportRef.current;
     if (!el) return undefined;
-    const read = () => {
-      const w = el.clientWidth;
-      const h = el.clientHeight;
-      if (w > 1 && h > 1) setView({ w, h });
-    };
+    const read = () => resizeView(el.clientWidth, el.clientHeight);
     read();
-    if (import.meta.env.MODE !== 'test' && !smoothRef.current && el.clientWidth > 1) {
-      smoothRef.current = cameraOffset(posRef.current, el.clientWidth, el.clientHeight);
-      setCam(smoothRef.current);
-    }
     if (typeof ResizeObserver === 'undefined') return undefined;
     const observer = new ResizeObserver(read);
     observer.observe(el);
@@ -291,13 +388,20 @@ export function WalkLayer({
   }
 
   function apply(next: Point, isMoving: boolean, isBlocked: boolean, dx: number, dy: number, power = 1) {
-    const planted = plantOnGround(sceneRef.current, next);
-    const gate = gateAt(sceneRef.current, planted);
+    if (pending.current) return;
+    const planted = groundStep(sceneRef.current, posRef.current, next);
+    const moved = groundDistance(planted, posRef.current) > 1e-6;
+    isBlocked ||= groundDistance(planted, next) > 1e-7;
+    isMoving &&= moved;
+    if (isMoving) activityRef.current?.();
+    const gate = gateCrossing(sceneRef.current, posRef.current, planted);
     if (gate) {
       velocityRef.current = { x: 0, y: 0 };
       pending.current = gate.arrival;
       entryRef.current = entrySide(gate.edge);
       targetRef.current = null;
+      travelRef.current = null;
+      setTravel(null);
       stickRef.current = null;
       held.current.clear();
       rememberRef.current(gate.to, gate.arrival);
@@ -309,18 +413,61 @@ export function WalkLayer({
     setFacing((current) => facingFromMove(dx, dy, current));
     setPos(planted);
     setMoving(isMoving);
+    if (isMoving) body.cancel();
     setStride(isMoving ? Math.min(1, Math.max(0, power)) : 0);
     setBlocked(isBlocked);
     movingRef.current = isMoving;
+    const plan = travelRef.current;
+    if (plan?.phase === 'approach' && groundDistance(planted, gateApproach(plan.gate)) < .0016) {
+      const nextPlan: TravelPlan = { gate: plan.gate, phase: 'cross' };
+      travelRef.current = nextPlan;
+      setTravel(nextPlan);
+      targetRef.current = { x: plan.gate.x, y: plan.gate.y };
+    }
   }
 
-  function beginReach() {
-    setReaching(true);
-    window.clearTimeout(reachTimer.current);
-    reachTimer.current = window.setTimeout(() => setReaching(false), REACH_HOLD_MS);
+  function beginReach(point?: Point) {
+    stopWalking();
+    setRejectedGround(null);
+    setFacing(current => point && point.x < posRef.current.x - .005 ? 'left' : point && point.x > posRef.current.x + .005 ? 'right' : current === 'left' ? 'left' : 'right');
+    body.begin('reach');
+  }
+
+  function interruptForMovement() {
+    window.clearTimeout(driftSeek.current);
+    body.cancel();
+    if (!resting) restingRef.current = false;
+    if (travelRef.current) { travelRef.current = null; setTravel(null); }
+    setRejectedGround(null);
+  }
+
+  function stopWalking() {
+    window.clearTimeout(driftSeek.current);
+    targetRef.current = null;
+    travelRef.current = null;
+    setTravel(null);
+    held.current.clear();
+    stickRef.current = null;
+    velocityRef.current = { x: 0, y: 0 };
+    movingRef.current = false;
+    setMoving(false);
+    setStride(0);
+  }
+
+  function travelTo(gate: Gate) {
+    if (pausedRef.current || pending.current || gate.from !== sceneRef.current) return;
+    interruptForMovement();
+    held.current.clear();
+    stickRef.current = null;
+    const approach = gateApproach(gate);
+    const next: TravelPlan = { gate, phase: groundDistance(posRef.current, approach) < .0016 ? 'cross' : 'approach' };
+    travelRef.current = next;
+    setTravel(next);
+    targetRef.current = next.phase === 'cross' ? { x: gate.x, y: gate.y } : approach;
   }
 
   function seek(point: Point) {
+    interruptForMovement();
     const band = BANDS[sceneRef.current];
     targetRef.current = plantOnGround(sceneRef.current, {
       x: Math.min(band.maxX, Math.max(band.minX, point.x)),
@@ -334,7 +481,21 @@ export function WalkLayer({
     if (!rect) return;
     const point = pointerToWorld(event.clientX, event.clientY, rect);
     if (!point) return;
-    seek(point);
+    const choice = selectGroundTarget(sceneRef.current, posRef.current, point);
+    if (choice.kind === 'rejected') {
+      stopWalking();
+      setRejectedGround({ scene: sceneRef.current, point,
+        message: choice.reason === 'off-ground' ? groundRefusal(sceneRef.current, point) : '这里暂时走不到，试试另一处地面。' });
+      return;
+    }
+    seek(choice.goal);
+  }
+
+  function onGroundHover(event: React.PointerEvent<HTMLDivElement>) {
+    if (event.pointerType !== 'mouse') return;
+    const rect = worldRef.current?.getBoundingClientRect();
+    const point = rect && pointerToWorld(event.clientX, event.clientY, rect);
+    event.currentTarget.dataset.walkable = point && groundTargetPoint(sceneRef.current, point) ? 'yes' : 'no';
   }
 
   useEffect(() => {
@@ -345,12 +506,17 @@ export function WalkLayer({
         return;
       }
       if (pausedRef.current) return;
+      const target = event.target instanceof Element ? event.target : null;
+      if (target?.closest('input, textarea, select, [contenteditable="true"]')) return;
       if (isInteractKey(event)) {
+        // Native controls own Enter/Space, including a focused world hotspot.
+        // Otherwise pressing Enter on the HUD also dispatches a nearby action.
+        if ((event.key === 'Enter' || event.key === ' ') && target?.closest('button, a, [role="button"]')) return;
         if (event.repeat) return;
         const standing = nearestSpot(spotsRef.current, posRef.current, sceneRef.current);
         if (standing) {
           event.preventDefault();
-          beginReach();
+          beginReach(standing);
           interactRef.current(standing.id);
           return;
         }
@@ -363,6 +529,7 @@ export function WalkLayer({
       const key = keyOf(event);
       if (!key) return;
       event.preventDefault();
+      interruptForMovement();
       held.current.add(key);
       targetRef.current = null;
       if (!event.repeat && import.meta.env.MODE === 'test') {
@@ -379,7 +546,15 @@ export function WalkLayer({
     };
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
-    const onBlur = () => held.current.clear();
+    const onBlur = () => {
+      window.clearTimeout(driftSeek.current);
+      held.current.clear();
+      stickRef.current = null;
+      targetRef.current = null;
+      velocityRef.current = { x: 0, y: 0 };
+      travelRef.current = null;
+      setTravel(null);
+    };
     window.addEventListener('blur', onBlur);
     return () => {
       window.removeEventListener('keydown', onKeyDown);
@@ -399,7 +574,6 @@ export function WalkLayer({
         const lying = restingRef.current;
         if (lying) {
           velocityRef.current = { x: 0, y: 0 };
-          targetRef.current = null;
           if (movingRef.current) {
             movingRef.current = false;
             setMoving(false);
@@ -410,6 +584,7 @@ export function WalkLayer({
         const prevCat = catRef.current;
         const desired = postRef.current;
         const stepped = stepWorld({
+          scene: sceneRef.current,
           walker: { pos: from, velocity: lying ? { x: 0, y: 0 } : velocityRef.current, seek: lying ? null : targetRef.current },
           intent: { move: lying ? null : heldDirection(), seek: lying ? null : targetRef.current },
           band: BANDS[sceneRef.current],
@@ -423,8 +598,10 @@ export function WalkLayer({
           },
         });
         velocityRef.current = stepped.walker.velocity;
-        targetRef.current = stepped.walker.seek;
-        const speed = Math.hypot(stepped.walker.velocity.x, stepped.walker.velocity.y);
+        // A route selected while resting waits for the rise instead of being
+        // discarded every frame. Clear only the old intent when rest starts.
+        if (!lying) targetRef.current = stepped.walker.seek;
+        const speed = groundDistance(stepped.walker.velocity, { x: 0, y: 0 });
         if (stepped.walker.moving) {
           apply(
             stepped.walker.pos,
@@ -459,9 +636,7 @@ export function WalkLayer({
         if (stepped.guide.cat.x !== prevCat.x || stepped.guide.cat.y !== prevCat.y) setCat(stepped.guide.cat);
         const frameEl = viewportRef.current;
         if (frameEl && frameEl.clientWidth > 1 && (frameEl.clientWidth !== viewRef.current.w || frameEl.clientHeight !== viewRef.current.h)) {
-          const nextView = { w: frameEl.clientWidth, h: frameEl.clientHeight };
-          viewRef.current = nextView;
-          setView(nextView);
+          resizeView(frameEl.clientWidth, frameEl.clientHeight);
         }
         const frameView = viewRef.current;
         const goalCam = cameraOffset(posRef.current, frameView.w, frameView.h);
@@ -486,7 +661,7 @@ export function WalkLayer({
       if (sole && vp && img instanceof HTMLImageElement && humanRect && contactOrigin) {
         const ir = humanRect;
         const pose = vp.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose');
-        if (pose === 'lie' || ir.width < 2) {
+        if (pose === 'lie' || img.dataset.atlas || ir.width < 2) {
           sole.style.visibility = 'hidden';
         } else {
           sole.style.visibility = 'visible';
@@ -571,14 +746,24 @@ export function WalkLayer({
   const {src:leap02} = useAssetSrc(warmLeap ? 'leap-02' : null, TRAJ_SRC_API);
   const guideReadyRef = useRef(false);
   guideReadyRef.current = !!leap01 && !!leap02;
-  const worldW = view.w * WORLD_SCALE;
-  const worldH = view.h * WORLD_SCALE;
+  const { w: worldW, h: worldH } = worldSize(view.w, view.h);
   const requestedCatSprite = companionFrameId(catPost.beat, clip);
+  const catPerformance = companionPerformanceKind(hint.pose === 'fetch' || hint.pose === 'paw' ? hint.pose : catPost.pose,
+    hint.level, restingNow, beat?.kind === 'ok' && beat.spot === 'yard-give' && body.kind === 'reach');
+  const performanceFrame = useCompanionPerformance(catPerformance, !performancePaused && guide === 'hold', interactionSeq, reduced);
+  // A single mounted preload owns retry timing for the whole sheet. Changing
+  // pose cells must not create new retry consumers or bypass its backoff.
+  useAssetSrc(!presentationFrozen ? 'pose-observe-01' : null, TRAJ_SRC_API);
+  // The shared sheet publishes every cell atomically. useAssetSrc's state can
+  // lag a new cell id by one render; that is not a missing bitmap and must not
+  // temporarily swap to the standing fallback/remount the native atlas image.
+  const performanceReady = !!trajUrl(performanceFrame);
   // Contract permits the complete scene prop as a temporary Y0 landing fallback.
   // Keep the beat/guide/queue and the dedicated trajectory file untouched.
   const yardLandingFallback = scene === 'dba.scene.yard' && requestedCatSprite === 'land-yard-give';
-  const targetCatSprite = yardLandingFallback ? 'fallback' : requestedCatSprite;
-  const groundAsset = sceneAssembly(scene)?.slots.find((slot) => slot.slot === 'ground')?.asset ?? null;
+  const legacyCatSprite = yardLandingFallback ? 'fallback' : requestedCatSprite;
+  const targetCatSprite = !presentationFrozen && guide === 'hold' && performanceReady ? performanceFrame : legacyCatSprite;
+  const groundAsset = painted ? null : sceneAssembly(scene)?.slots.find((slot) => slot.slot === 'ground')?.asset ?? null;
   const { src: groundPlate, onError: onGroundError } = useAssetSrc(groundAsset, SLOT_SRC_API);
   const slotCat =
     scene === 'dba.scene.camp'
@@ -586,7 +771,9 @@ export function WalkLayer({
       : scene === 'dba.scene.yard' || scene === 'dba.scene.path'
         ? 'art.yard.prop.nanaicha'
         : 'art.shore.prop.nanaicha';
-  const { src: trajFigure } = useAssetSrc(yardLandingFallback ? null : targetCatSprite, TRAJ_SRC_API);
+  // Prewarm the complete standing fallback as well as the optional pose sheet.
+  // A sheet failure must not remove the guide or prevent an otherwise ready scene.
+  const { src: trajFigure } = useAssetSrc(legacyCatSprite === 'fallback' ? null : legacyCatSprite, TRAJ_SRC_API);
   const { src: slotCatFigure } = useAssetSrc(slotCat, SLOT_SRC_API);
   // A target beat is not an arrived picture. Keep one committed, scene-scoped
   // record through gaze/cold loading; metadata always follows its actual bitmap.
@@ -614,7 +801,7 @@ export function WalkLayer({
     id: catSprite === 'fallback' ? slotCat : catSprite,
     originalURL: shownCat.figure, api: catSprite === 'fallback' ? SLOT_SRC_API : TRAJ_SRC_API,
   } : null, () => { committedCat.current = shownCat; });
-  const flashId =
+  const flashId = painted ? null :
     flash?.kind === 'driftwood'
       ? 'art.shore.prop.driftwood.interact'
       : flash?.kind === 'sleep'
@@ -625,13 +812,13 @@ export function WalkLayer({
   const { src: flashSrc, onError: onFlashError } = useAssetSrc(flashId, SLOT_SRC_API);
   useEffect(() => {
     const kit = sceneAssembly(scene);
-    preloadSceneAssets(kit?.slots.map((slot) => slot.asset) ?? []);
-  }, [scene]);
+    preloadSceneAssets(painted ? [`art.${scene.split('.').at(-1)}.landscape`] : kit?.slots.map((slot) => slot.asset) ?? []);
+  }, [scene, painted]);
   // Only the explicitly frozen depth matrix shares a fixed reference camera; live camera is unchanged.
   const fixedFixtureCamera = presentationFrozen && getShoreVisualProfile().fixture?.startsWith('depth-')
     ? cameraOffset(SPAWNS['dba.scene.shore'], view.w, view.h) : null;
   const rawCam = fixedFixtureCamera ?? (import.meta.env.MODE === 'test' ? cameraOffset(pos, view.w, view.h) : cam);
-  const shownCam = lookEast(rawCam, view.w, scene === 'dba.scene.shore');
+  const shownCam = lookEast(rawCam, view.w, scene === 'dba.scene.shore', undefined, view.h);
   const look = sceneLook(scene);
   const near = spots.filter((spot) => standsAt(scene, spot, pos)).map((spot) => spot.id);
   const glance = spots
@@ -647,7 +834,7 @@ export function WalkLayer({
   const spotIds = spots.map((spot) => spot.id);
   const sleepFoot = SPOTS[scene].find((spot) => spot.id === 'camp-sleep');
   const feetY = resting && sleepFoot ? sleepFoot.y : pos.y;
-  useShoreCuePresentation(viewportRef, scene === 'dba.scene.shore' && getShoreVisualProfile().variant === 'candidate',
+  useShoreCuePresentation(viewportRef, scene === 'dba.scene.shore',
     [shownCam.x, shownCam.y, feetY, plates.current, plates.previous, near.join(','), glance.join(','), spotIds.join(',')].join('|'));
   const exits = gatesFrom(scene);
   // The light is always present at this exit; only its name is proximity-gated.
@@ -681,12 +868,13 @@ export function WalkLayer({
   }, [arrive]);
 
   useEffect(() => () => {
-    window.clearTimeout(reachTimer.current);
     window.clearTimeout(driftSeek.current);
     window.clearTimeout(landTimer.current);
   }, []);
 
-  const catFace = companionFace(catSprite, catPost.x, cat.x);
+  const watchTarget = catPerformance === 'point' ? spots.find(spot => spot.id === catPost.targetId) ?? pos : pos;
+  const catFace = !presentationFrozen && guide === 'hold'
+    ? watchTarget.x < cat.x ? 'left' : 'right' : companionFace(catSprite, catPost.x, cat.x);
   const companionPresentation=useCompanionPresentation(catFigure,catRecovery.revision);
   // A detached old img may still finish/error. Match its committed render, not
   // just a URL that could recur after a scene round-trip or a raw/blob swap.
@@ -694,18 +882,38 @@ export function WalkLayer({
   const catFoot=catGeometry.foot;
   const catScreen = worldToScreen({ x: cat.x, y: cat.y }, catFoot);
   const catInFront = !sharedDepth && cat.y > feetY + 0.012;
-  const firstScreen = useFirstScreenReady(scene);
-  const shoreCandidate = scene === 'dba.scene.shore' && getShoreVisualProfile().variant === 'candidate';
-  const catDiagnostic = shoreCandidate && getShoreVisualProfile().fixture !== null && new URLSearchParams(window.location.search).get('diagnostic') === '1';
+  const shoreCandidate = scene === 'dba.scene.shore';
+  const catDiagnostic = shoreCandidate && getShoreVisualProfile().variant === 'candidate' && getShoreVisualProfile().fixture !== null && new URLSearchParams(window.location.search).get('diagnostic') === '1';
 
 
   // These owners are unconditional for WalkLayer's lifetime; only their stateless views reparent.
   const travelerPresentation=useTravelerPresentation({
     x:resting && sleepFoot?sleepFoot.x:pos.x,y:feetY,facing,moving,stride,
-    pose:resting?'lie':reaching?'reach':'auto',depthZ:catInFront?4:6,
-    presentationFrozen,contactCleanup:shoreCandidate,
+    pose:moving?'auto':body.pose !== 'auto' ? body.pose : resting?'lie':'auto',actionSeq:body.sequence,actionElapsed:body.kind ? body.elapsed : undefined,paused:performancePaused,depthZ:catInFront?4:6,
+    presentationFrozen,contactCleanup:true,
     height:travelerHeight(scene),
   });
+  const displayStatus = firstScreen.status === 'ready' && (!travelerPresentation.current.shown || !companionPresentation.src) ? 'loading' : firstScreen.status;
+  useEffect(() => { onReady?.(scene, displayStatus === 'ready'); }, [onReady, scene, displayStatus]);
+  pausedRef.current = worldPaused || displayStatus !== 'ready';
+  const navigationVisible = !pausedRef.current && !presentationFrozen;
+  const selectedTravel = travel?.gate.from === scene ? travel : null;
+  const rejected = rejectedGround?.scene === scene ? rejectedGround : null;
+  const closeGate = exits.filter(gate => groundDistance(pos, gate) <= .14)
+    .sort((a, b) => groundDistance(pos, a) - groundDistance(pos, b))[0];
+  const navigationKind = rejected ? 'blocked' : selectedTravel ? 'travel' : 'exit';
+  const navigationMessage = !navigationVisible ? null : rejected ? rejected.message
+    : selectedTravel ? `正在前往${gateLabel(selectedTravel.gate.to)} · 走过路口进入，可用方向键或摇杆停下改向。`
+    : closeGate ? `${closeGate.edge ? GATE_DIRECTION[closeGate.edge] : '前方'}路口通往${gateLabel(closeGate.to)} · 走过路口进入。` : null;
+  useEffect(() => {
+    noticeRef.current?.(navigationMessage ? { scene, message: navigationMessage, kind: navigationKind } : null);
+  }, [scene, navigationMessage, navigationKind]);
+  const remainingRoute = navigationVisible && targetRef.current
+    ? [pos, ...groundRoute(scene, pos, targetRef.current)] : [];
+  if (remainingRoute.length && selectedTravel?.phase === 'approach') {
+    remainingRoute.push(...groundRoute(scene, gateApproach(selectedTravel.gate), selectedTravel.gate));
+  }
+  useTravelerAudio(travelerPresentation, scene, pausedRef.current, body.sequence, beat);
   const catNode = (<div
             className="companion-anchor"
             data-testid="companion-anchor"
@@ -737,6 +945,8 @@ export function WalkLayer({
             <CompanionView
               presentation={companionPresentation}
               imageKey={catRecovery.imageKey}
+              imageRevision={catRecovery.revision}
+              imageScope={scene}
               figureRef={catRecovery.imageRef}
               frame={catSprite}
               diagnostic={catDiagnostic}
@@ -763,7 +973,7 @@ export function WalkLayer({
   const travelerNode = <TravelerView presentation={travelerPresentation}/>;
   const depthItems:GroundDepthNode[] = sharedDepth ? depthScenes.flatMap(plate => {
     const leaving = plate !== plates.current;
-    return groundDepthSlots(plate)
+    return groundDepthSlots(plate, painted)
       .filter(slot => leaving || !slot.spot || spotIds.includes(slot.spot))
       .map(slot => ({ id:`${plate}:${slot.id}`, footY:slot.y!, kind:'prop' as const, scene:plate,
         phase:leaving ? 'leaving' as const : plates.previous ? 'entering' as const : 'stable' as const,
@@ -785,17 +995,20 @@ export function WalkLayer({
     <div
       ref={viewportRef}
       className="walk-viewport"
-      data-display={firstScreen.status}
+      data-display={displayStatus}
       data-testid="walk-stage"
       data-blocked={blocked ? 'yes' : 'no'}
       data-near={near.join(' ')}
       data-cam-x={shownCam.x.toFixed(1)}
       data-cam-y={shownCam.y.toFixed(1)}
       data-scene={scene}
+      data-nav-target={selectedTravel?.gate.to ?? ''}
+      data-nav-phase={selectedTravel?.phase ?? ''}
       data-ground-depth={sharedDepth ? 'world' : undefined}
       data-cat-contact-source={shoreCandidate ? 'actual' : undefined}
       data-arrive={arrive ?? 'no'}
-      data-resting={resting ? 'yes' : 'no'}
+      data-resting={restingNow ? 'yes' : 'no'}
+      data-performance-paused={performancePaused ? 'yes' : 'no'}
       data-drank={drank ? 'yes' : 'no'}
       style={{ ['--ambient' as string]: look.ambient, ['--shadow-tint' as string]: look.shadowTint }}
     >
@@ -804,6 +1017,7 @@ export function WalkLayer({
         <div className="world-cam" data-testid="world-camera" style={{ transform: `translate3d(${-shownCam.x}px, ${-shownCam.y}px, 0)`, zIndex: 1 }}>
         <div ref={worldRef} className="world-layer" style={{ width: worldW, height: worldH, ['--world-w' as string]: `${worldW}px` }}>
           <PlateStack
+            painted={painted}
             plate={plates.current}
             previous={plates.previous}
             depthScenes={depthScenes}
@@ -816,32 +1030,39 @@ export function WalkLayer({
             feetY={feetY}
             beat={beat}
           />
+          {worldState && !presentationFrozen ? <WorldStateLayer scene={scene} state={worldState} paused={pausedRef.current} /> : null}
+          {!presentationFrozen ? <GroundGuide scene={scene} visible={navigationVisible && (guidePinned || routesOpen)}
+            route={remainingRoute} blocked={navigationVisible ? rejected?.point : null} /> : null}
           {sharedDepth ? <GroundDepth items={depthItems}/> : null}
-          <div className="walk-ground" data-testid="walk-ground" onPointerDown={onGround} />
+          <div className="walk-ground" data-testid="walk-ground" onPointerDown={onGround} onPointerMove={onGroundHover} />
+          {!presentationFrozen ? <WorldFeedback scene={scene} pos={pos} moving={moving} target={selectedTravel ? null : targetRef.current}
+            response={beat} sequence={interactionSeq} /> : null}
           {exits.map((gate) => {
             const at = pathExitPoint(gate);
             return (
               <button
                 key={gate.to}
                 type="button"
-                className={pathExitNear(pos, gate) ? 'path-exit near' : 'path-exit'}
+                className={`path-exit${!presentationFrozen ? ' wayfinding-exit' : ''}${pathExitNear(pos, gate) ? ' near' : ''}`}
                 data-hearth={gate.from === 'dba.scene.shore' && gate.to === 'dba.scene.camp' ? 'yes' : 'no'}
                 data-testid={`exit-${gate.to.split('.').at(-1)}`}
+                data-gate-x={gate.x} data-gate-y={gate.y} data-gate-radius={gate.r} data-gate-edge={gate.edge}
                 style={{ left: pct(at.x), top: pct(at.y) }}
                 aria-label={gateLabel(gate.to)}
                 onClick={(event) => {
                   event.stopPropagation();
-                  if (!pausedRef.current) seek(gate);
+                  travelTo(gate);
                 }}
               >
                 <i />
-                <span aria-hidden="true">{gateLabel(gate.to)}</span>
+                <span aria-hidden="true">{!presentationFrozen && gate.edge ? `${GATE_ARROW[gate.edge]} ` : ''}{gateLabel(gate.to)}</span>
               </button>
             );
           })}
           {spots.map((spot) => {
             const inside = near.includes(spot.id);
             const reach = inside ? 'near' : glance.includes(spot.id) ? 'glance' : 'far';
+            const art = sceneAssembly(scene)?.slots.find(slot => slot.spot === spot.id && slot.x === spot.x && slot.y === spot.y);
             return (
               <button
                 key={spot.id}
@@ -850,8 +1071,11 @@ export function WalkLayer({
                 data-reach={reach}
                 data-testid={spot.testId}
                 data-result={beat && beat.spot === spot.id ? beat.kind : undefined}
-                style={{ left: pct(spot.x), top: pct(spot.y), right: 'auto', bottom: 'auto' }}
+                style={{ left: pct(spot.x), top: pct(spot.y), right: 'auto', bottom: 'auto',
+                  ...(art?.w && art.h ? { width: `max(44px, ${pct(art.w)})`, height: `max(44px, ${pct(art.h)})`, transform: 'translate(-50%, -100%)' } : {}),
+                }}
                 aria-label={spot.ariaLabel}
+                title={spot.ariaLabel}
                 onClick={(event) => {
                   event.stopPropagation();
                   if (pausedRef.current) return;
@@ -860,8 +1084,9 @@ export function WalkLayer({
                     window.clearTimeout(driftSeek.current);
                     const lineFirst = spot.id === 'shore-driftwood' && !taughtRef.current;
                     if (lineFirst) {
+                      stopWalking();
                       driftSeek.current = window.setTimeout(() => {
-                        if (sceneRef.current !== 'dba.scene.shore') return;
+                        if (sceneRef.current !== 'dba.scene.shore' || pausedRef.current || pending.current) return;
                         seek(spot);
                       }, 720);
                     } else {
@@ -869,7 +1094,7 @@ export function WalkLayer({
                     }
                     return;
                   }
-                  beginReach();
+                  beginReach(spot);
                   interactRef.current(spot.id);
                 }}
               >
@@ -891,6 +1116,7 @@ export function WalkLayer({
           ) : null}
           {!sharedDepth ? travelerNode : null}
           <PlateStack
+            painted={painted}
             plate={plates.current}
             previous={plates.previous}
             depthScenes={depthScenes}
@@ -903,6 +1129,7 @@ export function WalkLayer({
             beat={beat}
           />
           <PlateStack
+            painted={painted}
             plate={plates.current}
             previous={plates.previous}
             depthScenes={depthScenes}
@@ -957,14 +1184,27 @@ export function WalkLayer({
             {t('hint.approach')}
           </p>
         ) : null}
-      <FirstScreenGate state={firstScreen.status} done={firstScreen.done} total={firstScreen.total} onRetry={firstScreen.retry} />
+      <FirstScreenGate state={displayStatus} done={firstScreen.done} total={firstScreen.total} onRetry={firstScreen.retry} />
       <WalkStick
+        disabled={paused || displayStatus !== 'ready'}
         onVector={(vector) => {
+          if (vector) interruptForMovement();
           stickRef.current = vector;
           if (vector) targetRef.current = null;
         }}
       />
     </div>
+    {!paused && displayStatus === 'ready' ? <StageControls scene={scene} exits={exits}
+      nearby={spots.find(spot => spot.id === nearestSpot(spots, pos, scene)?.id) ?? null}
+      guidePinned={guidePinned} onToggleGuide={() => setGuidePinned(value => !value)}
+      onOpenChange={open => { setRoutesOpen(open); if (open) stopWalking(); }}
+      onTravel={travelTo}
+      onInteract={spot => {
+        if (pausedRef.current || !standsAt(sceneRef.current, spot, posRef.current)) return;
+        beginReach(spot);
+        interactRef.current(spot.id);
+      }} /> : null}
+    {!onNavigationNotice ? <NavigationNotice message={navigationMessage} kind={navigationKind} /> : null}
     {hearthGate && hearthAt ? (
       <span
         className="hearth-name"

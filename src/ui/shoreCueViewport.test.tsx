@@ -1,3 +1,4 @@
+vi.mock('./firstScreenReady',()=>({useFirstScreenReady:()=>({status:'ready',done:1,total:1,retry:()=>{}})}));
 import { readFileSync } from 'node:fs';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -21,7 +22,7 @@ const hint = { level:0 as const, anchor:'driftwood' as const, wordId:null, pose:
 function mount(scene = 'dba.scene.shore' as const) {
  const save = newGameState(); const interact = vi.fn(); const remember = vi.fn();
  const props = { scene, drank:false, spots:visibleSpots(scene,save,hint), hint, paused:false, purr:false, knot:'rest' as const,
-  remembered:{x:.33,y:.72}, catPost:companionPost(scene,{}), taught:true,
+  remembered:{x:.37,y:.75}, catPost:companionPost(scene,{}), taught:true,
   onRemember:remember, onExit:vi.fn(), onInteract:interact, onAsk:vi.fn(), onEscape:vi.fn() };
  const view = render(<WalkLayer {...props}/>);
  return { ...view, interact, props };
@@ -68,7 +69,7 @@ describe('candidate shore cue viewport presentation', () => {
   const button=screen.getByTestId('shore-driftwood');const slot=screen.getByTestId('prop-art.shore.prop.driftwood');
   const old={button:button.getAttribute('style'),slot:slot.getAttribute('style'),world:document.querySelector('.world-layer')?.getAttribute('style')};
   refresh();expect({button:button.getAttribute('style'),slot:slot.getAttribute('style'),world:document.querySelector('.world-layer')?.getAttribute('style')}).toEqual(old);
-  expect(WORLD_SCALE).toBe(1.46);
+  expect(WORLD_SCALE).toBe(1.15);
  });
  it('keeps desktop sizes unchanged and ignores a zero-size hidden stick', () => {
   viewport={x:0,y:0,width:1920,height:1072};stick={x:0,y:0,width:0,height:0};mount();
@@ -94,11 +95,11 @@ describe('candidate shore cue viewport presentation', () => {
   const element=cue();view.unmount();expect(element.style.getPropertyValue('--cue-scale')).toBe('');
   expect(disconnects.some(d=>d.mock.calls.length>0)).toBe(true);refresh();
  });
- it('cleans up on baseline and applies no policy to other scenes', () => {
+ it('keeps production cues under old sample queries and cleans up on other scenes', () => {
   const view=mount();expect(cue().style.getPropertyValue('--cue-scale')).not.toBe('');
   history.replaceState({},'','/?shoreVisual=baseline');view.rerender(<WalkLayer {...view.props}/>);
-  expect(screen.getByTestId('walk-stage').dataset.cuePresentation).toBeUndefined();
-  expect(cue().style.getPropertyValue('--cue-scale')).toBe('');view.unmount();
+  expect(screen.getByTestId('walk-stage').dataset.cuePresentation).toBe('viewport');
+  expect(cue().style.getPropertyValue('--cue-scale')).not.toBe('');view.unmount();
   history.replaceState({},'','/?shoreVisual=candidate');const save=newGameState();
   render(<WalkLayer {...view.props} scene="dba.scene.camp" spots={visibleSpots('dba.scene.camp',save,hint)} catPost={companionPost('dba.scene.camp',{})}/>);
   expect(screen.getByTestId('walk-stage').dataset.cuePresentation).toBeUndefined();
@@ -114,17 +115,17 @@ describe('candidate shore cue viewport presentation', () => {
  });
  it('remeasures after real keyboard movement changes the camera/foot revision', () => {
   stick={x:14,y:262,width:112,height:112};mount();expect(cue().dataset.cueObscured).toBe('no');
-  const oldCam=screen.getByTestId('walk-stage').dataset.camY;center={x:108,y:280};
-  fireEvent.keyDown(window,{key:'w',code:'KeyW'});
-  expect(screen.getByTestId('walk-stage').dataset.camY).not.toBe(oldCam);
+  const oldY=screen.getByTestId('traveler').dataset.y;center={x:108,y:280};
+  fireEvent.keyDown(window,{key:'s',code:'KeyS'});
+  expect(screen.getByTestId('traveler').dataset.y).not.toBe(oldY);
   expect(cue().dataset.cueObscured).toBe('yes');
  });
- it('keeps ordinary builds opt-out even on localhost with explicit candidate query', () => {
+ it('ordinary builds also retain accessible viewport-sized cues', () => {
   vi.stubEnv('VITE_VISUAL_SAMPLE','');vi.stubEnv('VITE_SHORE_DEPLOY_ORIGIN','');mount();
-  expect(cue().style.getPropertyValue('--cue-scale')).toBe('');expect(screen.getByTestId('walk-stage').dataset.cuePresentation).toBeUndefined();
+  expect(cue().style.getPropertyValue('--cue-scale')).not.toBe('');expect(screen.getByTestId('walk-stage').dataset.cuePresentation).toBe('viewport');
  });
  it('CSS changes only decoration and outline, keeps reduced-motion, and does not hide all cues', () => {
-  const rules=css.slice(css.indexOf('/* Candidate-only viewport cue presentation.'));
+  const rules=css.slice(css.indexOf('/* Candidate-only viewport cue presentation.'),css.indexOf('/* Production stage:'));
   expect(rules).toContain('scale(var(--cue-scale, 1))');expect(rules).toContain('[data-cue-obscured="yes"]::after');
   expect(rules).toMatch(/width:\s*calc\(4px \/ var\(--cue-scale, 1\)\)/);
   expect(rules).toMatch(/:focus-visible\s*\{[^}]*outline:\s*2px/s);

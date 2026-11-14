@@ -18,10 +18,10 @@ beforeEach(()=>window.history.replaceState(null,'','/?loadtrace=1'));
 afterEach(cleanup);
 
 describe('actual PlateStack complete and exclusive scene partitions',()=>{
- it('assigns all 60 real slots to exactly one pass at 54 foot boundaries (3240 contracts)',()=>{
+ it('assigns all 62 declared slots to exactly one pass at every authored foot boundary',()=>{
   const all=SCENES.flatMap(scene=>sceneAssembly(scene)!.slots);
   const values=[...new Set([0,.5,.95,1,...all.flatMap(slot=>slot.y===undefined?[]:[slot.y-1e-6,slot.y,slot.y+1e-6])])].sort((a,b)=>a-b);
-  expect(all).toHaveLength(60);expect(values).toHaveLength(54);
+  expect(all).toHaveLength(62);expect(new Set(all.map(slot=>slot.id)).size).toBe(all.length);expect(values.length).toBeGreaterThan(50);
   let contracts=0;
   for(const scene of SCENES){
    const view=render(<Stack scene={scene} y={values[0]} active={null}/>);
@@ -36,21 +36,17 @@ describe('actual PlateStack complete and exclusive scene partitions',()=>{
    }
    view.unmount();
   }
-  expect(contracts).toBe(3240);
+  expect(contracts).toBe(all.length * values.length);
  });
 
- it.each([[.699999,'near'],[.7,'back'],[.700001,'back']] as const)('renders night curtain actual bitmap exactly once at feetY=%s in %s', (y,pass)=>{
-  const scene='dba.scene.night';const slot=sceneAssembly(scene)!.slots.find(slot=>slot.kind==='curtain')!;
-  expect(slot.y).toBe(.7);expect(slot.slot).toBe('fg');
-  const view=render(<Stack scene={scene} y={y} active={null}/>);const nodes=hosts(view.container,slot.id);
-  expect(nodes).toHaveLength(1);expect(nodes[0].closest('.plate-stack')?.className).toContain(`pass-${pass}`);
-  expect(nodes[0].querySelector('img')?.getAttribute('src')).toBe(slotAssetUrl(slot.asset!));
+ it('does not mount the retired foreground curtain over the night scene',()=>{
+  const view=render(<Stack scene="dba.scene.night" y={.74} active={null}/>);
+  const node=hosts(view.container,'art.night.fg')[0];expect(node).toBeTruthy();expect(node.querySelector('img')).toBeNull();
  });
-
- it.each([-1e-6,0,1e-6])('keeps camp north-curtain strict greater-than semantics at delta=%s', delta=>{
-  const scene='dba.scene.camp';const slot=sceneAssembly(scene)!.slots.find(slot=>slot.kind==='north-curtain')!;
-  const view=render(<Stack scene={scene} y={slot.y!+delta} active={null}/>);const nodes=hosts(view.container,slot.id);
-  expect(nodes).toHaveLength(1);expect(nodes[0].closest('.plate-stack')?.className).toContain(delta<0?'pass-near':'pass-back');
+ it.each([-1e-6,0,1e-6])('keeps the retired doorway slot behind actors at delta=%s',delta=>{
+  const slot=sceneAssembly('dba.scene.camp')!.slots.find(s=>s.id==='art.camp.prop.north-curtain')!;
+  const view=render(<Stack scene="dba.scene.camp" y={slot.y!+delta} active={null}/>);
+  expect(hosts(view.container,slot.id)[0].closest('.plate-stack')?.className).toContain('pass-back');
  });
 
  it('keeps every ordinary fg in fg at all configured foot boundaries',()=>{

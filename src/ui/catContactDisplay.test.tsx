@@ -47,7 +47,7 @@ describe('production RAF actual cat contact band and explicit fixture diagnostic
   expect(d.actualFrame).toBe(S1);expect(d.desiredFrame).toBe(S2);expect(d.legacySoleRow).toBe(976);expect(d.supportStatus).toBe('legacy-declared');
   expect(d.currentSrc).toBe(new URL(actual,document.baseURI).href);expect(d.natural).toEqual({width:864,height:1152});
   expect(d.rect).toEqual({left:300,top:200,width:129.6,height:172.8});expect(d.mirror).toBe('right');expect(d.guide).toBe('hold');expect(d.clip).toBe('land');
-  expect(d.hop.eligible).toBe(false);expect(d.logicalFoot.normalized).toEqual({x:.85,y:.63});expect(d.logicalFoot.viewport.x).toBeCloseTo(-180+.85*1870-20,7);
+  expect(d.hop.eligible).toBe(false);expect(d.logicalFoot.normalized).toEqual({x:.85,y:.74});expect(d.logicalFoot.viewport.x).toBeCloseTo(-180+.85*1870-20,7);
   expect(img.dataset.displayedFrame).toBe(S1);expect(img.dataset.supportStatus).toBe('legacy-declared');
  });
  it('unknown actual fallback is not coerced into desiredS2; hides only unmatched contact, not cat',async()=>{

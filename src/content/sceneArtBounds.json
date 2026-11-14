@@ -1,0 +1,382 @@
+{
+  "art.camp.building": {
+    "width": 1536,
+    "height": 1024,
+    "box": [
+      75,
+      51,
+      1399,
+      938
+    ]
+  },
+  "art.camp.prop.act-drink": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      584,
+      517,
+      111,
+      193
+    ]
+  },
+  "art.camp.prop.act-eat": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      509,
+      517,
+      261,
+      193
+    ]
+  },
+  "art.camp.prop.act-home": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      580,
+      517,
+      120,
+      193
+    ]
+  },
+  "art.camp.prop.act-me": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      567,
+      517,
+      145,
+      193
+    ]
+  },
+  "art.camp.prop.act-take": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      515,
+      517,
+      250,
+      193
+    ]
+  },
+  "art.camp.prop.act-walk": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      581,
+      517,
+      118,
+      193
+    ]
+  },
+  "art.camp.prop.act-you": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      567,
+      517,
+      145,
+      193
+    ]
+  },
+  "art.camp.prop.fire": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      462,
+      530,
+      355,
+      179
+    ]
+  },
+  "art.camp.prop.nanaicha": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      427,
+      346,
+      425,
+      368
+    ]
+  },
+  "art.camp.prop.north-curtain": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      309,
+      19,
+      704,
+      674
+    ]
+  },
+  "art.camp.prop.paper-bundles": {
+    "width": 1280,
+    "height": 703,
+    "box": [
+      453,
+      532,
+      374,
+      171
+    ]
+  },
+  "art.camp.prop.sleep-mat.interact": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      459,
+      544,
+      361,
+      164
+    ]
+  },
+  "art.camp.prop.sleep-mat": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      457,
+      544,
+      367,
+      161
+    ]
+  },
+  "art.hall.building": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      207,
+      194,
+      868,
+      520
+    ]
+  },
+  "art.hall.prop.scroll-wall": {
+    "width": 743,
+    "height": 306,
+    "box": [
+      0,
+      0,
+      743,
+      306
+    ]
+  },
+  "art.hall.prop.stamp-rail": {
+    "width": 540,
+    "height": 162,
+    "box": [
+      0,
+      0,
+      540,
+      162
+    ]
+  },
+  "art.hall.prop.wrist-knot": {
+    "width": 512,
+    "height": 512,
+    "box": [
+      19,
+      33,
+      486,
+      471
+    ]
+  },
+  "art.night.building": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      342,
+      238,
+      749,
+      477
+    ]
+  },
+  "art.night.prop.embers": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      488,
+      257,
+      304,
+      206
+    ]
+  },
+  "art.night.prop.old-layer": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      267,
+      400,
+      746,
+      306
+    ]
+  },
+  "art.path.building": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      120,
+      23,
+      890,
+      690
+    ]
+  },
+  "art.path.prop.danger-board": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      474,
+      112,
+      330,
+      596
+    ]
+  },
+  "art.path.prop.step-stones": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      531,
+      293,
+      218,
+      134
+    ]
+  },
+  "art.shore.building": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      90,
+      54,
+      888,
+      653
+    ]
+  },
+  "art.shore.prop.break-shard": {
+    "width": 1152,
+    "height": 864,
+    "box": [
+      310,
+      651,
+      539,
+      197
+    ]
+  },
+  "art.shore.prop.driftwood.interact": {
+    "width": 1152,
+    "height": 864,
+    "box": [
+      342,
+      658,
+      466,
+      190
+    ]
+  },
+  "art.shore.prop.driftwood": {
+    "width": 1152,
+    "height": 864,
+    "box": [
+      339,
+      663,
+      474,
+      185
+    ]
+  },
+  "art.shore.prop.east-gap": {
+    "width": 1152,
+    "height": 864,
+    "box": [
+      331,
+      272,
+      453,
+      574
+    ]
+  },
+  "art.shore.prop.gourd": {
+    "width": 1024,
+    "height": 1024,
+    "box": [
+      226,
+      575,
+      571,
+      435
+    ]
+  },
+  "art.shore.prop.mural-wall": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      159,
+      127,
+      958,
+      589
+    ]
+  },
+  "art.shore.prop.nanaicha": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      455,
+      254,
+      370,
+      441
+    ]
+  },
+  "art.yard.building": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      199,
+      198,
+      881,
+      508
+    ]
+  },
+  "art.yard.prop.dried-fish": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      463,
+      388,
+      355,
+      323
+    ]
+  },
+  "art.yard.prop.grain-bags.interact": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      553,
+      579,
+      173,
+      133
+    ]
+  },
+  "art.yard.prop.grain-bags": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      553,
+      579,
+      173,
+      133
+    ]
+  },
+  "art.yard.prop.more-less-boards": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      520,
+      502,
+      238,
+      208
+    ]
+  },
+  "art.yard.prop.nanaicha": {
+    "width": 1280,
+    "height": 720,
+    "box": [
+      469,
+      270,
+      342,
+      439
+    ]
+  }
+}

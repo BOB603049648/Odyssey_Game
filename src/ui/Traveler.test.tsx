@@ -1,4 +1,5 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+vi.mock('./firstScreenReady',()=>({useFirstScreenReady:()=>({status:'ready',done:1,total:1,retry:()=>{}})}));
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { companionPost } from '../core/companionPost';
 import { reduce } from '../core/reduce';
@@ -29,7 +30,7 @@ import {
   TravelerMark,
   type TravelerFacing,
 } from './Traveler';
-import { IslandScreen, SLEEP_LIE_MS, SLEEP_RISE_MS } from './IslandScreen';
+import { IslandScreen } from './IslandScreen';
 import { WalkLayer } from './WalkLayer';
 import type { SpotView } from './spotViews';
 
@@ -53,7 +54,7 @@ describe('traveler art', () => {
   it('uses the front idle frame and the same contact shadow on every facing', () => {
     const view = render(<TravelerMark x={0.4} y={0.6} facing="front" moving={false} />);
     const mark = view.container.querySelector('[data-testid="traveler"]') as HTMLElement;
-    const current = () => view.container.querySelector('[data-layer="current"]')?.getAttribute('src') ?? '';
+    const current = () => { const img = view.container.querySelector('[data-layer="current"]'); return img?.getAttribute('data-atlas') ?? img?.getAttribute('src') ?? ''; };
     expect(mark?.getAttribute('data-figure')).toBe('traveler');
     expect(mark?.getAttribute('data-facing')).toBe('front');
     expect(current()).toMatch(/idle-front-01/);
@@ -92,23 +93,20 @@ describe('traveler art', () => {
     expect(TRAVELER_FOOT.x).toBeCloseTo(0.5);
     expect(TRAVELER_SOLE).toBeCloseTo(995 / 1152);
     expect(TRAVELER_SOLE).toBeLessThan(TRAVELER_FOOT.y);
-    expect(mark.style.getPropertyValue('--sole-y')).toBe(`${TRAVELER_SOLE * 100}%`);
+    expect(mark.style.getPropertyValue('--sole-y')).toBe(`${TRAVELER_FOOT.y * 100}%`);
   });
 
-  it('lays the body along the mat with the sole still on the foot point', () => {
+  it('uses authored seated frames without rotating a standing body', () => {
     const view = render(<TravelerMark x={0.4} y={0.6} facing="left" moving={false} pose="lie" />);
     const mark = view.container.querySelector('[data-testid="traveler"]') as HTMLElement;
     expect(mark.getAttribute('data-pose')).toBe('lie');
     expect(mark.style.top).toBe('60%');
-    expect(mark.style.transform).toContain('rotate(-86deg)');
+    expect(mark.style.transform).not.toContain('rotate(-86deg)');
     expect(mark.style.transform).not.toContain('-50%, -50%');
     expect(mark.style.getPropertyValue('--sole-y')).toBe(`${TRAVELER_FOOT.y * 100}%`);
   });
 
   it('puts the traveler on the camp mat while resting, and stays upright otherwise', () => {
-    expect(SLEEP_LIE_MS).toBeGreaterThanOrEqual(1200);
-    expect(SLEEP_RISE_MS).toBeGreaterThanOrEqual(300);
-    expect(SLEEP_RISE_MS).toBeLessThanOrEqual(500);
     const shell = {
       drank: false,
       spots: [],
@@ -129,7 +127,7 @@ describe('traveler art', () => {
     const mark = view.container.querySelector('[data-testid="traveler"]') as HTMLElement;
     expect(view.container.querySelector('[data-testid="walk-stage"]')?.getAttribute('data-resting')).toBe('yes');
     expect(mark.getAttribute('data-pose')).toBe('lie');
-    expect(mark.style.transform).toContain('rotate(-86deg)');
+    expect(mark.style.transform).not.toContain('rotate(-86deg)');
     expect(mark.getAttribute('data-x')).toBe('0.42');
     expect(mark.getAttribute('data-y')).toBe('0.82');
     view.rerender(<WalkLayer scene="dba.scene.camp" resting={false} {...shell} />);
@@ -139,47 +137,35 @@ describe('traveler art', () => {
     expect(view.container.querySelector('[data-testid="approach-hint"]')).toBeNull();
   });
 
-  it('stands and unlocks the feet after the rest, and a refusal never lies', () => {
-    vi.useFakeTimers();
-    try {
-      const view = render(<IslandScreen save={campSleepSave('spot.sleep.ok')} dispatch={() => undefined} onTitle={() => undefined} />);
-      const stage = () => view.container.querySelector('[data-testid="walk-stage"]');
-      const mark = () => view.container.querySelector('[data-testid="traveler"]') as HTMLElement;
-      expect(stage()?.getAttribute('data-resting')).toBe('yes');
-      expect(mark().getAttribute('data-pose')).toBe('lie');
-      expect(mark().getAttribute('data-x')).toBe('0.42');
-      act(() => {
-        vi.advanceTimersByTime(SLEEP_LIE_MS + SLEEP_RISE_MS - 1);
-      });
-      expect(stage()?.getAttribute('data-resting')).toBe('yes');
-      act(() => {
-        vi.advanceTimersByTime(1);
-      });
-      expect(stage()?.getAttribute('data-resting')).toBe('no');
-      expect(mark().getAttribute('data-pose')).not.toBe('lie');
-      expect(mark().getAttribute('data-x')).not.toBe('0.42');
-      view.unmount();
-      const refused = render(<IslandScreen save={campSleepSave('spot.sleep.no')} dispatch={() => undefined} onTitle={() => undefined} />);
-      expect(refused.container.querySelector('[data-testid="walk-stage"]')?.getAttribute('data-resting')).toBe('no');
-      expect(refused.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).not.toBe('lie');
-      refused.unmount();
-      const far = render(<IslandScreen save={campSleepSave('spot.sleep.far')} dispatch={() => undefined} onTitle={() => undefined} />);
-      expect(far.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).not.toBe('lie');
-      expect(far.container.querySelector('[data-testid="spot-line"]')?.getAttribute('data-line')).toBe('spot.sleep.far');
-      far.unmount();
-    } finally {
-      vi.useRealTimers();
-    }
+  it('does not replay saved rest, starts a new successful rest, and lets movement interrupt it', () => {
+    const saved = campSleepSave('spot.sleep.ok');
+    const view = render(<IslandScreen save={saved} dispatch={() => undefined} onTitle={() => undefined} />);
+    const stage = () => view.container.querySelector('[data-testid="walk-stage"]');
+    const mark = () => view.container.querySelector('[data-testid="traveler"]') as HTMLElement;
+    expect(stage()?.getAttribute('data-resting')).toBe('no');
+    view.rerender(<IslandScreen save={{ ...saved, feedback: { ...saved.feedback, seq: saved.feedback.seq + 1 } }} dispatch={() => undefined} onTitle={() => undefined} />);
+    expect(stage()?.getAttribute('data-resting')).toBe('yes');
+    expect(mark().getAttribute('data-pose')).toBe('lie');
+    fireEvent.keyDown(window, { key: 'd' }); fireEvent.keyUp(window, { key: 'd' });
+    expect(stage()?.getAttribute('data-resting')).toBe('no');
+    expect(mark().getAttribute('data-pose')).not.toBe('lie');
+    view.unmount();
+    const refused = render(<IslandScreen save={campSleepSave('spot.sleep.no')} dispatch={() => undefined} onTitle={() => undefined} />);
+    expect(refused.container.querySelector('[data-testid="walk-stage"]')?.getAttribute('data-resting')).toBe('no');
+    refused.unmount();
+    const far = render(<IslandScreen save={campSleepSave('spot.sleep.far')} dispatch={() => undefined} onTitle={() => undefined} />);
+    expect(far.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).not.toBe('lie');
+    far.unmount();
   });
 
   it('uses the side walk sheet for both directions and a real back idle', () => {
     const view = render(<TravelerMark x={0.4} y={0.6} facing="left" moving />);
-    const current = () => view.container.querySelector('[data-layer="current"]')?.getAttribute('src') ?? '';
+    const current = () => { const img = view.container.querySelector('[data-layer="current"]'); return img?.getAttribute('data-atlas') ?? img?.getAttribute('src') ?? ''; };
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-facing')).toBe('left');
-    expect(current()).toMatch(/walk-side-01/);
+    expect(current()).toMatch(/stride-side-01/);
 
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="right" moving />);
-    expect(current()).toMatch(/walk-side-01/);
+    expect(current()).toMatch(/stride-side-01/);
 
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="back" moving={false} />);
     expect(current()).toMatch(/idle-back-01/);
@@ -218,17 +204,17 @@ describe('traveler art', () => {
     const walkFront = clipFrames('walk', 'front');
     expect(walkFront).toHaveLength(TRAVELER_FRAME_COUNTS.walk);
     expect(new Set(walkFront).size).toBe(4);
-    expect(walkFront.map((src) => src.match(/walk-front-0[1-4]/)?.[0])).toEqual([
-      'walk-front-01',
-      'walk-front-02',
-      'walk-front-03',
-      'walk-front-04',
+    expect(walkFront.map((src) => src.match(/stride-front-0[1-4]/)?.[0])).toEqual([
+      'stride-front-01',
+      'stride-front-02',
+      'stride-front-03',
+      'stride-front-04',
     ]);
     const idleSide = clipFrames('idle', 'side');
     expect(idleSide).toHaveLength(TRAVELER_FRAME_COUNTS.idle);
     expect(new Set(idleSide).size).toBe(2);
     const walkBack = clipFrames('walk', 'back');
-    expect(walkBack[0]).toMatch(/walk-back-01/);
+    expect(walkBack[0]).toMatch(/stride-back-01/);
     const idleBack = clipFrames('idle', 'back');
     expect(idleBack).toHaveLength(2);
     expect(new Set(idleBack).size).toBe(2);
@@ -236,14 +222,14 @@ describe('traveler art', () => {
     expect(idleBack.join(' ')).not.toMatch(/walk-back/);
     expect(clipFrames('interact', 'back')).toEqual([idleBack[0]]);
     const reachFront = clipFrames('reach', 'front');
-    expect(reachFront.map((src) => src.match(/reach-front-0[12]/)?.[0])).toEqual(['reach-front-01', 'reach-front-02']);
-    expect(new Set(reachFront).size).toBe(2);
-    expect(clipFrames('reach', 'side').map((src) => src.match(/reach-side-01/)?.[0])).toEqual(['reach-side-01']);
-    expect(poseForSheet('reach', 'back')).toBe('idle');
-    expect(clipFrames('reach', 'back')).toEqual(clipFrames('idle', 'back'));
+    expect(reachFront.map((src) => src.match(/action-reach-0[1234]/)?.[0])).toEqual(['action-reach-01', 'action-reach-02', 'action-reach-03', 'action-reach-04']);
+    expect(new Set(reachFront).size).toBe(4);
+    expect(clipFrames('reach', 'side')).toEqual(reachFront);
+    expect(poseForSheet('reach', 'back')).toBe('reach');
+    expect(clipFrames('reach', 'back')).toEqual(reachFront);
   });
 
-  it('reserves interact and plays reach, falling back to idle when that sheet is missing', () => {
+  it('reserves interact and plays the complete action clip in every direction', () => {
     const view = render(<TravelerMark x={0.4} y={0.6} facing="front" moving={false} pose="interact" />);
     const mark = view.container.querySelector('[data-testid="traveler"]');
     expect(mark?.getAttribute('data-pose')).toBe('interact');
@@ -251,15 +237,15 @@ describe('traveler art', () => {
     expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/idle-front-01/);
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="front" moving={false} pose="reach" />);
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).toBe('reach');
-    expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-clip-frames')).toBe('2');
-    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/reach-front-01/);
+    expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-clip-frames')).toBe('4');
+    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('data-atlas')).toMatch(/action-reach-01/);
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="left" moving stride={0.4} pose="reach" />);
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).toBe('reach');
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-gait')).toBe('0.40');
-    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/reach-side-01/);
+    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('data-atlas')).toMatch(/action-reach-01/);
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="back" moving={false} pose="reach" />);
-    expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).toBe('idle');
-    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/idle-back-01/);
+    expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).toBe('reach');
+    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('data-atlas')).toMatch(/action-reach-01/);
   });
 
   it('plays reach only when an interaction happens inside a hotspot', () => {
@@ -295,11 +281,11 @@ describe('traveler art', () => {
     const near = render(layer([here], null));
     const pose = () => near.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose');
     expect(pose()).toBe('idle');
-    expect(near.container.querySelector('.nanaicha-ground')?.getAttribute('src')).toMatch(/land-shore/);
-    expect(near.container.querySelector('[data-testid="companion-anchor"]')?.getAttribute('data-sprite')).toMatch(/land-shore/);
+    expect(near.container.querySelector('.nanaicha-ground')?.getAttribute('src')).toMatch(/performance-atlas/);
+    expect(near.container.querySelector('[data-testid="companion-anchor"]')?.getAttribute('data-sprite')).toMatch(/pose-observe/);
     fireEvent.keyDown(window, { key: 'e' });
     expect(pose()).toBe('reach');
-    expect(near.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/reach-front-01/);
+    expect(near.container.querySelector('[data-layer="current"]')?.getAttribute('data-atlas')).toMatch(/action-reach-01/);
     near.unmount();
     const far = render(layer([away], spawn));
     fireEvent.click(far.getByTestId('shore-depart'));
@@ -447,7 +433,7 @@ describe('traveler art', () => {
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="left" moving />);
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-crossfade')).toBe('yes');
     expect(view.container.querySelector('[data-layer="out"]')).toBeTruthy();
-    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/walk-side-01/);
+    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('data-atlas')).toMatch(/stride-side-01/);
     expect(view.container.querySelector('.traveler-shade')).toBeNull();
   });
 

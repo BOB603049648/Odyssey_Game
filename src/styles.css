@@ -31,6 +31,24 @@ body {
   overscroll-behavior: none;
 }
 
+.save-warning {
+  position: fixed;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  margin: 0;
+  padding: .65rem 1rem;
+  border: 1px solid #bda573;
+  border-radius: .4rem;
+  background: #29251f;
+  color: #fff0d0;
+  font-size: .875rem;
+  pointer-events: none;
+}
+
 button, input { font: inherit; color: inherit; }
 
 button {
@@ -130,9 +148,8 @@ h1 {
   background:
     linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, transparent 26%, transparent 62%, rgba(0, 0, 0, 0.62) 100%);
 }
-/* Opened shore sky made the generic 0.62 south wash read as a black belt
-   (browser y≈538/576). Soften only this scene; other island scenes keep the wrap. */
-.shore-wrap[data-scene="dba.scene.shore"]::before {
+/* The scene already has ambient grading. Keep foreground props readable. */
+.shore-wrap::before {
   background:
     linear-gradient(180deg, rgba(0, 0, 0, 0.28) 0%, transparent 22%, transparent 78%, rgba(0, 0, 0, 0.2) 100%);
 }
@@ -684,7 +701,7 @@ h1 {
      hid the contact bridge (rows 1132–1143). */
 }
 
-.traveler-frames { position: relative; height: 100%; }
+.traveler-frames { display: block; position: relative; height: 100%; }
 .traveler-frame-wrap { display: block; position: relative; height: 100%; }
 .traveler-frame-wrap[data-mirror="yes"] { transform: scaleX(-1); }
 .traveler-frame {
@@ -998,51 +1015,6 @@ h1 {
   background: linear-gradient(135deg, transparent 46%, rgba(230, 211, 164, 0.9) 48% 52%, transparent 54%);
 }
 
-.hud-compass {
-  position: absolute;
-  z-index: 3;
-  right: calc(22px + var(--safe-right));
-  bottom: calc(16px + var(--safe-bottom));
-  width: 132px;
-  height: 62px;
-  pointer-events: none;
-  color: rgba(243, 234, 220, 0.82);
-  font-size: 0.68rem;
-  letter-spacing: 0.14em;
-}
-
-.hud-compass .tick { position: absolute; }
-.hud-compass .sw { left: 0; bottom: 18px; }
-.hud-compass .nw { left: 28px; top: 0; }
-.hud-compass .e { left: 18px; bottom: 0; }
-.hud-compass .rose {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 52px;
-  height: 52px;
-  border: 1px solid rgba(243, 234, 220, 0.55);
-  border-radius: 50%;
-  background:
-    linear-gradient(rgba(243, 234, 220, 0.75), rgba(243, 234, 220, 0.75)) center/1px 70% no-repeat,
-    linear-gradient(rgba(243, 234, 220, 0.75), rgba(243, 234, 220, 0.75)) center/70% 1px no-repeat;
-}
-
-.hud-compass .rose::before,
-.hud-compass .rose::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 7px;
-  height: 7px;
-  border-top: 1px solid rgba(243, 234, 220, 0.8);
-  border-right: 1px solid rgba(243, 234, 220, 0.8);
-}
-
-.hud-compass .rose::before { transform: translate(-50%, -90%) rotate(-45deg); }
-.hud-compass .rose::after { transform: translate(-50%, 10%) rotate(135deg); }
-
 .hotspot.memory { left: 8%; bottom: 16%; }
 
 .shore-wrap[data-hotspots="on"] .hotspot,
@@ -1174,6 +1146,9 @@ h1 {
 .casefile figcaption { margin-top: 6px; }
 
 .mural-screen {
+  height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: calc(78px + var(--safe-top)) calc(4vw + var(--safe-right)) calc(28px + var(--safe-bottom)) calc(4vw + var(--safe-left));
   background: #14110e;
 }
@@ -1190,17 +1165,45 @@ h1 {
   align-items: center;
 }
 
+.plate-wash[data-plate="mural"] {
+  background: linear-gradient(90deg, rgba(14, 12, 9, .3), rgba(14, 12, 9, .88) 52%, rgba(14, 12, 9, .94)),
+    url('./assets/art/mural.jpg') center / cover;
+}
+
+.mural-guidance {
+  position: relative;
+  z-index: 3;
+  width: min(680px, 100%);
+  margin: 0 0 20px auto;
+  color: var(--bone);
+}
+.mural-guidance p { margin: 0 0 8px; }
+.mural-guidance .mural-progress { font-size: .85rem; color: var(--gold); }
+.journey-status { pointer-events: auto; margin-top: 8px; }
+.journey-checklist { grid-column: 1 / -1; }
+.journey-checklist h2 { font-size: 1rem; margin: 0 0 12px; }
+.journey-checklist ol { list-style: none; padding: 0; margin: 0; }
+.journey-checklist li { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+.journey-state { margin-left: auto; font-size: .85rem; }
+.journey-checklist [data-complete="yes"] { color: var(--gold); }
+.journey-optional { opacity: .75; font-size: .85rem; }
+
 .bands {
   position: relative;
   z-index: 3;
   grid-template-columns: repeat(5, 1fr);
-  width: min(520px, 100%);
+  width: min(680px, 100%);
   margin: 0 0 16px auto;
 }
 
 .band {
-  min-height: 8px;
-  height: 8px;
+  min-height: 48px;
+  height: auto;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 6px 2px;
+  font-size: .85rem;
   border-radius: 1px;
   background: rgba(8, 8, 8, 0.35);
   border-bottom: 1px solid var(--gold-line);
@@ -1212,9 +1215,10 @@ h1 {
 .band:disabled { opacity: 0.35; }
 .band.on {
   outline: none;
-  background: rgba(230, 211, 164, 0.72);
+  background: rgba(230, 211, 164, 0.16);
   box-shadow: 0 0 12px rgba(230, 211, 164, 0.35);
 }
+.band small { font-size: .75rem; }
 
 .grid, .tray, .choices, .lexicon {
   position: relative;
@@ -1324,9 +1328,13 @@ h1 {
 }
 
 .mural-screen .companion {
-  position: absolute;
-  right: calc(4vw + var(--safe-right));
-  bottom: calc(18px + var(--safe-bottom));
+  position: relative;
+  align-self: flex-end;
+  flex: 0 0 auto;
+  width: 160px;
+  margin: 24px 12px 0 0;
+  right: auto;
+  bottom: auto;
   z-index: 3;
 }
 
@@ -1593,13 +1601,6 @@ h1 {
     font-size: 0.92rem;
   }
 
-  .hud-compass {
-    right: calc(8px + var(--safe-right));
-    bottom: calc(6px + var(--safe-bottom));
-    transform: scale(0.82);
-    transform-origin: bottom right;
-  }
-
   .companion-anchor {
     width: auto;
   }
@@ -1662,12 +1663,12 @@ h1 {
   }
 
   .band {
-    min-height: 44px;
-    height: 44px;
+    min-height: 52px;
+    height: auto;
     background: transparent;
-    border-bottom: 0;
+    border-bottom: 1px solid var(--gold-line);
     display: grid;
-    align-items: end;
+    align-items: center;
   }
 
   .band .moss {
@@ -1678,7 +1679,8 @@ h1 {
   }
 
   .band.on {
-    background: transparent;
+    background: rgba(230, 211, 164, .16);
+    border-bottom-color: var(--gold);
     box-shadow: none;
   }
 
@@ -1753,17 +1755,6 @@ h1 {
    camera is clamped, so the south-gap filler is not needed on shore. */
 .walk-viewport[data-scene="dba.scene.shore"] .ground-fill {
   visibility: hidden;
-}
-/* Camp and yard building plates end in a hard vertical cut on the east.
-   Fade that edge into the ground plate so the modules meet. */
-.walk-viewport[data-scene="dba.scene.camp"] .scene-slot[data-slot="building"] .slot-asset,
-.walk-viewport[data-scene="dba.scene.yard"] .scene-slot[data-slot="building"] .slot-asset {
-  -webkit-mask-image: linear-gradient(90deg, #000 0 62%, transparent 80%);
-  mask-image: linear-gradient(90deg, #000 0 62%, transparent 80%);
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
 }
 .prop-body {
   position: relative;
@@ -2045,7 +2036,7 @@ h1 {
 .walk-viewport[data-scene="dba.scene.yard"] .world-ambient { opacity: 0.22; }
 .walk-viewport[data-scene="dba.scene.yard"] .world-strip { opacity: 0.16; }
 .world-vignette {
-  background: radial-gradient(ellipse at 50% 46%, transparent 42%, rgba(0, 0, 0, 0.42) 100%);
+  background: radial-gradient(ellipse at 50% 46%, transparent 52%, rgba(0, 0, 0, 0.22) 100%);
 }
 .walk-viewport[data-scene="dba.scene.shore"] .world-vignette {
   background: radial-gradient(ellipse at 50% 46%, transparent 58%, rgba(0, 0, 0, 0.16) 100%);
@@ -2229,6 +2220,15 @@ h1 {
 .approach-hint {
   bottom: calc(72px + var(--safe-bottom));
 }
+.diegetic-line {
+  bottom: calc(94px + var(--safe-bottom));
+  width: calc(100% - 32px);
+  max-width: 32em;
+  padding: 6px 12px;
+  box-sizing: border-box;
+  text-align: center;
+  background: linear-gradient(90deg, transparent, #06080aa6 15%, #06080aa6 85%, transparent);
+}
 .approach-hint.once {
   font-size: 1.2rem;
   letter-spacing: 0.16em;
@@ -2370,29 +2370,6 @@ h1 {
   filter: blur(4px);
 }
 
-.walk-viewport[data-scene="dba.scene.shore"] .scene-slot[data-cue="far"] .prop-cue {
-  width: 52px;
-  height: 16px;
-  opacity: 0.82;
-  border-color: rgba(224, 210, 176, 0.85);
-  background: radial-gradient(ellipse at center, rgba(236, 226, 200, 0.7), rgba(140, 128, 100, 0.05) 72%);
-  box-shadow: 0 0 12px rgba(214, 196, 154, 0.55);
-}
-.walk-viewport[data-scene="dba.scene.shore"] .scene-slot[data-cue="glance"] .prop-cue {
-  width: 64px;
-  height: 18px;
-  opacity: 1;
-  border-color: rgba(236, 220, 180, 0.95);
-  background: radial-gradient(ellipse at center, rgba(244, 232, 204, 0.92), rgba(180, 150, 90, 0.12) 70%);
-  box-shadow: 0 0 18px rgba(232, 210, 160, 0.9);
-}
-.walk-viewport[data-scene="dba.scene.shore"] .scene-slot.lit .prop-cue,
-.walk-viewport[data-scene="dba.scene.shore"] .scene-slot[data-cue="near"] .prop-cue {
-  width: 72px;
-  height: 18px;
-  opacity: 1;
-  box-shadow: 0 0 22px rgba(236, 220, 180, 0.95);
-}
 .walk-viewport .world-layer .hotspot.near,
 .walk-viewport .world-layer .hotspot.hint-near {
   color: transparent;
@@ -2513,3 +2490,89 @@ h1 {
   outline: 2px solid rgba(236, 220, 180, 0.95);
   outline-offset: 2px;
 }
+
+/* Production stage: one aspect ratio, subject bounds and depth order. */
+.walk-viewport, .world-root { overflow: clip; }
+.scene-slot .subject-art { overflow: hidden; }
+.walk-viewport .scene-grade { opacity: .16; }
+.walk-viewport .sole-soft.cat-sole { display: none; }
+.walk-viewport .companion-anchor::after { display: none; }
+.walk-viewport .scene-slot .prop-cue,
+.walk-viewport .scene-slot.lit .prop-cue,
+.walk-viewport .scene-slot[data-cue] .prop-cue {
+  width: 9px;
+  height: 9px;
+  border: 1px solid rgba(249,225,168,.8);
+  background: rgba(31,39,40,.5);
+  box-shadow: 0 0 4px rgba(249,225,168,.35);
+  border-radius: 50%;
+}
+
+/* Viewport controls share no transforms with the scrolling game world. */
+.stage-controls { position: absolute; inset: 0; z-index: 12; pointer-events: none; }
+.stage-interaction { position: absolute; bottom: calc(24px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); max-width: calc(100% - 260px); }
+.stage-action, .route-toggle, .route-panel button {
+  min-height: 44px;
+  border: 1px solid rgba(230,211,164,.46);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--bone);
+  background: rgba(16,27,30,.92);
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+.stage-action { display: flex; align-items: center; gap: 10px; justify-content: center; max-width: 100%; box-shadow: 0 2px 14px #0005; }
+.stage-action .glyph { flex: 0 0 24px; width: 24px; height: 24px; }
+.stage-action kbd { opacity: .65; font: inherit; font-size: 12px; border: 1px solid currentColor; border-radius: 3px; padding: 1px 5px; }
+.movement-help { margin: 0; color: #e6dfd0; font-size: 12px; line-height: 1.7; text-align: center; text-shadow: 0 1px 4px #000, 0 1px 8px #000; }
+.movement-help span { display: block; }
+.stage-routes { position: absolute; right: calc(24px + var(--safe-right)); bottom: calc(22px + var(--safe-bottom)); pointer-events: auto; }
+.route-toggle { display: flex; align-items: center; gap: 8px; }
+.route-toggle span { font-size: 22px; line-height: 1; }
+.route-panel { position: absolute; bottom: 54px; right: 0; width: 190px; display: grid; gap: 6px; padding: 12px; border: 1px solid var(--gold-line); border-radius: 10px; background: #101b1ef5; box-shadow: 0 8px 30px #0006; }
+.route-panel p { margin: 0 0 4px; color: #c9c4b8; font-size: 12px; }
+.route-panel button { display: flex; align-items: center; gap: 12px; text-align: left; background: #ffffff06; }
+.stage-action:hover, .route-toggle:hover, .route-panel button:hover { background: #30403f; }
+.stage-controls button:focus-visible { outline: 2px solid #f2d99c; outline-offset: 3px; }
+.walk-stick[aria-disabled="true"] { pointer-events: none; opacity: .3; }
+@media (pointer: coarse) {
+  .keyboard-help, .stage-action kbd { display: none !important; }
+  .stage-interaction { left: calc(142px + var(--safe-left)); right: calc(110px + var(--safe-right)); transform: none; max-width: none; bottom: calc(24px + var(--safe-bottom)); }
+  .stage-action { width: 100%; padding: 10px 8px; gap: 6px; }
+  .stage-routes { right: calc(14px + var(--safe-right)); }
+  .movement-help { font-size: 11px; }
+}
+.walk-viewport .scene-slot[data-cue="far"] .prop-cue { opacity: .4; }
+.walk-viewport .scene-slot[data-cue="near"] .prop-cue { opacity: 1; }
+.walk-viewport .world-layer .hotspot {
+  min-width: 44px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+}
+.walk-viewport .world-layer .hotspot:hover,
+.walk-viewport .world-layer .hotspot:focus-visible {
+  outline: 1px solid rgba(249,225,168,.7);
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+.audio-settings { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 20px; margin: 16px 0; font-size: 13px; color: var(--bone-dim); }
+.audio-settings button { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; }
+.audio-settings label { display: inline-flex; align-items: center; gap: 10px; }
+.audio-settings input[type="range"] { width: 104px; height: 44px; accent-color: #cdb58c; }
+.audio-settings output { width: 3em; font-variant-numeric: tabular-nums; }
+.audio-help { flex-basis: 100%; margin: 0; font-size: 12px; line-height: 1.6; }
+.audio-recovery-note { position: fixed; z-index: 90; top: calc(78px + var(--safe-top, 0px)); left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100vw - 24px); box-sizing: border-box; display: flex; align-items: center; gap: 12px; padding: 4px 12px; border: 1px solid #cdb58c66; border-radius: 8px; color: #eee5d0; background: #152224f2; font-size: 12px; }
+.audio-recovery-note button { min-height: 44px; flex-shrink: 0; color: #f1d398; }
+
+.audio-channel-controls { flex-basis: 100%; display: grid; gap: 2px; }
+.audio-channel-controls label { justify-content: space-between; }
+.audio-credits { flex-basis: 100%; font-size: 11px; line-height: 1.6; }
+.audio-credits summary { cursor: pointer; padding: 6px 0; }
+.audio-credits p { margin: 6px 0; }
+.audio-channel-details { flex-basis: 100%; }
+.audio-channel-details > summary { cursor: pointer; min-height: 32px; line-height: 32px; }
+.audio-channel-details[open] > summary { margin-bottom: 6px; }

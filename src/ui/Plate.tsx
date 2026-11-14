@@ -1,5 +1,4 @@
 import { type CSSProperties } from 'react';
-import { getShoreVisualProfile } from '../dev/shoreVisualProfile';
 import { sceneAssembly } from '../content/catalog';
 import { forgetSlotAsset, loadSlotAsset, resolveSlotAsset } from '../content/slotAssets';
 import { useAssetSrc } from './useAssetSrc';
@@ -12,6 +11,7 @@ import type { Point } from '../core/walk';
 import { buildingFoot, FOOT_PIVOT, parallaxBleed, worldToScreen } from '../core/world';
 import { hasPngContact } from './cohesion';
 import { isStillId, StillFrame } from './stillFrames';
+import { SceneArt } from './SceneArt';
 
 const SLOT_ORDER: readonly SceneSlotName[] = ['sky', 'far', 'ground', 'building', 'props', 'fg'];
 
@@ -44,7 +44,8 @@ function includeSlot(slot: SceneSlot, pass: PlatePass, feetY: number): boolean {
   return BACK_SLOTS.has(slot.slot) || isCurtain(slot);
 }
 
-export function groundDepthSlots(plate:string):SceneSlot[] {
+export function groundDepthSlots(plate:string, painted = false):SceneSlot[] {
+  if (painted && isIslandScene(plate)) return [];
   return isIslandScene(plate) ? (sceneAssembly(plate)?.slots??[]).filter(isGroundDepthSlot) : [];
 }
 function isGroundDepthSlot(slot:SceneSlot):boolean {
@@ -65,11 +66,14 @@ export function PlateStack({
   feetY = 1,
   beat = null,
   depthScenes = [],
+  painted = false,
 }: {
   plate: string;
   previous: string | null;
   /** Only these candidate transition scenes move placed props into GroundDepth. */
   depthScenes?: readonly string[];
+  /** Production painted environments; false retains the legacy art-review assembly. */
+  painted?: boolean;
   cam?: Point;
   near?: readonly string[];
   /** Hotspots about two steps out: readable, not yet in the click radius. */
@@ -87,6 +91,7 @@ export function PlateStack({
       {previous ? (
         <PlateBody
           plate={previous}
+          painted={painted}
           sharedGround={depthScenes.includes(previous)}
           leaving
           cam={cam}
@@ -101,6 +106,7 @@ export function PlateStack({
       ) : null}
       <PlateBody
         plate={plate}
+        painted={painted}
         sharedGround={depthScenes.includes(plate)}
         leaving={false}
         incoming={previous !== null}
@@ -130,6 +136,7 @@ function PlateBody({
   pass,
   feetY,
   beat = null,
+  painted = false,
 }: {
   plate: string;
   leaving: boolean;
@@ -143,8 +150,11 @@ function PlateBody({
   pass: PlatePass;
   feetY: number;
   beat?: SpotBeat | null;
+  painted?: boolean;
 }) {
   const className = leaving ? 'plate-fade out' : incoming ? 'plate-fade in' : 'plate-fade';
+  if (painted && isIslandScene(plate)) return pass === 'all' || pass === 'back'
+    ? <PaintedEnvironment scene={plate} className={className} near={near} glance={glance} activeSpots={activeSpots} beat={leaving ? null : beat} /> : null;
   if (plate === 'keyart') {
     return (
       <div className={className} data-ambient={plate}>
@@ -183,6 +193,21 @@ function PlateBody({
       <div className="plate-wash" data-plate={plate} />
     </div>
   );
+}
+
+function PaintedEnvironment({ scene, className, near, glance, activeSpots, beat }: {
+  scene: IslandScene; className: string; near: readonly string[]; glance: readonly string[];
+  activeSpots: readonly string[] | null; beat: SpotBeat | null;
+}) {
+  const { src, onError } = useSlotSrc(`art.${scene.split('.').at(-1)}.landscape`);
+  return <div className={className} data-assembly="painted" data-ambient={scene} data-shore-visual="candidate">
+    {src ? <img className="painted-environment" data-testid="painted-environment" src={src} alt="" draggable={false} onError={onError} /> : null}
+    {(sceneAssembly(scene)?.slots ?? []).filter(slot => slot.slot === 'props' && slot.spot).map(slot => <SlotPiece key={slot.id}
+      scene={scene} slot={{ ...slot, ...slot.playAt }} cam={{ x: 0, y: 0 }} painted
+      lit={!!slot.spot && near.includes(slot.spot)} glanced={!!slot.spot && glance.includes(slot.spot)}
+      hidden={!!slot.spot && activeSpots !== null && !activeSpots.includes(slot.spot)}
+      showWalkMask={false} beat={beat} />)}
+  </div>;
 }
 
 function SlotAssembly({
@@ -226,7 +251,7 @@ function SlotAssembly({
       data-ambient={kit.id}
       data-legacy-plate={kit.legacyPlate ?? 'none'}
       data-grade={kit.grade}
-      data-shore-visual={scene === 'dba.scene.shore' && getShoreVisualProfile().variant === 'candidate' ? 'candidate' : undefined}
+      data-shore-visual={scene === 'dba.scene.shore' ? 'candidate' : undefined}
     >
       {slots.flatMap((slot) => {
         const piece = (
@@ -263,6 +288,7 @@ export function SlotPiece({
   hidden,
   showWalkMask,
   beat = null,
+  painted = false,
 }: {
   scene: IslandScene;
   slot: SceneSlot;
@@ -272,16 +298,18 @@ export function SlotPiece({
   hidden: boolean;
   showWalkMask: boolean;
   beat?: SpotBeat | null;
+  /** The environment already contains the object. Keep only its interaction cue. */
+  painted?: boolean;
 }) {
+  const { src, onError } = useSlotSrc(painted ? null : slot.asset);
   if (hidden) return null;
   const placed = slot.x !== undefined && slot.y !== undefined;
   const scenic = slot.slot === 'building' && !placed;
   const testId = slot.slot === 'props' ? `prop-${slot.id}` : `slot-${slot.slot}`;
-  const { src, onError } = useSlotSrc(slot.asset);
   const interactable = Boolean(slot.spot);
   const cue = interactable ? (lit ? 'near' : glanced ? 'glance' : 'far') : undefined;
   const footed = (slot.slot === 'props' || slot.slot === 'building') && !isPortal(slot);
-  const shoreCandidate = scene === 'dba.scene.shore' && getShoreVisualProfile().variant === 'candidate';
+  const shoreCandidate = scene === 'dba.scene.shore';
   return (
     <div
       className={lit ? `scene-slot ${placed ? 'placed' : 'full'} lit` : `scene-slot ${placed ? 'placed' : 'full'}`}
@@ -292,16 +320,16 @@ export function SlotPiece({
       data-spot={slot.spot}
       data-interactable={interactable ? 'yes' : 'no'}
       data-cue={cue}
-      data-placeholder={src ? 'art' : 'block'}
+      data-placeholder={painted ? 'painted' : src ? 'art' : 'block'}
       data-anchor={footed ? 'foot' : isPortal(slot) ? 'portal' : undefined}
-      data-coplanar={scenic || (shoreCandidate && placed && footed) ? 'yes' : undefined}
+      data-coplanar={scenic || (placed && footed && slot.parallax === 1) ? 'yes' : undefined}
       data-shadow={slot.slot === 'props' ? (hasPngContact(slot.asset ?? slot.id) ? 'png' : 'none') : undefined}
       data-result={beat && slot.spot === beat.spot ? beat.kind : undefined}
       data-testid={testId}
       style={slotStyle(slot, cam, shoreCandidate)}
     >
       <div className="prop-body">
-        {src ? (
+        {src && placed && slot.asset ? <SceneArt asset={slot.asset} src={src} onError={onError} /> : src ? (
           <img
             className={scene === 'dba.scene.shore' && slot.slot === 'ground' ? 'slot-asset shore-ground-plate' : 'slot-asset'}
             src={src}
@@ -316,7 +344,7 @@ export function SlotPiece({
           />
         ) : null}
         {!src && slot.slot === 'ground' ? <GroundPlane scene={scene} kind={slot.kind} /> : null}
-        {!src && slot.slot !== 'ground' && slot.kind !== 'empty' ? (
+        {!painted && !src && slot.slot !== 'ground' && slot.kind !== 'empty' ? (
           <div className="slot-block" data-kind={slot.kind} data-placeholder="block" />
         ) : null}
         {interactable && !shoreCandidate ? <span className="prop-cue" data-testid={`cue-${slot.id}`} /> : null}
@@ -408,7 +436,7 @@ function slotStyle(slot: SceneSlot, cam: Point, shoreCandidate = false): CSSProp
   const shift = `translate3d(${dx}px, ${dy}px, 0)`;
   if (!placed || slot.x === undefined || slot.y === undefined) {
     const bleed = parallax === 1 ? 0 : parallaxBleed(parallax);
-    if (slot.slot === 'ground') {
+    if (slot.slot === 'ground' && slot.asset === 'art.shore.ground') {
       // Hang the textured floor past the south edge so a parked camera
       // does not reveal empty grade fog under the feet.
       return { transform: shift, top: '0px', right: '0px', bottom: `${-GROUND_SOUTH_HANG * 100}%`, left: '0px' };

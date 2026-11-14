@@ -30,11 +30,11 @@
         "slot": "building",
         "kind": "gate-post",
         "asset": "art.shore.building",
-        "parallax": 0.72,
-        "x": 0.16,
-        "y": 0.42,
-        "w": 0.48,
-        "h": 0.36
+        "parallax": 1,
+        "x": 0.17,
+        "y": 0.35,
+        "w": 0.33,
+        "h": 0.26
       },
       {
         "id": "art.shore.prop.driftwood",
@@ -43,10 +43,10 @@
         "asset": "art.shore.prop.driftwood",
         "parallax": 1,
         "spot": "shore-driftwood",
-        "x": 0.33,
-        "y": 0.72,
-        "w": 0.19,
-        "h": 0.14
+        "x": 0.37,
+        "y": 0.75,
+        "w": 0.18,
+        "h": 0.07
       },
       {
         "id": "art.shore.prop.gourd",
@@ -55,10 +55,10 @@
         "asset": "art.shore.prop.gourd",
         "parallax": 1,
         "spot": "island-gourd",
-        "x": 0.58,
-        "y": 0.66,
-        "w": 0.15,
-        "h": 0.15
+        "x": 0.6,
+        "y": 0.7,
+        "w": 0.13,
+        "h": 0.13
       },
       {
         "id": "art.shore.prop.break-shard",
@@ -68,9 +68,9 @@
         "parallax": 1,
         "spot": "shore-stone",
         "x": 0.18,
-        "y": 0.7,
-        "w": 0.18,
-        "h": 0.14
+        "y": 0.73,
+        "w": 0.09,
+        "h": 0.06
       },
       {
         "id": "art.shore.prop.mural-wall",
@@ -79,9 +79,9 @@
         "asset": "art.shore.prop.mural-wall",
         "parallax": 1,
         "spot": "island-mural",
-        "x": 0.3,
-        "y": 0.56,
-        "w": 0.3,
+        "x": 0.36,
+        "y": 0.62,
+        "w": 0.2,
         "h": 0.18
       },
       {
@@ -91,10 +91,10 @@
         "asset": "art.shore.prop.east-gap",
         "parallax": 1,
         "spot": "shore-depart",
-        "x": 0.74,
-        "y": 0.68,
-        "w": 0.26,
-        "h": 0.23
+        "x": 0.78,
+        "y": 0.73,
+        "w": 0.16,
+        "h": 0.29
       },
       {
         "id": "art.shore.fg",
@@ -102,6 +102,30 @@
         "kind": "fog-corners",
         "asset": "art.shore.fg",
         "parallax": 1.18
+      },
+      {
+        "id": "puzzle.shore.spring",
+        "slot": "props",
+        "kind": "empty",
+        "asset": null,
+        "parallax": 1,
+        "spot": "water-spring",
+        "x": 0.6,
+        "y": 0.7,
+        "w": 0.13,
+        "h": 0.13
+      },
+      {
+        "id": "puzzle.shore.sea",
+        "slot": "props",
+        "kind": "empty",
+        "asset": null,
+        "parallax": 1,
+        "spot": "water-sea",
+        "x": 0.49,
+        "y": 0.62,
+        "w": 0.055,
+        "h": 0.06
       }
     ]
   },
@@ -136,7 +160,11 @@
         "slot": "building",
         "kind": "shed",
         "asset": "art.camp.building",
-        "parallax": 0.72
+        "parallax": 1,
+        "x": 0.53,
+        "y": 0.46,
+        "w": 0.68,
+        "h": 0.54
       },
       {
         "id": "art.camp.prop.fire",
@@ -147,8 +175,8 @@
         "spot": "camp-sleep",
         "x": 0.56,
         "y": 0.82,
-        "w": 0.18,
-        "h": 0.14
+        "w": 0.09,
+        "h": 0.07
       },
       {
         "id": "art.camp.prop.sleep-mat",
@@ -159,8 +187,8 @@
         "spot": "camp-sleep",
         "x": 0.42,
         "y": 0.82,
-        "w": 0.26,
-        "h": 0.12
+        "w": 0.13,
+        "h": 0.055
       },
       {
         "id": "art.camp.prop.paper-bundles",
@@ -170,19 +198,20 @@
         "parallax": 1,
         "x": 0.278,
         "y": 0.808,
-        "w": 0.16,
-        "h": 0.12
+        "w": 0.06,
+        "h": 0.045
       },
       {
         "id": "art.camp.prop.north-curtain",
         "slot": "props",
-        "kind": "north-curtain",
-        "asset": "art.camp.prop.north-curtain",
+        "kind": "empty",
+        "asset": null,
         "parallax": 1,
-        "x": 0.5,
-        "y": 0.73,
-        "w": 0.2,
-        "h": 0.32
+        "x": 0.53,
+        "y": 0.66,
+        "w": 0.065,
+        "h": 0.13,
+        "depthMode": "wall-art"
       },
       {
         "id": "art.camp.prop.act-home",
@@ -193,8 +222,8 @@
         "spot": "act:dba.word.home",
         "x": 0.3,
         "y": 0.85,
-        "w": 0.13,
-        "h": 0.16
+        "w": 0.04,
+        "h": 0.055
       },
       {
         "id": "art.camp.prop.act-eat",
@@ -205,8 +234,8 @@
         "spot": "act:dba.word.eat",
         "x": 0.39,
         "y": 0.85,
-        "w": 0.13,
-        "h": 0.14
+        "w": 0.04,
+        "h": 0.055
       },
       {
         "id": "art.camp.prop.act-drink",
@@ -217,8 +246,8 @@
         "spot": "act:dba.word.drink",
         "x": 0.48,
         "y": 0.85,
-        "w": 0.12,
-        "h": 0.16
+        "w": 0.04,
+        "h": 0.055
       },
       {
         "id": "art.camp.prop.act-walk",
@@ -229,8 +258,8 @@
         "spot": "act:dba.word.walk",
         "x": 0.57,
         "y": 0.85,
-        "w": 0.14,
-        "h": 0.12
+        "w": 0.04,
+        "h": 0.055
       },
       {
         "id": "art.camp.prop.act-take",
@@ -241,8 +270,8 @@
         "spot": "act:dba.word.take",
         "x": 0.66,
         "y": 0.85,
-        "w": 0.13,
-        "h": 0.14
+        "w": 0.04,
+        "h": 0.055
       },
       {
         "id": "art.camp.prop.act-me",
@@ -253,8 +282,8 @@
         "spot": "act:dba.word.me",
         "x": 0.75,
         "y": 0.85,
-        "w": 0.12,
-        "h": 0.16
+        "w": 0.04,
+        "h": 0.055
       },
       {
         "id": "art.camp.prop.act-you",
@@ -265,14 +294,14 @@
         "spot": "act:dba.word.you",
         "x": 0.84,
         "y": 0.85,
-        "w": 0.12,
-        "h": 0.16
+        "w": 0.04,
+        "h": 0.055
       },
       {
         "id": "art.camp.fg",
         "slot": "fg",
-        "kind": "posts",
-        "asset": "art.camp.fg",
+        "kind": "empty",
+        "asset": null,
         "parallax": 1.18
       }
     ]
@@ -308,7 +337,11 @@
         "slot": "building",
         "kind": "hall-face",
         "asset": "art.yard.building",
-        "parallax": 0.72
+        "parallax": 1,
+        "x": 0.49,
+        "y": 0.455,
+        "w": 0.6,
+        "h": 0.55
       },
       {
         "id": "art.yard.prop.grain-bags",
@@ -319,8 +352,8 @@
         "spot": "yard-give",
         "x": 0.8,
         "y": 0.9,
-        "w": 0.3,
-        "h": 0.24
+        "w": 0.075,
+        "h": 0.085
       },
       {
         "id": "art.yard.prop.grain-bags.grab",
@@ -331,8 +364,8 @@
         "spot": "yard-grab",
         "x": 0.24,
         "y": 0.9,
-        "w": 0.26,
-        "h": 0.2
+        "w": 0.065,
+        "h": 0.075
       },
       {
         "id": "art.yard.prop.dried-fish",
@@ -343,8 +376,8 @@
         "spot": "act:dba.word.size:a",
         "x": 0.16,
         "y": 0.9,
-        "w": 0.22,
-        "h": 0.28
+        "w": 0.12,
+        "h": 0.18
       },
       {
         "id": "art.yard.prop.dried-fish.small",
@@ -355,8 +388,8 @@
         "spot": "act:dba.word.size:b",
         "x": 0.36,
         "y": 0.9,
-        "w": 0.16,
-        "h": 0.22
+        "w": 0.08,
+        "h": 0.13
       },
       {
         "id": "art.yard.prop.more-less-boards",
@@ -367,8 +400,8 @@
         "spot": "act:dba.word.amount:more",
         "x": 0.48,
         "y": 0.88,
-        "w": 0.2,
-        "h": 0.24
+        "w": 0.07,
+        "h": 0.105
       },
       {
         "id": "art.yard.prop.more-less-boards.less",
@@ -379,14 +412,14 @@
         "spot": "act:dba.word.amount:less",
         "x": 0.58,
         "y": 0.88,
-        "w": 0.16,
-        "h": 0.2
+        "w": 0.06,
+        "h": 0.09
       },
       {
         "id": "art.yard.fg",
         "slot": "fg",
-        "kind": "rail-corner",
-        "asset": "art.yard.fg",
+        "kind": "empty",
+        "asset": null,
         "parallax": 1.18
       }
     ]
@@ -422,11 +455,11 @@
         "slot": "building",
         "kind": "scroll-beam",
         "asset": "art.hall.building",
-        "parallax": 0.72,
-        "x": 0.5,
-        "y": 0.315,
-        "w": 0.72,
-        "h": 0.47
+        "parallax": 1,
+        "x": 0.52,
+        "y": 0.32,
+        "w": 0.5,
+        "h": 0.46
       },
       {
         "id": "art.hall.prop.scroll-wall",
@@ -437,8 +470,13 @@
         "spot": "hall-mural",
         "x": 0.47,
         "y": 0.5,
-        "w": 0.172,
-        "h": 0.125
+        "w": 0.12,
+        "h": 0.08,
+        "depthMode": "wall-art",
+        "playAt": {
+          "x": 0.49,
+          "y": 0.57
+        }
       },
       {
         "id": "art.hall.prop.stamp-rail",
@@ -449,8 +487,13 @@
         "spot": "hall-stamps",
         "x": 0.655,
         "y": 0.505,
-        "w": 0.1,
-        "h": 0.052
+        "w": 0.09,
+        "h": 0.05,
+        "depthMode": "wall-art",
+        "playAt": {
+          "x": 0.67,
+          "y": 0.57
+        }
       },
       {
         "id": "art.hall.prop.wrist-knot",
@@ -462,14 +505,18 @@
         "spot": "hall-tattoo",
         "x": 0.38,
         "y": 0.44,
-        "w": 0.055,
-        "h": 0.055
+        "w": 0.035,
+        "h": 0.06,
+        "playAt": {
+          "x": 0.392,
+          "y": 0.56
+        }
       },
       {
         "id": "art.hall.fg",
         "slot": "fg",
-        "kind": "pillar",
-        "asset": "art.hall.fg",
+        "kind": "empty",
+        "asset": null,
         "parallax": 1.18
       }
     ]
@@ -515,9 +562,9 @@
         "parallax": 1,
         "spot": "path-stop",
         "x": 0.3,
-        "y": 0.66,
-        "w": 0.22,
-        "h": 0.32
+        "y": 0.485,
+        "w": 0.045,
+        "h": 0.13
       },
       {
         "id": "art.path.prop.step-stones",
@@ -527,15 +574,15 @@
         "parallax": 1,
         "spot": "path-step",
         "x": 0.66,
-        "y": 0.66,
-        "w": 0.32,
-        "h": 0.24
+        "y": 0.61,
+        "w": 0.07,
+        "h": 0.06
       },
       {
         "id": "art.path.fg",
         "slot": "fg",
-        "kind": "branches",
-        "asset": "art.path.fg",
+        "kind": "empty",
+        "asset": null,
         "parallax": 1.18
       }
     ]
@@ -571,7 +618,11 @@
         "slot": "building",
         "kind": "shed-night",
         "asset": "art.night.building",
-        "parallax": 0.72
+        "parallax": 1,
+        "x": 0.52,
+        "y": 0.37,
+        "w": 0.56,
+        "h": 0.46
       },
       {
         "id": "art.night.prop.old-layer",
@@ -582,8 +633,12 @@
         "spot": "night-read",
         "x": 0.36,
         "y": 0.68,
-        "w": 0.42,
-        "h": 0.36
+        "w": 0.09,
+        "h": 0.06,
+        "playAt": {
+          "x": 0.36,
+          "y": 0.75
+        }
       },
       {
         "id": "art.night.prop.embers",
@@ -594,26 +649,34 @@
         "spot": "night-ember",
         "x": 0.58,
         "y": 0.74,
-        "w": 0.32,
-        "h": 0.24
+        "w": 0.09,
+        "h": 0.07,
+        "playAt": {
+          "x": 0.615,
+          "y": 0.75
+        }
       },
       {
         "id": "art.night.prop.memory-scrap",
         "slot": "props",
         "kind": "memory-scrap",
-        "asset": null,
+        "asset": "art.mem.rain",
         "parallax": 1,
         "spot": "night-memory",
         "x": 0.7,
         "y": 0.7,
-        "w": 0.1,
-        "h": 0.1
+        "w": 0.055,
+        "h": 0.05,
+        "playAt": {
+          "x": 0.78,
+          "y": 0.75
+        }
       },
       {
         "id": "art.night.fg",
         "slot": "fg",
-        "kind": "curtain",
-        "asset": "art.night.fg",
+        "kind": "empty",
+        "asset": null,
         "parallax": 1.18,
         "y": 0.7
       }

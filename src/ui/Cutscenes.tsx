@@ -1,3 +1,6 @@
+import { GameDialog } from './GameDialog';
+import { isLearnedState } from '../core/words';
+import { RELEASE_VERSION } from '../release';
 import { MEMORIES } from '../content/catalog';
 import type { Action } from '../core/reduce';
 import type { SaveData } from '../core/schema';
@@ -8,12 +11,17 @@ import { useCrossfade } from './useCrossfade';
 
 const FRAMES = MEMORIES[0]?.frames ?? ['rain', 'kitten', 'cloak'];
 
+export function completionPending(save: SaveData) {
+  return save.overlay === 'none' && save.flags['v01.completed'] === true && save.flags['v01.completion-seen'] !== true;
+}
 export function Cutscenes({
   save,
   dispatch,
+  onTitle,
 }: {
   save: SaveData;
   dispatch: (action: Action) => void;
+  onTitle?: () => void;
 }) {
   const frame = FRAMES[save.cutsceneStep] ?? 'rain';
   const plate = save.overlay === 'depart' ? 'art.depart' : `art.mem.${frame}`;
@@ -37,6 +45,19 @@ export function Cutscenes({
         </button>
       </section>
     );
+  }
+  if (completionPending(save)) {
+    const dismiss = () => dispatch({ type: 'dismiss-completion' });
+    return <GameDialog title="第一章 · 潮声之后" testId="chapter-complete" onClose={dismiss}>
+      <p className="eyebrow">东巴岛 · 旅程完成</p>
+      <p>你在陌生的文字里找到了水、食物与栖身处，也学会了在危险前停下。奈奈茶还在身旁，下一段海路已经留在图上。</p>
+      <div className="completion-stats"><span><strong>4 / 4</strong>生存经历</span>
+        <span><strong>{Object.values(save.words).filter(word => isLearnedState(word.state)).length} / 28</strong>认识的字</span>
+        <span><strong>{save.evidence.length}</strong>旅途线索</span></div>
+      <p>v{RELEASE_VERSION} 的故事在这里告一段落。可以留在岛上补齐线索、复习文字，或稍后继续探索。进度会自动保存。</p>
+      <div className="row"><button className="btn primary" onClick={dismiss}>留在岛上探索</button>
+        {onTitle ? <button className="btn" onClick={() => { dismiss(); onTitle(); }}>返回标题</button> : null}</div>
+    </GameDialog>;
   }
   if (save.overlay !== 'memory') return null;
   const last = save.cutsceneStep >= FRAMES.length - 1;

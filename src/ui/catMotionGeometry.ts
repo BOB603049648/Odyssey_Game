@@ -1,22 +1,24 @@
-import { slotAssetUrl, trajAssetUrl } from '../content/assetUrls';
+import { isStandingCompanionUrl, trajAssetUrl } from '../content/assetUrls';
 import { companionFoot, companionSole } from '../core/companionPost';
-import { LAND_BY_BEAT } from '../core/companionTraj';
-import { YARD_SCENE_CAT, yardSceneCatFoot } from '../core/yardCatFallback';
+import { companionAtlasSource } from '../content/characterPerformanceAtlas';
 
-/** Source alpha bounds, not anatomical/support certification. No pixels are changed. */
+export const STANDING_CAT_FOOT = { x: .5, y: 1054 / 1152 } as const;
+const STANDING_HEIGHT = .08;
+const STANDING_OPAQUE_HEIGHT = 1076 - 44;
 const LEAP_OPAQUE_HEIGHT = 1144 - 315;
-const DEFAULT_VISIBLE_HEIGHT = (707 - 272) * (3 / 4) / 1280;
-const YARD_LEAP_SCALE = DEFAULT_VISIBLE_HEIGHT / (LEAP_OPAQUE_HEIGHT / 1152);
-const frames = [...new Set([...Object.values(LAND_BY_BEAT), 'leap-01', 'leap-02'])];
 
-/** originalUrl belongs to the bitmap actually rendered by the persistent owner (raw or blob). */
-export function catMotionGeometry(originalUrl: string | undefined, scene: string, requestedFrame: string, face: 'left' | 'right') {
-  const isYardDefault = !!originalUrl && originalUrl === slotAssetUrl(YARD_SCENE_CAT.asset);
-  const frame = frames.find(id => originalUrl && trajAssetUrl(id) === originalUrl) ?? (originalUrl ? 'fallback' : requestedFrame);
-  const foot = isYardDefault ? yardSceneCatFoot(face) : companionFoot(frame);
-  return {
-    foot,
-    sole: isYardDefault ? foot.y : companionSole(frame),
-    heightScale: scene === 'dba.scene.yard' && !isYardDefault && (frame === 'leap-01' || frame === 'leap-02') ? YARD_LEAP_SCALE : 1,
-  };
+/** Geometry belongs to the bitmap actually displayed, including a held frame.
+ * Match visible body height across differently padded standing/leap canvases. */
+export function catMotionGeometry(originalUrl: string | undefined, scene: string, _requestedFrame: string, _face: 'left' | 'right') {
+  const nominalHeight = scene === 'dba.scene.shore' ? .168 : .22;
+  const performance = companionAtlasSource(originalUrl);
+  if (performance) return { foot: { x: .5, y: performance.sole / performance.height }, sole: performance.sole / performance.height, heightScale: STANDING_HEIGHT / nominalHeight };
+  if (isStandingCompanionUrl(originalUrl)) {
+    return { foot: STANDING_CAT_FOOT, sole: STANDING_CAT_FOOT.y, heightScale: STANDING_HEIGHT / nominalHeight };
+  }
+  const leap = ['leap-01','leap-02'].find(id => originalUrl && originalUrl === trajAssetUrl(id));
+  if (leap) {
+    return { foot: companionFoot(leap), sole: companionSole(leap), heightScale: STANDING_HEIGHT * STANDING_OPAQUE_HEIGHT / LEAP_OPAQUE_HEIGHT / nominalHeight };
+  }
+  return { foot: companionFoot('fallback'), sole: companionSole('fallback'), heightScale: 1 };
 }

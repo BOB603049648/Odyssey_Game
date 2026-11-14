@@ -98,12 +98,12 @@ function blurredLipAlpha(g: ReturnType<typeof geometry>, y: number) {
 }
 
 describe('shore lip clipping regression: actual CSS and rendered hierarchy', () => {
-  it('preserves real band, original fog/lip anchor geometry, gradient alphas and blur rather than hiding shade', () => {
+  it('preserves real band, band-relative fog/lip anchor geometry, gradient alphas and blur rather than hiding shade', () => {
     const g = geometry(1072);
-    expect(BANDS['dba.scene.shore']).toMatchObject({ minY: 0.48, maxY: 0.84 });
-    expect(g.box(g.lip).top / g.worldHeight).toBeCloseTo(0.7896, 10);
-    expect(g.box(g.lip).bottom / g.worldHeight).toBeCloseTo(0.8688, 10);
-    expect(g.box(g.fog).top / g.worldHeight).toBeCloseTo(0.444, 10);
+    expect(BANDS['dba.scene.shore']).toMatchObject({ minY: 0.62, maxY: 0.88 });
+    expect(g.box(g.lip).top / g.worldHeight).toBeCloseTo(0.8436, 10);
+    expect(g.box(g.lip).bottom / g.worldHeight).toBeCloseTo(0.9008, 10);
+    expect(g.box(g.fog).top / g.worldHeight).toBeCloseTo(0.594, 10);
     expect(g.box(g.fog).height / g.root.height).toBeCloseTo(0.24, 10);
     expect(gradientAlpha(0.62)).toBeCloseTo(0.2, 10);
     expect(gradientAlpha(1)).toBeCloseTo(0.28, 10);
@@ -113,7 +113,7 @@ describe('shore lip clipping regression: actual CSS and rendered hierarchy', () 
     expect(style(g.lip, 'opacity')).toBe('');
   });
 
-  it('the old world.84 cut lies 63.636% through nonzero dark gradient, but must no longer hard-cut that blurred paint', () => {
+  it('the walk band south edge lies 63.636% through nonzero dark gradient, but must no longer hard-cut that blurred paint', () => {
     const g = geometry(1072);
     const edge = g.root.top + g.root.height, lip = g.box(g.lip);
     const fraction = (edge - lip.top) / lip.height;
