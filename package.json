@@ -14,7 +14,8 @@
     "test:movement": "node scripts/browser-movement.mjs",
     "test:gameplay": "node scripts/browser-gameplay.mjs",
     "test:experience": "node scripts/browser-experience.mjs",
-    "test:prologue": "node scripts/browser-prologue.mjs"
+    "test:prologue": "node scripts/browser-prologue.mjs",
+    "test:cinematic": "node scripts/browser-cinematic.mjs"
   },
   "dependencies": {
     "@capacitor/core": "^7.4.3",

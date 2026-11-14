@@ -155,5 +155,17 @@
   "prologue.arrival": "接下来：走近石壁，看看那些陌生的刻痕。",
   "prologue.load.pending": "正在唤回下一段记忆…",
   "prologue.load.error": "这一幕暂时未能加载。可以重试，或跳过序章继续。",
-  "prologue.retry": "重新加载"
+  "prologue.retry": "重新加载",
+  "audio.on": "声音开",
+  "audio.off": "声音关",
+  "audio.enable": "启用声音",
+  "audio.unavailable": "声音不可用",
+  "audio.volume": "音量",
+  "audio.failed": "音效暂未加载，画面可继续。",
+  "audio.retry": "重试声音",
+  "prologue.pause": "暂停",
+  "prologue.play": "播放",
+  "prologue.auto": "连播",
+  "prologue.replay": "重播本幕",
+  "prologue.playback": "演出控制"
 }

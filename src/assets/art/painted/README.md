@@ -38,7 +38,7 @@ Four full 1672×941 paintings share the shore's art direction. The tide-line sho
 | prologue-break.webp | exec-711a439b-107f-4b5d-b931-5f859937125f.png |
 | prologue-tide.webp | exec-7732c52a-a27f-46fe-b266-a38cf4ed85e9.png |
 
-Generated 2026-11-13 with the image-generation tool, using `shore-scene.webp` as a style/landscape reference. WebP encoding uses the same quality 88 conversion as above. The four files total about 1.36 MB; each next shot preloads only after the current one is ready. They are illustrations, not skeletal animation or video. Sound still uses the existing synthetic placeholder cue.
+Generated 2026-11-13 with the image-generation tool, using `shore-scene.webp` as a style/landscape reference. WebP encoding uses the same quality 88 conversion as above. The four files total about 1.36 MB; each next shot preloads only after the current one is ready. They are illustrations, not skeletal animation or video assets. The runtime now adds water/weather/light animation in `PrologueMotion.tsx`; the sound pack and licenses are documented in `../../audio/README.md`.
 
 Portrait compositions (`1024×1536`) are separate generated paintings, not crops of the wide shots:
 

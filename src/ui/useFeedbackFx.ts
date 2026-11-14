@@ -17,10 +17,10 @@ export function useFeedbackFx(feedback: SaveData['feedback']): { shake: boolean;
     setShake(false);
     setPurr(false);
     if (feedback.kind === 'ok') {
-      playPurr();
+      const stopPurr = playPurr();
       setPurr(true);
       const timer = window.setTimeout(() => setPurr(false), 560);
-      return () => window.clearTimeout(timer);
+      return () => { window.clearTimeout(timer); stopPurr?.(); };
     }
     if (feedback.kind === 'no') {
       playThunk();

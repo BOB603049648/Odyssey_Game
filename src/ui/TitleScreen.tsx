@@ -1,3 +1,4 @@
+import { AudioSettings } from './AudioControls';
 import { GlossSwitch } from './GlossSwitch';
 import { t } from './i18n';
 import { EnterVeil, PlateStack } from './Plate';
@@ -36,6 +37,7 @@ export function TitleScreen({
             {t('menu.continue')}
           </button>
         </div>
+        <AudioSettings />
         <GlossSwitch checked={showGloss} onChange={onToggleGloss} />
       </div>
     </section>

@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { playMeow } from '../audio/placeholder';
+import { usePrologueSound } from '../audio/useSoundscape';
+import { AudioToggle } from './AudioControls';
+import { PrologueMotion } from './PrologueMotion';
+import { PROLOGUE_DURATIONS, useCinematicClock, usePagePresentation } from './useCinematicClock';
 import { firstScreenAssetIds } from '../content/firstScreen';
 import { loadNamedAsset } from '../content/imageLoad';
 import { t, type MessageKey } from './i18n';
@@ -28,7 +31,13 @@ export function PrologueScreen({ step, onAdvance, onBack, onSkip }: {
   }, []);
   const frame = usePrologueFrame(requested, portrait);
   const shown = frame.current?.step ?? requested;
-  const meowed = useRef(false);
+  const [paused, setPaused] = useState(false);
+  const [automatic, setAutomatic] = useState(false);
+  const [take, setTake] = useState(0);
+  const { visible, reduced } = usePagePresentation();
+  const playing = !paused && visible && frame.ready;
+  const clock = useCinematicClock(shown, take, playing);
+  const sound = usePrologueSound(shown, take, playing, clock.time);
   // Ignore duplicate activation before React commits the new story step.
   const activated = useRef<number | null>(null);
   useEffect(() => { activated.current = null; }, [requested]);
@@ -38,10 +47,8 @@ export function PrologueScreen({ step, onAdvance, onBack, onSkip }: {
     onAdvance();
   };
   useEffect(() => {
-    if (frame.current?.step !== 1 || meowed.current) return;
-    meowed.current = true;
-    playMeow();
-  }, [frame.current?.step]);
+    if (automatic && playing && clock.time.current >= PROLOGUE_DURATIONS[shown]) advance();
+  });
   useEffect(() => {
     if (requested !== 3) return;
     for (const id of firstScreenAssetIds('dba.scene.shore', 'land-companion', true)) {
@@ -70,11 +77,21 @@ export function PrologueScreen({ step, onAdvance, onBack, onSkip }: {
   return (
     <section className="prologue cinematic-prologue" data-testid="prologue"
       data-prologue-step={requested} data-displayed-step={frame.current?.step ?? 'none'}
+      data-playing={playing} data-auto={automatic} data-audio={sound.status}
       data-still={PROLOGUE_ART[requested]} data-frame-status={frame.status} data-mood={shown}
       aria-label={t('scene.prologue')}>
       <header className="prologue-header">
         <span className="prologue-chapter">{t('prologue.chapter')}</span>
         {onSkip && <button type="button" className="prologue-text-button" onClick={onSkip}>{t('prologue.skip')}</button>}
+        <div className="prologue-transport" aria-label={t('prologue.playback')}>
+          <button type="button" className="prologue-text-button" aria-pressed={paused} onClick={() => setPaused(value => !value)}>
+            {t(paused ? 'prologue.play' : 'prologue.pause')}
+          </button>
+          <button type="button" className="prologue-text-button" aria-pressed={automatic} onClick={() => setAutomatic(value => !value)}>{t('prologue.auto')}</button>
+          <button type="button" className="prologue-text-button" onClick={() => { setTake(value => value + 1); setPaused(false); }}>{t('prologue.replay')}</button>
+          <AudioToggle compact />
+        </div>
+        {sound.status === 'failed' && <div className="prologue-audio-note" role="status">{t('audio.failed')} <button type="button" onClick={sound.retry}>{t('audio.retry')}</button></div>}
       </header>
       <div className="prologue-stage" ref={stage} aria-busy={!frame.ready}>
         {frame.current && <div className="prologue-ambience" aria-hidden="true"
@@ -84,7 +101,8 @@ export function PrologueScreen({ step, onAdvance, onBack, onSkip }: {
         </div>}
         {frame.current && <div className="prologue-shot prologue-shot-in" key={frame.current.id}
           data-testid="still-frame" data-art-id={PROLOGUE_ART[frame.current.step]} data-composition={frame.current.id.endsWith('.portrait') ? 'portrait' : 'landscape'}>
-          <img src={frame.current.src} alt={t(ALTS[shown])} draggable={false}
+          <PrologueMotion src={frame.current.src} step={shown} portrait={frame.current.id.endsWith('.portrait')}
+            active={playing} reduced={reduced} time={clock.time} alt={t(ALTS[shown])}
             onError={() => frame.imageFailed(frame.current!.id)} />
         </div>}
         <span className="prologue-atmosphere" aria-hidden="true" />
@@ -105,7 +123,7 @@ export function PrologueScreen({ step, onAdvance, onBack, onSkip }: {
           </button>
           <ol className="prologue-progress" aria-label={`${t('prologue.progress')} ${shown + 1} / 4`}>
             {PROLOGUE_ART.map((id, index) => <li key={id} aria-current={index === shown ? 'step' : undefined}
-              data-past={index < shown}><span className="sr-only">{t(TITLES[index])}</span></li>)}
+              data-past={index < shown}><i aria-hidden="true" style={{ transform: `scaleX(${index === shown ? Math.min(1, clock.elapsed / PROLOGUE_DURATIONS[shown]) : 0})` }} /><span className="sr-only">{t(TITLES[index])}</span></li>)}
           </ol>
           <button type="button" className="prologue-next" disabled={!frame.ready} onClick={advance}>
             {t(requested >= 3 ? 'menu.ashore' : 'menu.next')}<span aria-hidden="true"> →</span>

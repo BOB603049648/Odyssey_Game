@@ -2558,3 +2558,9 @@ h1 {
   outline-offset: 2px;
   border-radius: 50%;
 }
+
+.audio-settings { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 20px; margin: 16px 0; font-size: 13px; color: var(--bone-dim); }
+.audio-settings button { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; }
+.audio-settings label { display: inline-flex; align-items: center; gap: 10px; }
+.audio-settings input[type="range"] { width: 104px; height: 44px; accent-color: #cdb58c; }
+.audio-settings output { width: 3em; font-variant-numeric: tabular-nums; }

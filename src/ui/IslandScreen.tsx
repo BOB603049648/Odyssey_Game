@@ -1,3 +1,4 @@
+import { AudioSettings } from './AudioControls';
 import { useEffect, useRef, useState } from 'react';
 import { EVIDENCE, LEXEMES } from '../content/catalog';
 import { companionPost } from '../core/companionPost';
@@ -221,10 +222,10 @@ export function OverlaySheet({
         {t('menu.close')}
       </button>
       {overlay === 'settings' ? (
-        <GlossSwitch
+        <><AudioSettings /><GlossSwitch
           checked={save.settings.showGloss}
           onChange={(value) => dispatch({ type: 'set-show-gloss', value })}
-        />
+        /></>
       ) : null}
       {overlay === 'lexicon' ? <Lexicon save={save} words={learned} /> : null}
       {overlay === 'casefile' ? (

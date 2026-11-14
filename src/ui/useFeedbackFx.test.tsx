@@ -2,6 +2,7 @@ import { act, renderHook } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { useFeedbackFx } from './useFeedbackFx';
 import type { SaveData } from '../core/schema';
+import { playPurr } from '../audio/placeholder';
 vi.mock('../audio/placeholder', () => ({ playPurr: vi.fn(), playThunk: vi.fn() }));
 afterEach(() => vi.useRealTimers());
 
@@ -18,4 +19,16 @@ it('releases both visual effects after quickly alternating wrong and right answe
   expect(view.result.current).toEqual({ shake: true, purr: false });
   act(() => vi.advanceTimersByTime(600));
   expect(view.result.current).toEqual({ shake: false, purr: false });
+});
+
+it('cancels a recorded purr when feedback changes or the screen unmounts', () => {
+  const stop = vi.fn();
+  vi.mocked(playPurr).mockReturnValue(stop);
+  const view = renderHook(({ feedback }) => useFeedbackFx(feedback), { initialProps: { feedback: { seq: 0, kind: 'none' } as SaveData['feedback'] } });
+  view.rerender({ feedback: { seq: 1, kind: 'ok' } });
+  view.rerender({ feedback: { seq: 2, kind: 'no' } });
+  expect(stop).toHaveBeenCalledTimes(1);
+  view.rerender({ feedback: { seq: 3, kind: 'ok' } });
+  view.unmount();
+  expect(stop).toHaveBeenCalledTimes(2);
 });

@@ -92,3 +92,27 @@
 @media (prefers-reduced-motion: reduce) {
   .cinematic-prologue *, .cinematic-prologue *::before, .cinematic-prologue *::after { animation: none !important; transition: none !important; }
 }
+
+/* Motion lives in the contained painting, never in the reading/interaction UI. */
+.prologue-motion { position: absolute; inset: 0; overflow: hidden; }
+.prologue-painting { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.prologue-camera { width: 100%; height: 100%; transform-origin: center; will-change: transform; }
+.prologue-weather { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.prologue-header { display: grid; grid-template-columns: 1fr auto auto; gap: 0 22px; }
+.prologue-header > .prologue-text-button { grid-column: 3; grid-row: 1; }
+.prologue-transport { display: flex; grid-column: 2; grid-row: 1; align-items: center; gap: 2px; }
+.prologue-transport button { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; padding-inline: 10px; font-size: 12px; }
+.prologue-transport button[aria-pressed="true"] { color: #eed3a2; }
+.prologue-audio-note { grid-column: 1 / -1; text-align: center; color: #c8bfa9; font-size: 12px; }
+.prologue-audio-note button { text-decoration: underline; min-height: 44px; }
+.prologue-progress li { position: relative; overflow: hidden; }
+.prologue-progress i { display: none; position: absolute; inset: 0; background: var(--prologue-accent); transform-origin: left; }
+.cinematic-prologue[data-auto="true"] .prologue-progress li[aria-current="step"] { background: #b9b5a740; }
+.cinematic-prologue[data-auto="true"] .prologue-progress li[aria-current="step"] i { display: block; }
+@media (max-width: 760px) {
+  .prologue-header { grid-template-columns: 1fr auto; padding-top: max(4px, var(--safe-top)); padding-bottom: 2px; gap: 0; }
+  .prologue-header > .prologue-text-button { grid-column: 2; }
+  .prologue-transport { grid-row: 2; grid-column: 1 / -1; justify-content: center; }
+  .prologue-transport button { padding-inline: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .prologue-camera { will-change: auto; } }

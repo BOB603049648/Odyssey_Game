@@ -1,5 +1,7 @@
 import { lazy, Suspense, useState } from 'react';
-import { primeAudio } from './audio/placeholder';
+import { primeAudio } from './audio/mixer';
+import { useSoundscape } from './audio/useSoundscape';
+import { usePagePresentation } from './ui/useCinematicClock';
 import { useGame } from './stores/gameStore';
 import { Cutscenes } from './ui/Cutscenes';
 import { IslandScreen } from './ui/IslandScreen';
@@ -15,6 +17,8 @@ export function App() {
   const saveFailed = useGame((state) => state.saveFailed);
   const dispatch = useGame((state) => state.dispatch);
   const [atTitle, setAtTitle] = useState(true);
+  const { visible } = usePagePresentation();
+  useSoundscape(!atTitle && save.screen !== 'prologue' && save.currentScene === 'dba.scene.shore' ? 'shore' : null, visible);
 
   return (
     <>
