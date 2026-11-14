@@ -1,0 +1,28 @@
+import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { resolve, relative } from 'node:path';
+const root=resolve(import.meta.dirname,'..');
+const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
+if(git('status','--porcelain'))throw new Error('Release packaging requires a clean committed checkout.');
+const revision=git('rev-parse','HEAD');
+execFileSync('npm',['run','build'],{cwd:root,stdio:'inherit'});
+const identity=JSON.parse(await readFile(resolve(root,'dist/version.json'),'utf8'));
+const pkg=JSON.parse(await readFile(resolve(root,'package.json'),'utf8'));
+if(identity.version!==pkg.version || identity.dirty || identity.revision!==revision)throw new Error('Build identity does not match the clean checkout.');
+const name=`odyssey-v${identity.version}-${revision.slice(0,7)}`;
+const output=resolve(root,'artifacts/releases');const stage=resolve(output,name);
+await mkdir(output,{recursive:true});await rm(stage,{recursive:true,force:true});
+await cp(resolve(root,'dist'),stage,{recursive:true});
+await cp(resolve(root,'docs/releases/v0.1.md'),resolve(stage,'RELEASE.md'));
+await cp(resolve(root,'src/assets/audio/README.md'),resolve(stage,'AUDIO-CREDITS.md'));
+await cp(resolve(root,'src/assets/art/painted/README.md'),resolve(stage,'ART-CREDITS.md'));
+await cp(resolve(root,'src/assets/traveler/actions-README.md'),resolve(stage,'ACTION-ART.md'));
+const manifest=[];
+async function walk(dir){for(const item of await readdir(dir,{withFileTypes:true})){const file=resolve(dir,item.name);if(item.isDirectory())await walk(file);else manifest.push(`${createHash('sha256').update(await readFile(file)).digest('hex')}  ${relative(stage,file)}`);}}
+await walk(stage);await writeFile(resolve(stage,'SHA256SUMS'),manifest.sort().join('\n')+'\n');
+const zip=resolve(output,name+'.zip');await rm(zip,{force:true});
+execFileSync('zip',['-qr',zip,'.'],{cwd:stage});
+const digest=createHash('sha256').update(await readFile(zip)).digest('hex');
+await writeFile(zip+'.sha256',`${digest}  ${name}.zip\n`);
+console.log(JSON.stringify({version:identity.version,revision,files:manifest.length,zip,sha256:digest},null,2));

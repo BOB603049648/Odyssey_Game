@@ -15,7 +15,9 @@
     "test:gameplay": "node scripts/browser-gameplay.mjs",
     "test:experience": "node scripts/browser-experience.mjs",
     "test:prologue": "node scripts/browser-prologue.mjs",
-    "test:cinematic": "node scripts/browser-cinematic.mjs"
+    "test:cinematic": "node scripts/browser-cinematic.mjs",
+    "test:release": "node scripts/browser-v01.mjs",
+    "release:pack": "node scripts/pack-release.mjs"
   },
   "dependencies": {
     "@capacitor/core": "^7.4.3",

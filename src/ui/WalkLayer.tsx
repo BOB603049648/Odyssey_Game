@@ -45,7 +45,7 @@ import { forgetTraj, loadTraj, trajUrl } from './trajArt';
 import { contactLift, contactOpacity, depthScale, worldToScreen } from '../core/world';
 import { catContactUrl, clippedBootUrl } from './soleClip';
 import { FirstScreenGate } from './FirstScreenGate';
-import { facingFromMove, REACH_HOLD_MS, TravelerView, travelerHeight, useTravelerPresentation, type TravelerFacing } from './Traveler';
+import { facingFromMove, REACH_HOLD_MS, DRINK_HOLD_MS, TravelerView, travelerHeight, useTravelerPresentation, type TravelerFacing } from './Traveler';
 import { useFirstScreenReady } from './firstScreenReady';
 import { useAssetSrc } from './useAssetSrc';
 
@@ -200,8 +200,18 @@ export function WalkLayer({
   const [arrive, setArrive] = useState<string | null>(null);
   const [cam, setCam] = useState<Point>({ x: 0, y: 0 });
   const [teachLine, setTeachLine] = useState(false);
-  const [reaching, setReaching] = useState(false);
+  const [reaching, setReaching] = useState<'reach' | 'drink' | null>(null);
   const reachTimer = useRef(0);
+  useEffect(() => {
+    if (beat?.kind !== 'ok' || (beat.spot !== 'island-gourd' && beat.spot !== 'act:dba.word.drink')) return;
+    setReaching('drink');
+    window.clearTimeout(reachTimer.current);
+    reachTimer.current = window.setTimeout(() => setReaching(null), DRINK_HOLD_MS);
+  }, [interactionSeq]);
+  useEffect(() => {
+    setReaching(null);
+    window.clearTimeout(reachTimer.current);
+  }, [scene]);
   const driftSeek = useRef(0);
   const restingRef = useRef(resting);
   restingRef.current = resting;
@@ -329,15 +339,16 @@ export function WalkLayer({
     setFacing((current) => facingFromMove(dx, dy, current));
     setPos(planted);
     setMoving(isMoving);
+    if (isMoving) { setReaching(null); window.clearTimeout(reachTimer.current); }
     setStride(isMoving ? Math.min(1, Math.max(0, power)) : 0);
     setBlocked(isBlocked);
     movingRef.current = isMoving;
   }
 
   function beginReach() {
-    setReaching(true);
+    setReaching('reach');
     window.clearTimeout(reachTimer.current);
-    reachTimer.current = window.setTimeout(() => setReaching(false), REACH_HOLD_MS);
+    reachTimer.current = window.setTimeout(() => setReaching(null), REACH_HOLD_MS);
   }
 
   function seek(point: Point) {
@@ -609,7 +620,7 @@ export function WalkLayer({
   // Keep the beat/guide/queue and the dedicated trajectory file untouched.
   const yardLandingFallback = scene === 'dba.scene.yard' && requestedCatSprite === 'land-yard-give';
   const targetCatSprite = yardLandingFallback ? 'fallback' : requestedCatSprite;
-  const groundAsset = painted && scene === 'dba.scene.shore' ? null : sceneAssembly(scene)?.slots.find((slot) => slot.slot === 'ground')?.asset ?? null;
+  const groundAsset = painted ? null : sceneAssembly(scene)?.slots.find((slot) => slot.slot === 'ground')?.asset ?? null;
   const { src: groundPlate, onError: onGroundError } = useAssetSrc(groundAsset, SLOT_SRC_API);
   const slotCat =
     scene === 'dba.scene.camp'
@@ -645,7 +656,7 @@ export function WalkLayer({
     id: catSprite === 'fallback' ? slotCat : catSprite,
     originalURL: shownCat.figure, api: catSprite === 'fallback' ? SLOT_SRC_API : TRAJ_SRC_API,
   } : null, () => { committedCat.current = shownCat; });
-  const flashId = painted && scene === 'dba.scene.shore' ? null :
+  const flashId = painted ? null :
     flash?.kind === 'driftwood'
       ? 'art.shore.prop.driftwood.interact'
       : flash?.kind === 'sleep'
@@ -656,7 +667,7 @@ export function WalkLayer({
   const { src: flashSrc, onError: onFlashError } = useAssetSrc(flashId, SLOT_SRC_API);
   useEffect(() => {
     const kit = sceneAssembly(scene);
-    preloadSceneAssets(painted && scene === 'dba.scene.shore' ? ['art.shore.landscape'] : kit?.slots.map((slot) => slot.asset) ?? []);
+    preloadSceneAssets(painted ? [`art.${scene.split('.').at(-1)}.landscape`] : kit?.slots.map((slot) => slot.asset) ?? []);
   }, [scene, painted]);
   // Only the explicitly frozen depth matrix shares a fixed reference camera; live camera is unchanged.
   const fixedFixtureCamera = presentationFrozen && getShoreVisualProfile().fixture?.startsWith('depth-')
@@ -732,7 +743,7 @@ export function WalkLayer({
   // These owners are unconditional for WalkLayer's lifetime; only their stateless views reparent.
   const travelerPresentation=useTravelerPresentation({
     x:resting && sleepFoot?sleepFoot.x:pos.x,y:feetY,facing,moving,stride,
-    pose:resting?'lie':reaching?'reach':'auto',depthZ:catInFront?4:6,
+    pose:resting?'lie':moving?'auto':reaching??'auto',actionSeq:interactionSeq,depthZ:catInFront?4:6,
     presentationFrozen,contactCleanup:true,
     height:travelerHeight(scene),
   });

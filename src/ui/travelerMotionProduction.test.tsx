@@ -5,7 +5,7 @@ vi.mock('./travelerArt',async()=>{const u=await import('../content/assetUrls');r
 const punches=new Map<string,(src:string)=>void>();
 vi.mock('./hemPunch',async()=>({...await vi.importActual('./hemPunch'),punchHemUrl:(src:string)=>new Promise<string>(resolve=>{punches.set(src,resolve);})}));
 let now=0,seq=0,raf=new Map<number,FrameRequestCallback>();let Traveler:typeof import('./Traveler')['TravelerMark'];
-async function frame(){now+=1000/60;await act(async()=>{vi.advanceTimersByTime(1000/60);const q=[...raf.values()];raf.clear();q.forEach(cb=>cb(now));});}
+async function frame(dt=1000/60){now+=dt;await act(async()=>{vi.advanceTimersByTime(dt);const q=[...raf.values()];raf.clear();q.forEach(cb=>cb(now));});}
 beforeEach(async()=>{vi.resetModules();vi.useFakeTimers({toFake:['setTimeout','clearTimeout','Date']});vi.stubEnv('MODE','production');vi.stubEnv('VITE_VISUAL_SAMPLE','1');history.replaceState({},'','/?shoreVisual=candidate');now=0;seq=0;raf=new Map();punches.clear();vi.spyOn(performance,'now').mockImplementation(()=>now);vi.spyOn(window,'requestAnimationFrame').mockImplementation(cb=>{raf.set(++seq,cb);return seq;});vi.spyOn(window,'cancelAnimationFrame').mockImplementation(id=>raf.delete(id));Traveler=(await import('./Traveler')).TravelerMark;});
 afterEach(()=>{cleanup();vi.restoreAllMocks();vi.useRealTimers();vi.unstubAllEnvs();});
 describe('actual production Traveler RAF follows observed displacement',()=>{
@@ -40,4 +40,14 @@ describe('actual production Traveler RAF follows observed displacement',()=>{
   v.rerender(<Traveler x={.4} y={.7} facing="right" moving stride={1}/>);for(let n=0;n<20;n++)await frame();expect(v.getByTestId('traveler').dataset.pose).toBe('idle');expect(v.getByTestId('traveler').dataset.facing).toBe('right');
   let x=.4;for(let n=0;n<30;n++){x+=.38/60;v.rerender(<Traveler x={x} y={.7} facing="left" moving stride={1}/>);await frame();}expect(v.getByTestId('traveler').dataset.pose).toBe('walk');
  });
+ it('finishes a drink at five frames per second and restarts a repeated interaction',async()=>{
+  const props={x:.4,y:.7,facing:'right' as const,moving:false,pose:'drink' as const,actionSeq:1};
+  const v=render(<Traveler {...props}/>);await frame();
+  const seen=new Set<string>();
+  for(let n=0;n<9;n++){await frame(200);seen.add(v.container.querySelector('[data-layer="current"]')!.getAttribute('data-atlas')!);}
+  expect(seen.size).toBe(4);expect(v.getByTestId('traveler').dataset.frame).toBe('3');
+  v.rerender(<Traveler {...props} actionSeq={2}/>);await frame(200);
+  expect(v.getByTestId('traveler').dataset.frame).toBe('0');
+ });
+
 });

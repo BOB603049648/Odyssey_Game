@@ -32,7 +32,7 @@ export const BANDS: Record<IslandScene, Band> = {
   'dba.scene.shore': shoreBand,
   'dba.scene.camp': campBand,
   'dba.scene.yard': yardBand,
-  'dba.scene.hall': pathBand,
+  'dba.scene.hall': { ...pathBand, minY: 0.56 },
   'dba.scene.path': pathBand,
   'dba.scene.night': nightBand,
 };
@@ -87,18 +87,18 @@ export const SPOTS: Record<IslandScene, readonly Spot[]> = {
     { id: 'act:dba.word.size:b', x: 0.36, y: 0.9, r: 0.034 },
   ],
   'dba.scene.hall': [
-    { id: 'hall-mural', x: 0.47, y: 0.5, r: 0.075 },
-    { id: 'hall-stamps', x: 0.655, y: 0.505, r: 0.055 },
-    { id: 'hall-tattoo', x: 0.38, y: 0.44, r: 0.07 },
+    { id: 'hall-mural', x: 0.49, y: 0.57, r: 0.075 },
+    { id: 'hall-stamps', x: 0.67, y: 0.57, r: 0.055 },
+    { id: 'hall-tattoo', x: 0.392, y: 0.56, r: 0.07 },
   ],
   'dba.scene.path': [
     { id: 'path-stop', x: 0.3, y: 0.485, r: 0.06 },
     { id: 'path-step', x: 0.66, y: 0.61, r: 0.06 },
   ],
   'dba.scene.night': [
-    { id: 'night-read', x: 0.36, y: 0.68, r: 0.05 },
-    { id: 'night-ember', x: 0.58, y: 0.74, r: 0.036 },
-    { id: 'night-memory', x: 0.7, y: 0.7, r: 0.046 },
+    { id: 'night-read', x: 0.36, y: 0.75, r: 0.04 },
+    { id: 'night-ember', x: 0.615, y: 0.75, r: 0.036 },
+    { id: 'night-memory', x: 0.78, y: 0.75, r: 0.046 },
   ],
 };
 
@@ -140,6 +140,11 @@ export function plantOnGround(scene: IslandScene, pos: Point): Point {
   const band = BANDS[scene];
   let x = Math.min(band.maxX, Math.max(band.minX, pos.x));
   let y = Math.min(band.maxY, Math.max(band.minY, pos.y));
+  // The night reading table, hearth and cloak rock are solid, painted objects.
+  // Approach from their southern feet, never walk through the table top.
+  if (scene === 'dba.scene.night' && ((x >= .14 && x <= .42) || (x >= .55 && x <= .88))) {
+    y = Math.max(.75, y);
+  }
   if (scene === 'dba.scene.path') {
     x = Math.max(.11, Math.min(.77, x));
     // Measured plank centerline in the 1280×720 bridge plate. The narrow

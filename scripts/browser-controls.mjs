@@ -54,8 +54,10 @@ try {
   // Each direction is selected from the viewport UI; no keyboard travel or save injection.
   for (const to of ['camp', 'yard', 'path', 'yard', 'camp', 'night', 'camp', 'shore', 'hall']) await travel(to);
   await page.getByTestId('hall-mural').tap();
+  if ((await save()).screen !== 'mural') {
   await page.waitForFunction(() => document.querySelector('[data-testid="hall-mural"]')?.dataset.reach === 'near');
   await page.getByTestId('nearby-action').tap();
+  }
   await page.getByRole('tab', { name: '壁画带 1', exact: true }).waitFor();
   const object = page.locator('button[data-testid^="object-"]').first();
   const word = (await object.getAttribute('data-testid')).slice(7);

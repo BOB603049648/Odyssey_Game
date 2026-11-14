@@ -1,9 +1,11 @@
+const paintedScenes = import.meta.glob<string>('../assets/art/painted/*-scene.webp', { eager: true, import: 'default' });
 import paintedShore from '../assets/art/painted/shore-scene.webp';
 import prologueStorm from '../assets/art/painted/prologue-storm.webp';
 import prologueDark from '../assets/art/painted/prologue-dark.webp';
 import prologueBreak from '../assets/art/painted/prologue-break.webp';
 import prologueTide from '../assets/art/painted/prologue-tide.webp';
 import companionStanding from '../assets/companion/nanaicha/nanaicha-hero.png';
+import { ACTION_ATLAS, ACTION_ATLAS_FILES } from './travelerActionAtlas';
 import { WALK_ATLAS, WALK_ATLAS_FILES } from './travelerWalkAtlas';
 
 /**
@@ -57,6 +59,10 @@ function preferUrl(mods: Record<string, string>): Map<string, string> {
 
 const slots = preferUrl(slotModules);
 slots.set('art.shore.landscape', paintedShore);
+for (const [path, url] of Object.entries(paintedScenes)) {
+  const name = /([a-z]+)-scene\.webp$/.exec(path)?.[1];
+  if (name) slots.set(`art.${name}.landscape`, url);
+}
 // Keep narrative/save IDs stable while replacing the opening's old mixed styles.
 for (const [id, url] of Object.entries({
   'art.pro.storm': prologueStorm, 'art.pro.dark': prologueDark,
@@ -68,6 +74,7 @@ for (const [path, url] of Object.entries(prologuePortraits)) {
 }
 const travelers = preferUrl(travelerModules);
 for (const file of WALK_ATLAS_FILES) travelers.set(file, `${WALK_ATLAS.url}#${file}`);
+for (const file of ACTION_ATLAS_FILES) travelers.set(file, `${ACTION_ATLAS.url}#${file}`);
 const trajs = preferUrl(trajModules);
 // One complete, registered standing silhouette. The historical landings contain
 // missing bodies, embedded scenery and incompatible padding; do not ship them as

@@ -13,7 +13,7 @@ export function expeditionGoal(save: SaveData): ExpeditionGoal {
     ? { title: '让刻痕成为行动', detail: '石壁上的水纹，让你想起岸边的清泉。走近水瓢，试着使用刚刚理解的图形。', destination: 'dba.scene.shore', spot: 'island-gourd' }
     : wall('潮水退去了。石壁上留下的图画，也许能告诉你如何在这里活下去。');
   if (!save.beats['dba.beat.sleep']) return learned('sleep') && learned('fire')
-    ? { title: '在火边歇一歇', detail: '沿东边的小路去棚火，找一处可以躺下的铺位。', destination: 'dba.scene.camp', spot: 'camp-sleep' }
+    ? { title: '在火边歇一歇', detail: '沿东边的小路去棚火，找一处可以歇息的铺位。', destination: 'dba.scene.camp', spot: 'camp-sleep' }
     : wall('火边的铺位有新的刻痕。观察壁画第二带里的动作。');
   if (!save.beats['dba.beat.food']) return learned('give') && learned('share')
     ? { title: '留一份给同行者', detail: '穿过棚火，去前坪看看那份还没有递出的食物。', destination: 'dba.scene.yard', spot: 'yard-give' }

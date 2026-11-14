@@ -1,3 +1,4 @@
+import { ACTION_ATLAS, ACTION_ATLAS_FILES, actionAtlasFrame } from '../content/travelerActionAtlas';
 import { travelerFrameUrl } from '../content/assetUrls';
 import { notifyAssetUpdates } from '../content/assetUpdates';
 import { recordLoadTrace } from '../content/loadTrace';
@@ -13,9 +14,9 @@ export function frameUrl(file: string): string | undefined {
 
 export function forgetFrame(file: string): void {
   recordLoadTrace({ event: 'forget', key: file });
-  if (walkAtlasFrame(file)) {
-    cache.delete('stride-atlas.png');
-    for (const id of WALK_ATLAS_FILES) cache.delete(id);
+  if (walkAtlasFrame(file) || actionAtlasFrame(file)) {
+    cache.delete(actionAtlasFrame(file) ? 'action-atlas.png' : 'stride-atlas.png');
+    for (const id of actionAtlasFrame(file) ? ACTION_ATLAS_FILES : WALK_ATLAS_FILES) cache.delete(id);
     notifyAssetUpdates();
     return;
   }
@@ -35,13 +36,15 @@ export function loadFrame(file: string): Promise<string> {
   if (hit) return Promise.resolve(hit);
   const url = travelerFrameUrl(file);
   if (!url) return Promise.resolve('');
-  if (walkAtlasFrame(file)) {
+  if (walkAtlasFrame(file) || actionAtlasFrame(file)) {
+    const action = Boolean(actionAtlasFrame(file));
+    const atlas = action ? ACTION_ATLAS : WALK_ATLAS;
     // Decode the sheet once, then publish every cell together. Turning or taking
     // the first step cannot race twelve independent requests for the same image.
-    return loadGated('traveler-walk-atlas', 'idle', () => decodeAssetUrl(WALK_ATLAS.url), cache,
-      { defer: true, cacheKey: 'stride-atlas.png' }).then(next => {
+    return loadGated(action ? 'traveler-action-atlas' : 'traveler-walk-atlas', 'idle', () => decodeAssetUrl(atlas.url), cache,
+      { defer: true, cacheKey: action ? 'action-atlas.png' : 'stride-atlas.png' }).then(next => {
       if (!next) return '';
-      for (const id of WALK_ATLAS_FILES) cache.set(id, travelerFrameUrl(id)!);
+      for (const id of action ? ACTION_ATLAS_FILES : WALK_ATLAS_FILES) cache.set(id, travelerFrameUrl(id)!);
       return cache.get(file)!;
     });
   }
@@ -60,5 +63,5 @@ if (import.meta.env.MODE === 'test') {
     import: 'default',
   });
   const files = Object.keys(modules).map((path) => path.split('/').pop()!);
-  await Promise.all([...files, ...WALK_ATLAS_FILES].map((file) => loadFrame(file)));
+  await Promise.all([...files, ...WALK_ATLAS_FILES, ...ACTION_ATLAS_FILES].map((file) => loadFrame(file)));
 }

@@ -115,9 +115,10 @@ try {
   assert.deepEqual(errors, []);
   console.log(JSON.stringify({ result: 'PASS', checks: ['hint retarget', 'visible band progression', 'mobile all abstract answers', 'drinking acknowledgment', 'early departure blocked', 'four survival actions', 'route queued during rest', 'optional evidence skipped', 'ember and danger feedback', 'completed save reload'], errors }));
 } catch (error) {
+  console.error(error);
   await page.screenshot({ path: resolve(output, 'failure.png') });
   console.error('last scene', (await save())?.currentScene);
-  console.error('walker', await page.getByTestId('traveler').evaluate(el => ({ ...el.dataset })));
+  if (await page.getByTestId('traveler').count()) console.error('walker', await page.getByTestId('traveler').evaluate(el => ({ ...el.dataset })));
   await writeFile(resolve(output, 'failure-save.json'), JSON.stringify(await save(), null, 2));
-  console.error(error); process.exitCode = 1;
+  process.exitCode = 1;
 } finally { await browser.close(); }

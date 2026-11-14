@@ -16,6 +16,7 @@ interface GameStore {
   place: Place | null;
   setPlace: (place: Place | null) => void;
   dispatch: (action: Action) => void;
+  restore: (save: SaveData) => boolean;
   resetForTests: () => void;
 }
 
@@ -28,6 +29,11 @@ export const useGame = create<GameStore>((set, get) => ({
     const next = reduce(get().save, action);
     const saved = storage.save(next);
     set({ save: next, saveFailed: !saved, place: action.type === 'new-game' ? null : get().place });
+  },
+  restore: (save) => {
+    if (!storage.save(save)) return false;
+    set({ save, saveFailed: false, place: null });
+    return true;
   },
   resetForTests: () => {
     set({ save: storage.load() ?? newGameState(), saveFailed: false, place: null });

@@ -27,6 +27,7 @@ import { isLearnedState, transitionWord } from './words';
 
 export type Action =
   | { type: 'new-game' }
+  | { type: 'dismiss-completion' }
   | { type: 'advance-prologue' }
   | { type: 'previous-prologue' }
   | { type: 'skip-prologue' }
@@ -81,6 +82,8 @@ export function reduce(state: SaveData, action: Action): SaveData {
 
 function applyAction(state: SaveData, action: Action): SaveData {
   switch (action.type) {
+    case 'dismiss-completion':
+      return touch({ ...state, flags: { ...state.flags, 'v01.completion-seen': true } });
     case 'new-game':
       return beginPrologue(state.settings.showGloss);
     case 'set-show-gloss':

@@ -70,3 +70,17 @@ noise=np.convolve(noise,np.ones(5)/5,mode='same')
 envelope=(1-np.exp(-t*35))*np.exp(-t*6)
 crack=noise*envelope*.3+np.sin(2*np.pi*(880*t-100*t*t))*np.exp(-t*5)*.09
 save('glyph-break',np.column_stack([crack,np.roll(crack,130)]),rms=.07,peak=.45,fade=True)
+# First-island interiors, canopy and hearth. Wind is recorded; the fire texture
+# is deliberately synthesized, not claimed as a field recording.
+rng = np.random.default_rng(2026111401)
+length = len(wind)
+noise = rng.normal(0, 1, length)
+fire = np.convolve(noise, np.ones(25)/25, mode='same') * .06
+for at in rng.integers(0, length-5000, 72):
+    n = int(rng.integers(300, 4000))
+    fire[at:at+n] += rng.normal(0,.07,n)*np.exp(-np.arange(n)/(n*.14))
+fire = loop(np.column_stack([fire, np.roll(fire, 170)]))
+save('camp', unit(wind)*.12 + unit(fire)*.45, rms=.031, peak=.2)
+save('forest', unit(wind)*.5, rms=.035, peak=.2)
+save('hall', pad*.7 + unit(wind)*.018, rms=.024, peak=.15)
+save('night', pad*.4 + unit(fire)*.035 + unit(wind)*.012, rms=.028, peak=.18)

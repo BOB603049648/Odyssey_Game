@@ -7,9 +7,10 @@ export const FIRST_SCREEN_TRAJ = 'land-companion';
 
 export function firstScreenAssetIds(scene = FIRST_SCREEN_SCENE, companion = FIRST_SCREEN_TRAJ, painted = false): string[] {
   const kit = sceneAssembly(scene);
-  const ids = painted && scene === FIRST_SCREEN_SCENE ? ['art.shore.landscape'] : (kit?.slots ?? [])
+  const ids = painted && kit ? [`art.${scene.split('.').at(-1)}.landscape`] : (kit?.slots ?? [])
     .map((slot) => slot.asset)
     .filter((asset): asset is string => Boolean(asset));
+  if (painted) ids.push('action-reach-01.png');
   // A complete scene includes its actors, even after a cold resume elsewhere.
   ids.push(FIRST_SCREEN_TRAVELER, 'stride-front-01.png', companion);
   return [...new Set(ids)];

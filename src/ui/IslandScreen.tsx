@@ -1,3 +1,5 @@
+import { SaveTools } from './SaveTools';
+import { completionPending } from './Cutscenes';
 import { AudioSettings } from './AudioControls';
 import { useEffect, useRef, useState } from 'react';
 import { EVIDENCE, LEXEMES } from '../content/catalog';
@@ -28,9 +30,9 @@ import './adventure.css';
 
 export { hintMark } from './hintMark';
 
-/** Success rest. The body stays down at least this long, then stands. */
+/** Successful rest. Hold the seated pose, then stand. */
 export const SLEEP_LIE_MS = 1200;
-/** Short settle after the lie before the feet unlock. */
+/** Short settle after resting before the feet unlock. */
 export const SLEEP_RISE_MS = 400;
 
 export function IslandScreen({
@@ -52,7 +54,7 @@ export function IslandScreen({
   const look = sceneLook(scene);
   const drank = save.beats['dba.beat.water'] === true;
   const remembered = place?.scene === scene ? { x: place.x, y: place.y } : null;
-  const paused = save.overlay !== 'none';
+  const paused = save.overlay !== 'none' || completionPending(save);
   const [skipWelcome, setSkipWelcome] = useState(false);
   useEffect(() => {
     if (save.flags['dba.flag.driftwood'] === true) return undefined;
@@ -225,7 +227,12 @@ export function OverlaySheet({
         <><AudioSettings /><GlossSwitch
           checked={save.settings.showGloss}
           onChange={(value) => dispatch({ type: 'set-show-gloss', value })}
-        /></>
+        /><div className="control-guide"><h3>如何游玩</h3>
+          <p>点击地面移动，或使用 WASD / 方向键；手机使用左下摇杆。</p>
+          <p>走近物品后，再点一次或按 E 互动；右下角也会显示可用操作。</p>
+          <p>观察壁画、辨认图意，把学会的字用在饮水、觅食、休息和避险中。</p>
+          <p>卡住时点奈奈茶寻求提示。此刻的旅程会指引下一步。</p>
+        </div><SaveTools save={save} /></>
       ) : null}
       {overlay === 'lexicon' ? <Lexicon save={save} words={learned} /> : null}
       {overlay === 'casefile' ? (

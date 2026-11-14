@@ -262,6 +262,9 @@ describe('playable slice', async () => {
     fireEvent.click(screen.getByRole('button', { name: '合上' }));
     expect(screen.queryByTestId('memory-plate')).toBeNull();
 
+    expect(screen.getByTestId('chapter-complete')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: '留在岛上探索' }));
+
     const closeMemory = () => {
       fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
       fireEvent.click(screen.getByRole('button', { name: '下一幕' }));

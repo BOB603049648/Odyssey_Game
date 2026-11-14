@@ -1,3 +1,4 @@
+import { PrologueLimbs } from './PrologueLimbs';
 import { useEffect, useRef, useState, type MutableRefObject } from 'react';
 
 const fract = (n: number) => n - Math.floor(n);
@@ -10,6 +11,7 @@ export function PrologueMotion({ src, step, portrait, active, reduced, time, alt
   src: string; step: number; portrait: boolean; active: boolean; reduced: boolean;
   time: MutableRefObject<number>; alt: string; onError: () => void;
 }) {
+  const [limbsReady, setLimbsReady] = useState(false);
   const container = useRef<HTMLDivElement>(null);
   const camera = useRef<HTMLDivElement>(null);
   const picture = useRef<HTMLImageElement>(null);
@@ -132,8 +134,9 @@ export function PrologueMotion({ src, step, portrait, active, reduced, time, alt
 
   return <div className="prologue-motion" ref={container} data-animation={MOODS[step]} data-motion={reduced ? 'reduced' : active ? 'playing' : 'paused'}>
     <div className="prologue-painting" style={size.width ? { width: size.width, height: size.height } : { width: '100%', height: '100%' }}>
-      <div className="prologue-camera" ref={camera}>
+      <div className="prologue-camera" ref={camera} data-limbs={limbsReady ? 'ready' : 'still'}>
         <img ref={picture} src={src} alt={alt} draggable={false} onError={onError} />
+        <PrologueLimbs src={src} step={step} portrait={portrait} reduced={reduced} time={time} width={size.width} height={size.height} onReady={setLimbsReady} />
         <canvas ref={canvas} className="prologue-weather" aria-hidden="true" />
       </div>
     </div>

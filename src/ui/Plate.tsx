@@ -45,7 +45,7 @@ function includeSlot(slot: SceneSlot, pass: PlatePass, feetY: number): boolean {
 }
 
 export function groundDepthSlots(plate:string, painted = false):SceneSlot[] {
-  if (painted && plate === 'dba.scene.shore') return [];
+  if (painted && isIslandScene(plate)) return [];
   return isIslandScene(plate) ? (sceneAssembly(plate)?.slots??[]).filter(isGroundDepthSlot) : [];
 }
 function isGroundDepthSlot(slot:SceneSlot):boolean {
@@ -153,8 +153,8 @@ function PlateBody({
   painted?: boolean;
 }) {
   const className = leaving ? 'plate-fade out' : incoming ? 'plate-fade in' : 'plate-fade';
-  if (painted && plate === 'dba.scene.shore') return pass === 'all' || pass === 'back'
-    ? <PaintedShore className={className} near={near} glance={glance} activeSpots={activeSpots} beat={leaving ? null : beat} /> : null;
+  if (painted && isIslandScene(plate)) return pass === 'all' || pass === 'back'
+    ? <PaintedEnvironment scene={plate} className={className} near={near} glance={glance} activeSpots={activeSpots} beat={leaving ? null : beat} /> : null;
   if (plate === 'keyart') {
     return (
       <div className={className} data-ambient={plate}>
@@ -195,15 +195,15 @@ function PlateBody({
   );
 }
 
-function PaintedShore({ className, near, glance, activeSpots, beat }: {
-  className: string; near: readonly string[]; glance: readonly string[];
+function PaintedEnvironment({ scene, className, near, glance, activeSpots, beat }: {
+  scene: IslandScene; className: string; near: readonly string[]; glance: readonly string[];
   activeSpots: readonly string[] | null; beat: SpotBeat | null;
 }) {
-  const { src, onError } = useSlotSrc('art.shore.landscape');
-  return <div className={className} data-assembly="painted" data-ambient="dba.scene.shore" data-shore-visual="candidate">
+  const { src, onError } = useSlotSrc(`art.${scene.split('.').at(-1)}.landscape`);
+  return <div className={className} data-assembly="painted" data-ambient={scene} data-shore-visual="candidate">
     {src ? <img className="painted-environment" data-testid="painted-environment" src={src} alt="" draggable={false} onError={onError} /> : null}
-    {groundDepthSlots('dba.scene.shore').map(slot => <SlotPiece key={slot.id}
-      scene="dba.scene.shore" slot={slot} cam={{ x: 0, y: 0 }} painted
+    {(sceneAssembly(scene)?.slots ?? []).filter(slot => slot.slot === 'props' && slot.spot).map(slot => <SlotPiece key={slot.id}
+      scene={scene} slot={{ ...slot, ...slot.playAt }} cam={{ x: 0, y: 0 }} painted
       lit={!!slot.spot && near.includes(slot.spot)} glanced={!!slot.spot && glance.includes(slot.spot)}
       hidden={!!slot.spot && activeSpots !== null && !activeSpots.includes(slot.spot)}
       showWalkMask={false} beat={beat} />)}
@@ -301,11 +301,11 @@ export function SlotPiece({
   /** The environment already contains the object. Keep only its interaction cue. */
   painted?: boolean;
 }) {
+  const { src, onError } = useSlotSrc(painted ? null : slot.asset);
   if (hidden) return null;
   const placed = slot.x !== undefined && slot.y !== undefined;
   const scenic = slot.slot === 'building' && !placed;
   const testId = slot.slot === 'props' ? `prop-${slot.id}` : `slot-${slot.slot}`;
-  const { src, onError } = useSlotSrc(painted ? null : slot.asset);
   const interactable = Boolean(slot.spot);
   const cue = interactable ? (lit ? 'near' : glanced ? 'glance' : 'far') : undefined;
   const footed = (slot.slot === 'props' || slot.slot === 'building') && !isPortal(slot);

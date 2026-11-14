@@ -50,3 +50,7 @@ Portrait compositions (`1024×1536`) are separate generated paintings, not crops
 | prologue-tide-portrait.webp | exec-f758c8ea-232c-4d52-9233-ab5172d85ee2.png |
 
 Each uses its corresponding wide shot as the image-generation reference. `ResizeObserver` selects the composition that fills more of the available stage without cropping. A phone with limited height may therefore use the wide painting. Rotation uses the same decode/retain/retry contract as advancing a shot; it never changes story progress. Only the chosen composition and its next shot are prefetched. The `.portrait` suffix exists only in the asset map, never in save scene IDs.
+
+## v0.1 scene continuity (2026-11-14)
+
+`camp-scene.webp`, `yard-scene.webp`, `hall-scene.webp`, `path-scene.webp`, and `night-scene.webp` are original generated illustrations, using the existing prologue tide painting as the visual reference. They replace the production slot collage while retaining the historical slot assemblies for review. Each full scene was generated at 1672 × 941 and encoded as WebP quality 88. No people or companion are baked into these backgrounds. Gameplay anchors for the new hall and night paintings are explicit `playAt` positions in `content/islands/dba/scenes.json`; navigation, hotspot geometry and content validation agree with those anchors.

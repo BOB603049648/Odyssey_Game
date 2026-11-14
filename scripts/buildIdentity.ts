@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import type { Plugin } from 'vite';
+import { RELEASE_VERSION, RELEASE_SCOPE } from '../src/release';
 
 /** Public, non-secret build identity so a test deployment can be verified. */
 export function buildIdentity(): Plugin {
@@ -9,7 +10,7 @@ export function buildIdentity(): Plugin {
     revision = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
     dirty = Boolean(execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim());
   } catch { /* Source archives can be built without a Git checkout. */ }
-  const identity = { revision, dirty, builtAt: new Date().toISOString() };
+  const identity = { version: RELEASE_VERSION, scope: RELEASE_SCOPE, revision, dirty, builtAt: new Date().toISOString() };
   return {
     name: 'odyssey-build-identity',
     apply: 'build',

@@ -61,6 +61,10 @@ assert.ok((await save()).inventory.includes('dba.item.token'));assert.ok((await 
 await gate('shore');await spot('shore-depart');await page.getByTestId('depart-plate').waitFor();
 for(let i=0;i<3;i++)await page.getByRole('button',{name:'下一幕',exact:true}).click();
 await page.getByRole('button',{name:'合上',exact:true}).click();
+await page.getByTestId('chapter-complete').waitFor();
+await page.screenshot({path:resolve(output, 'chapter-complete.png')});
+await page.getByRole('button',{name:'留在岛上探索',exact:true}).click();
+assert.equal((await save()).flags['v01.completion-seen'],true);
 assert.equal((await save()).beats['dba.beat.depart'],true);assert.ok((await save()).chart.includes('chart.jgw'));
 await page.reload();await page.getByRole('button',{name:'继续',exact:true}).click();await ready();assert.equal((await save()).beats['dba.beat.depart'],true);
 assert.deepEqual(errors,[]);console.log(JSON.stringify({result:'PASS',errors,beats:(await save()).beats,evidence:(await save()).evidence}));

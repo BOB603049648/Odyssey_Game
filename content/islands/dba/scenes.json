@@ -448,7 +448,11 @@
         "y": 0.5,
         "w": 0.12,
         "h": 0.08,
-        "depthMode": "wall-art"
+        "depthMode": "wall-art",
+        "playAt": {
+          "x": 0.49,
+          "y": 0.57
+        }
       },
       {
         "id": "art.hall.prop.stamp-rail",
@@ -461,7 +465,11 @@
         "y": 0.505,
         "w": 0.09,
         "h": 0.05,
-        "depthMode": "wall-art"
+        "depthMode": "wall-art",
+        "playAt": {
+          "x": 0.67,
+          "y": 0.57
+        }
       },
       {
         "id": "art.hall.prop.wrist-knot",
@@ -474,7 +482,11 @@
         "x": 0.38,
         "y": 0.44,
         "w": 0.035,
-        "h": 0.06
+        "h": 0.06,
+        "playAt": {
+          "x": 0.392,
+          "y": 0.56
+        }
       },
       {
         "id": "art.hall.fg",
@@ -598,7 +610,11 @@
         "x": 0.36,
         "y": 0.68,
         "w": 0.09,
-        "h": 0.06
+        "h": 0.06,
+        "playAt": {
+          "x": 0.36,
+          "y": 0.75
+        }
       },
       {
         "id": "art.night.prop.embers",
@@ -610,7 +626,11 @@
         "x": 0.58,
         "y": 0.74,
         "w": 0.09,
-        "h": 0.07
+        "h": 0.07,
+        "playAt": {
+          "x": 0.615,
+          "y": 0.75
+        }
       },
       {
         "id": "art.night.prop.memory-scrap",
@@ -622,7 +642,11 @@
         "x": 0.7,
         "y": 0.7,
         "w": 0.055,
-        "h": 0.05
+        "h": 0.05,
+        "playAt": {
+          "x": 0.78,
+          "y": 0.75
+        }
       },
       {
         "id": "art.night.fg",

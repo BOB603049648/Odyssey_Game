@@ -6,7 +6,7 @@ import { SLOT_ASSETS } from './slotAssets';
 describe('first-screen asset contract', () => {
   it('loads one complete painted environment and both actors for the live shore', () => {
     const ids = firstScreenAssetIds('dba.scene.shore', 'land-companion', true);
-    expect(ids).toEqual(['art.shore.landscape', 'idle-front-01.png', 'stride-front-01.png', 'land-companion']);
+    expect(ids).toEqual(['art.shore.landscape', 'action-reach-01.png', 'idle-front-01.png', 'stride-front-01.png', 'land-companion']);
     expect(SLOT_ASSETS['art.shore.landscape']).toBe(true);
     expect(ids).not.toContain('art.shore.prop.gourd');
   });

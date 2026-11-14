@@ -242,7 +242,8 @@ export function advanceCutscene(state: SaveData): SaveData {
   }
   if (state.overlay !== 'memory') return state;
   if (state.cutsceneStep >= MEMORY_FRAMES - 1) {
-    return { ...state, overlay: 'none', cutsceneStep: 0 };
+    return { ...state, overlay: 'none', cutsceneStep: 0, flags: { ...state.flags,
+      ...(state.beats['dba.beat.depart'] ? { 'v01.completed': true } : {}) } };
   }
   return { ...state, cutsceneStep: state.cutsceneStep + 1 };
 }

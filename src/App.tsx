@@ -1,5 +1,7 @@
+import './ui/release.css';
 import { lazy, Suspense, useState } from 'react';
 import { primeAudio } from './audio/mixer';
+import type { SoundId } from './audio/sounds';
 import { useSoundscape } from './audio/useSoundscape';
 import { usePagePresentation } from './ui/useCinematicClock';
 import { useGame } from './stores/gameStore';
@@ -18,7 +20,12 @@ export function App() {
   const dispatch = useGame((state) => state.dispatch);
   const [atTitle, setAtTitle] = useState(true);
   const { visible } = usePagePresentation();
-  useSoundscape(!atTitle && save.screen !== 'prologue' && save.currentScene === 'dba.scene.shore' ? 'shore' : null, visible);
+  const ambient: Record<string, SoundId> = {
+    'dba.scene.shore': 'shore', 'dba.scene.camp': 'camp', 'dba.scene.yard': 'shore',
+    'dba.scene.hall': 'hall', 'dba.scene.path': 'forest', 'dba.scene.night': 'night',
+  };
+  const soundscape = save.overlay === 'memory' ? 'memory' : ambient[save.currentScene] ?? null;
+  useSoundscape(!atTitle && save.screen !== 'prologue' ? soundscape : null, visible);
 
   return (
     <>
@@ -50,7 +57,7 @@ export function App() {
         ) : (
           <IslandScreen save={save} dispatch={dispatch} onTitle={() => setAtTitle(true)} />
         )}
-        {atTitle ? null : <Cutscenes save={save} dispatch={dispatch} />}
+        {atTitle ? null : <Cutscenes save={save} dispatch={dispatch} onTitle={() => setAtTitle(true)} />}
       </main>
       {saveFailed ? (
         <p className="save-warning" role="status">

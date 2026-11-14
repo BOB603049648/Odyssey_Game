@@ -1,3 +1,7 @@
+import camp from '../assets/audio/camp.mp3';
+import forest from '../assets/audio/forest.mp3';
+import hall from '../assets/audio/hall.mp3';
+import night from '../assets/audio/night.mp3';
 import storm from '../assets/audio/storm.mp3';
 import rescue from '../assets/audio/rescue.mp3';
 import memory from '../assets/audio/memory.mp3';
@@ -7,7 +11,7 @@ import catPurr from '../assets/audio/cat-purr.mp3';
 import glyphBreak from '../assets/audio/glyph-break.mp3';
 import { audibleGraph } from './mixer';
 
-export const SOUND_URLS = { storm, rescue, memory, shore, 'cat-call': catCall, 'cat-purr': catPurr, 'glyph-break': glyphBreak };
+export const SOUND_URLS = { storm, rescue, memory, shore, camp, forest, hall, night, 'cat-call': catCall, 'cat-purr': catPurr, 'glyph-break': glyphBreak };
 export type SoundId = keyof typeof SOUND_URLS;
 export type SoundVoice = { stop: (fade?: number) => void };
 const decoded = new Map<SoundId, AudioBuffer>();

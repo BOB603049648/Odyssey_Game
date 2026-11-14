@@ -224,7 +224,7 @@ export function checkContent(): string[] {
       seenSpots.add(spot.id);
       const anchors = kit.slots.filter((slot) => slot.slot === 'props' && slot.spot === spot.id);
       const placed = anchors.filter((slot) => slot.x !== undefined && slot.y !== undefined);
-      const onSpot = placed.some((slot) => Math.abs((slot.x ?? 0) - spot.x) < 1e-6 && Math.abs((slot.y ?? 0) - spot.y) < 1e-6);
+      const onSpot = placed.some((slot) => Math.abs((slot.playAt?.x ?? slot.x ?? 0) - spot.x) < 1e-6 && Math.abs((slot.playAt?.y ?? slot.y ?? 0) - spot.y) < 1e-6);
       if (placed.length > 0 && !onSpot) errors.push(`${sceneId} hotspot ${spot.id} is not on an anchor`);
     }
   }
