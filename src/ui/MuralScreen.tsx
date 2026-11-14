@@ -16,6 +16,7 @@ import { useFeedbackFx } from './useFeedbackFx';
 import { useIdleHint } from './useIdleHint';
 import { ConceptScene } from './ConceptScene';
 import { meaningChoices } from '../core/conceptChoices';
+import { LearningJourney } from './LearningJourney';
 
 const LAYERS: MuralLayer[] = ['concrete', 'action', 'relation', 'abstract'];
 const BETRAY = 'dba.word.betray';
@@ -101,6 +102,7 @@ export function MuralScreen({
           <span>{t('mural.review')}</span>
         </button>
       </div>
+      {!reviewing ? <LearningJourney save={save} dispatch={dispatch} /> : null}
       <div className="mural-guidance" data-testid="mural-guidance">
         <p role="status">{reviewing ? (save.feedback.kind === 'no' ? t('mural.reviewMiss') : t('mural.reviewHelp')) : complete
           ? t(nextLayer ? 'mural.complete' : 'mural.allComplete')

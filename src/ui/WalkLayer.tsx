@@ -148,6 +148,8 @@ export function WalkLayer({
   interactionSeq = 0,
   worldState,
   onNavigationNotice,
+  onActivity,
+  onReady,
 }: {
   scene: IslandScene;
   drank: boolean;
@@ -177,6 +179,8 @@ export function WalkLayer({
   interactionSeq?: number;
   worldState?: WorldState;
   onNavigationNotice?: (notice: NavigationStatus | null) => void;
+  onActivity?: () => void;
+  onReady?: (scene: IslandScene, ready: boolean) => void;
 }) {
   const painted = !presentationFrozen;
   const { visible, reduced } = usePagePresentation();
@@ -204,6 +208,8 @@ export function WalkLayer({
   const [rejectedGround, setRejectedGround] = useState<{ scene: IslandScene; point: Point; message: string } | null>(null);
   const noticeRef = useRef(onNavigationNotice);
   noticeRef.current = onNavigationNotice;
+  const activityRef = useRef(onActivity);
+  activityRef.current = onActivity;
   const stickRef = useRef<Point | null>(null);
   const smoothRef = useRef<Point | null>(null);
   const entryRef = useRef<string | null>(null);
@@ -387,6 +393,7 @@ export function WalkLayer({
     const moved = groundDistance(planted, posRef.current) > 1e-6;
     isBlocked ||= groundDistance(planted, next) > 1e-7;
     isMoving &&= moved;
+    if (isMoving) activityRef.current?.();
     const gate = gateCrossing(sceneRef.current, posRef.current, planted);
     if (gate) {
       velocityRef.current = { x: 0, y: 0 };
@@ -887,6 +894,7 @@ export function WalkLayer({
     height:travelerHeight(scene),
   });
   const displayStatus = firstScreen.status === 'ready' && (!travelerPresentation.current.shown || !companionPresentation.src) ? 'loading' : firstScreen.status;
+  useEffect(() => { onReady?.(scene, displayStatus === 'ready'); }, [onReady, scene, displayStatus]);
   pausedRef.current = worldPaused || displayStatus !== 'ready';
   const navigationVisible = !pausedRef.current && !presentationFrozen;
   const selectedTravel = travel?.gate.from === scene ? travel : null;

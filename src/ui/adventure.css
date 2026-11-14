@@ -53,6 +53,7 @@
 
 /* The mural is a readable illustrated puzzle spread, not two identical icon trays. */
 .mural-screen { padding: 100px max(24px, 6vw) 30px; }
+.mural-screen > .plate-stack, .mural-screen::before { position: fixed; }
 .mural-screen .bar { padding: 20px max(24px, 6vw); }
 .mural-title { font-size: 23px; letter-spacing: .16em; line-height: 1.3; margin-top: 6px; }
 .mural-screen .plate-wash[data-plate="mural"] { background: linear-gradient(90deg, #0d1719e8, #101c1ce8), url('../assets/art/mural.jpg') center / cover; }

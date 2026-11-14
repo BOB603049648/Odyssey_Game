@@ -1,7 +1,7 @@
 import { SaveTools } from './SaveTools';
 import { completionPending } from './Cutscenes';
 import { AudioSettings } from './AudioControls';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { EVIDENCE, LEXEMES } from '../content/catalog';
 import { companionPost } from '../core/companionPost';
 import { hintPresentation } from '../core/hints';
@@ -30,6 +30,7 @@ import { AdventureHud, JourneyMoment } from './AdventureHud';
 import { puzzleState } from '../core/puzzles';
 import { worldState } from '../core/worldState';
 import { FoodTable } from './FoodTable';
+import { FieldLexicon } from './FieldLexicon';
 import './adventure.css';
 
 export { hintMark } from './hintMark';
@@ -45,7 +46,6 @@ export function IslandScreen({
 }) {
   const hint = hintPresentation(save);
   const { shake, purr } = useFeedbackFx(save.feedback);
-  useIdleHint(save, dispatch);
   const place = useGame((state) => state.place);
   const setPlace = useGame((state) => state.setPlace);
   const learned = LEXEMES.filter((lexeme) => isLearnedState(save.words[lexeme.id]?.state));
@@ -58,6 +58,9 @@ export function IslandScreen({
   const foodTableVisible = foodTableOpen && scene === 'dba.scene.yard' && save.overlay === 'none';
   const remembered = place?.scene === scene ? { x: place.x, y: place.y } : null;
   const paused = save.overlay !== 'none' || completionPending(save) || foodTableVisible;
+  const [readyScene, setReadyScene] = useState<string | null>(null);
+  const onReady = useCallback((scene: string, ready: boolean) => setReadyScene(ready ? scene : null), []);
+  const onActivity = useIdleHint(save, dispatch, !paused && readyScene === scene);
   useEffect(() => { setFoodTableOpen(false); }, [scene, save.createdAt]);
   const [skipWelcome, setSkipWelcome] = useState(false);
   useEffect(() => {
@@ -135,6 +138,8 @@ export function IslandScreen({
           onFar={(id) => dispatch({ type: 'spot-far', id })}
           onApproachHint={setApproachHint}
           onNavigationNotice={setNavigation}
+          onActivity={onActivity}
+          onReady={onReady}
           beat={save.feedback.kind === 'none' || !save.feedback.spot ? null : { spot: save.feedback.spot, kind: save.feedback.kind }}
           interactionSeq={save.feedback.seq}
           flash={flashSpot && flashKind ? { kind: flashKind, seq: save.feedback.seq, x: flashSpot.x, y: flashSpot.y } : null}
@@ -238,7 +243,7 @@ export function OverlaySheet({
   const overlay = held.current;
   if (!presence.mounted || overlay === 'none' || overlay === 'depart' || overlay === 'memory') return null;
   return (
-    <div className={`sheet ${presence.phase}`} role="dialog" aria-label={sheetLabel(overlay)}>
+    <div className={`sheet ${presence.phase}`} data-overlay={overlay} role="dialog" aria-label={sheetLabel(overlay)}>
       <button type="button" className="btn" onClick={() => dispatch({ type: 'close-overlay' })}>
         {t('menu.close')}
       </button>
@@ -253,7 +258,7 @@ export function OverlaySheet({
           <p>卡住时点奈奈茶寻求提示。此刻的旅程会指引下一步。</p>
         </div><SaveTools save={save} /></>
       ) : null}
-      {overlay === 'lexicon' ? <Lexicon save={save} words={learned} /> : null}
+      {overlay === 'lexicon' ? <FieldLexicon save={save} /> : null}
       {overlay === 'casefile' ? (
         <CaseFile save={save} onMemory={() => dispatch({ type: 'open-memory' })} />
       ) : null}
@@ -275,27 +280,6 @@ export function OverlaySheet({
           </div>
         </div>
       ) : null}
-    </div>
-  );
-}
-
-function Lexicon({
-  save,
-  words,
-}: {
-  save: SaveData;
-  words: typeof LEXEMES;
-}) {
-  if (words.length === 0) return <p>{t('lexicon.empty')}</p>;
-  return (
-    <div className="lexicon">
-      {words.map((lexeme) => (
-        <article key={lexeme.id} className="lex-card">
-          <Glyph id={lexeme.id} />
-          {save.settings.showGloss ? <span className="gloss">{lexeme.gloss}</span> : null}
-          <i className="draft" aria-label={t('lexicon.draft')} />
-        </article>
-      ))}
     </div>
   );
 }
