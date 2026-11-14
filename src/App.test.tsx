@@ -93,11 +93,11 @@ describe('playable slice', async () => {
     if (screen.queryByTestId('walk-stage')) await ready();
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
     expect(screen.getByTestId('prologue').getAttribute('data-prologue-step')).toBe('1');
-    expect(screen.getByRole('status').textContent).toContain('暂时无法保存进度');
+    expect(screen.getByText(/暂时无法保存进度/).getAttribute('role')).toBe('status');
     expect(JSON.parse(localStorage.getItem(SAVE_KEY)!).prologueStep).toBe(0);
     write.mockRestore();
     fireEvent.click(screen.getByRole('button', { name: '下一幕' }));
-    expect(screen.queryByRole('status')).toBeNull();
+    expect(screen.queryByText(/暂时无法保存进度/)).toBeNull();
     expect(JSON.parse(localStorage.getItem(SAVE_KEY)!).prologueStep).toBe(2);
   });
 

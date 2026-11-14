@@ -41,7 +41,14 @@ try {
     const sample = () => {
       const actor = document.querySelector('[data-testid="traveler"]');
       const img = actor?.querySelector('[data-layer="current"]');
-      if (actor && img) window.movementSamples.push({ time: performance.now(), x: Number(actor.dataset.x), y: Number(actor.dataset.y), pose: actor.dataset.pose, facing: actor.dataset.facing, frame: img.dataset.atlas, ready: img.complete && img.naturalWidth > 0 });
+      if (actor && img) {
+        const rect = actor.getBoundingClientRect();
+        const raster = img.getBoundingClientRect();
+        const crop = img.parentElement.getBoundingClientRect();
+        window.movementSamples.push({ time: performance.now(), x: Number(actor.dataset.x), y: Number(actor.dataset.y), pose: actor.dataset.pose, facing: actor.dataset.facing, frame: img.dataset.atlas,
+          ready: img.complete && img.naturalWidth > 0, src: img.src, bitmap: img.currentSrc, bitmapWidth: img.naturalWidth,
+          cropHeight: crop.height / rect.height, cropWidth: crop.width / rect.width, rasterHeight: raster.height / crop.height });
+      }
       requestAnimationFrame(sample);
     };
     requestAnimationFrame(sample);
@@ -78,11 +85,21 @@ try {
     assert.ok(walking.length > 15, `no sustained ${facing} walk`);
     assert.equal(new Set(walking.map(s => s.frame).filter(Boolean)).size, 4, `${facing} did not show all four walk poses`);
     assert.ok(walking.every(s => s.ready), `${facing} contained an undecoded image`);
+    for (const frame of walking.filter(s => s.frame?.startsWith('stride-'))) {
+      assert.equal(frame.bitmapWidth, 1448, 'crop was applied to the wrong bitmap');
+      assert.ok(!frame.src.includes('#'), 'walking reloaded the atlas URL for individual cells');
+      assert.equal(frame.bitmap, frame.src, 'the browser was still painting a previous source');
+      assert.ok(Math.abs(frame.cropHeight - 1) < .025 && Math.abs(frame.cropWidth - 1) < .01, 'frame container changed size');
+      assert.ok(Math.abs(frame.rasterHeight - 1086 / 332) < .02, 'atlas scale changed during the walk');
+    }
   }
+  const idleFlashes = samples.filter((sample, i) => sample.pose === 'idle' && samples[i-1]?.pose === 'walk' && samples[i+1]?.pose === 'walk'
+    && samples[i-1].facing === sample.facing && samples[i+1].facing === sample.facing);
+  assert.deepEqual(idleFlashes, [], 'idle artwork flashed between two walk frames');
   assert.equal(new Set(atlases).size, 1, 'walk cells downloaded different atlases');
   assert.deepEqual(errors, []);
   await writeFile(resolve(output, 'movement.json'), JSON.stringify({ result: 'PASS', errors, atlases, samples }, null, 2));
-  console.log(JSON.stringify({ result: 'PASS', checks: ['four facings / four frames', 'cold atlas decode', 'short release', 'stationary idle'], errors }));
+  console.log(JSON.stringify({ result: 'PASS', checks: ['four facings / four frames', 'cold atlas decode', 'short release', 'stationary idle', 'fixed bitmap and crop scale', 'no idle flash'], errors }));
 } catch (error) {
   await page.screenshot({ path: resolve(output, 'failure.png') });
   await writeFile(resolve(output, 'failure-samples.json'), JSON.stringify(await page.evaluate(() => ({ samples: window.movementSamples, releases: window.movementReleases })), null, 2));

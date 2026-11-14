@@ -1,6 +1,7 @@
 import './ui/release.css';
-import { lazy, Suspense, useState } from 'react';
-import { primeAudio } from './audio/mixer';
+import { lazy, Suspense, useEffect, useState } from 'react';
+import { installAudioRecovery, primeAudio } from './audio/mixer';
+import { AudioRecoveryNotice } from './ui/AudioControls';
 import type { SoundId } from './audio/sounds';
 import { useSoundscape } from './audio/useSoundscape';
 import { usePagePresentation } from './ui/useCinematicClock';
@@ -15,6 +16,7 @@ import { t } from './ui/i18n';
 const DevTools = import.meta.env.DEV ? lazy(() => import('./dev/DevTools').then((mod) => ({ default: mod.DevTools }))) : null;
 
 export function App() {
+  useEffect(installAudioRecovery, []);
   const save = useGame((state) => state.save);
   const saveFailed = useGame((state) => state.saveFailed);
   const dispatch = useGame((state) => state.dispatch);
@@ -25,7 +27,7 @@ export function App() {
     'dba.scene.hall': 'hall', 'dba.scene.path': 'forest', 'dba.scene.night': 'night',
   };
   const soundscape = save.overlay === 'memory' ? 'memory' : ambient[save.currentScene] ?? null;
-  useSoundscape(!atTitle && save.screen !== 'prologue' ? soundscape : null, visible);
+  const sound = useSoundscape(!atTitle && save.screen !== 'prologue' ? soundscape : null, visible);
 
   return (
     <>
@@ -59,6 +61,7 @@ export function App() {
         )}
         {atTitle ? null : <Cutscenes save={save} dispatch={dispatch} onTitle={() => setAtTitle(true)} />}
       </main>
+      {!atTitle && save.screen !== 'prologue' && <AudioRecoveryNotice failed={sound.status === 'failed'} retry={sound.retry} />}
       {saveFailed ? (
         <p className="save-warning" role="status">
           {t('save.failed')}

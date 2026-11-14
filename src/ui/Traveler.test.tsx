@@ -54,7 +54,7 @@ describe('traveler art', () => {
   it('uses the front idle frame and the same contact shadow on every facing', () => {
     const view = render(<TravelerMark x={0.4} y={0.6} facing="front" moving={false} />);
     const mark = view.container.querySelector('[data-testid="traveler"]') as HTMLElement;
-    const current = () => view.container.querySelector('[data-layer="current"]')?.getAttribute('src') ?? '';
+    const current = () => { const img = view.container.querySelector('[data-layer="current"]'); return img?.getAttribute('data-atlas') ?? img?.getAttribute('src') ?? ''; };
     expect(mark?.getAttribute('data-figure')).toBe('traveler');
     expect(mark?.getAttribute('data-facing')).toBe('front');
     expect(current()).toMatch(/idle-front-01/);
@@ -175,7 +175,7 @@ describe('traveler art', () => {
 
   it('uses the side walk sheet for both directions and a real back idle', () => {
     const view = render(<TravelerMark x={0.4} y={0.6} facing="left" moving />);
-    const current = () => view.container.querySelector('[data-layer="current"]')?.getAttribute('src') ?? '';
+    const current = () => { const img = view.container.querySelector('[data-layer="current"]'); return img?.getAttribute('data-atlas') ?? img?.getAttribute('src') ?? ''; };
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-facing')).toBe('left');
     expect(current()).toMatch(/stride-side-01/);
 
@@ -253,14 +253,14 @@ describe('traveler art', () => {
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="front" moving={false} pose="reach" />);
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).toBe('reach');
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-clip-frames')).toBe('4');
-    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/action-reach-01/);
+    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('data-atlas')).toMatch(/action-reach-01/);
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="left" moving stride={0.4} pose="reach" />);
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).toBe('reach');
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-gait')).toBe('0.40');
-    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/action-reach-01/);
+    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('data-atlas')).toMatch(/action-reach-01/);
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="back" moving={false} pose="reach" />);
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).toBe('reach');
-    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/action-reach-01/);
+    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('data-atlas')).toMatch(/action-reach-01/);
   });
 
   it('plays reach only when an interaction happens inside a hotspot', () => {
@@ -300,7 +300,7 @@ describe('traveler art', () => {
     expect(near.container.querySelector('[data-testid="companion-anchor"]')?.getAttribute('data-sprite')).toMatch(/land-shore/);
     fireEvent.keyDown(window, { key: 'e' });
     expect(pose()).toBe('reach');
-    expect(near.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/action-reach-01/);
+    expect(near.container.querySelector('[data-layer="current"]')?.getAttribute('data-atlas')).toMatch(/action-reach-01/);
     near.unmount();
     const far = render(layer([away], spawn));
     fireEvent.click(far.getByTestId('shore-depart'));
@@ -448,7 +448,7 @@ describe('traveler art', () => {
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="left" moving />);
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-crossfade')).toBe('yes');
     expect(view.container.querySelector('[data-layer="out"]')).toBeTruthy();
-    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/stride-side-01/);
+    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('data-atlas')).toMatch(/stride-side-01/);
     expect(view.container.querySelector('.traveler-shade')).toBeNull();
   });
 

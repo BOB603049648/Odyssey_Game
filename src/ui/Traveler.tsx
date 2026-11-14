@@ -215,6 +215,7 @@ function useTravelerMotion(
     let prevPose: TravelerPose = 'idle';
     let locomotion: TravelerLocomotion = 'idle';
     let lastPos = { ...posRef.current };
+    let lastMovementAt = -Infinity;
     const tick = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
@@ -223,8 +224,12 @@ function useTravelerMotion(
       const dist = moved < 0.1 ? moved : 0; // scene entry is not a step
       lastPos = here;
       const physicallyWalking = dist > 1e-6 && strideRef.current > 0.001;
+      if (physicallyWalking) lastMovementAt = now;
       gait = stepGait(gait, physicallyWalking ? strideRef.current : 0, dt);
-      locomotion = physicallyWalking ? 'walk' : 'idle';
+      // Movement and presentation have separate RAF/React commits. A missed
+      // position sample must not insert a differently drawn idle into a step.
+      // Explicit release still stops immediately; collision settles in 80 ms.
+      locomotion = strideRef.current > 0.001 && now - lastMovementAt < 80 ? 'walk' : 'idle';
       const requested: TravelerPose = overrideRef.current === 'auto' ? locomotion : overrideRef.current;
       const pose = poseForSheet(requested, sheetRef.current);
       if (pose === 'walk') {
@@ -354,6 +359,7 @@ function useFramePresentation(blend:FrameBlend|null,contactCleanup:boolean):Fram
 export function FramePictureView({picture,layer,onMount}:{picture:FramePresentation;layer:'out'|'current';onMount?:(node:HTMLSpanElement|null)=>void}) {
   const {blend,shown,support,onError}=picture;
   const cell = atlasSource(shown);
+  const bitmap = cell ? shown.slice(0, shown.indexOf('#')) : shown;
   return (
     <span
       ref={onMount}
@@ -366,12 +372,16 @@ export function FramePictureView({picture,layer,onMount}:{picture:FramePresentat
     >
       {shown ? (
         <img
+          // Never apply atlas enlargement/cropping to a still-painted idle
+          // bitmap while the browser swaps image sources. Within an atlas the
+          // node and URL stay fixed; only the crop coordinates change.
+          key={cell ? bitmap : 'standalone'}
           className={layer === 'current' ? 'traveler-figure traveler-frame' : 'traveler-frame'}
           data-layer={layer}
           data-frame={blend.frame}
           data-atlas={cell ? cell.file : undefined}
           style={cell ? { position: 'absolute', width: `${cell.atlasWidth / cell.width * 100}%`, height: `${cell.atlasHeight / cell.height * 100}%`, left: `${-cell.x / cell.width * 100}%`, top: `${-cell.y / cell.height * 100}%`, maxWidth: 'none', objectFit: 'fill' } : undefined}
-          src={shown}
+          src={bitmap}
           alt=""
           draggable={false}
           onError={onError}

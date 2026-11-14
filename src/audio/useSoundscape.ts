@@ -22,7 +22,8 @@ export function useSoundscape(id: SoundId | null, running: boolean, time?: Mutab
       if (!live) { voice?.stop(0); return; }
       if (voice) {
         setStatus('playing');
-        const next = SCAPES[SCAPES.indexOf(id!) + 1];
+        const index = SCAPES.indexOf(id!);
+        const next = index >= 0 ? SCAPES[index + 1] : undefined;
         if (next) void loadSound(next);
       } else {
         setStatus('failed');

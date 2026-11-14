@@ -3,13 +3,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const param = () => ({ value: 0, cancelScheduledValues: vi.fn(), setValueAtTime: vi.fn(), linearRampToValueAtTime: vi.fn() });
 const node = () => ({ connect: vi.fn(), disconnect: vi.fn(), gain: param() });
 let contexts: FakeContext[];
-class FakeContext {
+class FakeContext extends EventTarget {
   state = 'running'; currentTime = 10; destination = {};
   gains: ReturnType<typeof node>[] = [];
   sources: (ReturnType<typeof node> & { start: ReturnType<typeof vi.fn>; stop: ReturnType<typeof vi.fn>; onended?: () => void })[] = [];
-  resume = vi.fn(() => Promise.resolve()); addEventListener = vi.fn();
+  resume = vi.fn(() => { this.state = 'running'; this.dispatchEvent(new Event('statechange')); return Promise.resolve(); });
   decodeAudioData = vi.fn(() => Promise.resolve({ duration: 16 }));
-  constructor() { contexts.push(this); }
+  constructor() { super(); contexts.push(this); }
   createGain() { const gain = node(); this.gains.push(gain); return gain; }
   createDynamicsCompressor() { return { ...node(), threshold: param(), knee: param(), ratio: param(), attack: param(), release: param() }; }
   createBufferSource() { const source = { ...node(), start: vi.fn(), stop: vi.fn() }; this.sources.push(source); return source; }
@@ -18,6 +18,41 @@ beforeEach(() => { vi.resetModules(); contexts = []; localStorage.clear(); vi.st
 afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
 describe('shared sound mixer', () => {
+  it('requests playback routing when Safari exposes an audio session', async () => {
+    const audioSession = { type: 'auto' };
+    vi.stubGlobal('navigator', { audioSession });
+    const mixer = await import('./mixer');
+    expect(await mixer.primeAudio()).toBe(true);
+    expect(audioSession.type).toBe('playback');
+  });
+  it('recovers interrupted audio on return and on gameplay input without autoplaying the title', async () => {
+    const mixer = await import('./mixer');
+    const remove = mixer.installAudioRecovery();
+    try {
+      document.dispatchEvent(new MouseEvent('click')); window.dispatchEvent(new Event('pageshow'));
+      expect(contexts).toHaveLength(0);
+      await mixer.primeAudio(); const context = contexts[0];
+      context.state = 'interrupted'; context.dispatchEvent(new Event('statechange'));
+      expect(mixer.audioSnapshot().status).toBe('blocked');
+      const hidden = vi.spyOn(document, 'hidden', 'get').mockReturnValue(true);
+      document.dispatchEvent(new Event('visibilitychange'));
+      expect(context.gains[0].gain.linearRampToValueAtTime).toHaveBeenLastCalledWith(0, 10.08);
+      expect(context.resume).not.toHaveBeenCalled();
+      hidden.mockReturnValue(false); document.dispatchEvent(new Event('visibilitychange')); await Promise.resolve();
+      expect(mixer.audioSnapshot().status).toBe('ready');
+      expect(context.gains[0].gain.linearRampToValueAtTime).toHaveBeenLastCalledWith(.7, 10.08);
+      context.state = 'suspended'; context.dispatchEvent(new Event('statechange'));
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'd' })); await Promise.resolve();
+      expect(context.resume).toHaveBeenCalledTimes(2);
+      mixer.setAudioPreferences({ muted: true }); context.state = 'suspended';
+      document.dispatchEvent(new MouseEvent('click')); window.dispatchEvent(new Event('pageshow'));
+      expect(context.resume).toHaveBeenCalledTimes(2);
+      mixer.setAudioPreferences({ muted: false, volume: 0 });
+      document.dispatchEvent(new MouseEvent('click')); expect(context.resume).toHaveBeenCalledTimes(2);
+      remove(); mixer.setAudioPreferences({ volume: .7 });
+      document.dispatchEvent(new MouseEvent('click')); expect(context.resume).toHaveBeenCalledTimes(2);
+    } finally { remove(); }
+  });
   it('remembers mute, avoids creating audio while muted, and clamps volume', async () => {
     localStorage.setItem('odyssey.audio.v1', JSON.stringify({ muted: true, volume: .4 }));
     const mixer = await import('./mixer');

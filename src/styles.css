@@ -701,7 +701,7 @@ h1 {
      hid the contact bridge (rows 1132–1143). */
 }
 
-.traveler-frames { position: relative; height: 100%; }
+.traveler-frames { display: block; position: relative; height: 100%; }
 .traveler-frame-wrap { display: block; position: relative; height: 100%; }
 .traveler-frame-wrap[data-mirror="yes"] { transform: scaleX(-1); }
 .traveler-frame {
@@ -2564,3 +2564,6 @@ h1 {
 .audio-settings label { display: inline-flex; align-items: center; gap: 10px; }
 .audio-settings input[type="range"] { width: 104px; height: 44px; accent-color: #cdb58c; }
 .audio-settings output { width: 3em; font-variant-numeric: tabular-nums; }
+.audio-help { flex-basis: 100%; margin: 0; font-size: 12px; line-height: 1.6; }
+.audio-recovery-note { position: fixed; z-index: 90; top: calc(78px + var(--safe-top, 0px)); left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100vw - 24px); box-sizing: border-box; display: flex; align-items: center; gap: 12px; padding: 4px 12px; border: 1px solid #cdb58c66; border-radius: 8px; color: #eee5d0; background: #152224f2; font-size: 12px; }
+.audio-recovery-note button { min-height: 44px; flex-shrink: 0; color: #f1d398; }

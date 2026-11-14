@@ -38,3 +38,9 @@ export const playPurr = () => ownedCue('cat-purr');
 export function playThunk(): void {
   tone(180, 70, 0.08, 0.03);
 }
+
+/** A recognizable output check that also works if scene MP3 loading fails. */
+export function playAudioTest(): void {
+  tone(523, 523, .28, .22);
+  tone(784, 784, .38, .22, .32);
+}
