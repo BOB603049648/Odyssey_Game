@@ -5,6 +5,7 @@ import { SPOTS, type Spot } from '../core/stage';
 import { isLearnedState } from '../core/words';
 import { t, type MessageKey } from './i18n';
 import { hintMark } from './hintMark';
+import { puzzleState } from '../core/puzzles';
 
 const BETRAY = 'dba.word.betray';
 
@@ -29,6 +30,8 @@ type ViewSpec = {
 const VIEWS: Record<string, ViewSpec> = {
   'island-mural': { className: 'hotspot mural', testId: 'island-mural', label: 'island.mural', hintAnchor: 'mural-entrance' },
   'island-gourd': { className: 'hotspot gourd', testId: 'island-gourd', label: 'island.gourd', aria: 'island.gourd', hintAnchor: 'gourd' },
+  'water-spring': { className: 'hotspot gourd', testId: 'water-spring', label: 'puzzle.water.spring', hintAnchor: 'water-spring', glyph: 'dba.word.water' },
+  'water-sea': { className: 'hotspot water-sea', testId: 'water-sea', label: 'puzzle.water.sea' },
   'shore-stone': { className: 'hotspot stone', testId: 'shore-stone', label: 'shore.stone' },
   'shore-driftwood': { className: 'hotspot drift', testId: 'shore-driftwood', label: 'shore.driftwood', hintAnchor: 'driftwood' },
   'shore-depart': { className: 'hotspot depart', testId: 'shore-depart', label: 'shore.depart', hintAnchor: 'depart' },
@@ -74,8 +77,11 @@ export function visibleSpots(
   save: SaveData,
   hint: { level: number; anchor: string; wordId: string | null },
 ): SpotView[] {
+  const puzzles = puzzleState(save);
   return SPOTS[scene]
     .filter((spot) => {
+      if (spot.id === 'island-gourd') return puzzles.water !== 'carried';
+      if (spot.id === 'water-spring' || spot.id === 'water-sea') return puzzles.water === 'carried';
       if (spot.id === 'hall-tattoo') return isLearnedState(save.words[BETRAY]?.state);
       if (spot.id === 'night-memory') return save.memories.includes('dba.mem.rain-night');
       return true;
@@ -83,18 +89,26 @@ export function visibleSpots(
     .map((spot) => {
       const spec = VIEWS[spot.id];
       if (!spec) throw new Error(`Missing spot view ${spot.id}`);
+      const dynamic = spot.id === 'island-gourd' ? puzzles.water === 'empty' ? '拿起空瓢' : puzzles.water === 'filled' ? '喝下清泉' : '清泉与水瓢'
+        : spot.id === 'yard-grab' ? puzzles.food.stage === 'unseen' ? '查看篮中的食物' : puzzles.food.stage === 'inspected' ? '取出四份食物' : puzzles.food.stage === 'done' ? '已经分好的晚餐' : '分一份晚餐'
+        : spot.id.startsWith('act:dba.word.amount:') && (puzzles.food.stage === 'taken' || puzzles.food.stage === 'allocating') ? '分一份晚餐' : null;
       return {
         ...spot,
-        className: `${spec.className} ${hintMark(hint, spec.hintAnchor ?? spot.id, spec.hintWord)}`.trim(),
+        className: `${spec.className} ${hintMark(hint, hintSpotId(scene, hint.anchor as HintAnchor) === spot.id ? hint.anchor : spec.hintAnchor ?? spot.id, spec.hintWord)}`.trim(),
         testId: spec.testId,
-        label: spec.glyph || spec.aria ? '' : t(spec.label),
-        ariaLabel: spec.aria ? t(spec.aria) : undefined,
+        label: dynamic ?? (spec.glyph || spec.aria ? '' : t(spec.label)),
+        ariaLabel: dynamic ?? (spec.aria ? t(spec.aria) : spot.id === 'water-spring' ? t(spec.label) : undefined),
         glyph: spec.glyph,
       };
     });
 }
 
 export function hintSpotId(scene: IslandScene, anchor: HintAnchor): string | null {
+  if (anchor === 'water-take' || anchor === 'water-drink') return 'island-gourd';
+  if (anchor === 'water-spring') return 'water-spring';
+  if (anchor === 'food-inspect' || anchor === 'food-take') return 'yard-grab';
+  if (anchor === 'food-self') return 'act:dba.word.amount:more';
+  if (anchor === 'food-companion') return 'act:dba.word.amount:less';
   if (anchor === 'mural-entrance') return scene === 'dba.scene.hall' ? 'hall-mural' : 'island-mural';
   if (anchor === 'gourd') return 'island-gourd';
   if (anchor === 'driftwood') return 'shore-driftwood';

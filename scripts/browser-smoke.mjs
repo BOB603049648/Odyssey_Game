@@ -23,7 +23,7 @@ async function pointer(el){
 const save=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('odyssey.save.v1')));
 async function closeSheet(){if(['casefile','lexicon','settings'].includes((await save()).overlay))await page.getByRole('button',{name:'合上',exact:true}).click();await page.getByRole('dialog').waitFor({state:'hidden'});}
 async function ready(){await page.locator('.scene-display').waitFor({state:'hidden'});}
-async function spot(id){await closeSheet();await ready();const el=page.getByTestId(id);await pointer(el);await page.waitForFunction(id=>document.querySelector(`[data-testid="${id}"]`)?.dataset.reach==='near',id);await page.waitForFunction(()=>document.querySelector('[data-testid="traveler"]')?.dataset.moving==='no');await page.waitForTimeout(700);await pointer(el);console.log('spot',id);}
+async function spot(id){await closeSheet();await ready();const el=page.getByTestId(id);if(await el.getAttribute('data-reach')!=='near'){await pointer(el);await page.waitForFunction(id=>document.querySelector(`[data-testid="${id}"]`)?.dataset.reach==='near',id);}await page.waitForFunction(()=>document.querySelector('[data-testid="traveler"]')?.dataset.moving==='no');await page.waitForTimeout(200);await pointer(el);console.log('spot',id);}
 async function gate(to){await closeSheet();await ready();const from=(await page.getByTestId('walk-stage').getAttribute('data-scene')).split('.').at(-1);
  const keys={'shore:camp':'d','shore:hall':'a','camp:shore':'a','camp:yard':'d','camp:night':'w','yard:camp':'a','yard:path':'d','path:yard':'a','hall:shore':'s','night:camp':'s'};
  const floor=from==='shore' ? .79 : from==='yard' ? .925 : null;
@@ -46,14 +46,23 @@ while(await page.locator('.glyph-wall button[data-testid^="cell-"]').count()){
 }
 assert.equal(Object.values((await save()).words).filter(w=>w.state==='learned').length,28);
 console.log('learned 28 words');
-await page.getByRole('button',{name:'返回',exact:true}).click();await spot('island-gourd');await page.getByTestId('use-dba.word.water').click();
+await page.getByRole('button',{name:'返回',exact:true}).click();await spot('island-gourd');
+assert.equal((await save()).flags['dba.puzzle.water'],'carried');
+await spot('water-spring');assert.equal((await save()).flags['dba.puzzle.water'],'filled');
+assert.notEqual((await save()).beats['dba.beat.water'],true);await spot('island-gourd');
 assert.equal((await save()).beats['dba.beat.water'],true);
 await gate('camp');await spot('camp-sleep');await page.waitForFunction(()=>document.querySelector('[data-testid="walk-stage"]')?.dataset.resting==='yes');await page.waitForFunction(()=>document.querySelector('[data-testid="walk-stage"]')?.dataset.resting==='no');
 assert.equal((await save()).beats['dba.beat.sleep'],true);
 await gate('yard');await spot('amount-more');assert.equal((await save()).beats['dba.beat.amount'],true);assert.equal(await page.getByTestId('amount-more').getAttribute('data-result'),'ok');
 await spot('amount-less');assert.equal((await save()).feedback.spot,'act:dba.word.amount:less');assert.equal((await save()).feedback.kind,'no');
 await page.screenshot({path:resolve(output, 'play-yard.png')});
-await spot('yard-grab');await spot('yard-give');assert.equal((await save()).beats['dba.beat.food'],true);
+await spot('yard-grab');await spot('yard-grab');await spot('yard-grab');
+await page.getByRole('dialog',{name:'分一份晚餐',exact:true}).waitFor();
+for(let i=0;i<2;i++)await page.getByRole('button',{name:'移一份给同行者',exact:true}).click();
+assert.equal(await page.getByTestId('food-self-bowl').getAttribute('data-count'),'2');
+assert.equal(await page.getByTestId('food-companion-bowl').getAttribute('data-count'),'2');
+await page.getByRole('button',{name:'回到前坪',exact:true}).click();
+await spot('yard-give');assert.equal((await save()).beats['dba.beat.food'],true);
 await gate('path');await spot('path-stop');assert.equal((await save()).beats['dba.beat.danger'],true);
 await gate('yard');await gate('camp');await gate('night');await spot('night-read');assert.ok((await save()).evidence.includes('dba.ev.main'));
 await gate('camp');await gate('shore');await gate('hall');await spot('hall-stamps');await spot('hall-tattoo');

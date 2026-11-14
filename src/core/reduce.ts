@@ -24,8 +24,10 @@ import {
 import { newGameState } from './save';
 import type { EndingContent, HintLevel, MuralLayer, SaveData, WordProgress } from './schema';
 import { isLearnedState, transitionWord } from './words';
+import { applyPuzzleAction, useGourd, useWaterWord, type PuzzleAction } from './puzzles';
 
 export type Action =
+  | PuzzleAction
   | { type: 'new-game' }
   | { type: 'dismiss-completion' }
   | { type: 'advance-prologue' }
@@ -66,8 +68,6 @@ export type Action =
   | { type: 'shore-stone' }
   | { type: 'inspect-embers' }
   | { type: 'spot-far'; id: string };
-
-const WATER = 'dba.word.water';
 
 export function reduce(state: SaveData, action: Action): SaveData {
   const next = applyAction(state, action);
@@ -118,9 +118,11 @@ function applyAction(state: SaveData, action: Action): SaveData {
     case 'request-hint':
       return requestHint(state);
     case 'poke-gourd':
-      return pokeGourd(state);
+      return touch(useGourd(state));
     case 'use-word':
-      return useWord(state, action.wordId);
+      return touch(useWaterWord(state, action.wordId));
+    case 'puzzle-act':
+      return touch(applyPuzzleAction(state, action));
     case 'goto-scene':
       return touch(gotoScene(state, action.scene));
     case 'sit-driftwood':
@@ -339,38 +341,6 @@ function requestHint(state: SaveData): SaveData {
     ...state,
     companion: { level, targetId, pawUsed: level === 3 },
     hintStats: bumpHint(state, level, targetId),
-  });
-}
-
-function pokeGourd(state: SaveData): SaveData {
-  if (state.beats['dba.beat.water'] === true) {
-    return mark(state, { feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: 'spot.gourd.again', spot: 'island-gourd' } });
-  }
-  if (isLearnedState(state.words[WATER]?.state)) {
-    return touch({ ...state, overlay: 'use-word', screen: 'island', currentScene: 'dba.scene.shore' });
-  }
-  return mark(state, { feedback: { seq: state.feedback.seq + 1, kind: 'no', line: 'spot.gourd.no', spot: 'island-gourd' } });
-}
-
-function useWord(state: SaveData, wordId: string): SaveData {
-  if (wordId === WATER && isLearnedState(state.words[WATER]?.state)) {
-    return mark(state, {
-      beats: { ...state.beats, 'dba.beat.water': true },
-      overlay: 'none',
-      stepCounter: state.stepCounter + 1,
-      companion: { level: 0, targetId: null, pawUsed: false },
-      feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: 'spot.gourd.ok', spot: 'island-gourd' },
-    });
-  }
-  const word = state.words[wordId];
-  const words =
-    word && isLearnedState(word.state)
-      ? { ...state.words, [wordId]: transitionWord(word, 'miss') }
-      : state.words;
-  return mark(state, {
-    words,
-    stepCounter: state.stepCounter + 1,
-    feedback: { seq: state.feedback.seq + 1, kind: 'no' },
   });
 }
 

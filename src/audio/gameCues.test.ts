@@ -20,8 +20,12 @@ describe('meaningful game audio events', () => {
   });
   it('acknowledges first survival completion once; repeats keep only physical action audio', () => {
     const save=shore(); save.words['dba.word.water'].state='learned';
-    const done=reduce(save,{type:'use-word',wordId:'dba.word.water'});
-    expect(gameCues(save,done)).toContainEqual({id:'milestone',delay:1100,level:.7});
+    const held=reduce(save,{type:'puzzle-act',puzzle:'water',move:'take'});
+    const filled=reduce(held,{type:'puzzle-act',puzzle:'water',move:'fill'});
+    expect(gameCues(save,held).some(c=>c.id==='milestone')).toBe(false);
+    expect(gameCues(held,filled).some(c=>c.id==='milestone')).toBe(false);
+    const done=reduce(filled,{type:'puzzle-act',puzzle:'water',move:'drink'});
+    expect(gameCues(filled,done)).toContainEqual({id:'milestone',delay:1100,level:.7});
     expect(gameCues(done,reduce(done,{type:'poke-gourd'}))).toEqual([]);
   });
   it('picks up an actual new evidence item and acknowledges requests for the cat', () => {
@@ -30,5 +34,18 @@ describe('meaningful game audio events', () => {
     expect(gameCues(save,next).map(c=>c.id)).toEqual(['pickup','paper']);
     expect(gameCues(next,reduce(next,{type:'shore-stone'}))).toEqual([]);
     expect(gameCues(save,reduce(save,{type:'request-hint'})).map(c=>c.id)).toContain('cat-call');
+  });
+  it('sounds food placement only when a portion actually moves between bowls', () => {
+    let save=reduce(shore(),{type:'goto-scene',scene:'dba.scene.yard'});
+    for(const move of ['inspect','take'] as const) save=reduce(save,{type:'puzzle-act',puzzle:'food',move});
+    const blocked=reduce(save,{type:'puzzle-act',puzzle:'food',move:'move-to-self'});
+    expect(gameCues(save,blocked).some(c=>c.id==='place')).toBe(false);
+    const moved=reduce(save,{type:'puzzle-act',puzzle:'food',move:'move-to-companion'});
+    expect(gameCues(save,moved)).toContainEqual({id:'place',level:.55});
+    expect(gameCues(moved,moved)).toEqual([]);
+    const returned=reduce(moved,{type:'puzzle-act',puzzle:'food',move:'move-to-self'});
+    expect(gameCues(moved,returned)).toContainEqual({id:'place',level:.55});
+    const done={...moved,beats:{...moved.beats,'dba.beat.food':true}};
+    expect(gameCues(done,reduce(done,{type:'puzzle-act',puzzle:'food',move:'move-to-self'}))).toEqual([]);
   });
 });

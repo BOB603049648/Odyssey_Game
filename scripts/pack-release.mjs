@@ -15,9 +15,12 @@ const output=resolve(root,'artifacts/releases');const stage=resolve(output,name)
 await mkdir(output,{recursive:true});await rm(stage,{recursive:true,force:true});
 await cp(resolve(root,'dist'),stage,{recursive:true});
 await cp(resolve(root,'docs/releases/v0.1.md'),resolve(stage,'RELEASE.md'));
+await cp(resolve(root,'docs/design/v0.1.3-playable-world-plan.md'),resolve(stage,'PLAYABLE-WORLD.md'));
 await cp(resolve(root,'src/assets/audio/README.md'),resolve(stage,'AUDIO-CREDITS.md'));
 await cp(resolve(root,'src/assets/art/painted/README.md'),resolve(stage,'ART-CREDITS.md'));
 await cp(resolve(root,'src/assets/traveler/actions-README.md'),resolve(stage,'ACTION-ART.md'));
+await cp(resolve(root,'src/assets/traveler/performance-README.md'),resolve(stage,'CHARACTER-ART.md'));
+await cp(resolve(root,'src/assets/art/states/README.md'),resolve(stage,'WORLD-ART.md'));
 const manifest=[];
 async function walk(dir){for(const item of await readdir(dir,{withFileTypes:true})){const file=resolve(dir,item.name);if(item.isDirectory())await walk(file);else manifest.push(`${createHash('sha256').update(await readFile(file)).digest('hex')}  ${relative(stage,file)}`);}}
 await walk(stage);await writeFile(resolve(stage,'SHA256SUMS'),manifest.sort().join('\n')+'\n');

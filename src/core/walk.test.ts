@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { ISLAND_SCENES } from './island';
 import { BANDS, GATES, SHORE_MARKER, SPAWNS, SPOTS, crossed, gateAt, plantOnGround, standsAt } from './stage';
+import { visibleSpots } from '../ui/spotViews';
+import { newGameState } from './save';
 import {
   KEY_STEP,
   WALK_SPEED,
@@ -177,12 +179,22 @@ describe('shore and camp layout', () => {
         expect(spot.y).toBeGreaterThanOrEqual(band.minY);
         expect(spot.y).toBeLessThanOrEqual(band.maxY);
       }
-      for (let i = 0; i < SPOTS[scene].length; i += 1) {
-        for (let j = i + 1; j < SPOTS[scene].length; j += 1) {
-          const a = SPOTS[scene][i];
-          const b = SPOTS[scene][j];
+      // A held cup exposes the spring instead of the cup on the same stone.
+      // Test every actual shore layout; hidden alternate states cannot conflict.
+      const layouts = scene === 'dba.scene.shore' ? ['empty', 'carried', 'filled', 'done'].map(stage => {
+        const save = newGameState(); save.flags['dba.puzzle.water'] = stage;
+        if (stage === 'done') save.beats['dba.beat.water'] = true;
+        return visibleSpots(scene, save, { level: 0, anchor: 'mural-entrance', wordId: null });
+      }) : [SPOTS[scene]];
+      for (const spots of layouts) for (let i = 0; i < spots.length; i += 1) {
+        for (let j = i + 1; j < spots.length; j += 1) {
+          const a = spots[i];
+          const b = spots[j];
           // Centers stay outside each other. The west mural and shard sit close on the sand.
-          expect(distance(a, b)).toBeGreaterThan(Math.max(a.r, b.r));
+          expect(distance(a, b), `${scene}: ${a.id} overlaps ${b.id}`).toBeGreaterThan(Math.max(a.r, b.r));
+          if (a.id.startsWith('water-') || b.id.startsWith('water-')) {
+            expect(distance(a, b), `${a.id}/${b.id} allows two water interactions at once`).toBeGreaterThan(a.r + b.r);
+          }
         }
       }
     }

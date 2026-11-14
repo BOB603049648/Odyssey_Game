@@ -102,6 +102,30 @@
         "kind": "fog-corners",
         "asset": "art.shore.fg",
         "parallax": 1.18
+      },
+      {
+        "id": "puzzle.shore.spring",
+        "slot": "props",
+        "kind": "empty",
+        "asset": null,
+        "parallax": 1,
+        "spot": "water-spring",
+        "x": 0.6,
+        "y": 0.7,
+        "w": 0.13,
+        "h": 0.13
+      },
+      {
+        "id": "puzzle.shore.sea",
+        "slot": "props",
+        "kind": "empty",
+        "asset": null,
+        "parallax": 1,
+        "spot": "water-sea",
+        "x": 0.49,
+        "y": 0.62,
+        "w": 0.055,
+        "h": 0.06
       }
     ]
   },

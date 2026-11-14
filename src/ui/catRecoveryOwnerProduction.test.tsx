@@ -56,6 +56,9 @@ beforeEach(async () => {
   vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(id => { callbacks.delete(id); });
   WalkLayer = (await import('./WalkLayer')).WalkLayer; urls = await import('../content/assetUrls'); post = (await import('../core/companionPost')).companionPost; traj = await import('./trajArt');
   (await import('../content/loadGate')).setLoadRetryDelayForTests(() => 0);
+  // Exercise the real full-figure fallback, not a disabled animation mode. The
+  // optional new sheet fails decoding; legacy records must still recover intact.
+  modes.set((await import('../content/characterPerformanceAtlas')).COMPANION_ATLAS.url, 'fail');
 });
 afterEach(() => { cleanup(); vi.clearAllTimers(); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 

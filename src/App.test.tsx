@@ -11,6 +11,7 @@ import { SAVE_KEY } from './platform/storage';
 import { useGame } from './stores/gameStore';
 import { MuralScreen } from './ui/MuralScreen';
 import { PrologueScreen } from './ui/PrologueScreen';
+import { puzzleState } from './core/puzzles';
 
 afterEach(() => {
   cleanup();
@@ -101,27 +102,37 @@ describe('playable slice', async () => {
     expect(JSON.parse(localStorage.getItem(SAVE_KEY)!).prologueStep).toBe(2);
   });
 
-  it('reaches both yard amount boards from the step by click and keyboard', async () => {
+  it('reaches the food table from both yard boards and shares only after allocating and offering', async () => {
     let save = reduce(newGameState(), { type: 'new-game' });
     for (let i = 0; i < 28; i++) save = reduce(save, { type: 'debug-learn-next' });
     save = reduce(save, { type: 'debug-scene', scene: 'dba.scene.yard' });
+    for (const move of ['inspect', 'take'] as const) save = reduce(save, { type: 'puzzle-act', puzzle: 'food', move });
     localStorage.setItem(SAVE_KEY, JSON.stringify(save));
     useGame.getState().resetForTests();
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: '继续' }));
     if (screen.queryByTestId('walk-stage')) await ready();
     fireEvent.click(screen.getByTestId('amount-more'));
-    expect(useGame.getState().save.beats['dba.beat.amount']).toBeUndefined();
+    expect(screen.queryByRole('dialog', { name: '分一份晚餐' })).toBeNull();
     await press(['d', 'w']);
     expect(here().y).toBe(0.92);
     expect(screen.getByTestId('walk-stage').getAttribute('data-near')).toContain('act:dba.word.amount:more');
     fireEvent.click(screen.getByTestId('amount-more'));
-    expect(useGame.getState().save.beats['dba.beat.amount']).toBe(true);
-    expect(screen.getByTestId('amount-more').getAttribute('data-result')).toBe('ok');
+    expect(screen.getByRole('dialog', { name: '分一份晚餐' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: '移一份给同行者' }));
+    expect(puzzleState(useGame.getState().save).food).toMatchObject({ self: 3, companion: 1 });
+    fireEvent.click(screen.getByRole('button', { name: '回到前坪' }));
     await press(['d', 'd', 'e']);
     expect(here().y).toBe(0.92);
-    expect(useGame.getState().save.feedback.spot).toBe('act:dba.word.amount:less');
-    expect(useGame.getState().save.feedback.kind).toBe('no');
+    expect(screen.getByRole('dialog', { name: '分一份晚餐' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: '移一份给同行者' }));
+    expect(puzzleState(useGame.getState().save).food).toMatchObject({ self: 2, companion: 2 });
+    expect(useGame.getState().save.beats['dba.beat.food']).not.toBe(true);
+    fireEvent.click(screen.getByRole('button', { name: '回到前坪' }));
+    const offer = spot('dba.scene.yard', 'yard-give');
+    await walkTo('dba.scene.yard', offer, offer.r);
+    fireEvent.click(screen.getByTestId('yard-give'));
+    expect(useGame.getState().save.beats['dba.beat.food']).toBe(true);
   });
 
   it('starts with teaching glosses off and can learn water, then use it', async () => {
@@ -152,9 +163,20 @@ describe('playable slice', async () => {
     fireEvent.click(screen.getByTestId('object-dba.word.water'));
     fireEvent.click(screen.getByRole('button', { name: '返回' }));
     const gourd = spot('dba.scene.shore', 'island-gourd');
+    expect(screen.queryByTestId('water-spring')).toBeNull();
     await walkTo('dba.scene.shore', gourd, gourd.r);
     fireEvent.click(screen.getByTestId('island-gourd'));
-    fireEvent.click(screen.getByTestId('use-dba.word.water'));
+    expect(puzzleState(useGame.getState().save).water).toBe('carried');
+    expect(screen.queryByTestId('island-gourd')).toBeNull();
+    expect(screen.queryByTestId('use-dba.word.water')).toBeNull();
+    const spring = spot('dba.scene.shore', 'water-spring');
+    await walkTo('dba.scene.shore', spring, spring.r);
+    fireEvent.click(screen.getByTestId('water-spring'));
+    expect(puzzleState(useGame.getState().save).water).toBe('filled');
+    expect(screen.queryByTestId('water-spring')).toBeNull();
+    expect(useGame.getState().save.beats['dba.beat.water']).not.toBe(true);
+    await walkTo('dba.scene.shore', gourd, gourd.r);
+    fireEvent.click(screen.getByTestId('island-gourd'));
 
     expect(screen.getByTestId('shore').getAttribute('data-water-beat')).toBe('done');
     expect(useGame.getState().save.beats['dba.beat.water']).toBe(true);
@@ -231,9 +253,10 @@ describe('playable slice', async () => {
     let save = reduce(newGameState(), { type: 'new-game' });
     for (let step = 0; step < 4; step += 1) save = reduce(save, { type: 'advance-prologue' });
     for (let step = 0; step < 28; step += 1) save = reduce(save, { type: 'debug-learn-next' });
-    save = reduce(save, { type: 'use-word', wordId: 'dba.word.water' });
+    for (const move of ['take', 'fill', 'drink'] as const) save = reduce(save, { type: 'puzzle-act', puzzle: 'water', move });
     save = reduce(reduce(save, { type: 'goto-scene', scene: 'dba.scene.camp' }), { type: 'sleep-at-camp' });
-    save = reduce(reduce(save, { type: 'goto-scene', scene: 'dba.scene.yard' }), { type: 'give-fish' });
+    save = reduce(save, { type: 'goto-scene', scene: 'dba.scene.yard' });
+    for (const move of ['inspect', 'take', 'move-to-companion', 'move-to-companion', 'offer'] as const) save = reduce(save, { type: 'puzzle-act', puzzle: 'food', move });
     save = reduce(reduce(save, { type: 'goto-scene', scene: 'dba.scene.path' }), { type: 'forest-choice', choice: 'stop' });
     save = reduce(save, { type: 'goto-scene', scene: 'dba.scene.shore' });
     save = reduce(save, { type: 'depart' });

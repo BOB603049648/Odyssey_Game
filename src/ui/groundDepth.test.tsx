@@ -46,9 +46,12 @@ describe('one physical shore depth root',()=>{
  it.each([['dba.scene.shore','dba.scene.camp'],['dba.scene.camp','dba.scene.shore']])('splits current/previous prop units for980ms %s→%s without duplicates or omissions',async(from,to)=>{
   vi.useFakeTimers();const {WalkLayer,props}=await setup(from);const {sceneAssembly}=await import('../content/catalog');const {visibleSpots}=await import('./spotViews');const {newGameState}=await import('../core/save');const {companionPost}=await import('../core/companionPost');
   const v=render(<WalkLayer {...props}/>);const dest=to as import('../core/island').IslandScene;
-  v.rerender(<WalkLayer {...props} scene={dest} spots={visibleSpots(dest,newGameState(),hint)} catPost={companionPost(dest,{})}/>);
+  const currentSpots=visibleSpots(dest,newGameState(),hint);
+  v.rerender(<WalkLayer {...props} scene={dest} spots={currentSpots} catPost={companionPost(dest,{})}/>);
   for(const scene of [from,to])for(const slot of sceneAssembly(scene as import('../core/island').IslandScene)!.slots.filter(s=>s.slot==='props'&&s.depthMode!=='wall-art'&&s.x!==undefined&&s.y!==undefined)){
-   const nodes=document.querySelectorAll(`[data-art-id="${slot.id}"]`);expect(nodes).toHaveLength(1);expect(nodes[0].closest('[data-depth-id]')).not.toBeNull();
+   const nodes=document.querySelectorAll(`[data-art-id="${slot.id}"]`);
+   const visible=scene===from||!slot.spot||currentSpots.some(spot=>spot.id===slot.spot);
+   expect(nodes,`${scene}/${slot.id}`).toHaveLength(visible?1:0);if(visible)expect(nodes[0].closest('[data-depth-id]')).not.toBeNull();
   }
   expect(document.querySelector('.ground-depth-root [data-phase="leaving"]')).not.toBeNull();expect(document.querySelector('.ground-depth-root [data-phase="entering"]')).not.toBeNull();expect(screen.getAllByTestId('traveler')).toHaveLength(1);expect(screen.getAllByTestId('companion-anchor')).toHaveLength(1);
   act(()=>vi.advanceTimersByTime(979));expect(document.querySelector('.ground-depth-root [data-phase="leaving"]')).not.toBeNull();act(()=>vi.advanceTimersByTime(1));expect(document.querySelector('[data-phase="leaving"]')).toBeNull();

@@ -30,6 +30,21 @@ describe('actual production Traveler RAF follows observed displacement',()=>{
   for(let n=0;n<60;n++){x+=.22/(60*16/9);v.rerender(<Traveler x={x} y={.7} facing="right" moving stride={1} contactCleanup/>);await frame();sources.add(img.getAttribute('data-atlas')!);expect(img.getAttribute('src')).toBe(raw);}
   expect(v.container.querySelector('[data-layer="current"]')).toBe(img);expect(sources.size).toBe(4);
  });
+ it('gives a processed standalone bitmap its own native image without changing the old image request',async()=>{
+  const props={x:.4,y:.7,facing:'front' as const,moving:false,contactCleanup:true};
+  const v=render(<Traveler {...props}/>);await frame();
+  const raw=v.container.querySelector<HTMLImageElement>('[data-layer="current"]')!;
+  const rawSrc=raw.getAttribute('src')!;expect(rawSrc).toMatch(/idle-front-01/);
+  expect(raw.dataset.atlas).toBeUndefined();
+  await act(async()=>{punches.get(rawSrc)!('blob:decoded-idle-front');});
+  const processed=v.container.querySelector<HTMLImageElement>('[data-layer="current"]')!;
+  expect(processed).not.toBe(raw);expect(raw.getAttribute('src')).toBe(rawSrc);
+  expect(processed.getAttribute('src')).toBe('blob:decoded-idle-front');
+  expect(processed.dataset.atlas).toBeUndefined();expect(processed.style.position).toBe('');
+  expect(processed.style.width).toBe('');expect(processed.style.height).toBe('');
+  v.rerender(<Traveler {...props} x={.401}/>);await frame();
+  expect(v.container.querySelector('[data-layer="current"]')).toBe(processed);
+ });
  it('switches pose to idle on the first stationary tick even with gait inertia from a full walk',async()=>{
   let x=.2;const v=render(<Traveler x={x} y={.7} facing="front" moving stride={1}/>);
   for(let n=0;n<100;n++){x+=.003;v.rerender(<Traveler x={x} y={.7} facing="front" moving stride={1}/>);await frame();}
@@ -63,6 +78,17 @@ describe('actual production Traveler RAF follows observed displacement',()=>{
   expect(seen.size).toBe(4);expect(v.getByTestId('traveler').dataset.frame).toBe('3');
   v.rerender(<Traveler {...props} actionSeq={2}/>);await frame(200);
   expect(v.getByTestId('traveler').dataset.frame).toBe('0');
+ });
+ it('holds the actual rendered contact frame through a pause without consuming action time',async()=>{
+  const props={x:.4,y:.7,facing:'right' as const,moving:false,pose:'drink' as const,actionSeq:1};
+  const v=render(<Traveler {...props}/>);await frame();await frame(600);
+  const actor=v.getByTestId('traveler');const cell=v.container.querySelector('[data-layer="current"]')!.getAttribute('data-atlas');
+  expect(actor.dataset.frame).toBe('1');
+  v.rerender(<Traveler {...props} paused/>);await frame(8000);
+  expect(v.container.querySelector('[data-layer="current"]')!.getAttribute('data-atlas')).toBe(cell);
+  expect(actor.dataset.frame).toBe('1');
+  v.rerender(<Traveler {...props} paused={false}/>);await frame(16);await frame(400);
+  expect(actor.dataset.frame).toBe('2');expect(actor.dataset.pose).toBe('drink');
  });
 
 });

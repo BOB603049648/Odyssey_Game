@@ -66,6 +66,8 @@ export const SPOTS: Record<IslandScene, readonly Spot[]> = {
     { id: 'shore-stone', x: 0.18, y: 0.73, r: 0.045 },
     { id: 'shore-driftwood', x: 0.37, y: 0.75, r: 0.05 },
     { id: 'island-gourd', x: 0.60, y: 0.70, r: 0.055 },
+    { id: 'water-spring', x: 0.60, y: 0.70, r: 0.055 },
+    { id: 'water-sea', x: 0.49, y: 0.62, r: 0.045 },
     { id: 'shore-depart', x: 0.78, y: 0.73, r: 0.05 },
   ],
   'dba.scene.camp': [

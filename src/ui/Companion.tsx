@@ -5,6 +5,7 @@ import type { HintLevel } from '../core/schema';
 import { loadCatSrc } from './catImage';
 import { CatMark, nanaichaState, type KnotMark } from './companion/CatMark';
 import { t } from './i18n';
+import { companionAtlasSource, COMPANION_ATLAS } from '../content/characterPerformanceAtlas';
 
 export type CompanionProps = {
   level: HintLevel;
@@ -19,6 +20,8 @@ export type CompanionProps = {
   frame?: string;
   /** Only the WalkLayer record opts into source-keyed native error isolation. */
   imageKey?: string;
+  imageRevision?: number;
+  imageScope?: string;
   figureRef?: (node: HTMLImageElement | null) => void;
   /** Only explicit approved fixture diagnostic; no bearing certification. */
   diagnostic?: boolean;
@@ -34,6 +37,9 @@ export function useCompanionPresentation(figure:string|undefined, revision=0) {
     }
     let live = true;
     setReady({src:figure,originalUrl:figure,revision});
+    // The complete sheet was decoded atomically by trajArt. One native URL
+    // serves all cells; fetching a blob per frame wastes memory and breaks it.
+    if (companionAtlasSource(figure)) return undefined;
     loadCatSrc(figure).then((next) => {
       if (live) setReady({src:next,originalUrl:figure,revision});
     }, () => { /* Keep the ready raw/current bitmap if an unexpected loader rejection occurs. */ });
@@ -56,12 +62,16 @@ export function CompanionView({
   figure,
   frame,
   imageKey,
+  imageRevision = 0,
+  imageScope = '',
   figureRef,
   onFigureError,
   diagnostic = false,
   presentation,
 }: CompanionProps & {presentation:CompanionPresentation}) {
   const {src}=presentation;
+  const cell = companionAtlasSource(presentation.originalUrl);
+  const bitmap = cell && src?.includes('#') ? src.slice(0, src.indexOf('#')) : src;
   const imageRef = useRef<HTMLImageElement | null>(null);
   const bindImage = useCallback((node: HTMLImageElement | null) => { imageRef.current = node; figureRef?.(node); }, [figureRef]);
   useLayoutEffect(() => { if (imageRef.current) writeCatDisplayAttributes(imageRef.current, diagnostic); }, [src, figure, diagnostic]);
@@ -83,8 +93,10 @@ export function CompanionView({
       <span className="companion-mirror">
         <span className="companion-sway">
           {figure ? (
-            <span className="nanaicha-figure" style={{ ['--figure' as string]: `url("${src ?? figure}")` }}>
-              <img key={imageKey} ref={bindImage} onLoad={() => { if (imageRef.current) writeCatDisplayAttributes(imageRef.current, diagnostic); }} className="nanaicha-ground" data-look={anchor} data-frame={frame} src={src ?? figure} alt="" draggable={false} onError={onFigureError} />
+            <span className="nanaicha-figure" style={{ ['--figure' as string]: `url("${bitmap ?? figure}")`, ...(cell ? { overflow: 'hidden' } : {}) }}>
+              <img key={cell ? `atlas:${imageScope}:${COMPANION_ATLAS.url}:${imageRevision}` : imageKey} ref={bindImage} onLoad={() => { if (imageRef.current) writeCatDisplayAttributes(imageRef.current, diagnostic); }} className="nanaicha-ground" data-look={anchor} data-frame={frame} data-performance={cell?.file}
+                style={cell ? { position: 'absolute', width: `${COMPANION_ATLAS.width / cell.width * 100}%`, height: `${COMPANION_ATLAS.height / cell.height * 100}%`, left: `${-cell.x / cell.width * 100}%`, top: `${-cell.y / cell.height * 100}%`, maxWidth: 'none', objectFit: 'fill' } : undefined}
+                src={bitmap ?? figure} alt="" draggable={false} onError={onFigureError} />
               <span className="figure-grade grade-color" />
               <span className="figure-grade grade-soft" />
             </span>

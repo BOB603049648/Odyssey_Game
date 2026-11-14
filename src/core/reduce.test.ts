@@ -108,15 +108,18 @@ describe('island 1 teach loop', () => {
     expect(state.companion.level).toBe(0);
   });
 
-  it('uses the learned water word on the offered gourd', () => {
+  it('uses the learned water word to fill a held gourd before drinking', () => {
     let state = learn(atIsland(), 'dba.word.water');
     state = reduce(state, { type: 'close-screen' });
     state = reduce(state, { type: 'use-word', wordId: 'dba.word.fish' });
     expect(state.beats['dba.beat.water']).toBeUndefined();
 
     state = reduce(state, { type: 'poke-gourd' });
-    expect(state.overlay).toBe('use-word');
-    state = reduce(state, { type: 'use-word', wordId: 'dba.word.water' });
+    expect(state.flags['dba.puzzle.water']).toBe('carried');
+    state = reduce(state, { type: 'puzzle-act', puzzle: 'water', move: 'fill' });
+    expect(state.beats['dba.beat.water']).toBeUndefined();
+    expect(state.flags['dba.puzzle.water']).toBe('filled');
+    state = reduce(state, { type: 'poke-gourd' });
     expect(state.beats['dba.beat.water']).toBe(true);
     expect(state.overlay).toBe('none');
   });

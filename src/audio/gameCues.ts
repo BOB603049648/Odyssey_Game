@@ -2,12 +2,16 @@ import { SURVIVAL_BEATS } from '../core/island';
 import type { SaveData } from '../core/schema';
 import { isLearnedState } from '../core/words';
 import type { SoundId } from './sounds';
+import { puzzleState } from '../core/puzzles';
 export type GameCue = { id: SoundId; delay?: number; level?: number };
 /** State transitions only: continuing/restoring a save must not replay rewards. */
 export function gameCues(previous: SaveData, next: SaveData): GameCue[] {
   if (previous.createdAt !== next.createdAt || next.screen === 'prologue' || previous.screen === 'prologue') return [];
   const cues: GameCue[] = [];
   const changed = next.feedback.seq !== previous.feedback.seq;
+  if (changed && next.feedback.kind === 'ok' &&
+      (next.feedback.spot === 'food-self' || next.feedback.spot === 'food-companion') &&
+      puzzleState(previous).food.self !== puzzleState(next).food.self) cues.push({ id: 'place', level: .55 });
   if (next.evidence.some(id => !previous.evidence.includes(id)) || next.inventory.some(id => !previous.inventory.includes(id))) cues.push({ id: 'pickup', level: .8 });
   if (next.screen === 'mural' && next.selectedCellId && next.selectedCellId !== previous.selectedCellId) cues.push({ id: 'select', level: .6 });
   if (next.screen === 'mural' && changed) {

@@ -85,6 +85,9 @@ describe('island 1 scenes', () => {
     expect(state.flags['dba.flag.taught-approach']).toBeUndefined();
 
     state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.yard' });
+    for (const move of ['inspect', 'take', 'move-to-companion', 'move-to-companion'] as const) {
+      state = reduce(state, { type: 'puzzle-act', puzzle: 'food', move });
+    }
     const refused = reduce(state, { type: 'give-fish' });
     expect(refused.beats['dba.beat.food']).toBeUndefined();
     expect(refused.feedback.line).toBe('spot.give.no');
@@ -133,7 +136,7 @@ describe('island 1 scenes', () => {
       expect(far.feedback.seq).toBe(shore.feedback.seq + 1);
     }
     const empty = reduce(shore, { type: 'poke-gourd' });
-    expect(empty.feedback.line).toBe('spot.gourd.no');
+    expect(empty.feedback.line).toBe('spot.water.take');
     expect(empty.beats['dba.beat.water']).toBeUndefined();
     const held = reduce(shore, { type: 'depart' });
     expect(held.feedback.line).toBe('spot.depart.water');
@@ -181,10 +184,15 @@ describe('island 1 scenes', () => {
 
     state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.shore' });
     expect(reduce(state, { type: 'depart' }).beats['dba.beat.depart']).toBeUndefined();
-    state = reduce(state, { type: 'use-word', wordId: 'dba.word.water' });
+    for (const move of ['take', 'fill', 'drink'] as const) {
+      state = reduce(state, { type: 'puzzle-act', puzzle: 'water', move });
+    }
     state = learn(state, 'dba.word.share');
     state = reduce(reduce(state, { type: 'goto-scene', scene: 'dba.scene.camp' }), { type: 'sleep-at-camp' });
-    state = reduce(reduce(state, { type: 'goto-scene', scene: 'dba.scene.yard' }), { type: 'give-fish' });
+    state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.yard' });
+    for (const move of ['inspect', 'take', 'move-to-companion', 'move-to-companion', 'offer'] as const) {
+      state = reduce(state, { type: 'puzzle-act', puzzle: 'food', move });
+    }
     state = reduce(reduce(state, { type: 'goto-scene', scene: 'dba.scene.path' }), { type: 'forest-choice', choice: 'stop' });
     state = reduce(state, { type: 'goto-scene', scene: 'dba.scene.shore' });
     state = reduce(state, { type: 'depart' });

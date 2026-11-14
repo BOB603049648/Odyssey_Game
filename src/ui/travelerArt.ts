@@ -5,6 +5,7 @@ import { recordLoadTrace } from '../content/loadTrace';
 import { decodeAssetUrl } from '../content/decodedImage';
 import { loadGated } from '../content/loadGate';
 import { WALK_ATLAS, WALK_ATLAS_FILES, walkAtlasFrame } from '../content/travelerWalkAtlas';
+import { SETTLE_ATLAS, SETTLE_ATLAS_FILES, settleAtlasFrame } from '../content/characterPerformanceAtlas';
 
 const cache = new Map<string, string>();
 
@@ -14,6 +15,11 @@ export function frameUrl(file: string): string | undefined {
 
 export function forgetFrame(file: string): void {
   recordLoadTrace({ event: 'forget', key: file });
+  if (settleAtlasFrame(file)) {
+    cache.delete('settle-atlas.png');
+    for (const id of SETTLE_ATLAS_FILES) cache.delete(id);
+    notifyAssetUpdates(); return;
+  }
   if (walkAtlasFrame(file) || actionAtlasFrame(file)) {
     cache.delete(actionAtlasFrame(file) ? 'action-atlas.png' : 'stride-atlas.png');
     for (const id of actionAtlasFrame(file) ? ACTION_ATLAS_FILES : WALK_ATLAS_FILES) cache.delete(id);
@@ -36,6 +42,14 @@ export function loadFrame(file: string): Promise<string> {
   if (hit) return Promise.resolve(hit);
   const url = travelerFrameUrl(file);
   if (!url) return Promise.resolve('');
+  if (settleAtlasFrame(file)) {
+    return loadGated('traveler-settle-atlas', 'idle', () => decodeAssetUrl(SETTLE_ATLAS.url), cache,
+      { defer: true, cacheKey: 'settle-atlas.png' }).then(next => {
+      if (!next) return '';
+      for (const id of SETTLE_ATLAS_FILES) cache.set(id, travelerFrameUrl(id)!);
+      return cache.get(file)!;
+    });
+  }
   if (walkAtlasFrame(file) || actionAtlasFrame(file)) {
     const action = Boolean(actionAtlasFrame(file));
     const atlas = action ? ACTION_ATLAS : WALK_ATLAS;
@@ -58,10 +72,10 @@ export function loadFrames(files: readonly string[]): Promise<string[]> {
 }
 
 if (import.meta.env.MODE === 'test') {
-  const modules = import.meta.glob<string>('../assets/traveler/*.{png,webp}', {
+  const modules = import.meta.glob<string>(['../assets/traveler/*.{png,webp}', '!../assets/traveler/settle-atlas.png'], {
     eager: true,
     import: 'default',
   });
   const files = Object.keys(modules).map((path) => path.split('/').pop()!);
-  await Promise.all([...files, ...WALK_ATLAS_FILES, ...ACTION_ATLAS_FILES].map((file) => loadFrame(file)));
+  await Promise.all([...files, ...WALK_ATLAS_FILES, ...ACTION_ATLAS_FILES, ...SETTLE_ATLAS_FILES].map((file) => loadFrame(file)));
 }

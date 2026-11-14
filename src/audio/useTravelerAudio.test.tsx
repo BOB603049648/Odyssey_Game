@@ -35,3 +35,17 @@ it('does not play a successful pickup for a refused interaction',()=>{
  const view=renderHook(({frame})=>useTravelerAudio(actor(frame,'reach',false),'dba.scene.yard',false,2,{spot:'yard-grab',kind:'no'}),{initialProps:{frame:0}});view.rerender({frame:2});
  expect(mock.play.mock.calls[0][0]).toBe('cloth-1');
 });
+it('resumes future contacts after pause without replaying the held swallow',()=>{
+ const view=renderHook(({frame,paused})=>useTravelerAudio(actor(frame,'drink',false),'dba.scene.shore',paused,3),{initialProps:{frame:0,paused:false}});
+ view.rerender({frame:2,paused:false});expect(mock.play).toHaveBeenCalledTimes(2);
+ view.rerender({frame:2,paused:true});view.rerender({frame:2,paused:false});expect(mock.play).toHaveBeenCalledTimes(2);
+ view.rerender({frame:3,paused:false});expect(mock.play).toHaveBeenLastCalledWith('place',expect.anything());
+});
+it('fills at the spring but leaves food-table contact audio to its event owner',()=>{
+ const view=renderHook(({frame,spot,seq})=>useTravelerAudio(actor(frame,'reach',false),'dba.scene.shore',false,seq,{spot,kind:'ok'}),{initialProps:{frame:0,spot:'water-spring',seq:1}});
+ view.rerender({frame:2,spot:'water-spring',seq:1});expect(mock.play.mock.calls[0][0]).toMatch(/^water-draw-/);
+ for(const spot of ['food-self','food-companion','food-inspect']) {
+  view.rerender({frame:0,spot,seq:2});view.rerender({frame:2,spot,seq:2});
+ }
+ expect(mock.play).toHaveBeenCalledTimes(1);
+});

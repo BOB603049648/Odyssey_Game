@@ -4,6 +4,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SCENE_ASSEMBLIES } from '../content/catalog';
 import { BANDS, GATES, SPAWNS, SPOTS } from '../core/stage';
 import { PlateStack, drawsInFront } from './Plate';
+import { newGameState } from '../core/save';
+import { visibleSpots } from './spotViews';
+import type { WaterStage } from '../core/puzzles';
 
 /**
  * 编导写死的场景验收句：
@@ -27,6 +30,12 @@ function prop(id: string, scene: string) {
   return kit(scene).slots.find((slot) => slot.id === id);
 }
 
+function shoreSpots(stage: WaterStage = 'empty') {
+  const save = newGameState(); save.flags['dba.puzzle.water'] = stage;
+  if (stage === 'done') save.beats['dba.beat.water'] = true;
+  return visibleSpots('dba.scene.shore', save, { level: 0, anchor: 'mural-entrance', wordId: null }).map(spot => spot.id);
+}
+
 describe('hotspot acceptance', () => {
   it('anchors every shore, camp, and yard spot on its own prop', () => {
     const shore = [
@@ -35,8 +44,10 @@ describe('hotspot acceptance', () => {
       ['island-gourd', 'art.shore.prop.gourd', 0.60, 0.70, 0.055],
       ['island-mural', 'art.shore.prop.mural-wall', 0.36, 0.62, 0.075],
       ['shore-depart', 'art.shore.prop.east-gap', 0.78, 0.73, 0.05],
+      ['water-spring', 'puzzle.shore.spring', 0.60, 0.70, 0.055],
+      ['water-sea', 'puzzle.shore.sea', 0.49, 0.62, 0.045],
     ] as const;
-    expect(SPOTS['dba.scene.shore']).toHaveLength(5);
+    expect(SPOTS['dba.scene.shore']).toHaveLength(7);
     for (const [spotId, artId, x, y, r] of shore) {
       const spot = SPOTS['dba.scene.shore'].find((item) => item.id === spotId);
       expect(spot).toMatchObject({ x, y, r });
@@ -52,6 +63,7 @@ describe('hotspot acceptance', () => {
     expect(wood && gourd && wood.x! < gourd.x!).toBe(true);
     expect(gap?.slot).toBe('props');
     expect(kit('dba.scene.shore').slots.find((slot) => slot.slot === 'sky')?.id).not.toBe('art.shore.prop.east-gap');
+    for (const id of ['puzzle.shore.spring', 'puzzle.shore.sea']) expect(prop(id, 'dba.scene.shore')).toMatchObject({ kind: 'empty', asset: null });
     const gate = prop('art.shore.building', 'dba.scene.shore');
     expect(gate).toMatchObject({ x: 0.17, y: 0.35, w: 0.33, h: 0.26 });
     expect((gate?.y ?? 0) + (gate?.h ?? 0) / 2).toBeCloseTo(0.48);
@@ -92,7 +104,7 @@ describe('hotspot acceptance', () => {
 
   it('lights only the prop you have walked up to', () => {
     const { container } = render(
-      <PlateStack plate="dba.scene.shore" previous={null} near={['shore-driftwood']} activeSpots={null} cam={{ x: 40, y: 0 }} />,
+      <PlateStack plate="dba.scene.shore" previous={null} near={['shore-driftwood']} activeSpots={shoreSpots()} cam={{ x: 40, y: 0 }} />,
     );
     expect(container.querySelector('.plate-photo')).toBeNull();
     expect(container.querySelector('[data-assembly="slots"]')?.getAttribute('data-legacy-plate')).toBe('shore.jpg');
@@ -137,6 +149,19 @@ describe('hotspot acceptance', () => {
     expect(screen.getByTestId('slot-ground').style.bottom).toBe('-22%');
     const props = container.querySelectorAll('[data-interactable="yes"]');
     expect(props.length).toBe(5);
+  });
+
+  it.each(['empty', 'carried', 'filled', 'done'] as const)('keeps cup and source anchors exclusive while water is %s', stage => {
+    const active = shoreSpots(stage);
+    const view = render(<PlateStack plate="dba.scene.shore" previous={null} activeSpots={active} />);
+    expect([...view.container.querySelectorAll('[data-interactable="yes"]')].map(node => node.getAttribute('data-spot')).sort()).toEqual([...active].sort());
+    expect(active).toHaveLength(stage === 'carried' ? 6 : 5);
+    expect(screen.queryByTestId('prop-art.shore.prop.gourd') !== null).toBe(stage !== 'carried');
+    for (const id of ['puzzle.shore.spring', 'puzzle.shore.sea']) {
+      const node = screen.queryByTestId(`prop-${id}`);
+      expect(node !== null).toBe(stage === 'carried');
+      if (node) { expect(node.querySelector('img')).toBeNull(); expect(node.querySelector('.slot-block')).toBeNull(); }
+    }
   });
 
   it('lights the prop that just answered and leaves the others dark', () => {

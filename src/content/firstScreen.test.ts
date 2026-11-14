@@ -2,11 +2,19 @@ import { describe, expect, it } from 'vitest';
 import { sceneAssembly } from './catalog';
 import { FIRST_SCREEN_SCENE, firstScreenAssetIds, isFirstScreenRequired } from './firstScreen';
 import { SLOT_ASSETS } from './slotAssets';
+import { loadNamedAsset, resolveNamedAsset } from './imageLoad';
 
 describe('first-screen asset contract', () => {
+  it('routes both new character atlases through their actual loaders and ready caches', async () => {
+    for (const id of ['pose-observe-01', 'settle-down-01.png']) {
+      const url = await loadNamedAsset(id);
+      expect(url, id).toBeTruthy();
+      expect(resolveNamedAsset(id), id).toBe(url);
+    }
+  });
   it('loads one complete painted environment and both actors for the live shore', () => {
     const ids = firstScreenAssetIds('dba.scene.shore', 'land-companion', true);
-    expect(ids).toEqual(['art.shore.landscape', 'action-reach-01.png', 'idle-front-01.png', 'stride-front-01.png', 'land-companion']);
+    expect(ids).toEqual(['art.shore.landscape', 'action-reach-01.png', 'art.shore.carried', 'idle-front-01.png', 'stride-front-01.png', 'land-companion']);
     expect(SLOT_ASSETS['art.shore.landscape']).toBe(true);
     expect(ids).not.toContain('art.shore.prop.gourd');
   });

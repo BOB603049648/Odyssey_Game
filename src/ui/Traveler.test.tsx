@@ -1,5 +1,5 @@
 vi.mock('./firstScreenReady',()=>({useFirstScreenReady:()=>({status:'ready',done:1,total:1,retry:()=>{}})}));
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { companionPost } from '../core/companionPost';
 import { reduce } from '../core/reduce';
@@ -30,7 +30,7 @@ import {
   TravelerMark,
   type TravelerFacing,
 } from './Traveler';
-import { IslandScreen, SLEEP_LIE_MS, SLEEP_RISE_MS } from './IslandScreen';
+import { IslandScreen } from './IslandScreen';
 import { WalkLayer } from './WalkLayer';
 import type { SpotView } from './spotViews';
 
@@ -107,9 +107,6 @@ describe('traveler art', () => {
   });
 
   it('puts the traveler on the camp mat while resting, and stays upright otherwise', () => {
-    expect(SLEEP_LIE_MS).toBeGreaterThanOrEqual(1200);
-    expect(SLEEP_RISE_MS).toBeGreaterThanOrEqual(300);
-    expect(SLEEP_RISE_MS).toBeLessThanOrEqual(500);
     const shell = {
       drank: false,
       spots: [],
@@ -140,37 +137,25 @@ describe('traveler art', () => {
     expect(view.container.querySelector('[data-testid="approach-hint"]')).toBeNull();
   });
 
-  it('stands and unlocks the feet after the rest, and a refusal never lies', () => {
-    vi.useFakeTimers();
-    try {
-      const view = render(<IslandScreen save={campSleepSave('spot.sleep.ok')} dispatch={() => undefined} onTitle={() => undefined} />);
-      const stage = () => view.container.querySelector('[data-testid="walk-stage"]');
-      const mark = () => view.container.querySelector('[data-testid="traveler"]') as HTMLElement;
-      expect(stage()?.getAttribute('data-resting')).toBe('yes');
-      expect(mark().getAttribute('data-pose')).toBe('lie');
-      expect(mark().getAttribute('data-x')).toBe('0.42');
-      act(() => {
-        vi.advanceTimersByTime(SLEEP_LIE_MS + SLEEP_RISE_MS - 1);
-      });
-      expect(stage()?.getAttribute('data-resting')).toBe('yes');
-      act(() => {
-        vi.advanceTimersByTime(1);
-      });
-      expect(stage()?.getAttribute('data-resting')).toBe('no');
-      expect(mark().getAttribute('data-pose')).not.toBe('lie');
-      expect(mark().getAttribute('data-x')).not.toBe('0.42');
-      view.unmount();
-      const refused = render(<IslandScreen save={campSleepSave('spot.sleep.no')} dispatch={() => undefined} onTitle={() => undefined} />);
-      expect(refused.container.querySelector('[data-testid="walk-stage"]')?.getAttribute('data-resting')).toBe('no');
-      expect(refused.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).not.toBe('lie');
-      refused.unmount();
-      const far = render(<IslandScreen save={campSleepSave('spot.sleep.far')} dispatch={() => undefined} onTitle={() => undefined} />);
-      expect(far.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).not.toBe('lie');
-      expect(far.container.querySelector('[data-testid="spot-line"]')?.getAttribute('data-line')).toBe('spot.sleep.far');
-      far.unmount();
-    } finally {
-      vi.useRealTimers();
-    }
+  it('does not replay saved rest, starts a new successful rest, and lets movement interrupt it', () => {
+    const saved = campSleepSave('spot.sleep.ok');
+    const view = render(<IslandScreen save={saved} dispatch={() => undefined} onTitle={() => undefined} />);
+    const stage = () => view.container.querySelector('[data-testid="walk-stage"]');
+    const mark = () => view.container.querySelector('[data-testid="traveler"]') as HTMLElement;
+    expect(stage()?.getAttribute('data-resting')).toBe('no');
+    view.rerender(<IslandScreen save={{ ...saved, feedback: { ...saved.feedback, seq: saved.feedback.seq + 1 } }} dispatch={() => undefined} onTitle={() => undefined} />);
+    expect(stage()?.getAttribute('data-resting')).toBe('yes');
+    expect(mark().getAttribute('data-pose')).toBe('lie');
+    fireEvent.keyDown(window, { key: 'd' }); fireEvent.keyUp(window, { key: 'd' });
+    expect(stage()?.getAttribute('data-resting')).toBe('no');
+    expect(mark().getAttribute('data-pose')).not.toBe('lie');
+    view.unmount();
+    const refused = render(<IslandScreen save={campSleepSave('spot.sleep.no')} dispatch={() => undefined} onTitle={() => undefined} />);
+    expect(refused.container.querySelector('[data-testid="walk-stage"]')?.getAttribute('data-resting')).toBe('no');
+    refused.unmount();
+    const far = render(<IslandScreen save={campSleepSave('spot.sleep.far')} dispatch={() => undefined} onTitle={() => undefined} />);
+    expect(far.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).not.toBe('lie');
+    far.unmount();
   });
 
   it('uses the side walk sheet for both directions and a real back idle', () => {
@@ -296,8 +281,8 @@ describe('traveler art', () => {
     const near = render(layer([here], null));
     const pose = () => near.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose');
     expect(pose()).toBe('idle');
-    expect(near.container.querySelector('.nanaicha-ground')?.getAttribute('src')).toMatch(/land-shore/);
-    expect(near.container.querySelector('[data-testid="companion-anchor"]')?.getAttribute('data-sprite')).toMatch(/land-shore/);
+    expect(near.container.querySelector('.nanaicha-ground')?.getAttribute('src')).toMatch(/performance-atlas/);
+    expect(near.container.querySelector('[data-testid="companion-anchor"]')?.getAttribute('data-sprite')).toMatch(/pose-observe/);
     fireEvent.keyDown(window, { key: 'e' });
     expect(pose()).toBe('reach');
     expect(near.container.querySelector('[data-layer="current"]')?.getAttribute('data-atlas')).toMatch(/action-reach-01/);

@@ -47,8 +47,10 @@ it('production first decoded original stays visible during slow processing, then
  vi.useFakeTimers();let finish!:(s:string)=>void;transport.punch.mockImplementationOnce(()=>new Promise<string>(r=>{finish=r;}));
  const view=render(<TravelerMark x={.42} y={.62} facing="front" moving={false} presentationFrozen contactCleanup />);await act(async()=>{});
  const originalNode=view.container.querySelector('.traveler-figure');expect(originalNode?.getAttribute('src')).toBe('asset:idle-front-01.png');
- await act(async()=>{await vi.advanceTimersByTimeAsync(3000);});expect(view.container.querySelector('.traveler-figure')?.getAttribute('src')).toBe('asset:idle-front-01.png');
- await act(async()=>{finish('blob:cleaned-front');});expect(view.container.querySelector('.traveler-figure')?.getAttribute('src')).toBe('blob:cleaned-front');expect(view.container.querySelector('.traveler-figure')).toBe(originalNode);
+ await act(async()=>{await vi.advanceTimersByTimeAsync(3000);});expect(view.container.querySelector('.traveler-figure')?.getAttribute('src')).toBe('asset:idle-front-01.png');expect(view.container.querySelector('.traveler-figure')).toBe(originalNode);
+ // Preserve the original node while pending; a decoded replacement gets its
+ // own native image so swapping Blob sources cannot leave the old node pending.
+ await act(async()=>{finish('blob:cleaned-front');});expect(view.container.querySelector('.traveler-figure')?.getAttribute('src')).toBe('blob:cleaned-front');expect(view.container.querySelector('.traveler-figure')).not.toBe(originalNode);expect(originalNode?.isConnected).toBe(false);
 });
 it('production first processing rejection never removes the decoded original through retry and success',async()=>{
  vi.useFakeTimers();transport.punch.mockRejectedValueOnce(new Error('temporary processing'));

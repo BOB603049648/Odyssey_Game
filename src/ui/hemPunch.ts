@@ -1,5 +1,6 @@
 import { approvedTravelerContactSource } from './travelerContactIdentity';
 import { hasTravelerContactMask, trimTravelerMat } from './travelerContact';
+import { decodeImage } from '../content/decodedImage';
 
 /** Standing-pose hard lip. Rows below this stay, including the locked sole. */
 export const HEM_Y0 = 995;
@@ -109,6 +110,16 @@ async function drawPunched(src: string, contactFile?: string): Promise<string> {
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob((next) => resolve(next), 'image/png'));
   if (!blob) return src;
   const url = URL.createObjectURL(blob);
+  // Canvas encoding creates a new bitmap request. Decoding the original frame
+  // does not make this Blob ready: publishing it immediately could replace the
+  // last visible idle while the browser is still decoding the processed image.
+  // Keep the caller's lastReady frame until the replacement is paintable.
+  try {
+    await decodeImage(url);
+  } catch {
+    URL.revokeObjectURL(url);
+    return src;
+  }
   if (contactFile) contactBitmaps.set(url, contactFile);
   return url;
 }

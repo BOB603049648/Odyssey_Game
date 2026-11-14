@@ -27,6 +27,24 @@ beforeEach(() => {
 afterEach(() => cleanup());
 
 describe('first-screen readiness', () => {
+  it('does not block shore or night on the camp-only rest sheet, but waits for it before camp interaction', async () => {
+    const rest = deferred<string>();
+    art.load.mockImplementation((id: string) => id === 'settle-down-01.png' ? rest.promise : Promise.resolve('ok'));
+    const { result, rerender } = renderHook(({ scene }) => useFirstScreenReady(scene, 'land-companion', true), {
+      initialProps: { scene: 'dba.scene.shore' },
+    });
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+    expect(art.load).toHaveBeenCalledWith('action-reach-01.png');
+    expect(art.load).not.toHaveBeenCalledWith('settle-down-01.png');
+    rerender({ scene: 'dba.scene.night' });
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+    expect(art.load).not.toHaveBeenCalledWith('settle-down-01.png');
+    rerender({ scene: 'dba.scene.camp' });
+    await waitFor(() => expect(art.load).toHaveBeenCalledWith('settle-down-01.png'));
+    expect(result.current.status).toBe('loading');
+    await act(async () => rest.resolve('rest-ready'));
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+  });
   it('requires the painted shore, exposes its failure, and recovers through retry', async () => {
     art.load.mockImplementation((id: string) => id === 'art.shore.landscape' ? Promise.resolve(null) : Promise.resolve('ok'));
     const { result } = renderHook(() => useFirstScreenReady('dba.scene.shore', 'land-companion', true));

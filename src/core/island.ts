@@ -2,6 +2,7 @@ import { LEXEMES } from '../content/catalog';
 import type { SaveData } from './schema';
 import { isLearnedState, reviewForMastery } from './words';
 import { meaningChoices } from './conceptChoices';
+import { applyPuzzleAction } from './puzzles';
 
 export const ISLAND_SCENES = [
   'dba.scene.shore',
@@ -16,8 +17,6 @@ export type IslandScene = (typeof ISLAND_SCENES)[number];
 
 const SLEEP = 'dba.word.sleep';
 const FIRE = 'dba.word.fire';
-const SHARE = 'dba.word.share';
-const GIVE = 'dba.word.give';
 const DANGER = 'dba.word.danger';
 const HUNGER = 'dba.word.hunger';
 const PROMISE = 'dba.word.promise';
@@ -68,13 +67,7 @@ export function sleepAtCamp(state: SaveData): SaveData {
 }
 
 export function giveSharedFish(state: SaveData): SaveData {
-  if (state.currentScene !== 'dba.scene.yard') return deny(state);
-  if (!learned(state, SHARE) || !learned(state, GIVE)) return deny(state, 'spot.give.no', 'yard-give');
-  return {
-    ...state,
-    beats: { ...state.beats, 'dba.beat.food': true },
-    feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: 'spot.give.ok', spot: 'yard-give' },
-  };
+  return applyPuzzleAction(state, { type: 'puzzle-act', puzzle: 'food', move: 'offer' });
 }
 
 export function forestChoice(state: SaveData, choice: 'step' | 'stop'): SaveData {

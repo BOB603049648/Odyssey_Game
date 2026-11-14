@@ -80,7 +80,9 @@ try {
   await page.getByRole('dialog').waitFor();
   assert.equal(await page.locator('[data-testid="journey-checklist"] li[data-complete="no"]').count(), 4);
   await close();
-  await spot('island-gourd'); await page.getByTestId('use-dba.word.water').click();
+  await spot('island-gourd'); assert.equal((await save()).flags['dba.puzzle.water'], 'carried');
+  await spot('water-spring'); assert.equal((await save()).flags['dba.puzzle.water'], 'filled');
+  await spot('island-gourd'); assert.equal((await save()).beats['dba.beat.water'], true);
   await spot('island-gourd'); assert.equal((await save()).feedback.line, 'spot.gourd.again');
   await spot('shore-depart');
   assert.equal((await save()).overlay, 'none');
@@ -94,7 +96,12 @@ try {
   await travel('camp'); await spot('camp-sleep');
   await page.waitForFunction(() => document.querySelector('[data-testid="walk-stage"]')?.dataset.resting === 'yes');
   // Choosing a route during the short rest must wait, then walk after rising.
-  await travel('yard'); await spot('yard-give');
+  await travel('yard');
+  await spot('yard-grab'); await spot('yard-grab'); await spot('yard-grab');
+  await page.getByRole('dialog', { name: '分一份晚餐', exact: true }).waitFor();
+  for (let i = 0; i < 2; i++) await page.getByRole('button', { name: '移一份给同行者', exact: true }).click();
+  await page.getByRole('button', { name: '回到前坪', exact: true }).click();
+  await spot('yard-give'); assert.equal((await save()).beats['dba.beat.food'], true);
   await travel('path'); await spot('path-step');
   assert.equal((await save()).feedback.line, 'spot.path.step');
   await spot('path-stop'); assert.equal((await save()).beats['dba.beat.danger'], true);

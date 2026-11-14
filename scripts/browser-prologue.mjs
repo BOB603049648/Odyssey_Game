@@ -104,7 +104,7 @@ try {
   assert.equal(await page.locator('.prologue-shot-in').evaluate(el => getComputedStyle(el).animationName), 'none');
   await page.getByRole('button', { name: '走上潮线', exact: true }).click();
   await page.locator('[data-testid="walk-stage"][data-display="ready"]').waitFor();
-  assert.match(await page.getByTestId('current-goal').innerText(), /刻痕/);
+  assert.match(await page.getByTestId('current-goal').innerText(), /带上一只空瓢/);
   assert.equal((await save()).flags['pro.flag.met-companion'], true);
   await capture('shore-handoff.png');
   // New players can skip immediately without missing evidence or tutorial gates.

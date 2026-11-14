@@ -1,4 +1,5 @@
 const paintedScenes = import.meta.glob<string>('../assets/art/painted/*-scene.webp', { eager: true, import: 'default' });
+const sceneStates = import.meta.glob<string>('../assets/art/states/*.webp', { eager: true, import: 'default' });
 import paintedShore from '../assets/art/painted/shore-scene.webp';
 import prologueStorm from '../assets/art/painted/prologue-storm.webp';
 import prologueDark from '../assets/art/painted/prologue-dark.webp';
@@ -7,6 +8,7 @@ import prologueTide from '../assets/art/painted/prologue-tide.webp';
 import companionStanding from '../assets/companion/nanaicha/nanaicha-hero.png';
 import { ACTION_ATLAS, ACTION_ATLAS_FILES } from './travelerActionAtlas';
 import { WALK_ATLAS, WALK_ATLAS_FILES } from './travelerWalkAtlas';
+import { COMPANION_ATLAS, COMPANION_PERFORMANCE_IDS, SETTLE_ATLAS, SETTLE_ATLAS_FILES } from './characterPerformanceAtlas';
 
 /**
  * Compile-time URL map. Eager glob inlines hashed URLs in the app bundle
@@ -23,7 +25,7 @@ const repairedGroundModules = import.meta.glob<string>('../assets/art/slots/art.
   eager: true,
   import: 'default',
 });
-const travelerModules = import.meta.glob<string>('../assets/traveler/*.{png,webp}', {
+const travelerModules = import.meta.glob<string>(['../assets/traveler/*.{png,webp}', '!../assets/traveler/settle-atlas.png'], {
   eager: true,
   import: 'default',
 });
@@ -59,6 +61,10 @@ function preferUrl(mods: Record<string, string>): Map<string, string> {
 
 const slots = preferUrl(slotModules);
 slots.set('art.shore.landscape', paintedShore);
+for (const [path, url] of Object.entries(sceneStates)) {
+  if (path.endsWith('/shore-carried.webp')) slots.set('art.shore.carried', url);
+  if (path.endsWith('/yard-shared.webp')) slots.set('art.yard.shared', url);
+}
 for (const [path, url] of Object.entries(paintedScenes)) {
   const name = /([a-z]+)-scene\.webp$/.exec(path)?.[1];
   if (name) slots.set(`art.${name}.landscape`, url);
@@ -75,6 +81,7 @@ for (const [path, url] of Object.entries(prologuePortraits)) {
 const travelers = preferUrl(travelerModules);
 for (const file of WALK_ATLAS_FILES) travelers.set(file, `${WALK_ATLAS.url}#${file}`);
 for (const file of ACTION_ATLAS_FILES) travelers.set(file, `${ACTION_ATLAS.url}#${file}`);
+for (const file of SETTLE_ATLAS_FILES) travelers.set(file, `${SETTLE_ATLAS.url}#${file}`);
 const trajs = preferUrl(trajModules);
 // One complete, registered standing silhouette. The historical landings contain
 // missing bodies, embedded scenery and incompatible padding; do not ship them as
@@ -85,6 +92,7 @@ for (const id of [...trajs.keys()].filter(id => id.startsWith('land-'))) {
   // downloads only the same content-hashed image, without query-string copies.
   trajs.set(id, `${companionStanding}#${id}`);
 }
+for (const id of COMPANION_PERFORMANCE_IDS) trajs.set(id, `${COMPANION_ATLAS.url}#${id}`);
 for (const id of ['art.shore.prop.nanaicha', 'art.camp.prop.nanaicha', 'art.yard.prop.nanaicha']) {
   slots.set(id, companionStanding);
 }

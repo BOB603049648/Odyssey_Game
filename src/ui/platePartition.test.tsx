@@ -18,10 +18,10 @@ beforeEach(()=>window.history.replaceState(null,'','/?loadtrace=1'));
 afterEach(cleanup);
 
 describe('actual PlateStack complete and exclusive scene partitions',()=>{
- it('assigns all 60 real slots to exactly one pass at every authored foot boundary',()=>{
+ it('assigns all 62 declared slots to exactly one pass at every authored foot boundary',()=>{
   const all=SCENES.flatMap(scene=>sceneAssembly(scene)!.slots);
   const values=[...new Set([0,.5,.95,1,...all.flatMap(slot=>slot.y===undefined?[]:[slot.y-1e-6,slot.y,slot.y+1e-6])])].sort((a,b)=>a-b);
-  expect(all).toHaveLength(60);expect(values.length).toBeGreaterThan(50);
+  expect(all).toHaveLength(62);expect(new Set(all.map(slot=>slot.id)).size).toBe(all.length);expect(values.length).toBeGreaterThan(50);
   let contracts=0;
   for(const scene of SCENES){
    const view=render(<Stack scene={scene} y={values[0]} active={null}/>);

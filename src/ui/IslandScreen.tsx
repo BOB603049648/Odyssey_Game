@@ -26,14 +26,12 @@ import { useIdleHint } from './useIdleHint';
 import { sceneLook } from './cohesion';
 import { WalkLayer } from './WalkLayer';
 import { AdventureHud, JourneyMoment } from './AdventureHud';
+import { puzzleState } from '../core/puzzles';
+import { worldState } from '../core/worldState';
+import { FoodTable } from './FoodTable';
 import './adventure.css';
 
 export { hintMark } from './hintMark';
-
-/** Successful rest. Hold the seated pose, then stand. */
-export const SLEEP_LIE_MS = 1200;
-/** Short settle after resting before the feet unlock. */
-export const SLEEP_RISE_MS = 400;
 
 export function IslandScreen({
   save,
@@ -53,8 +51,12 @@ export function IslandScreen({
   const scene = isIslandScene(save.currentScene) ? save.currentScene : 'dba.scene.shore';
   const look = sceneLook(scene);
   const drank = save.beats['dba.beat.water'] === true;
+  const puzzles = puzzleState(save);
+  const [foodTableOpen, setFoodTableOpen] = useState(false);
+  const foodTableVisible = foodTableOpen && scene === 'dba.scene.yard' && save.overlay === 'none';
   const remembered = place?.scene === scene ? { x: place.x, y: place.y } : null;
-  const paused = save.overlay !== 'none' || completionPending(save);
+  const paused = save.overlay !== 'none' || completionPending(save) || foodTableVisible;
+  useEffect(() => { setFoodTableOpen(false); }, [scene, save.createdAt]);
   const [skipWelcome, setSkipWelcome] = useState(false);
   useEffect(() => {
     if (save.flags['dba.flag.driftwood'] === true) return undefined;
@@ -64,16 +66,6 @@ export function IslandScreen({
   const catPost = companionPost(scene, save.beats, save.flags, { skipWelcome });
   const line = save.feedback.line;
   const [approachHint, setApproachHint] = useState(false);
-  const sleepOk = scene === 'dba.scene.camp' && line === 'spot.sleep.ok';
-  const [lieUntil, setLieUntil] = useState(0);
-  useEffect(() => {
-    if (!sleepOk) return undefined;
-    const until = Date.now() + SLEEP_LIE_MS + SLEEP_RISE_MS;
-    setLieUntil(until);
-    const id = window.setTimeout(() => setLieUntil(0), until - Date.now());
-    return () => window.clearTimeout(id);
-  }, [sleepOk, save.feedback.seq]);
-  const resting = scene === 'dba.scene.camp' && lieUntil > Date.now();
   const spoken = line?.startsWith('spot.') ? t(line as MessageKey) : null;
   const flashKind = line === 'spot.driftwood.ok' || line === 'spot.driftwood.again'
     ? 'driftwood'
@@ -86,6 +78,21 @@ export function IslandScreen({
   const flashSpot = flashScene && flashScene === scene
     ? SPOTS[flashScene].find((spot) => spot.id === (flashKind === 'driftwood' ? 'shore-driftwood' : flashKind === 'sleep' ? 'camp-sleep' : 'yard-give'))
     : null;
+  const onInteract = (id: string) => {
+    if (id === 'water-spring' || id === 'water-sea') {
+      dispatch({ type: 'puzzle-act', puzzle: 'water', move: id === 'water-spring' ? 'fill' : 'try-sea' }); return;
+    }
+    if (id === 'yard-grab') {
+      if (puzzles.food.stage === 'unseen') dispatch({ type: 'puzzle-act', puzzle: 'food', move: 'inspect' });
+      else if (puzzles.food.stage === 'inspected') dispatch({ type: 'puzzle-act', puzzle: 'food', move: 'take' });
+      else if (puzzles.food.stage !== 'done') setFoodTableOpen(true);
+      else dispatch({ type: 'puzzle-act', puzzle: 'food', move: 'inspect' });
+      return;
+    }
+    if ((id === 'act:dba.word.amount:more' || id === 'act:dba.word.amount:less') &&
+        (puzzles.food.stage === 'taken' || puzzles.food.stage === 'allocating')) { setFoodTableOpen(true); return; }
+    interact(id, dispatch);
+  };
 
   return (
     <section className={`island adventure-island${shake ? ' shake' : ''}`} style={{ ['--ambient' as string]: look.ambient }}>
@@ -108,6 +115,7 @@ export function IslandScreen({
         <WalkLayer
           scene={scene}
           drank={drank}
+          worldState={worldState(save)}
           spots={visibleSpots(scene, save, hint)}
           hint={hint}
           paused={paused}
@@ -116,24 +124,28 @@ export function IslandScreen({
           remembered={remembered}
           onRemember={(nextScene, point) => setPlace({ scene: nextScene, x: point.x, y: point.y })}
           onExit={(next) => dispatch({ type: 'goto-scene', scene: next })}
-          onInteract={(id) => interact(id, dispatch)}
+          onInteract={onInteract}
           onAsk={() => dispatch({ type: 'request-hint' })}
           taught={save.flags['dba.flag.taught-approach'] === true}
           onTeach={() => dispatch({ type: 'teach-approach' })}
           showWalkMask={import.meta.env.DEV && save.flags['dev.walkable'] === true}
           catPost={catPost}
-          resting={resting}
           onFar={(id) => dispatch({ type: 'spot-far', id })}
           onApproachHint={setApproachHint}
           beat={save.feedback.kind === 'none' || !save.feedback.spot ? null : { spot: save.feedback.spot, kind: save.feedback.kind }}
           interactionSeq={save.feedback.seq}
           flash={flashSpot && flashKind ? { kind: flashKind, seq: save.feedback.seq, x: flashSpot.x, y: flashSpot.y } : null}
           onEscape={() => {
+            if (foodTableVisible) { setFoodTableOpen(false); return; }
             if (save.overlay === 'depart' || save.overlay === 'memory') return;
             if (save.overlay !== 'none') dispatch({ type: 'close-overlay' });
             else dispatch({ type: 'open-overlay', overlay: 'casefile' });
           }}
         />
+        {scene === 'dba.scene.shore' && (puzzles.water === 'carried' || puzzles.water === 'filled') && !paused ?
+          <p className="held-vessel" data-testid="held-vessel" data-filled={puzzles.water === 'filled' ? 'yes' : 'no'}>
+            {puzzles.water === 'filled' ? '手中是接好的清泉' : '手中是空瓢 · 找一处可以饮用的水'}
+          </p> : null}
         {save.chart.includes('chart.jgw') ? (
           <button
             type="button"
@@ -147,6 +159,7 @@ export function IslandScreen({
       </div>
       {save.overlay === 'chart' ? <ChartSealed onClose={() => dispatch({ type: 'close-overlay' })} /> : null}
       <OverlaySheet save={save} dispatch={dispatch} learned={learned} hint={hint} />
+      {foodTableVisible ? <FoodTable food={puzzles.food} dispatch={dispatch} onClose={() => setFoodTableOpen(false)} /> : null}
       <JourneyMoment save={save} />
       {save.overlay === 'none' && spoken && !(approachHint && line === 'spot.driftwood.far') ? (
         <p key={scene} className="diegetic-line" data-testid="spot-line" data-line={line}>

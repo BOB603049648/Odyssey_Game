@@ -23,6 +23,7 @@ export function useTravelerAudio(presentation: TravelerPresentation, scene: Isla
   const owner = useRef<ReturnType<typeof soundScope> | null>(null);
   const lastFrame = useRef(-1);
   const actionArmed = useRef(false);
+  const contactIdentity = useRef('');
   const lastSound = useRef<FoleyId>();
   const lastCloth = useRef<FoleyId>();
   const lastAt = useRef(-Infinity);
@@ -34,7 +35,14 @@ export function useTravelerAudio(presentation: TravelerPresentation, scene: Isla
     for (const id of [...STEP_BANKS[material], ...CLOTH, ...DRINK, 'water-draw-1','water-draw-2','sit','place','pickup'] as const) void loadSound(id);
   }, [material, enabled]);
   useEffect(() => {
-    lastFrame.current = -1; actionArmed.current = walking;
+    const identity = `${scene}:${walking}:${blend.pose}:${sequence}`;
+    // A pause retires voices, not the contact history of this action. On resume
+    // do not repeat the held contact, but allow later contacts (e.g. putting the
+    // cup down after a paused swallow) without demanding a second frame zero.
+    if (contactIdentity.current !== identity) {
+      contactIdentity.current = identity;
+      lastFrame.current = -1; actionArmed.current = walking;
+    }
     if (!enabled) return;
     const scope = soundScope(); owner.current = scope;
     return () => { scope.dispose(); owner.current = null; };
@@ -68,7 +76,13 @@ export function useTravelerAudio(presentation: TravelerPresentation, scene: Isla
     } else if (!walking && blend.pose === 'lie' && blend.frame === 1) {
       scope.play('sit', { level: .75, pan });
     } else if (!walking && blend.pose === 'reach' && blend.frame === 2) {
-      scope.play(response?.kind === 'ok' ? (response.spot === 'yard-give' || response.spot === 'act:dba.word.eat' ? 'place' : 'pickup') : 'cloth-1', { level: .55, pan });
+      // These contacts happen visibly in the food-table overlay. Its event
+      // owner provides sound there; closing it must not replay a delayed hand.
+      if (response?.spot === 'food-self' || response?.spot === 'food-companion' || response?.spot === 'food-inspect') return;
+      const id = response?.kind !== 'ok' ? 'cloth-1' : response.spot === 'water-spring'
+        ? variation(['water-draw-1','water-draw-2'] as const)
+        : response.spot === 'yard-give' || response.spot === 'act:dba.word.eat' ? 'place' : 'pickup';
+      scope.play(id, { level: .55, pan });
     }
   }, [enabled, walking, blend.pose, blend.frame, presentation.current.shown, presentation.x, material, sequence, response?.spot, response?.kind]);
 }

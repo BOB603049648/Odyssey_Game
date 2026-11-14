@@ -27,7 +27,7 @@ try {
   await page.getByRole('button', { name: '走上潮线', exact: true }).click();
   await page.locator('.scene-display').waitFor({ state: 'hidden' });
   await page.waitForTimeout(1100);
-  assert.match(await page.getByTestId('current-goal').innerText(), /读懂陌生的刻痕/);
+  assert.match(await page.getByTestId('current-goal').innerText(), /带上一只空瓢/);
   assert.equal(await page.getByTestId('painted-environment').count(), 1);
   assert.equal(await page.locator('[data-assembly="painted"] .prop-body img').count(), 0, 'legacy cutouts cover the painting');
   assert.equal(await page.locator('[data-assembly="painted"] [data-interactable="yes"]').count(), 5);
@@ -61,7 +61,7 @@ try {
   await page.screenshot({ path: resolve(output, 'review-mobile.png') });
   await page.getByRole('button', { name: '返回', exact: true }).click();
   await page.locator('.scene-display').waitFor({ state: 'hidden' });
-  assert.match(await page.getByTestId('current-goal').innerText(), /让刻痕成为行动/);
+  assert.match(await page.getByTestId('current-goal').innerText(), /带上一只空瓢/);
   await page.waitForTimeout(1100);
   await page.screenshot({ path: resolve(output, 'opening-mobile.png') });
   assert.deepEqual(errors, []);

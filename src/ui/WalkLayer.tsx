@@ -1,4 +1,9 @@
 import { useTravelerAudio } from '../audio/useTravelerAudio';
+import { useCharacterAction } from './characterActionTimeline';
+import { companionPerformanceKind, useCompanionPerformance } from './companionPerformance';
+import { usePagePresentation } from './useCinematicClock';
+import type { WorldState } from '../core/worldState';
+import { WorldStateLayer } from './WorldStateLayer';
 import { useCatRecordRecovery } from './useCatRecordRecovery';
 import { getShoreVisualProfile } from '../dev/shoreVisualProfile';
 import { catDisplaySnapshot, lookupCatDisplay, writeCatDisplayAttributes } from './catDisplay';
@@ -46,7 +51,7 @@ import { forgetTraj, loadTraj, trajUrl } from './trajArt';
 import { contactLift, contactOpacity, depthScale, worldToScreen } from '../core/world';
 import { catContactUrl, clippedBootUrl } from './soleClip';
 import { FirstScreenGate } from './FirstScreenGate';
-import { facingFromMove, REACH_HOLD_MS, DRINK_HOLD_MS, TravelerView, travelerHeight, useTravelerPresentation, type TravelerFacing } from './Traveler';
+import { facingFromMove, TravelerView, travelerHeight, useTravelerPresentation, type TravelerFacing } from './Traveler';
 import { useFirstScreenReady } from './firstScreenReady';
 import { useAssetSrc } from './useAssetSrc';
 
@@ -123,6 +128,7 @@ export function WalkLayer({
   beat = null,
   presentationFrozen = false,
   interactionSeq = 0,
+  worldState,
 }: {
   scene: IslandScene;
   drank: boolean;
@@ -150,8 +156,10 @@ export function WalkLayer({
   /** Static local fixture only. Does not pause asset/contact RAF work. */
   presentationFrozen?: boolean;
   interactionSeq?: number;
+  worldState?: WorldState;
 }) {
   const painted = !presentationFrozen;
+  const { visible, reduced } = usePagePresentation();
   const firstScreen = useFirstScreenReady(scene, 'land-companion', painted);
   const viewportRef = useRef<HTMLDivElement>(null);
   const soleRef = useRef<HTMLImageElement>(null);
@@ -201,27 +209,32 @@ export function WalkLayer({
   const [arrive, setArrive] = useState<string | null>(null);
   const [cam, setCam] = useState<Point>({ x: 0, y: 0 });
   const [teachLine, setTeachLine] = useState(false);
-  const [reaching, setReaching] = useState<'reach' | 'drink' | null>(null);
-  const reachTimer = useRef(0);
+  const worldPaused = paused || !visible || firstScreen.status !== 'ready';
+  const performancePaused = worldPaused || presentationFrozen;
+  const body = useCharacterAction(!performancePaused, scene);
+  const handledResponse = useRef(interactionSeq);
   useEffect(() => {
-    if (beat?.kind !== 'ok' || (beat.spot !== 'island-gourd' && beat.spot !== 'act:dba.word.drink')) return;
-    setReaching('drink');
-    window.clearTimeout(reachTimer.current);
-    reachTimer.current = window.setTimeout(() => setReaching(null), DRINK_HOLD_MS);
-  }, [interactionSeq]);
-  useEffect(() => {
-    setReaching(null);
-    window.clearTimeout(reachTimer.current);
-  }, [scene]);
+    if (handledResponse.current === interactionSeq) return;
+    handledResponse.current = interactionSeq;
+    if (beat?.kind !== 'ok') return;
+    if (beat.spot === 'food-inspect' || beat.spot === 'food-self' || beat.spot === 'food-companion') { body.cancel(); return; }
+    if (beat.spot === 'camp-sleep') body.begin('rest');
+    else if (beat.spot === 'island-gourd' || beat.spot === 'act:dba.word.drink') body.begin('drink');
+    else if (beat.spot === 'water-take' || beat.spot === 'water-spring' || beat.spot === 'food-take' || beat.spot === 'yard-give') body.begin('reach');
+    const targetId = beat.spot === 'water-take' ? 'island-gourd' : beat.spot === 'food-take' ? 'yard-grab' : beat.spot;
+    const target = spotsRef.current.find(spot => spot.id === targetId);
+    if (target) setFacing(current => target.x < posRef.current.x - .005 ? 'left' : target.x > posRef.current.x + .005 ? 'right' : current === 'left' ? 'left' : 'right');
+  }, [interactionSeq, beat?.kind, beat?.spot, body.begin, body.cancel]);
+  const restingNow = resting || body.kind === 'rest';
   const driftSeek = useRef(0);
-  const restingRef = useRef(resting);
-  restingRef.current = resting;
+  const restingRef = useRef(restingNow);
+  restingRef.current = restingNow;
   useEffect(() => {
-    if (!resting) return;
+    if (!restingNow) return;
     targetRef.current = null;
     held.current.clear();
     stickRef.current = null;
-  }, [resting]);
+  }, [restingNow]);
   const viewRef = useRef(view);
   const plates = useCrossfade(scene, 980);
   const depthComparison = getShoreVisualProfile().fixture !== null && new URLSearchParams(window.location.search).get('depth') === 'legacy';
@@ -232,7 +245,7 @@ export function WalkLayer({
 
   spotsRef.current = spots;
   hintRef.current = hint;
-  pausedRef.current = paused;
+  pausedRef.current = worldPaused;
   rememberRef.current = onRemember;
   exitRef.current = onExit;
   interactRef.current = onInteract;
@@ -340,19 +353,24 @@ export function WalkLayer({
     setFacing((current) => facingFromMove(dx, dy, current));
     setPos(planted);
     setMoving(isMoving);
-    if (isMoving) { setReaching(null); window.clearTimeout(reachTimer.current); }
+    if (isMoving) body.cancel();
     setStride(isMoving ? Math.min(1, Math.max(0, power)) : 0);
     setBlocked(isBlocked);
     movingRef.current = isMoving;
   }
 
-  function beginReach() {
-    setReaching('reach');
-    window.clearTimeout(reachTimer.current);
-    reachTimer.current = window.setTimeout(() => setReaching(null), REACH_HOLD_MS);
+  function beginReach(point?: Point) {
+    setFacing(current => point && point.x < posRef.current.x - .005 ? 'left' : point && point.x > posRef.current.x + .005 ? 'right' : current === 'left' ? 'left' : 'right');
+    body.begin('reach');
+  }
+
+  function interruptForMovement() {
+    body.cancel();
+    if (!resting) restingRef.current = false;
   }
 
   function seek(point: Point) {
+    interruptForMovement();
     const band = BANDS[sceneRef.current];
     targetRef.current = plantOnGround(sceneRef.current, {
       x: Math.min(band.maxX, Math.max(band.minX, point.x)),
@@ -387,7 +405,7 @@ export function WalkLayer({
         const standing = nearestSpot(spotsRef.current, posRef.current, sceneRef.current);
         if (standing) {
           event.preventDefault();
-          beginReach();
+          beginReach(standing);
           interactRef.current(standing.id);
           return;
         }
@@ -400,6 +418,7 @@ export function WalkLayer({
       const key = keyOf(event);
       if (!key) return;
       event.preventDefault();
+      interruptForMovement();
       held.current.add(key);
       targetRef.current = null;
       if (!event.repeat && import.meta.env.MODE === 'test') {
@@ -617,10 +636,21 @@ export function WalkLayer({
   guideReadyRef.current = !!leap01 && !!leap02;
   const { w: worldW, h: worldH } = worldSize(view.w, view.h);
   const requestedCatSprite = companionFrameId(catPost.beat, clip);
+  const catPerformance = companionPerformanceKind(hint.pose === 'fetch' || hint.pose === 'paw' ? hint.pose : catPost.pose,
+    hint.level, restingNow, beat?.kind === 'ok' && beat.spot === 'yard-give' && body.kind === 'reach');
+  const performanceFrame = useCompanionPerformance(catPerformance, !performancePaused && guide === 'hold', interactionSeq, reduced);
+  // A single mounted preload owns retry timing for the whole sheet. Changing
+  // pose cells must not create new retry consumers or bypass its backoff.
+  useAssetSrc(!presentationFrozen ? 'pose-observe-01' : null, TRAJ_SRC_API);
+  // The shared sheet publishes every cell atomically. useAssetSrc's state can
+  // lag a new cell id by one render; that is not a missing bitmap and must not
+  // temporarily swap to the standing fallback/remount the native atlas image.
+  const performanceReady = !!trajUrl(performanceFrame);
   // Contract permits the complete scene prop as a temporary Y0 landing fallback.
   // Keep the beat/guide/queue and the dedicated trajectory file untouched.
   const yardLandingFallback = scene === 'dba.scene.yard' && requestedCatSprite === 'land-yard-give';
-  const targetCatSprite = yardLandingFallback ? 'fallback' : requestedCatSprite;
+  const legacyCatSprite = yardLandingFallback ? 'fallback' : requestedCatSprite;
+  const targetCatSprite = !presentationFrozen && guide === 'hold' && performanceReady ? performanceFrame : legacyCatSprite;
   const groundAsset = painted ? null : sceneAssembly(scene)?.slots.find((slot) => slot.slot === 'ground')?.asset ?? null;
   const { src: groundPlate, onError: onGroundError } = useAssetSrc(groundAsset, SLOT_SRC_API);
   const slotCat =
@@ -629,7 +659,9 @@ export function WalkLayer({
       : scene === 'dba.scene.yard' || scene === 'dba.scene.path'
         ? 'art.yard.prop.nanaicha'
         : 'art.shore.prop.nanaicha';
-  const { src: trajFigure } = useAssetSrc(yardLandingFallback ? null : targetCatSprite, TRAJ_SRC_API);
+  // Prewarm the complete standing fallback as well as the optional pose sheet.
+  // A sheet failure must not remove the guide or prevent an otherwise ready scene.
+  const { src: trajFigure } = useAssetSrc(legacyCatSprite === 'fallback' ? null : legacyCatSprite, TRAJ_SRC_API);
   const { src: slotCatFigure } = useAssetSrc(slotCat, SLOT_SRC_API);
   // A target beat is not an arrived picture. Keep one committed, scene-scoped
   // record through gaze/cold loading; metadata always follows its actual bitmap.
@@ -724,12 +756,13 @@ export function WalkLayer({
   }, [arrive]);
 
   useEffect(() => () => {
-    window.clearTimeout(reachTimer.current);
     window.clearTimeout(driftSeek.current);
     window.clearTimeout(landTimer.current);
   }, []);
 
-  const catFace = companionFace(catSprite, catPost.x, cat.x);
+  const watchTarget = catPerformance === 'point' ? spots.find(spot => spot.id === catPost.targetId) ?? pos : pos;
+  const catFace = !presentationFrozen && guide === 'hold'
+    ? watchTarget.x < cat.x ? 'left' : 'right' : companionFace(catSprite, catPost.x, cat.x);
   const companionPresentation=useCompanionPresentation(catFigure,catRecovery.revision);
   // A detached old img may still finish/error. Match its committed render, not
   // just a URL that could recur after a scene round-trip or a raw/blob swap.
@@ -744,13 +777,13 @@ export function WalkLayer({
   // These owners are unconditional for WalkLayer's lifetime; only their stateless views reparent.
   const travelerPresentation=useTravelerPresentation({
     x:resting && sleepFoot?sleepFoot.x:pos.x,y:feetY,facing,moving,stride,
-    pose:resting?'lie':moving?'auto':reaching??'auto',actionSeq:interactionSeq,depthZ:catInFront?4:6,
+    pose:moving?'auto':body.pose !== 'auto' ? body.pose : resting?'lie':'auto',actionSeq:body.sequence,actionElapsed:body.kind ? body.elapsed : undefined,paused:performancePaused,depthZ:catInFront?4:6,
     presentationFrozen,contactCleanup:true,
     height:travelerHeight(scene),
   });
   const displayStatus = firstScreen.status === 'ready' && (!travelerPresentation.current.shown || !companionPresentation.src) ? 'loading' : firstScreen.status;
-  pausedRef.current = paused || displayStatus !== 'ready';
-  useTravelerAudio(travelerPresentation, scene, pausedRef.current, interactionSeq, beat);
+  pausedRef.current = worldPaused || displayStatus !== 'ready';
+  useTravelerAudio(travelerPresentation, scene, pausedRef.current, body.sequence, beat);
   const catNode = (<div
             className="companion-anchor"
             data-testid="companion-anchor"
@@ -782,6 +815,8 @@ export function WalkLayer({
             <CompanionView
               presentation={companionPresentation}
               imageKey={catRecovery.imageKey}
+              imageRevision={catRecovery.revision}
+              imageScope={scene}
               figureRef={catRecovery.imageRef}
               frame={catSprite}
               diagnostic={catDiagnostic}
@@ -840,7 +875,8 @@ export function WalkLayer({
       data-ground-depth={sharedDepth ? 'world' : undefined}
       data-cat-contact-source={shoreCandidate ? 'actual' : undefined}
       data-arrive={arrive ?? 'no'}
-      data-resting={resting ? 'yes' : 'no'}
+      data-resting={restingNow ? 'yes' : 'no'}
+      data-performance-paused={performancePaused ? 'yes' : 'no'}
       data-drank={drank ? 'yes' : 'no'}
       style={{ ['--ambient' as string]: look.ambient, ['--shadow-tint' as string]: look.shadowTint }}
     >
@@ -862,6 +898,7 @@ export function WalkLayer({
             feetY={feetY}
             beat={beat}
           />
+          {worldState && !presentationFrozen ? <WorldStateLayer scene={scene} state={worldState} paused={pausedRef.current} /> : null}
           {sharedDepth ? <GroundDepth items={depthItems}/> : null}
           <div className="walk-ground" data-testid="walk-ground" onPointerDown={onGround} />
           {!presentationFrozen ? <WorldFeedback scene={scene} pos={pos} moving={moving} target={targetRef.current}
@@ -921,7 +958,7 @@ export function WalkLayer({
                     }
                     return;
                   }
-                  beginReach();
+                  beginReach(spot);
                   interactRef.current(spot.id);
                 }}
               >
@@ -1015,6 +1052,7 @@ export function WalkLayer({
       <WalkStick
         disabled={paused || displayStatus !== 'ready'}
         onVector={(vector) => {
+          if (vector) interruptForMovement();
           stickRef.current = vector;
           if (vector) targetRef.current = null;
         }}
@@ -1025,7 +1063,7 @@ export function WalkLayer({
       onTravel={gate => { if (!pausedRef.current) seek(gate); }}
       onInteract={spot => {
         if (pausedRef.current || !standsAt(sceneRef.current, spot, posRef.current)) return;
-        beginReach();
+        beginReach(spot);
         interactRef.current(spot.id);
       }} /> : null}
     {hearthGate && hearthAt ? (

@@ -13,10 +13,14 @@ describe('a journey with a purpose', () => {
     expect(early).not.toContain('dba.word.drink');
     expect(meaningChoices('dba.word.promise', pool, 3)).toEqual([]);
   });
-  it('moves from observing the wall to applying water, then resting, without collecting optional evidence', () => {
+  it('points to the next physical water step, then resting, without collecting optional evidence', () => {
     const state = newGameState();
+    expect(expeditionGoal(state).spot).toBe('island-gourd');
+    state.flags['dba.puzzle.water'] = 'carried';
     expect(expeditionGoal(state).spot).toBe('island-mural');
     state.words['dba.word.water'].state = 'learned';
+    expect(expeditionGoal(state).spot).toBe('water-spring');
+    state.flags['dba.puzzle.water'] = 'filled';
     expect(expeditionGoal(state).spot).toBe('island-gourd');
     state.beats['dba.beat.water'] = true;
     expect(expeditionGoal(state).spot).toBe('island-mural');
@@ -24,6 +28,23 @@ describe('a journey with a purpose', () => {
     expect(expeditionGoal(state)).toMatchObject({ destination: 'dba.scene.camp', spot: 'camp-sleep' });
     state.beats['dba.beat.depart'] = true;
     expect(expeditionGoal(state).spot).toBe('night-memory');
+  });
+
+  it('keeps the food goal on observation, allocation and offering instead of skipping to a reward', () => {
+    const state = newGameState();
+    state.beats = { 'dba.beat.water': true, 'dba.beat.sleep': true };
+    expect(expeditionGoal(state).spot).toBe('yard-grab');
+    state.flags['dba.puzzle.food'] = 'inspected';
+    expect(expeditionGoal(state).spot).toBe('yard-grab');
+    state.flags['dba.puzzle.food'] = 'taken';
+    expect(expeditionGoal(state).spot).toBe('act:dba.word.amount:less');
+    state.flags['dba.puzzle.food'] = 'allocating';
+    state.flags['dba.puzzle.food-self'] = 1;
+    expect(expeditionGoal(state).spot).toBe('act:dba.word.amount:more');
+    state.flags['dba.puzzle.food-self'] = 2;
+    expect(expeditionGoal(state).spot).toBe('island-mural');
+    state.words['dba.word.share'].state = state.words['dba.word.give'].state = 'learned';
+    expect(expeditionGoal(state).spot).toBe('yard-give');
   });
 
   it('offers several learned answers and records a mistaken interpretation on the question', () => {
