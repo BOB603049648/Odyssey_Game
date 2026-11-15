@@ -101,12 +101,11 @@ function pct(value: number): string {
   return `${value * 100}%`;
 }
 
-function entrySide(edge: GateEdge | undefined): string | null {
-  if (edge === 'east') return 'from-left';
-  if (edge === 'west') return 'from-right';
-  if (edge === 'north') return 'from-down';
-  if (edge === 'south') return 'from-up';
-  return null;
+function entryFacing(edge: GateEdge | undefined): TravelerFacing {
+  if (edge === 'east') return 'right';
+  if (edge === 'west') return 'left';
+  if (edge === 'north') return 'back';
+  return 'front';
 }
 
 const SLOT_SRC_API = {
@@ -190,7 +189,7 @@ export function WalkLayer({
   const catSoleRef = useRef<HTMLImageElement>(null);
   const catDiagnosticRef = useRef<HTMLOutputElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
-  const pending = useRef<Point | null>(null);
+  const pending = useRef<{ point: Point; facing: TravelerFacing } | null>(null);
   const sceneRef = useRef(scene);
   const spotsRef = useRef(spots);
   const hintRef = useRef(hint);
@@ -212,7 +211,6 @@ export function WalkLayer({
   activityRef.current = onActivity;
   const stickRef = useRef<Point | null>(null);
   const smoothRef = useRef<Point | null>(null);
-  const entryRef = useRef<string | null>(null);
   const held = useRef(new Set<WalkKey>());
   const movingRef = useRef(false);
   const velocityRef = useRef<Point>({ x: 0, y: 0 });
@@ -239,7 +237,6 @@ export function WalkLayer({
   postRef.current = catPost;
   catRef.current = cat;
   const [view, setView] = useState({ w: 1280, h: 720 });
-  const [arrive, setArrive] = useState<string | null>(null);
   const [cam, setCam] = useState<Point>({ x: 0, y: 0 });
   const [teachLine, setTeachLine] = useState(false);
   const worldPaused = paused || !visible || firstScreen.status !== 'ready';
@@ -301,7 +298,8 @@ export function WalkLayer({
   movingRef.current = moving;
 
   if (sceneRef.current !== scene) {
-    const next = plantOnGround(scene, pending.current ?? remembered ?? SPAWNS[scene]);
+    const next = plantOnGround(scene, pending.current?.point ?? remembered ?? SPAWNS[scene]);
+    setFacing(pending.current?.facing ?? 'front');
     pending.current = null;
     sceneRef.current = scene;
     posRef.current = next;
@@ -311,11 +309,12 @@ export function WalkLayer({
     setRoutesOpen(false);
     setRejectedGround(null);
     stickRef.current = null;
-    smoothRef.current = null;
+    const nextCam = cameraOffset(next, viewRef.current.w, viewRef.current.h);
+    smoothRef.current = nextCam;
+    setCam(nextCam);
     velocityRef.current = { x: 0, y: 0 };
     held.current.clear();
-    setArrive(entryRef.current);
-    entryRef.current = null;
+    movingRef.current = false;
     setPos(next);
     setMoving(false);
     setStride(0);
@@ -396,14 +395,10 @@ export function WalkLayer({
     if (isMoving) activityRef.current?.();
     const gate = gateCrossing(sceneRef.current, posRef.current, planted);
     if (gate) {
-      velocityRef.current = { x: 0, y: 0 };
-      pending.current = gate.arrival;
-      entryRef.current = entrySide(gate.edge);
-      targetRef.current = null;
-      travelRef.current = null;
-      setTravel(null);
-      stickRef.current = null;
-      held.current.clear();
+      // Enter planted and idle. Neither a route nor the old physical key/touch
+      // gesture owns movement on the other side of a doorway.
+      stopWalking();
+      pending.current = { point: gate.arrival, facing: entryFacing(gate.edge) };
       rememberRef.current(gate.to, gate.arrival);
       exitRef.current(gate.to);
       return;
@@ -529,6 +524,9 @@ export function WalkLayer({
       const key = keyOf(event);
       if (!key) return;
       event.preventDefault();
+      // The RAF already handles a held key. OS autorepeat must not resurrect
+      // a gesture cleared by a scene change, blur, or a loading screen.
+      if (event.repeat || pending.current) return;
       interruptForMovement();
       held.current.add(key);
       targetRef.current = null;
@@ -861,12 +859,6 @@ export function WalkLayer({
     approachRef.current?.(teachLine && scene === 'dba.scene.shore');
   }, [teachLine, scene]);
 
-  useEffect(() => {
-    if (!arrive) return undefined;
-    const id = window.setTimeout(() => setArrive(null), 980);
-    return () => window.clearTimeout(id);
-  }, [arrive]);
-
   useEffect(() => () => {
     window.clearTimeout(driftSeek.current);
     window.clearTimeout(landTimer.current);
@@ -1006,7 +998,6 @@ export function WalkLayer({
       data-nav-phase={selectedTravel?.phase ?? ''}
       data-ground-depth={sharedDepth ? 'world' : undefined}
       data-cat-contact-source={shoreCandidate ? 'actual' : undefined}
-      data-arrive={arrive ?? 'no'}
       data-resting={restingNow ? 'yes' : 'no'}
       data-performance-paused={performancePaused ? 'yes' : 'no'}
       data-drank={drank ? 'yes' : 'no'}
@@ -1186,6 +1177,7 @@ export function WalkLayer({
         ) : null}
       <FirstScreenGate state={displayStatus} done={firstScreen.done} total={firstScreen.total} onRetry={firstScreen.retry} />
       <WalkStick
+        key={scene}
         disabled={paused || displayStatus !== 'ready'}
         onVector={(vector) => {
           if (vector) interruptForMovement();

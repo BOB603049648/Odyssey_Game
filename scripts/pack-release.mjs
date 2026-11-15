@@ -22,6 +22,7 @@ await cp(resolve(root,'docs/design/v0.1.6-bridge-reasoning.md'),resolve(stage,'B
 await cp(resolve(root,'docs/design/v0.1.7-prologue-loading.md'),resolve(stage,'PROLOGUE-LOADING.md'));
 await cp(resolve(root,'docs/design/v0.1.8-traveler-palette.md'),resolve(stage,'TRAVELER-PALETTE.md'));
 await cp(resolve(root,'docs/design/v0.1.9-walk-cycle.md'),resolve(stage,'WALK-CYCLE.md'));
+await cp(resolve(root,'docs/design/v0.1.10-scene-entry.md'),resolve(stage,'SCENE-ENTRY.md'));
 await cp(resolve(root,'docs/assets/traveler-walk8/README.md'),resolve(stage,'WALK-ART.md'));
 await cp(resolve(root,'src/assets/audio/README.md'),resolve(stage,'AUDIO-CREDITS.md'));
 await cp(resolve(root,'src/assets/art/painted/README.md'),resolve(stage,'ART-CREDITS.md'));

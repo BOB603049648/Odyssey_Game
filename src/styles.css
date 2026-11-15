@@ -1380,28 +1380,6 @@ h1 {
 .prologue .plate-fade.in { z-index: 2; animation: none; opacity: 1; }
 .prologue .plate-fade.out { z-index: 1; animation: none; opacity: 0; }
 
-.walk-viewport[data-arrive="from-left"] .traveler-bob { animation: arrive-left 880ms ease; }
-.walk-viewport[data-arrive="from-right"] .traveler-bob { animation: arrive-right 880ms ease; }
-.walk-viewport[data-arrive="from-up"] .traveler-bob { animation: arrive-up 880ms ease; }
-.walk-viewport[data-arrive="from-down"] .traveler-bob { animation: arrive-down 880ms ease; }
-
-@keyframes arrive-left {
-  from { opacity: 0; transform: translateX(-42px); }
-  to { opacity: 1; transform: none; }
-}
-@keyframes arrive-right {
-  from { opacity: 0; transform: translateX(42px); }
-  to { opacity: 1; transform: none; }
-}
-@keyframes arrive-up {
-  from { opacity: 0; transform: translateY(-28px); }
-  to { opacity: 1; transform: none; }
-}
-@keyframes arrive-down {
-  from { opacity: 0; transform: translateY(28px); }
-  to { opacity: 1; transform: none; }
-}
-
 .walk-stick {
   display: none;
 }

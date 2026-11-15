@@ -66,6 +66,7 @@ function probe() {
         [0, -3, 3, -6, 6].some(dy => area.isPointInFill(new DOMPoint(x * 1280 + dx, y * 720 + dy))));
       window.wayfindingQA.samples.push({ at, label: window.wayfindingQA.label, scene,
         display: stage.dataset.display, x, y, moving: actor.dataset.moving,
+        entrySliding: getComputedStyle(actor.querySelector('.traveler-bob')).animationName.includes('arrive-'),
         view: { w: viewport.width, h: viewport.height },
         layoutReady: Math.abs(world.height - expectedHeight) < 1 && Math.abs(world.width - expectedHeight * 16 / 9) < 1,
         worldCovered: world.left <= viewport.left + 1 && world.right >= viewport.right - 1
@@ -338,6 +339,10 @@ async function journey(base, mobile, rotationOnly = false) {
     await ready(); await page.waitForTimeout(180);
     const data = await collect(label);
     const walking = data.samples.filter(sample => sample.scene === sceneId(from) && sample.display === 'ready');
+    const arrival = data.samples.filter(sample => sample.scene === sceneId(to) && sample.display === 'ready');
+    assert.ok(arrival.length > 1, `${label}: missing arrival observations`);
+    assert.ok(arrival.every(sample => sample.moving === 'no' && !sample.target && !sample.entrySliding
+      && distance(sample, arrival[0]) < .000001), `${label}: scene entry forced a second walk`);
     assert.ok(walking.length >= 5 && walking.some(sample => distance(sample, before) > .015), `${label}: no real traversal observed`);
     assert.deepEqual(data.changes.map(change => [change.from, change.to]), [[sceneId(from), sceneId(to)]], `${label}: repeated or unexpected scene transitions`);
     const last = walking.at(-1);
