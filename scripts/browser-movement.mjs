@@ -14,7 +14,7 @@ const context = await browser.newContext({ viewport: { width: 1440, height: 900 
 const page = await context.newPage();
 const errors = [], atlases = [];
 page.on('pageerror', e => errors.push(e.message));
-page.on('response', r => { if (r.status() >= 400) errors.push(`${r.status()} ${r.url()}`); if (r.url().includes('stride-atlas')) atlases.push(r.url()); });
+page.on('response', r => { if (r.status() >= 400) errors.push(`${r.status()} ${r.url()}`); if (r.url().includes('stride-eight-atlas')) atlases.push(r.url()); });
 const traveler = page.getByTestId('traveler');
 const position = () => traveler.evaluate(e => ({ x: Number(e.dataset.x), y: Number(e.dataset.y) }));
 try {
@@ -80,17 +80,33 @@ try {
     assert.deepEqual(await position(), stopped, 'movement continued after release');
   }
   const samples = await page.evaluate(() => window.movementSamples);
+  const cadence = {};
   for (const facing of ['right','left','front','back']) {
     const walking = samples.filter(s => s.facing === facing && s.pose === 'walk');
     assert.ok(walking.length > 15, `no sustained ${facing} walk`);
-    assert.equal(new Set(walking.map(s => s.frame).filter(Boolean)).size, 4, `${facing} did not show all four walk poses`);
+    assert.equal(new Set(walking.map(s => s.frame).filter(Boolean)).size, 8, `${facing} did not show all eight walk poses`);
     assert.ok(walking.every(s => s.ready), `${facing} contained an undecoded image`);
+    // Record observed pose holds, including scheduling delays, rather than
+    // reporting the nominal animation rate as a measured browser frame rate.
+    const holds = [];
+    let previous = null, changedAt = null;
+    for (const sample of samples) {
+      if (sample.pose !== 'walk' || sample.facing !== facing || !sample.frame) {
+        previous = null; changedAt = null; continue;
+      }
+      if (sample.frame !== previous) {
+        if (changedAt !== null) holds.push(sample.time - changedAt);
+        previous = sample.frame; changedAt = sample.time;
+      }
+    }
+    holds.sort((a, b) => a - b);
+    cadence[facing] = { changes: holds.length, medianPoseMs: holds[Math.floor(holds.length / 2)], p90PoseMs: holds[Math.floor(holds.length * .9)] };
     for (const frame of walking.filter(s => s.frame?.startsWith('stride-'))) {
-      assert.equal(frame.bitmapWidth, 1448, 'crop was applied to the wrong bitmap');
+      assert.equal(frame.bitmapWidth, 3072, 'crop was applied to the wrong bitmap');
       assert.ok(!frame.src.includes('#'), 'walking reloaded the atlas URL for individual cells');
       assert.equal(frame.bitmap, frame.src, 'the browser was still painting a previous source');
       assert.ok(Math.abs(frame.cropHeight - 1) < .025 && Math.abs(frame.cropWidth - 1) < .01, 'frame container changed size');
-      assert.ok(Math.abs(frame.rasterHeight - 1086 / 332) < .02, 'atlas scale changed during the walk');
+      assert.ok(Math.abs(frame.rasterHeight - 1536 / 496) < .02, 'atlas scale changed during the walk');
     }
   }
   const idleFlashes = samples.filter((sample, i) => sample.pose === 'idle' && samples[i-1]?.pose === 'walk' && samples[i+1]?.pose === 'walk'
@@ -98,8 +114,8 @@ try {
   assert.deepEqual(idleFlashes, [], 'idle artwork flashed between two walk frames');
   assert.equal(new Set(atlases).size, 1, 'walk cells downloaded different atlases');
   assert.deepEqual(errors, []);
-  await writeFile(resolve(output, 'movement.json'), JSON.stringify({ result: 'PASS', errors, atlases, samples }, null, 2));
-  console.log(JSON.stringify({ result: 'PASS', checks: ['four facings / four frames', 'cold atlas decode', 'short release', 'stationary idle', 'fixed bitmap and crop scale', 'no idle flash'], errors }));
+  await writeFile(resolve(output, 'movement.json'), JSON.stringify({ result: 'PASS', errors, atlases, cadence, samples }, null, 2));
+  console.log(JSON.stringify({ result: 'PASS', checks: ['four facings / eight frames', 'cold atlas decode', 'short release', 'stationary idle', 'fixed bitmap and crop scale', 'no idle flash'], cadence, errors }));
 } catch (error) {
   await page.screenshot({ path: resolve(output, 'failure.png') });
   await writeFile(resolve(output, 'failure-samples.json'), JSON.stringify(await page.evaluate(() => ({ samples: window.movementSamples, releases: window.movementReleases })), null, 2));

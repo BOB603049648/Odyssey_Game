@@ -15,12 +15,12 @@ try {
   await page.getByRole('button', { name: '新游戏', exact: true }).click();
   await page.getByRole('button', { name: '跳过序章', exact: true }).click();
   await page.locator('[data-testid="walk-stage"][data-display="ready"]').waitFor();
-  const filter = await page.locator('[data-testid="traveler"] filter').evaluate(node => new XMLSerializer().serializeToString(node));
-  const sourceFiles = ['idle-front-01.webp', 'idle-side-01.png', 'idle-back-01.png', 'stride-atlas.png', 'action-atlas.png', 'settle-atlas.webp'];
+  const filters = await page.locator('[data-testid="traveler"] filter').evaluateAll(nodes => Object.fromEntries(nodes.map(node => [node.dataset.profile, new XMLSerializer().serializeToString(node)])));
+  const sourceFiles = ['idle-front-01.webp', 'idle-side-01.png', 'idle-back-01.png', 'stride-eight-atlas.webp', 'action-atlas.png', 'settle-atlas.webp'];
   const sources = await Promise.all(sourceFiles.map(async name => ({ name, uri: `data:image/${name.endsWith('.png') ? 'png' : 'webp'};base64,${(await readFile(resolve('src/assets/traveler', name))).toString('base64')}` })));
   // Exercise the browser's actual SVG implementation on the original RGBA,
   // comparing material samples against idle art and checking all edge pixels.
-  const colors = await page.evaluate(async ({ sources, filter }) => {
+  const colors = await page.evaluate(async ({ sources, filters }) => {
     const median = values => { values.sort((a, b) => a - b); return values[Math.floor(values.length / 2)]; };
     const bitmap = async uri => { const img = new Image(); img.src = uri; await img.decode(); return img; };
     const pixels = img => {
@@ -33,6 +33,7 @@ try {
     for (const { name, uri } of sources) {
       const img = await bitmap(uri), raw = pixels(img), width = img.naturalWidth, height = img.naturalHeight;
       const idle = name.startsWith('idle'), settle = name.startsWith('settle');
+      const filter = filters[name.startsWith('stride') ? 'walk' : 'action'];
       const id = /id="([^"]+)"/.exec(filter)[1];
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><defs>${filter}</defs><image href="${uri}" width="${width}" height="${height}" filter="url(#${id})"/></svg>`;
       const graded = idle ? raw : pixels(await bitmap(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`));
@@ -45,7 +46,7 @@ try {
         }
       }
       const cells = [];
-      const rows = idle ? 1 : settle ? 2 : 3, columns = idle ? 1 : 4;
+      const rows = idle ? 1 : settle ? 2 : 3, columns = idle ? 1 : name.startsWith('stride') ? 8 : 4;
       const cw = width / columns, ch = height / rows;
       for (let row = 0; row < rows; row++) for (let column = 0; column < columns; column++) {
         const before = [], after = [];
@@ -62,7 +63,8 @@ try {
       results.push({ name, alphaError, warmError, warmPixels, cells });
     }
     return results;
-  }, { sources, filter });
+  }, { sources, filters });
+  await writeFile(resolve(output, 'palette-pixels.json'), JSON.stringify(colors, null, 2));
   const references = colors.slice(0, 3).map(result => result.cells[0].before);
   for (const result of colors.slice(3)) {
     assert(result.alphaError <= 1, `${result.name}: changed transparent edges by ${result.alphaError}`);
@@ -74,8 +76,6 @@ try {
       assert(Math.abs(cell.after - target) < Math.abs(cell.before - target) * .45, `${result.name}: did not reduce costume brightness mismatch`);
     }
   }
-  await writeFile(resolve(output, 'palette-pixels.json'), JSON.stringify(colors, null, 2));
-
   const world = await page.getByTestId('world-root').locator('.world-layer').boundingBox();
   await page.mouse.click(world.x + world.width * .49, world.y + world.height * .77);
   await page.waitForFunction(() => {
@@ -114,11 +114,11 @@ try {
   const ids = new Set();
   for (const sample of samples) {
     assert.equal(sample.palette, sample.atlas ? 'costume-match' : 'reference');
-    if (sample.atlas) { assert(sample.filter.includes('traveler-palette-')); ids.add(sample.filter); }
+    if (sample.atlas) { assert(sample.filter.includes('traveler-palette-')); assert(sample.filter.includes('-walk'), 'walking used the action palette'); ids.add(sample.filter); }
     else assert.equal(sample.filter, 'none', 'idle inherited the departing walk color correction');
   }
   assert.equal(ids.size, 1, 'rebuilt the filter on each animation frame');
   assert.deepEqual(errors, []);
   await writeFile(resolve(output, 'transitions.json'), JSON.stringify(samples, null, 2));
-  console.log(JSON.stringify({ result: 'PASS', checks: ['32 atlas cells match idle costume', 'warm materials preserved', 'alpha edges preserved', 'four facings start/stop', 'outgoing/current retain own palette', 'one stable filter'], colors }));
+  console.log(JSON.stringify({ result: 'PASS', checks: ['44 atlas cells match idle costume', 'warm materials preserved', 'alpha edges preserved', 'four facings start/stop', 'outgoing/current retain own palette', 'one stable walk filter'], colors }));
 } finally { await browser.close(); }

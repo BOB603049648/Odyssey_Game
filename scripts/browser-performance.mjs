@@ -149,7 +149,7 @@ function verifyBitmaps(list) {
     const settle = f.atlas.startsWith('settle-');
     const walk = f.atlas.startsWith('stride-');
     const expected = settle ? { w: 1536, h: 1024, cw: 360, ch: 480 }
-      : walk ? { w: 1448, h: 1086, cw: 249, ch: 332 } : { w: 1448, h: 1086, cw: 271.5, ch: 362 };
+      : walk ? { w: 3072, h: 1536, cw: 372, ch: 496 } : { w: 1448, h: 1086, cw: 271.5, ch: 362 };
     assert.ok(f.loaded && f.naturalW === expected.w && f.naturalH === expected.h,
       `${f.atlas}: incorrect native bitmap ${f.naturalW}x${f.naturalH}`);
     assert.ok(f.crop.w > 10 && f.crop.h > 10, `${f.atlas}: empty crop container`);

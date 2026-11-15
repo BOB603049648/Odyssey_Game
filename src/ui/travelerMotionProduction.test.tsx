@@ -9,12 +9,27 @@ async function frame(dt=1000/60){now+=dt;await act(async()=>{vi.advanceTimersByT
 beforeEach(async()=>{vi.resetModules();vi.useFakeTimers({toFake:['setTimeout','clearTimeout','Date']});vi.stubEnv('MODE','production');vi.stubEnv('VITE_VISUAL_SAMPLE','1');history.replaceState({},'','/?shoreVisual=candidate');now=0;seq=0;raf=new Map();punches.clear();vi.spyOn(performance,'now').mockImplementation(()=>now);vi.spyOn(window,'requestAnimationFrame').mockImplementation(cb=>{raf.set(++seq,cb);return seq;});vi.spyOn(window,'cancelAnimationFrame').mockImplementation(id=>raf.delete(id));Traveler=(await import('./Traveler')).TravelerMark;});
 afterEach(()=>{cleanup();vi.restoreAllMocks();vi.useRealTimers();vi.unstubAllEnvs();});
 describe('actual production Traveler RAF follows observed displacement',()=>{
+ it('shows intermediate leg poses without holding a full-speed pose for a tenth of a second',async()=>{
+  let x=.2;
+  const v=render(<Traveler x={x} y={.7} facing="right" moving stride={1}/>);
+  let previous='',changedAt=0;
+  const holds:number[]=[];
+  for(let n=0;n<120;n++){
+   x+=.22/(60*16/9);
+   v.rerender(<Traveler x={x} y={.7} facing="right" moving stride={1}/>);
+   await frame();
+   const cell=v.container.querySelector('[data-layer="current"]')?.getAttribute('data-atlas')??'';
+   if(cell!==previous){if(previous)holds.push(now-changedAt);previous=cell;changedAt=now;}
+  }
+  expect(holds.length).toBeGreaterThan(20);
+  expect(Math.max(...holds)).toBeLessThanOrEqual(100);
+ });
  it.each([true,false])('stops walk promptly and advances decoded raw frames despite slow punch (contactCleanup=%s)',async contactCleanup=>{
   let x=.2;const v=render(<Traveler x={x} y={.7} facing="right" moving stride={1} contactCleanup={contactCleanup}/>);
   const walkingSources=new Set<string>();
   for(let n=0;n<100;n++){x+=.38/60;v.rerender(<Traveler x={x} y={.7} facing="right" moving stride={1} contactCleanup={contactCleanup}/>);await frame();const cell=v.container.querySelector('[data-layer="current"]')?.getAttribute('data-atlas');if(cell?.includes('stride-side-'))walkingSources.add(cell);}
-  expect(walkingSources.size).toBe(4);
-  expect(v.getByTestId('traveler').dataset.pose).toBe('walk');const old=v.container.querySelector('[data-layer="current"]')!.getAttribute('src')!;expect(old).toMatch(/stride-atlas/);
+  expect(walkingSources.size).toBe(8);
+  expect(v.getByTestId('traveler').dataset.pose).toBe('walk');const old=v.container.querySelector('[data-layer="current"]')!.getAttribute('src')!;expect(old).toMatch(/stride-eight-atlas/);
   v.rerender(<Traveler x={x} y={.7} facing="right" moving={false} stride={0} contactCleanup={contactCleanup}/>);await frame();expect(v.getByTestId('traveler').dataset.pose).toBe('idle');
   expect(v.container.querySelector('[data-layer="current"]')!.getAttribute('src')).toMatch(/idle-side/);
   await act(async()=>{punches.get(old)?.('blob:late-walk');});expect(v.container.querySelector('[data-layer="current"]')!.getAttribute('src')).toMatch(/idle-side/);
@@ -24,11 +39,11 @@ describe('actual production Traveler RAF follows observed displacement',()=>{
  it('advances registered atlas cells on one image without legacy hem processing',async()=>{
   let x=.2;const v=render(<Traveler x={x} y={.7} facing="right" moving stride={1} contactCleanup/>);
   for(let n=0;n<35;n++){x+=.22/(60*16/9);v.rerender(<Traveler x={x} y={.7} facing="right" moving stride={1} contactCleanup/>);await frame();}
-  const img=v.container.querySelector('[data-layer="current"]')!;const raw=img.getAttribute('src')!;expect(raw).toMatch(/stride-atlas/);
+  const img=v.container.querySelector('[data-layer="current"]')!;const raw=img.getAttribute('src')!;expect(raw).toMatch(/stride-eight-atlas/);
   expect(punches.has(raw)).toBe(false);expect(img.getAttribute('data-atlas')).toMatch(/stride-side/);
   const sources=new Set<string>();
   for(let n=0;n<60;n++){x+=.22/(60*16/9);v.rerender(<Traveler x={x} y={.7} facing="right" moving stride={1} contactCleanup/>);await frame();sources.add(img.getAttribute('data-atlas')!);expect(img.getAttribute('src')).toBe(raw);}
-  expect(v.container.querySelector('[data-layer="current"]')).toBe(img);expect(sources.size).toBe(4);
+  expect(v.container.querySelector('[data-layer="current"]')).toBe(img);expect(sources.size).toBe(8);
  });
  it('gives a processed standalone bitmap its own native image without changing the old image request',async()=>{
   const props={x:.4,y:.7,facing:'front' as const,moving:false,contactCleanup:true};

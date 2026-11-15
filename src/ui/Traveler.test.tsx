@@ -9,6 +9,7 @@ import { SPAWNS } from '../core/stage';
 import { WALK_SPEED } from '../core/walk';
 import {
   FRAME_BLEND_MS,
+  WALK_FRAME_BLEND_MS,
   TRAVELER_FOOT,
   TRAVELER_SOLE,
   TRAVELER_FRAME_COUNTS,
@@ -203,12 +204,13 @@ describe('traveler art', () => {
     expect(sheetOf('right')).toBe('side');
     const walkFront = clipFrames('walk', 'front');
     expect(walkFront).toHaveLength(TRAVELER_FRAME_COUNTS.walk);
-    expect(new Set(walkFront).size).toBe(4);
-    expect(walkFront.map((src) => src.match(/stride-front-0[1-4]/)?.[0])).toEqual([
+    expect(new Set(walkFront).size).toBe(8);
+    expect(walkFront.map((src) => src.match(/stride-front-0[1-8]/)?.[0])).toEqual([
       'stride-front-01',
       'stride-front-02',
       'stride-front-03',
       'stride-front-04',
+      'stride-front-05', 'stride-front-06', 'stride-front-07', 'stride-front-08',
     ]);
     const idleSide = clipFrames('idle', 'side');
     expect(idleSide).toHaveLength(TRAVELER_FRAME_COUNTS.idle);
@@ -423,7 +425,7 @@ describe('traveler art', () => {
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="back" moving stride={1} />);
     const mark = view.container.querySelector('[data-testid="traveler"]');
     expect(mark?.getAttribute('data-pose')).toBe('walk');
-    expect(mark?.getAttribute('data-clip-frames')).toBe('4');
+    expect(mark?.getAttribute('data-clip-frames')).toBe('8');
     expect(mark?.getAttribute('data-gait')).toBe('1.00');
   });
 
@@ -446,7 +448,8 @@ describe('traveler art', () => {
     expect(stepCycleByDistance(half, WALK_STRIDE / 2)).toBeCloseTo(0);
     const posed = { sheet: 'front' as const, pose: 'walk' as const, frame: 0, facing: 'front' as TravelerFacing };
     expect(blendDuration(posed, posed)).toBe(0);
-    expect(blendDuration(posed, { ...posed, frame: 1 })).toBe(FRAME_BLEND_MS);
+    expect(blendDuration(posed, { ...posed, frame: 1 })).toBe(WALK_FRAME_BLEND_MS);
+    expect(WALK_FRAME_BLEND_MS).toBeLessThan(1000 / (WALK_CYCLE_HZ * TRAVELER_FRAME_COUNTS.walk) / 2);
     expect(blendDuration(posed, { ...posed, sheet: 'side', facing: 'right' })).toBe(TURN_BLEND_MS);
     expect(TURN_BLEND_MS).toBeGreaterThan(FRAME_BLEND_MS);
   });

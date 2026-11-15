@@ -5,6 +5,7 @@ import { useAudio } from './useSoundscape';
 import { loadSound } from './sounds';
 import { CLOTH, DRINK, STEP_BANKS, variation, type FoleyId } from './soundBank';
 import { soundScope } from './soundScope';
+import { crossedWalkContact, WALK_CONTACT_FRAMES } from '../content/travelerWalkAtlas';
 
 export function groundMaterial(scene: IslandScene): keyof typeof STEP_BANKS {
   if (scene === 'dba.scene.shore') return 'sand';
@@ -50,6 +51,7 @@ export function useTravelerAudio(presentation: TravelerPresentation, scene: Isla
   useEffect(() => {
     const scope = owner.current;
     if (!enabled || !scope || !presentation.current.shown || lastFrame.current === blend.frame) return;
+    const contact = walking ? crossedWalkContact(lastFrame.current, blend.frame) : null;
     lastFrame.current = blend.frame;
     if (!walking) {
       // Repeated actions can briefly still show the previous clip's last frame.
@@ -58,14 +60,14 @@ export function useTravelerAudio(presentation: TravelerPresentation, scene: Isla
       if (!actionArmed.current) return;
     }
     const pan = Math.max(-.45, Math.min(.45, (presentation.x-.5)*.8));
-    if (walking && (blend.frame === 0 || blend.frame === 2)) {
+    if (walking && contact !== null) {
       const now = performance.now();
       if (now - lastAt.current < 150) return; // No backlog/burst under frame drops.
       lastAt.current = now;
       const id = variation<FoleyId>(STEP_BANKS[material], lastSound.current); lastSound.current = id;
       scope.play(id, { level: .8, pan, rate: .97+Math.random()*.06, maxAge: 180,
         valid: () => live.current.moving && live.current.current.blend.pose === 'walk' && live.current.current.blend.frame === blend.frame });
-      if (blend.frame === 2) {
+      if (contact === WALK_CONTACT_FRAMES[1]) {
         const cloth = variation<FoleyId>(CLOTH, lastCloth.current); lastCloth.current = cloth;
         scope.play(cloth, { level: .22, pan, maxAge: 150 });
       }

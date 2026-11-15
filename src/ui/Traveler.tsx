@@ -9,7 +9,7 @@ import { punchHemUrl, wakeHemPunch } from './hemPunch';
 import { heldFrameIndex } from './travelerDisplay';
 import { forgetFrame, frameUrl, loadFrame } from './travelerArt';
 import { useAssetSrc } from './useAssetSrc';
-import { WALK_ATLAS, walkAtlasSource } from '../content/travelerWalkAtlas';
+import { WALK_ATLAS, WALK_ATLAS_FILES, WALK_FRAME_COUNT, walkAtlasSource } from '../content/travelerWalkAtlas';
 import { SETTLE_FILES, settleAtlasSource } from '../content/characterPerformanceAtlas';
 import { REST_LOWER_MS, REST_RISE_MS } from './characterActionTimeline';
 import './character-performance.css';
@@ -19,10 +19,10 @@ export type TravelerSheet = 'front' | 'side' | 'back';
 export type TravelerPose = 'idle' | 'walk' | 'interact' | 'reach' | 'drink' | 'lie' | 'rise';
 export type TravelerLocomotion = 'idle' | 'walk';
 
-/** Four registered walk poses per direction and four authored frames per action. */
+/** Eight registered walk poses per direction and four authored frames per action. */
 export const TRAVELER_FRAME_COUNTS = {
   idle: 2,
-  walk: 4,
+  walk: WALK_FRAME_COUNT,
   interact: 1,
   reach: 4,
   drink: 4,
@@ -36,9 +36,9 @@ export const REACH_HZ = 1000 / REACH_HOLD_MS;
 export const DRINK_HOLD_MS = 1800;
 
 const WALK_FILES: Record<TravelerSheet, readonly string[]> = {
-  front: ['stride-front-01.png', 'stride-front-02.png', 'stride-front-03.png', 'stride-front-04.png'],
-  side: ['stride-side-01.png', 'stride-side-02.png', 'stride-side-03.png', 'stride-side-04.png'],
-  back: ['stride-back-01.png', 'stride-back-02.png', 'stride-back-03.png', 'stride-back-04.png'],
+  front: WALK_ATLAS_FILES.slice(0, WALK_FRAME_COUNT),
+  side: WALK_ATLAS_FILES.slice(WALK_FRAME_COUNT, WALK_FRAME_COUNT * 2),
+  back: WALK_ATLAS_FILES.slice(WALK_FRAME_COUNT * 2),
 };
 
 const IDLE_FILES: Record<TravelerSheet, readonly string[]> = {
@@ -55,7 +55,7 @@ function filesFor(pose: TravelerPose, sheet: TravelerSheet): readonly string[] {
 }
 function atlasSource(src: string) {
   const walk = walkAtlasSource(src);
-  return walk ? { ...walk, sole: walk.height, atlasWidth: WALK_ATLAS.width, atlasHeight: WALK_ATLAS.height } : settleAtlasSource(src) ?? actionAtlasSource(src);
+  return walk ? { ...walk, atlasWidth: WALK_ATLAS.width, atlasHeight: WALK_ATLAS.height } : settleAtlasSource(src) ?? actionAtlasSource(src);
 }
 
 function frameSrc(file: string): string {
@@ -65,9 +65,10 @@ function frameSrc(file: string): string {
 /**
  * Full-speed walk cycles per second while covering WALK_SPEED.
  * Playback follows distance (`WALK_STRIDE`), so a slower stick does not skate.
- * At full speed the new sheet completes 1.5 cycles per second on the shore.
+ * At reference scale, 1.65 cycles/sec gives 13.2 distinct poses/sec. Perspective
+ * and the nearer hall scale still adjust stride to the displayed body size.
  */
-export const WALK_CYCLE_HZ = 1.5;
+export const WALK_CYCLE_HZ = 1.65;
 export const WALK_STRIDE = WALK_SPEED / WALK_CYCLE_HZ;
 /**
  * Figure box height as a fraction of the world layer.
@@ -101,6 +102,7 @@ export const TRAVELER_FOOT = { x: 0.5, y: 1151 / 1152 } as const;
 export const TRAVELER_SOLE = 995 / 1152;
 /** Overlap between frames inside one clip, and a slightly longer blend on a turn. */
 export const FRAME_BLEND_MS = 45;
+export const WALK_FRAME_BLEND_MS = 28;
 export const TURN_BLEND_MS = 110;
 export const IDLE_CYCLE_HZ = 0.35;
 export const GAIT_RISE = 3.4;
@@ -155,7 +157,7 @@ export type FrameBlend = {
 export function blendDuration(prev: FrameBlend, next: FrameBlend): number {
   if (prev.facing !== next.facing || prev.sheet !== next.sheet) return TURN_BLEND_MS;
   if (prev.pose !== next.pose) return TURN_BLEND_MS;
-  if (prev.frame !== next.frame) return FRAME_BLEND_MS;
+  if (prev.frame !== next.frame) return next.pose === 'walk' ? WALK_FRAME_BLEND_MS : FRAME_BLEND_MS;
   return 0;
 }
 
@@ -387,7 +389,7 @@ export function FramePictureView({picture,layer,onMount,paletteId}:{picture:Fram
       data-support-x={support?.x}
       data-support-y={support?.y}
       data-palette={cell ? 'costume-match' : 'reference'}
-      style={{ ...(support ? { transform: supportTransform(support, blend.facing === 'left', TRAVELER_FOOT) } : {}), ...(cell ? { overflow: 'hidden', ...(paletteId ? { filter: `url("#${paletteId}")` } : {}) } : {}) }}
+      style={{ ...(support ? { transform: supportTransform(support, blend.facing === 'left', TRAVELER_FOOT) } : {}), ...(cell ? { overflow: 'hidden', ...(paletteId ? { filter: `url("#${paletteId}${walkAtlasSource(shown) ? '-walk' : ''}")` } : {}) } : {}) }}
     >
       {shown ? (
         <img

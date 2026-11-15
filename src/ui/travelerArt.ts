@@ -54,7 +54,7 @@ export function loadFrame(file: string): Promise<string> {
     const action = Boolean(actionAtlasFrame(file));
     const atlas = action ? ACTION_ATLAS : WALK_ATLAS;
     // Decode the sheet once, then publish every cell together. Turning or taking
-    // the first step cannot race twelve independent requests for the same image.
+    // the first step cannot race independent requests for the same image.
     return loadGated(action ? 'traveler-action-atlas' : 'traveler-walk-atlas', 'idle', () => decodeAssetUrl(atlas.url), cache,
       { defer: true, cacheKey: action ? 'action-atlas.png' : 'stride-atlas.png' }).then(next => {
       if (!next) return '';
@@ -72,7 +72,7 @@ export function loadFrames(files: readonly string[]): Promise<string[]> {
 }
 
 if (import.meta.env.MODE === 'test') {
-  const modules = import.meta.glob<string>(['../assets/traveler/*.{png,webp}', '!../assets/traveler/settle-atlas.png'], {
+  const modules = import.meta.glob<string>(['../assets/traveler/*.{png,webp}', '!../assets/traveler/settle-atlas.png', '!../assets/traveler/stride-atlas.png'], {
     eager: true,
     import: 'default',
   });

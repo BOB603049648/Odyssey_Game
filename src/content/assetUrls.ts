@@ -25,7 +25,7 @@ const repairedGroundModules = import.meta.glob<string>('../assets/art/slots/art.
   eager: true,
   import: 'default',
 });
-const travelerModules = import.meta.glob<string>(['../assets/traveler/*.{png,webp}', '!../assets/traveler/settle-atlas.png'], {
+const travelerModules = import.meta.glob<string>(['../assets/traveler/*.{png,webp}', '!../assets/traveler/settle-atlas.png', '!../assets/traveler/stride-atlas.png'], {
   eager: true,
   import: 'default',
 });

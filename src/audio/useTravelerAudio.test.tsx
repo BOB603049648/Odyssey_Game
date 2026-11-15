@@ -17,10 +17,21 @@ it('sounds only actual contact frames, has no repeat timer, and retires on stop/
  expect(mock.play.mock.calls[0][0]).toMatch(/^step-sand/);
  act(()=>vi.advanceTimersByTime(400));view.rerender({p:actor(0),paused:false});expect(mock.play).toHaveBeenCalledTimes(1);
  view.rerender({p:actor(1),paused:false});expect(mock.play).toHaveBeenCalledTimes(1);
- act(()=>vi.advanceTimersByTime(200));view.rerender({p:actor(2),paused:false});expect(mock.play.mock.calls[1][0]).toMatch(/^step-sand/);expect(mock.play.mock.calls[2][0]).toMatch(/^cloth-/);
+ view.rerender({p:actor(2),paused:false});expect(mock.play).toHaveBeenCalledTimes(1);
+ act(()=>vi.advanceTimersByTime(200));view.rerender({p:actor(4),paused:false});expect(mock.play.mock.calls[1][0]).toMatch(/^step-sand/);expect(mock.play.mock.calls[2][0]).toMatch(/^cloth-/);
  view.rerender({p:actor(2,'idle',false),paused:false});expect(mock.dispose).toHaveBeenCalled();
  const calls=mock.play.mock.calls.length;act(()=>vi.advanceTimersByTime(2000));expect(mock.play).toHaveBeenCalledTimes(calls);
  view.rerender({p:actor(0),paused:true});expect(mock.play).toHaveBeenCalledTimes(calls);
+});
+it('emits one contact after a skipped planting frame, without a timer backlog',()=>{
+ const view=renderHook(({frame})=>useTravelerAudio(actor(frame),'dba.scene.shore',false,0),{initialProps:{frame:3}});
+ expect(mock.play).not.toHaveBeenCalled();
+ view.rerender({frame:5});expect(mock.play.mock.calls[0][0]).toMatch(/^step-sand/);
+ expect(mock.play.mock.calls[1][0]).toMatch(/^cloth-/);
+ act(()=>vi.advanceTimersByTime(300));view.rerender({frame:1});
+ expect(mock.play.mock.calls[2][0]).toMatch(/^step-sand/);
+ const count=mock.play.mock.calls.length;act(()=>vi.advanceTimersByTime(1000));view.rerender({frame:1});
+ expect(mock.play).toHaveBeenCalledTimes(count);
 });
 it('synchronizes water, swallowing and set-down with separate drink poses',()=>{
  const view=renderHook(({frame,seq})=>useTravelerAudio(actor(frame,'drink',false),'dba.scene.shore',false,seq),{initialProps:{frame:0,seq:1}});

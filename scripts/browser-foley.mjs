@@ -39,7 +39,7 @@ try{
   assert.equal((await voices(page,'word-learn')).length,0,'loading a learned save replayed a reward');
   await page.keyboard.down('d');await page.waitForTimeout(1450);await page.keyboard.up('d');await page.waitForTimeout(250);
   const steps=await voices(page,`step-${material}`);assert.ok(steps.length>=3,`${scene} has only ${steps.length} contacts`);
-  assert.ok(steps.every(v=>v.pose==='walk'&&['0','2'].includes(v.frame)),`${material}: sound outside a displayed contact frame`);
+  assert.ok(steps.every(v=>v.pose==='walk'&&['0','4'].includes(v.frame)),`${material}: sound outside a displayed contact frame`);
   assert.ok(steps.every((v,i)=>!i||v.url!==steps[i-1].url),'identical consecutive footfall');
   const n=steps.length;await page.waitForTimeout(450);assert.equal((await voices(page,`step-${material}`)).length,n,'footsteps continued at rest');
   assert.ok((await voices(page,`step-${material}`)).every(v=>!v.live),'footstep voices survived release');
