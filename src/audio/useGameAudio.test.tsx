@@ -3,11 +3,20 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { newGameState } from '../core/save';
 import { reduce } from '../core/reduce';
 import { useGameAudio } from './useGameAudio';
+import { loadSound } from './sounds';
 const mock=vi.hoisted(()=>({play:vi.fn(),stop:vi.fn(),dispose:vi.fn()}));
 vi.mock('./useSoundscape',()=>({useAudio:()=>({status:'ready',muted:false,volume:.7})}));
 vi.mock('./sounds',()=>({loadSound:vi.fn()}));
 vi.mock('./soundScope',()=>({soundScope:()=>({...mock,after:vi.fn()})}));
 afterEach(cleanup);
+it('defers island sound preloads until the player leaves the prologue',()=>{
+ vi.mocked(loadSound).mockClear();
+ const prologue=reduce(newGameState(),{type:'new-game'});
+ const view=renderHook(({save})=>useGameAudio(save,true,true),{initialProps:{save:prologue}});
+ expect(loadSound).not.toHaveBeenCalled();
+ view.rerender({save:reduce(prologue,{type:'skip-prologue'})});
+ expect(loadSound).toHaveBeenCalledWith('select');
+});
 it('plays new actions but suppresses rewards from restoring the same journey and returning from background',()=>{
  const shore=reduce(reduce(newGameState(),{type:'new-game'}),{type:'skip-prologue'});
  const mural=reduce(shore,{type:'open-mural'});

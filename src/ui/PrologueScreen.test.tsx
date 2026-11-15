@@ -4,11 +4,13 @@ import { useState } from 'react';
 import { PrologueScreen } from './PrologueScreen';
 import { usePrologueFrame } from './usePrologueFrame';
 
-const art = vi.hoisted(() => ({ cache: new Map<string, string>(), load: vi.fn<(id: string) => Promise<string | null>>() }));
-vi.mock('../content/slotAssets', () => ({
-  resolveSlotAsset: (id: string) => art.cache.get(id) ?? null,
-  loadSlotAsset: (id: string) => art.load(id),
-  forgetSlotAsset: (id: string) => art.cache.delete(id),
+const art = vi.hoisted(() => ({ cache: new Map<string, string>(), load: vi.fn<(id: string) => Promise<string | null>>(), detail: vi.fn<(id: string) => Promise<string | null>>() }));
+vi.mock('../content/prologueAssets', async importOriginal => ({
+  ...await importOriginal<typeof import('../content/prologueAssets')>(),
+  resolvePrologueImage: (id: string) => art.cache.get(id) ?? null,
+  loadProloguePreview: (id: string) => art.load(id),
+  loadPrologueDetail: (id: string) => art.detail(id),
+  forgetPrologueImage: (id: string) => art.cache.delete(id),
 }));
 vi.mock('../content/imageLoad', () => ({ loadNamedAsset: () => Promise.resolve(null) }));
 vi.mock('../audio/placeholder', () => ({ playMeow: vi.fn() }));
@@ -18,6 +20,7 @@ beforeEach(() => {
   art.cache.clear();
   for (const id of ids) art.cache.set(id, `/${id}.webp`);
   art.load.mockReset().mockImplementation(id => Promise.resolve(art.cache.get(id) ?? null));
+  art.detail.mockReset().mockResolvedValue(null);
 });
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 
@@ -29,6 +32,41 @@ function deferred() {
 function displayed() { return screen.getByTestId('prologue').dataset.displayedStep; }
 
 describe('cinematic prologue recovery', () => {
+  it('prepares remaining lightweight shots before detail and upgrades without remounting the scene', async () => {
+    const detail = deferred();
+    art.detail.mockReturnValue(detail.promise);
+    render(<PrologueScreen step={0} onAdvance={() => {}} />);
+    const shot = screen.getByTestId('still-frame');
+    const caption = document.querySelector('[data-caption]');
+    await act(async () => {});
+    expect(art.load.mock.calls.map(([id]) => id)).toEqual(ids.slice(1));
+    expect(art.detail).toHaveBeenCalledWith(ids[0]);
+    await act(async () => detail.resolve('/full-storm.webp'));
+    expect(screen.getByTestId('still-frame')).toBe(shot);
+    expect(document.querySelector('[data-caption]')).toBe(caption);
+    expect(shot.querySelector('img')?.src).toContain('/full-storm.webp');
+    expect(screen.getByTestId('prologue').dataset.playing).toBe('true');
+    expect(document.querySelector('.prologue-shot-out')).toBeNull();
+  });
+  it('ignores a late detail upgrade after navigating to another shot', async () => {
+    const detail = deferred();
+    art.detail.mockImplementation(id => id === ids[0] ? detail.promise : Promise.resolve(null));
+    const view = renderHook(({ step }) => usePrologueFrame(step), { initialProps: { step: 0 } });
+    await act(async () => {});
+    view.rerender({ step: 1 });
+    await act(async () => detail.resolve('/late-full-storm.webp'));
+    expect(view.result.current.current?.id).toBe(ids[1]);
+    expect(view.result.current.ready).toBe(true);
+  });
+  it('can display the original if the lightweight file is unavailable', async () => {
+    art.cache.delete(ids[0]);
+    art.load.mockResolvedValue(null);
+    art.detail.mockImplementation(id => Promise.resolve(id === ids[0] ? '/full-storm.webp' : null));
+    render(<PrologueScreen step={0} onAdvance={() => {}} />);
+    await act(async () => {});
+    expect(displayed()).toBe('0');
+    expect(screen.queryByRole('status')).toBeNull();
+  });
   it('retains the shot on rotation and ignores a late portrait after rotating back', async () => {
     const portrait = deferred();
     art.load.mockImplementation(id => id.endsWith('.portrait') ? portrait.promise : Promise.resolve(art.cache.get(id) ?? null));

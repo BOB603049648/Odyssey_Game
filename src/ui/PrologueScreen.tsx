@@ -5,6 +5,7 @@ import { PrologueMotion } from './PrologueMotion';
 import { PROLOGUE_DURATIONS, useCinematicClock, usePagePresentation } from './useCinematicClock';
 import { firstScreenAssetIds } from '../content/firstScreen';
 import { loadNamedAsset } from '../content/imageLoad';
+import { initialProloguePortrait } from '../content/prologueAssets';
 import { t, type MessageKey } from './i18n';
 import { PROLOGUE_ART, usePrologueFrame } from './usePrologueFrame';
 import './prologue.css';
@@ -20,7 +21,7 @@ export function PrologueScreen({ step, onAdvance, onBack, onSkip }: {
   const stage = useRef<HTMLDivElement>(null);
   // Choose the composition that occupies more of the actual picture area.
   // Both are complete paintings; rotation never crops the rescue or the scroll.
-  const [portrait, setPortrait] = useState(() => window.innerWidth / Math.max(1, window.innerHeight - 316) < 1.09);
+  const [portrait, setPortrait] = useState(initialProloguePortrait);
   useEffect(() => {
     if (!stage.current || typeof ResizeObserver === 'undefined') return;
     const observer = new ResizeObserver(([entry]) => {
@@ -50,11 +51,11 @@ export function PrologueScreen({ step, onAdvance, onBack, onSkip }: {
     if (automatic && playing && clock.time.current >= PROLOGUE_DURATIONS[shown]) advance();
   });
   useEffect(() => {
-    if (requested !== 3) return;
+    if (requested !== 3 || !frame.ready) return;
     for (const id of firstScreenAssetIds('dba.scene.shore', 'land-companion', true)) {
       void loadNamedAsset(id).catch(() => null);
     }
-  }, [requested]);
+  }, [requested, frame.ready]);
   useEffect(() => {
     function keydown(event: KeyboardEvent) {
       if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
@@ -97,13 +98,13 @@ export function PrologueScreen({ step, onAdvance, onBack, onSkip }: {
         {frame.current && <div className="prologue-ambience" aria-hidden="true"
           style={{ backgroundImage: `url("${frame.current.src}")` }} />}
         {frame.previous && <div className="prologue-shot prologue-shot-out" key={`old-${frame.previous.id}`} aria-hidden="true">
-          <img src={frame.previous.src} alt="" draggable={false} onError={() => frame.imageFailed(frame.previous!.id)} />
+          <img src={frame.previous.src} alt="" draggable={false} onError={() => frame.imageFailed(frame.previous!.id, frame.previous!.src)} />
         </div>}
         {frame.current && <div className="prologue-shot prologue-shot-in" key={frame.current.id}
           data-testid="still-frame" data-art-id={PROLOGUE_ART[frame.current.step]} data-composition={frame.current.id.endsWith('.portrait') ? 'portrait' : 'landscape'}>
           <PrologueMotion src={frame.current.src} step={shown} portrait={frame.current.id.endsWith('.portrait')}
             active={playing} reduced={reduced} time={clock.time} alt={t(ALTS[shown])}
-            onError={() => frame.imageFailed(frame.current!.id)} />
+            onError={() => frame.imageFailed(frame.current!.id, frame.current!.src)} />
         </div>}
         <span className="prologue-atmosphere" aria-hidden="true" />
         {!frame.ready && <div className="prologue-load" role="status">

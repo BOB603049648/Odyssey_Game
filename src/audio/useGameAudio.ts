@@ -10,7 +10,7 @@ export function useGameAudio(save: SaveData, active: boolean, visible: boolean, 
   const previous = useRef(save);
   const epoch = useRef(generation);
   const owner = useRef<ReturnType<typeof soundScope> | null>(null);
-  const enabled = active && visible && audio.status === 'ready' && !audio.muted && audio.volume > 0;
+  const enabled = active && save.screen !== 'prologue' && visible && audio.status === 'ready' && !audio.muted && audio.volume > 0;
   useEffect(() => {
     if (!enabled) return;
     const scope = soundScope(); owner.current = scope;

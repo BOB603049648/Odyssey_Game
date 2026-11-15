@@ -49,6 +49,9 @@ export function usePrologueSound(step: number, take: number, running: boolean, t
     const cue: SoundId | null = step === 1 ? 'cat-call' : step === 2 ? 'glyph-break' : null;
     const key = `${step}:${take}`;
     if (!cue || !running || audio.status !== 'ready' || audio.muted || audio.volume === 0 || consumed.current === key) return;
+    // Prepare only this reveal's cue; island interaction sounds wait until
+    // landing. Starting at reveal time would spend its short window fetching.
+    void loadSound(cue);
     let live = true;
     let voice: SoundVoice | null = null;
     // The cue belongs to the reveal, not to a late network response or unmute.

@@ -31,6 +31,8 @@ The other five exploration environments and character animation assets are separ
 
 Four full 1672×941 paintings share the shore's art direction. The tide-line shot uses the actual painted shore as its landscape reference; the companion has housecat proportions. The four canonical `art.pro.*` IDs are mapped to these files in `assetUrls.ts`; existing saves and memory scenes keep their IDs. The dedicated prologue renderer uses `object-fit: contain`, including on phones, and commits each cut only after decoding.
 
+Since v0.1.7, `../prologue-light/*-preview.webp` supplies lightweight complete compositions for first display. `python scripts/build-prologue-previews.py` reproduces all eight derivatives from these existing WebPs with Pillow: longest edge 768 px, Lanczos resampling, WebP quality 72 / method 6, no crop or artwork changes. Each is 33–66 KB; the original paintings here remain the full-resolution detail tier. Upcoming previews are prepared before the current painting upgrades, without restarting its animation, caption or sound. The loading policy and measurements are documented in `docs/design/v0.1.7-prologue-loading.md`.
+
 | File | Generation source |
 | --- | --- |
 | prologue-storm.webp | exec-5f3a6673-a3a5-474a-81f5-4f932998a86a.png |

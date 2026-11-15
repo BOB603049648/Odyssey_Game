@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { initialProloguePortrait, loadProloguePreview, prologueArtId } from '../content/prologueAssets';
 import { useGame } from '../stores/gameStore';
 import { RELEASE_VERSION, RELEASE_SCOPE } from '../release';
 import { GameDialog } from './GameDialog';
@@ -24,6 +25,12 @@ export function TitleScreen({
   const [confirmNew, setConfirmNew] = useState(false);
   const [manageSave, setManageSave] = useState(false);
   const save = useGame(state => state.save);
+  useEffect(() => {
+    if (save.screen === 'title' || save.screen === 'prologue') {
+      const step = save.screen === 'prologue' ? save.prologueStep : 0;
+      void loadProloguePreview(prologueArtId(step, initialProloguePortrait()), 'low');
+    }
+  }, [save.screen, save.prologueStep]);
   return (
     <section className="title-screen">
       <PlateStack plate="keyart" previous={null} />

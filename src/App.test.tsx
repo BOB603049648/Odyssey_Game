@@ -13,15 +13,19 @@ import { useGame } from './stores/gameStore';
 import { MuralScreen } from './ui/MuralScreen';
 import { PrologueScreen } from './ui/PrologueScreen';
 import { puzzleState } from './core/puzzles';
+import { PROLOGUE_ART, loadProloguePreview } from './content/prologueAssets';
 
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
 });
 
-beforeEach(() => {
+beforeEach(async () => {
   localStorage.clear();
   useGame.getState().resetForTests();
+  // These tests exercise story actions with decoded art, as the scene asset
+  // fixtures do. Slow/missing prologue files have dedicated hook/browser tests.
+  await Promise.all(PROLOGUE_ART.flatMap(id => [id, `${id}.portrait`]).map(id => loadProloguePreview(id)));
 });
 
 async function ready() {
