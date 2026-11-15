@@ -1,6 +1,7 @@
 import { ACTION_FILES, actionAtlasSource } from '../content/travelerActionAtlas';
 import { supportForSource, supportTransform, type TravelerSupport } from './travelerSupport';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { TravelerPalette } from './TravelerPalette';
 import type { IslandScene } from '../core/island';
 import { WALK_SPEED, groundDistance, WORLD_ASPECT } from '../core/walk';
 import { depthScale, worldToScreen } from '../core/world';
@@ -373,7 +374,7 @@ function useFramePresentation(blend:FrameBlend|null,contactCleanup:boolean):Fram
 }
 
 /** Pure bitmap/metadata view; async work belongs entirely to the persistent slot. */
-export function FramePictureView({picture,layer,onMount}:{picture:FramePresentation;layer:'out'|'current';onMount?:(node:HTMLSpanElement|null)=>void}) {
+export function FramePictureView({picture,layer,onMount,paletteId}:{picture:FramePresentation;layer:'out'|'current';onMount?:(node:HTMLSpanElement|null)=>void;paletteId?:string}) {
   const {blend,shown,support,onError}=picture;
   const cell = atlasSource(shown);
   const bitmap = cell ? shown.slice(0, shown.indexOf('#')) : shown;
@@ -385,7 +386,8 @@ export function FramePictureView({picture,layer,onMount}:{picture:FramePresentat
       data-support-frame={support?.file}
       data-support-x={support?.x}
       data-support-y={support?.y}
-      style={{ ...(support ? { transform: supportTransform(support, blend.facing === 'left', TRAVELER_FOOT) } : {}), ...(cell ? { overflow: 'hidden' } : {}) }}
+      data-palette={cell ? 'costume-match' : 'reference'}
+      style={{ ...(support ? { transform: supportTransform(support, blend.facing === 'left', TRAVELER_FOOT) } : {}), ...(cell ? { overflow: 'hidden', ...(paletteId ? { filter: `url("#${paletteId}")` } : {}) } : {}) }}
     >
       {shown ? (
         <img
@@ -496,6 +498,7 @@ export function useTravelerPresentation({
 export type TravelerPresentation=ReturnType<typeof useTravelerPresentation>;
 
 export function TravelerView({presentation}:{presentation:TravelerPresentation}) {
+  const paletteId = `traveler-palette-${useId().replaceAll(':', '')}`;
   const {x,y,facing,moving,paused,depthZ,presentationFrozen,contactCleanup,height,sheet,motion,frame,frameCount,blendMs,poseNow,supported,planted,current,outgoing,fadeToken,onOutgoingMount}=presentation;
   return (
     <div
@@ -530,6 +533,7 @@ export function TravelerView({presentation}:{presentation:TravelerPresentation})
       }}
       aria-hidden="true"
     >
+      <TravelerPalette id={paletteId} />
       <span
         className="contact-shadow"
         data-testid="contact-shadow"
@@ -541,8 +545,8 @@ export function TravelerView({presentation}:{presentation:TravelerPresentation})
       />
       <div className="traveler-bob" style={presentationFrozen || supported ? { ...(presentationFrozen ? { animation: 'none' } : {}), ...(supported ? { transformOrigin: `50% ${TRAVELER_FOOT.y * 100}%` } : {}) } : undefined}>
         <span className="traveler-frames" style={{ ['--frame-blend' as string]: `${blendMs}ms` }}>
-          {outgoing ? <FramePictureView key={fadeToken} picture={outgoing} layer="out" onMount={onOutgoingMount} /> : null}
-          <FramePictureView picture={current} layer="current" />
+          {outgoing ? <FramePictureView key={fadeToken} picture={outgoing} layer="out" onMount={onOutgoingMount} paletteId={paletteId} /> : null}
+          <FramePictureView picture={current} layer="current" paletteId={paletteId} />
         </span>
       </div>
     </div>

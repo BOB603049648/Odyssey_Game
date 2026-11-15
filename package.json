@@ -1,7 +1,7 @@
 {
   "name": "odyssey-game",
   "private": true,
-  "version": "0.1.7",
+  "version": "0.1.8",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -25,7 +25,8 @@
     "test:wayfinding": "node scripts/browser-wayfinding.mjs",
     "test:learning": "node scripts/browser-learning.mjs",
     "test:bridge": "node scripts/browser-bridge.mjs",
-    "test:prologue-loading": "node scripts/browser-prologue-loading.mjs"
+    "test:prologue-loading": "node scripts/browser-prologue-loading.mjs",
+    "test:palette": "node scripts/browser-traveler-palette.mjs"
   },
   "dependencies": {
     "@capacitor/core": "^7.4.3",

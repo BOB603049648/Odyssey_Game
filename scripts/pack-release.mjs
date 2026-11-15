@@ -20,6 +20,7 @@ await cp(resolve(root,'docs/design/v0.1.4-wayfinding.md'),resolve(stage,'WAYFIND
 await cp(resolve(root,'docs/design/v0.1.5-exploration-learning.md'),resolve(stage,'LEARNING-JOURNEY.md'));
 await cp(resolve(root,'docs/design/v0.1.6-bridge-reasoning.md'),resolve(stage,'BRIDGE-REASONING.md'));
 await cp(resolve(root,'docs/design/v0.1.7-prologue-loading.md'),resolve(stage,'PROLOGUE-LOADING.md'));
+await cp(resolve(root,'docs/design/v0.1.8-traveler-palette.md'),resolve(stage,'TRAVELER-PALETTE.md'));
 await cp(resolve(root,'src/assets/audio/README.md'),resolve(stage,'AUDIO-CREDITS.md'));
 await cp(resolve(root,'src/assets/art/painted/README.md'),resolve(stage,'ART-CREDITS.md'));
 await cp(resolve(root,'src/assets/traveler/actions-README.md'),resolve(stage,'ACTION-ART.md'));
