@@ -1,6 +1,9 @@
 import { LEXEMES } from '../content/catalog';
 import type { SaveData } from './schema';
 import { isLearnedState, reviewForMastery } from './words';
+import { meaningChoices } from './conceptChoices';
+import { applyPuzzleAction } from './puzzles';
+import { completeBridgeReturn, inspectBridgeApproach } from './bridge';
 
 export const ISLAND_SCENES = [
   'dba.scene.shore',
@@ -15,8 +18,6 @@ export type IslandScene = (typeof ISLAND_SCENES)[number];
 
 const SLEEP = 'dba.word.sleep';
 const FIRE = 'dba.word.fire';
-const SHARE = 'dba.word.share';
-const GIVE = 'dba.word.give';
 const DANGER = 'dba.word.danger';
 const HUNGER = 'dba.word.hunger';
 const PROMISE = 'dba.word.promise';
@@ -30,14 +31,15 @@ export function gotoScene(state: SaveData, scene: string): SaveData {
   if (!isIslandScene(scene)) return state;
   if (state.screen === 'title' || state.screen === 'prologue') return state;
   const changed = state.currentScene !== scene;
+  const next = completeBridgeReturn(state, scene);
   return {
-    ...state,
+    ...next,
     screen: 'island',
     currentScene: scene,
     overlay: 'none',
     selectedCellId: null,
     muralMode: 'learn',
-    feedback: changed ? { seq: state.feedback.seq, kind: 'none' } : state.feedback,
+    feedback: changed && next === state ? { seq: state.feedback.seq, kind: 'none' } : next.feedback,
   };
 }
 
@@ -67,22 +69,19 @@ export function sleepAtCamp(state: SaveData): SaveData {
 }
 
 export function giveSharedFish(state: SaveData): SaveData {
-  if (state.currentScene !== 'dba.scene.yard') return deny(state);
-  if (!learned(state, SHARE) || !learned(state, GIVE)) return deny(state, 'spot.give.no', 'yard-give');
-  return {
-    ...state,
-    beats: { ...state.beats, 'dba.beat.food': true },
-    feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: 'spot.give.ok', spot: 'yard-give' },
-  };
+  return applyPuzzleAction(state, { type: 'puzzle-act', puzzle: 'food', move: 'offer' });
 }
 
 export function forestChoice(state: SaveData, choice: 'step' | 'stop'): SaveData {
-  if (state.currentScene !== 'dba.scene.path') return deny(state);
-  if (!learned(state, DANGER) || choice === 'step') return deny(state);
+  return inspectBridgeApproach(state, choice === 'step');
+}
+
+export function inspectEmbers(state: SaveData): SaveData {
+  if (state.currentScene !== 'dba.scene.night') return deny(state);
   return {
     ...state,
-    beats: { ...state.beats, 'dba.beat.danger': true },
-    feedback: { seq: state.feedback.seq + 1, kind: 'ok' },
+    flags: { ...state.flags, 'dba.flag.embers-seen': true },
+    feedback: { seq: state.feedback.seq + 1, kind: 'ok', line: 'spot.ember.ok', spot: 'night-ember' },
   };
 }
 
@@ -126,7 +125,7 @@ export function sceneAct(state: SaveData, wordId: string, part?: 'a' | 'b' | 'mo
   const spec = SCENE_ACTS[wordId] ?? (wordId === 'dba.word.amount'
     ? { scene: 'dba.scene.yard' as const, beat: 'dba.beat.amount' }
     : undefined);
-  const spot = `act:${wordId}`;
+  const spot = wordId === 'dba.word.amount' ? `act:${wordId}:more` : `act:${wordId}`;
   if (!spec || state.currentScene !== spec.scene) return deny(state);
   if (!learned(state, wordId)) return deny(state, 'spot.act.no', spot);
   const line = spec.scene === 'dba.scene.camp' ? 'spot.act.ok' : undefined;
@@ -176,18 +175,27 @@ export function shoreStone(state: SaveData): SaveData {
   };
 }
 
+/** Survival and application are the main route. Evidence remains optional.
+ * Preserve completion of older saves that finished before these checks existed.
+ */
+export const SURVIVAL_BEATS = ['water', 'food', 'sleep', 'danger'] as const;
+export function departureBlocker(state: SaveData): typeof SURVIVAL_BEATS[number] | 'words' | null {
+  if (state.beats['dba.beat.depart'] === true) return null;
+  for (const beat of SURVIVAL_BEATS) {
+    if (state.beats[`dba.beat.${beat}`] !== true) return beat;
+  }
+  if (!learned(state, HUNGER) || !learned(state, PROMISE) || !learned(state, DANGER)) return 'words';
+  return null;
+}
+
 export function canDepart(state: SaveData): boolean {
-  return (
-    state.beats['dba.beat.water'] === true &&
-    learned(state, HUNGER) &&
-    learned(state, PROMISE) &&
-    learned(state, DANGER)
-  );
+  return departureBlocker(state) === null;
 }
 
 export function departEast(state: SaveData): SaveData {
   if (state.currentScene !== 'dba.scene.shore') return deny(state);
-  if (!canDepart(state)) return deny(state, 'spot.depart.no', 'shore-depart');
+  const missing = departureBlocker(state);
+  if (missing) return deny(state, `spot.depart.${missing}`, 'shore-depart');
   const chart = state.chart.includes('chart.jgw') ? state.chart : [...state.chart, 'chart.jgw'];
   const memories = state.memories.includes('dba.mem.rain-night')
     ? state.memories
@@ -222,7 +230,8 @@ export function advanceCutscene(state: SaveData): SaveData {
   }
   if (state.overlay !== 'memory') return state;
   if (state.cutsceneStep >= MEMORY_FRAMES - 1) {
-    return { ...state, overlay: 'none', cutsceneStep: 0 };
+    return { ...state, overlay: 'none', cutsceneStep: 0, flags: { ...state.flags,
+      ...(state.beats['dba.beat.depart'] ? { 'v01.completed': true } : {}) } };
   }
   return { ...state, cutsceneStep: state.cutsceneStep + 1 };
 }
@@ -232,10 +241,23 @@ export function reviewTarget(state: SaveData): string | null {
   return next?.id ?? null;
 }
 
+export function reviewChoices(state: SaveData): string[] {
+  const target = reviewTarget(state);
+  if (!target) return [];
+  const known = LEXEMES.filter(lexeme => learned(state, lexeme.id));
+  if (known.length < 2) return [];
+  const layer = LEXEMES.find(lexeme => lexeme.id === target)?.layer;
+  const available = known.sort((a, b) => Number(b.layer === layer) - Number(a.layer === layer));
+  return meaningChoices(target, available.map(lexeme => lexeme.id), 4);
+}
+
 export function reviewTap(state: SaveData, wordId: string): SaveData {
   const target = reviewTarget(state);
   const word = target ? state.words[target] : undefined;
-  if (!target || !word || wordId !== target) return deny(state);
+  if (!target || !word) return deny(state);
+  if (wordId !== target) return deny({ ...state, words: {
+    ...state.words, [target]: reviewForMastery(word, { correct: false, pawUsed: state.companion.pawUsed }),
+  } });
   return {
     ...state,
     words: {

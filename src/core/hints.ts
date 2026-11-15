@@ -1,8 +1,10 @@
 import { HINT_PLANS, LEXEMES } from '../content/catalog';
 import { isLayerUnlocked, requirementsMet } from './conditions';
-import { canDepart } from './island';
+import { canDepart, reviewTarget } from './island';
 import type { HintLevel, HintPlanContent, SaveData } from './schema';
 import { isLearnedState } from './words';
+import { puzzleState } from './puzzles';
+import { bridgeState } from './bridge';
 
 export type HintAnchor =
   | 'mural-entrance'
@@ -15,7 +17,14 @@ export type HintAnchor =
   | 'give'
   | 'path-stop'
   | 'old-layer'
-  | 'depart';
+  | 'depart'
+  | 'water-take'
+  | 'water-spring'
+  | 'water-drink'
+  | 'food-inspect'
+  | 'food-take'
+  | 'food-self'
+  | 'food-companion';
 
 export type CompanionPose =
   | 'idle'
@@ -46,15 +55,16 @@ export const HOTSPOT_IDS = [
 ] as const;
 
 export function hintSituation(state: SaveData): HintPlanContent['when'] | null {
+  const puzzles = puzzleState(state);
   if (state.overlay === 'use-word') return 'use-word';
   if (state.screen === 'mural') return 'mural';
   if (state.currentScene === 'dba.scene.camp' && learned(state, 'dba.word.sleep') && learned(state, 'dba.word.fire') && state.beats['dba.beat.sleep'] !== true) {
     return 'camp-sleep';
   }
-  if (state.currentScene === 'dba.scene.yard' && learned(state, 'dba.word.share') && learned(state, 'dba.word.give') && state.beats['dba.beat.food'] !== true) {
+  if (state.currentScene === 'dba.scene.yard' && puzzles.food.stage !== 'done') {
     return 'yard-give';
   }
-  if (state.currentScene === 'dba.scene.path' && learned(state, 'dba.word.danger') && state.beats['dba.beat.danger'] !== true) {
+  if (state.currentScene === 'dba.scene.path' && learned(state, 'dba.word.danger') && state.beats['dba.beat.danger'] !== true && bridgeState(state).stage !== 'agreed') {
     return 'path-stop';
   }
   if (
@@ -67,10 +77,10 @@ export function hintSituation(state: SaveData): HintPlanContent['when'] | null {
     return 'night-read';
   }
   if (state.currentScene === 'dba.scene.shore') {
-    if (state.flags['dba.flag.driftwood'] !== true && state.beats['dba.beat.depart'] !== true) return 'shore-driftwood';
-    if (isLearnedState(state.words[WATER]?.state) && state.beats[WATER_BEAT] !== true) return 'shore-water-ready';
+    if (state.flags['dba.flag.driftwood'] !== true && puzzles.water === 'empty' && state.beats['dba.beat.depart'] !== true) return 'shore-driftwood';
+    if (puzzles.water !== 'done' && (puzzles.water !== 'carried' || isLearnedState(state.words[WATER]?.state))) return 'shore-water-ready';
     if (canDepart(state) && state.beats['dba.beat.depart'] !== true) return 'shore-depart';
-    if (!isLearnedState(state.words[WATER]?.state)) return 'shore-unlearned-water';
+    if (puzzles.water !== 'done' && !isLearnedState(state.words[WATER]?.state)) return 'shore-unlearned-water';
   }
   return null;
 }
@@ -78,7 +88,22 @@ export function hintSituation(state: SaveData): HintPlanContent['when'] | null {
 export function activeHintPlan(state: SaveData): HintPlanContent | null {
   const when = hintSituation(state);
   if (!when) return null;
-  return HINT_PLANS.find((plan) => plan.when === when) ?? null;
+  const plan = HINT_PLANS.find((plan) => plan.when === when) ?? null;
+  if (!plan) return null;
+  const puzzles = puzzleState(state);
+  if (when === 'shore-water-ready') {
+    const anchor = puzzles.water === 'empty' ? 'water-take' : puzzles.water === 'filled' ? 'water-drink' : 'water-spring';
+    return { ...plan, anchor, target: puzzles.water === 'carried' ? 'water-spring' : 'island-gourd' };
+  }
+  if (when === 'yard-give') {
+    const food = puzzles.food;
+    const anchor = food.stage === 'unseen' ? 'food-inspect' : food.stage === 'inspected' ? 'food-take'
+      : food.self > 2 ? 'food-companion' : food.self < 2 ? 'food-self' : 'yard-give';
+    const target = anchor === 'food-inspect' || anchor === 'food-take' ? 'yard-grab'
+      : anchor === 'food-companion' ? 'act:dba.word.amount:less' : anchor === 'food-self' ? 'act:dba.word.amount:more' : 'yard-give';
+    return { ...plan, anchor: anchor === 'yard-give' ? 'give' : anchor, target };
+  }
+  return plan;
 }
 
 export function hintCap(state: SaveData): HintLevel {
@@ -91,6 +116,7 @@ export function hintCap(state: SaveData): HintLevel {
 
 export function hintTarget(state: SaveData): string | null {
   if (state.overlay === 'use-word') return WATER;
+  if (state.screen === 'mural' && state.muralMode === 'review') return reviewTarget(state);
   if (state.screen === 'mural' && state.selectedCellId) {
     const selected = state.words[state.selectedCellId];
     if (selected && !isLearnedState(selected.state)) return state.selectedCellId;
@@ -105,9 +131,6 @@ export function hintTarget(state: SaveData): string | null {
     );
     return next?.id ?? null;
   }
-  const ready =
-    isLearnedState(state.words[WATER]?.state) && state.beats[WATER_BEAT] !== true && state.currentScene === 'dba.scene.shore';
-  if (ready) return WATER;
   const plan = activeHintPlan(state);
   if (plan?.target.startsWith('dba.word.')) return plan.target;
   return plan?.target ?? null;

@@ -8,14 +8,22 @@ import { clippedBootUrl } from './soleClip';
 const processUrl:(src:string,file?:string)=>Promise<string>=punchHemUrl;
 let serial=0,caseId=0;
 let failImage=false,failBlob='',failCanvas=false;
+let blobDecode:'ready'|'hold'|'fail'='ready';
+let pendingDecodes:Array<{url:string;resolve:()=>void}>=[];
+let revoked:string[]=[];
 let bitmaps:Map<string,Uint8ClampedArray>;
 let canvases:WeakMap<HTMLCanvasElement,Uint8ClampedArray>;
 const frames=JSON.parse(readFileSync('src/ui/__fixtures__/traveler-contact/manifest.json','utf8')) as Array<{logical:string}>;
 function source(file='idle-front-01.png'){const crop=gunzipSync(readFileSync('src/ui/__fixtures__/traveler-contact/'+file.replace('.png','.rgba.gz')));const data=new Uint8ClampedArray(864*1152*4);data.set(crop,900*864*4);return data;}
 beforeEach(()=>{
- caseId++;failImage=false;failBlob='';failCanvas=false;bitmaps=new Map();canvases=new WeakMap();const blobs=new WeakMap<Blob,Uint8ClampedArray>();const NativeURL=URL;
- vi.stubGlobal('URL',class extends NativeURL{static createObjectURL(blob:Blob){const key=`blob:unit-${caseId}-${serial++}`;bitmaps.set(key,blobs.get(blob)!.slice());return key;}});
- vi.stubGlobal('Image',class{naturalWidth=864;naturalHeight=1152;onload:(()=>void)|null=null;onerror:(()=>void)|null=null;private value='';get src(){return this.value;}get currentSrc(){return this.value;}set src(s:string){this.value=s;queueMicrotask(()=>failImage?this.onerror?.():this.onload?.());}});
+ caseId++;failImage=false;failBlob='';failCanvas=false;blobDecode='ready';pendingDecodes=[];revoked=[];bitmaps=new Map();canvases=new WeakMap();const blobs=new WeakMap<Blob,Uint8ClampedArray>();const NativeURL=URL;
+ vi.stubGlobal('URL',class extends NativeURL{
+  static createObjectURL(blob:Blob){const key=`blob:unit-${caseId}-${serial++}`;bitmaps.set(key,blobs.get(blob)!.slice());return key;}
+  static revokeObjectURL(url:string){revoked.push(url);bitmaps.delete(url);}
+ });
+ vi.stubGlobal('Image',class{naturalWidth=864;naturalHeight=1152;onload:(()=>void)|null=null;onerror:(()=>void)|null=null;private value='';get src(){return this.value;}get currentSrc(){return this.value;}set src(s:string){this.value=s;queueMicrotask(()=>failImage?this.onerror?.():this.onload?.());}
+  decode(){if(blobDecode==='fail')return Promise.reject(new Error('processed bitmap decode failed'));if(blobDecode==='hold')return new Promise<void>(resolve=>pendingDecodes.push({url:this.value,resolve}));return Promise.resolve();}
+ });
  vi.spyOn(HTMLCanvasElement.prototype,'getContext').mockImplementation(function(this:HTMLCanvasElement){const canvas=this;return{
   drawImage(img:HTMLImageElement){canvases.set(canvas,bitmaps.get(img.currentSrc||img.src)!.slice());},
   getImageData(){if(failCanvas)throw new Error('canvas unavailable');return{data:canvases.get(canvas)!,width:864,height:1152};},
@@ -27,6 +35,34 @@ beforeEach(()=>{
 afterEach(()=>{vi.restoreAllMocks();vi.unstubAllGlobals();});
 
 describe('production punch→actual-bitmap sole transport with real source pixels',()=>{
+ it('publishes a processed URL and its contact identity only after the new bitmap decodes',async()=>{
+  const src=`https://unit-assets.invalid/${caseId}/pending.webp`;bitmaps.set(src,source());blobDecode='hold';
+  let published:string|undefined;
+  const pending=processUrl(src,'idle-front-01.png').then(url=>{published=url;return url;});
+  await vi.waitFor(()=>expect(pendingDecodes).toHaveLength(1));
+  const decoded=pendingDecodes[0];
+  expect(published).toBeUndefined();expect(travelerContactFile(decoded.url)).toBeUndefined();
+  expect(revoked).toHaveLength(0);
+  decoded.resolve();
+  await expect(pending).resolves.toBe(decoded.url);
+  expect(travelerContactFile(decoded.url)).toBe('idle-front-01.png');
+  expect(await processUrl(src,'idle-front-01.png')).toBe(decoded.url);
+ });
+ it('revokes an undecodable replacement without publishing it and retries the contact frame',async()=>{
+  vi.useFakeTimers();try{
+   const src=`https://unit-assets.invalid/${caseId}/decode-recovery.webp`;bitmaps.set(src,source());blobDecode='fail';
+   await expect(processUrl(src,'idle-front-01.png')).rejects.toThrow();
+   expect(revoked).toHaveLength(1);expect(travelerContactFile(revoked[0])).toBeUndefined();expect(bitmaps.has(revoked[0])).toBe(false);
+   blobDecode='ready';await vi.advanceTimersByTimeAsync(5000);
+   const ready=await processUrl(src,'idle-front-01.png');
+   expect(ready).not.toBe(src);expect(ready).not.toBe(revoked[0]);expect(travelerContactFile(ready)).toBe('idle-front-01.png');
+  }finally{vi.useRealTimers();}
+ });
+ it('keeps the original decoded frame when a legacy processed bitmap cannot decode',async()=>{
+  const src=`https://unit-assets.invalid/${caseId}/legacy-decode.webp`;bitmaps.set(src,source());blobDecode='fail';
+  await expect(processUrl(src)).resolves.toBe(src);
+  expect(revoked).toHaveLength(1);expect(travelerContactFile(revoked[0])).toBeUndefined();
+ });
  it('does not alias cleaned and legacy cached promises, and retains both cache identities',async()=>{
   const src=`https://unit-assets.invalid/${caseId}/idle.webp`;bitmaps.set(src,source());
   const legacy=await processUrl(src),clean=await processUrl(src,'idle-front-01.png');

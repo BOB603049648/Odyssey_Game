@@ -19,14 +19,22 @@ import {
   shoreStone,
   sitDriftwood,
   sleepAtCamp,
+  inspectEmbers,
 } from './island';
 import { newGameState } from './save';
 import type { EndingContent, HintLevel, MuralLayer, SaveData, WordProgress } from './schema';
 import { isLearnedState, transitionWord } from './words';
+import { applyPuzzleAction, useGourd, useWaterWord, type PuzzleAction } from './puzzles';
+import { applyBridgeAction, type BridgeAction } from './bridge';
 
 export type Action =
+  | PuzzleAction
+  | BridgeAction
   | { type: 'new-game' }
+  | { type: 'dismiss-completion' }
   | { type: 'advance-prologue' }
+  | { type: 'previous-prologue' }
+  | { type: 'skip-prologue' }
   | { type: 'open-mural' }
   | { type: 'close-screen' }
   | { type: 'select-layer'; layer: MuralLayer }
@@ -60,18 +68,41 @@ export type Action =
   | { type: 'scene-act'; wordId: string; part?: 'a' | 'b' | 'more' | 'less' }
   | { type: 'grab-fish' }
   | { type: 'shore-stone' }
+  | { type: 'inspect-embers' }
   | { type: 'spot-far'; id: string };
 
-const WATER = 'dba.word.water';
-
 export function reduce(state: SaveData, action: Action): SaveData {
+  const next = applyAction(state, action);
+  if (action.type === 'request-hint') return next;
+  const contextChanged = next.screen !== state.screen || next.currentScene !== state.currentScene ||
+    next.activeLayer !== state.activeLayer || next.muralMode !== state.muralMode || next.overlay !== state.overlay;
+  const targetChanged = next.companion.level > 0 && next.companion.targetId !== hintTarget(next);
+  return contextChanged || targetChanged
+    ? { ...next, companion: { level: 0, targetId: null, pawUsed: false } }
+    : next;
+}
+
+function applyAction(state: SaveData, action: Action): SaveData {
   switch (action.type) {
+    case 'dismiss-completion':
+      return touch({ ...state, flags: { ...state.flags, 'v01.completion-seen': true } });
     case 'new-game':
       return beginPrologue(state.settings.showGloss);
     case 'set-show-gloss':
       return touch({ ...state, settings: { showGloss: action.value } });
     case 'advance-prologue':
       return advancePrologue(state);
+    case 'previous-prologue':
+      if (state.screen !== 'prologue' || state.prologueStep <= 0) return state;
+      return touch({ ...state, prologueStep: state.prologueStep - 1,
+        currentScene: ['pro.scene.storm', 'pro.scene.dark', 'pro.scene.break'][state.prologueStep - 1] });
+    case 'skip-prologue': {
+      // Follow the same story transitions, including the first evidence. Rewatching
+      // never removes evidence; advancePrologue adds it at most once.
+      let next = state;
+      for (let i = 0; i < 4 && next.screen === 'prologue'; i += 1) next = advancePrologue(next);
+      return next;
+    }
     case 'open-mural':
       return openMural(state);
     case 'close-screen':
@@ -89,9 +120,13 @@ export function reduce(state: SaveData, action: Action): SaveData {
     case 'request-hint':
       return requestHint(state);
     case 'poke-gourd':
-      return pokeGourd(state);
+      return touch(useGourd(state));
     case 'use-word':
-      return useWord(state, action.wordId);
+      return touch(useWaterWord(state, action.wordId));
+    case 'puzzle-act':
+      return touch(applyPuzzleAction(state, action));
+    case 'bridge-act':
+      return touch(applyBridgeAction(state, action));
     case 'goto-scene':
       return touch(gotoScene(state, action.scene));
     case 'sit-driftwood':
@@ -138,6 +173,8 @@ export function reduce(state: SaveData, action: Action): SaveData {
       return touch(grabFish(state));
     case 'shore-stone':
       return touch(shoreStone(state));
+    case 'inspect-embers':
+      return touch(inspectEmbers(state));
     case 'spot-far':
       return touch(farSpot(state, action.id));
     default:
@@ -208,6 +245,7 @@ function openMural(state: SaveData): SaveData {
         activeLayer,
         muralMode: 'learn',
         selectedCellId: null,
+        feedback: { seq: state.feedback.seq, kind: 'none' },
       },
       activeLayer,
     ),
@@ -297,43 +335,16 @@ function matchObject(state: SaveData, wordId: string): SaveData {
 }
 
 function requestHint(state: SaveData): SaveData {
-  const cap = hintCap(state);
-  if (state.companion.level >= cap) return state;
-  const level = (state.companion.level + 1) as HintLevel;
   const targetId = hintTarget(state);
+  if (!targetId) return state;
+  const cap = hintCap(state);
+  const current = state.companion.targetId === targetId ? state.companion.level : 0;
+  if (current >= cap) return state;
+  const level = (current + 1) as HintLevel;
   return touch({
     ...state,
     companion: { level, targetId, pawUsed: level === 3 },
     hintStats: bumpHint(state, level, targetId),
-  });
-}
-
-function pokeGourd(state: SaveData): SaveData {
-  if (isLearnedState(state.words[WATER]?.state) && state.beats['dba.beat.water'] !== true) {
-    return touch({ ...state, overlay: 'use-word', screen: 'island', currentScene: 'dba.scene.shore' });
-  }
-  return mark(state, { feedback: { seq: state.feedback.seq + 1, kind: 'no', line: 'spot.gourd.no', spot: 'island-gourd' } });
-}
-
-function useWord(state: SaveData, wordId: string): SaveData {
-  if (wordId === WATER && isLearnedState(state.words[WATER]?.state)) {
-    return mark(state, {
-      beats: { ...state.beats, 'dba.beat.water': true },
-      overlay: 'none',
-      stepCounter: state.stepCounter + 1,
-      companion: { level: 0, targetId: null, pawUsed: false },
-      feedback: { seq: state.feedback.seq + 1, kind: 'ok' },
-    });
-  }
-  const word = state.words[wordId];
-  const words =
-    word && isLearnedState(word.state)
-      ? { ...state.words, [wordId]: transitionWord(word, 'miss') }
-      : state.words;
-  return mark(state, {
-    words,
-    stepCounter: state.stepCounter + 1,
-    feedback: { seq: state.feedback.seq + 1, kind: 'no' },
   });
 }
 

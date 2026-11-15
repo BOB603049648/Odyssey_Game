@@ -66,6 +66,33 @@ describe('prologue', () => {
     expect(state.screen).toBe('prologue');
     expect(state.evidence).toEqual([]);
   });
+
+  it.each([0, 1, 2, 3])('skips from frame %i with the same story evidence as watching', (frame) => {
+    let state = reduce(newGameState(), { type: 'new-game' });
+    for (let i = 0; i < frame; i++) state = reduce(state, { type: 'advance-prologue' });
+    state = reduce(state, { type: 'skip-prologue' });
+    const watched = atIsland();
+    expect(state.screen).toBe('island');
+    expect(state.currentScene).toBe(watched.currentScene);
+    expect(state.flags).toEqual(watched.flags);
+    expect(state.beats).toEqual(watched.beats);
+    expect(state.evidence).toEqual(watched.evidence);
+    expect(reduce(state, { type: 'skip-prologue' })).toBe(state);
+    expect(reduce(state, { type: 'previous-prologue' })).toBe(state);
+  });
+
+  it('lets players rewatch without losing or duplicating the first evidence', () => {
+    let state = reduce(newGameState(), { type: 'new-game' });
+    expect(reduce(state, { type: 'previous-prologue' })).toBe(state);
+    for (let i = 0; i < 3; i++) state = reduce(state, { type: 'advance-prologue' });
+    for (let i = 0; i < 3; i++) state = reduce(state, { type: 'previous-prologue' });
+    expect(state.currentScene).toBe('pro.scene.storm');
+    expect(state.prologueStep).toBe(0);
+    expect(state.evidence).toEqual(['dba.ev.a']);
+    state = reduce(state, { type: 'skip-prologue' });
+    expect(state.evidence).toEqual(['dba.ev.a']);
+    expect(state.words).toEqual(newGameState().words);
+  });
 });
 
 describe('island 1 teach loop', () => {
@@ -81,15 +108,18 @@ describe('island 1 teach loop', () => {
     expect(state.companion.level).toBe(0);
   });
 
-  it('uses the learned water word on the offered gourd', () => {
+  it('uses the learned water word to fill a held gourd before drinking', () => {
     let state = learn(atIsland(), 'dba.word.water');
     state = reduce(state, { type: 'close-screen' });
     state = reduce(state, { type: 'use-word', wordId: 'dba.word.fish' });
     expect(state.beats['dba.beat.water']).toBeUndefined();
 
     state = reduce(state, { type: 'poke-gourd' });
-    expect(state.overlay).toBe('use-word');
-    state = reduce(state, { type: 'use-word', wordId: 'dba.word.water' });
+    expect(state.flags['dba.puzzle.water']).toBe('carried');
+    state = reduce(state, { type: 'puzzle-act', puzzle: 'water', move: 'fill' });
+    expect(state.beats['dba.beat.water']).toBeUndefined();
+    expect(state.flags['dba.puzzle.water']).toBe('filled');
+    state = reduce(state, { type: 'poke-gourd' });
     expect(state.beats['dba.beat.water']).toBe(true);
     expect(state.overlay).toBe('none');
   });

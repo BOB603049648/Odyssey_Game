@@ -2,7 +2,7 @@ import ledger from './travelerContactIdentity.json';
 // URLs only; Vite does not request these images. BuildStart verifies every approved
 // byte hash before emitting these content-hashed imports. No fetch/crypto.subtle or
 // cross-browser decoded-RGB comparison, including on insecure HTTP production.
-const modules = import.meta.glob<string>('../assets/traveler/*.{png,webp}', { eager:true, import:'default' });
+const modules = import.meta.glob<string>(['../assets/traveler/*.{png,webp}', '!../assets/traveler/stride-atlas.png'], { eager:true, import:'default' });
 export function approvedTravelerContactSource(file: string, src: string): boolean {
   const stem = file.replace(/\.(png|webp)$/i,'');
   return Object.keys(ledger.assets).some(name => name.replace(/\.(png|webp)$/,'') === stem && modules[`../assets/traveler/${name}`] === src);

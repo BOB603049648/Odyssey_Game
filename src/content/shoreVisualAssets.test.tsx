@@ -16,7 +16,7 @@ describe('shore candidate URL stays inside the existing decode pipeline', () => 
   it('opts in to the existing clean asset without exposing its own preload id', () => {
     variant('baseline'); const ground = slotAssetUrl('art.shore.ground'); const camp = slotAssetUrl('art.camp.ground');
     variant('candidate');
-    expect(slotAssetUrl('art.shore.ground')).not.toBe(ground);
+    expect(slotAssetUrl('art.shore.ground')).toBe(ground);
     expect(slotAssetUrl('art.shore.ground')).toContain('art.shore.ground.clean');
     expect(slotAssetUrl('art.shore.ground.jpg')).toBe(slotAssetUrl('art.shore.ground'));
     expect(slotAssetUrl('art.camp.ground')).toBe(camp);
@@ -40,12 +40,12 @@ describe('shore candidate URL stays inside the existing decode pipeline', () => 
     const view = render(<PlateStack plate="dba.scene.shore" previous={null} />);
     expect(view.container.querySelector('[data-slot="ground"] img')?.getAttribute('src')).toBe(ready);
   });
-  it('baseline preload does not decode or request candidate ground', async () => {
+  it('ordinary preload requests the same repaired production ground', async () => {
     variant('baseline'); forgetSlotAsset('art.shore.ground');
     const decode = vi.spyOn(decoded, 'decodeAssetUrl');
     preloadSceneAssets(sceneAssembly('dba.scene.shore')!.slots.map(slot => slot.asset));
     await loadSlotAsset('art.shore.ground');
-    expect(decode.mock.calls.some(([url]) => url.includes('ground.clean'))).toBe(false);
-    expect(resolveSlotAsset('art.shore.ground')).not.toContain('ground.clean');
+    expect(decode.mock.calls.some(([url]) => url.includes('ground.clean'))).toBe(true);
+    expect(resolveSlotAsset('art.shore.ground')).toContain('ground.clean');
   });
 });

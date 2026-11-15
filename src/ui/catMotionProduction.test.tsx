@@ -38,7 +38,7 @@ describe('actual production guide RAF and persistent cat source',()=>{
   v.rerender(layer('dba.scene.yard',true));for(let n=0;n<100;n++)await frame();expect(anchor.dataset.guide).toBe('hold');
  });
  it('Y0→leap uses equal visible-height extent and its actual leap foot, not the wide default or Y0 special pivot',async()=>{
-  const v=render(layer('dba.scene.yard'));const anchor=v.getByTestId('companion-anchor');const before=parseFloat(anchor.style.height)*435*.75/1280;
+  const v=render(layer('dba.scene.yard'));const anchor=v.getByTestId('companion-anchor');const before=parseFloat(anchor.style.height)*1032/1152;
   v.rerender(layer('dba.scene.yard',true));for(let n=0;n<40;n++)await frame();expect(anchor.dataset.guide).toBe('move');
   const after=parseFloat(anchor.style.height)*829/1152;expect(after).toBeCloseTo(before,8);
   expect(parseFloat(anchor.style.getPropertyValue('--foot-x'))/100).toBe(.5);expect(parseFloat(anchor.style.getPropertyValue('--foot-y'))/100).toBeCloseTo(1144/1152,10);

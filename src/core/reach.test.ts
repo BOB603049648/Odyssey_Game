@@ -1,3 +1,4 @@
+import { returnFromBridge } from './__fixtures__/bridgeJourney';
 import { describe, expect, it } from 'vitest';
 import { LEXEMES } from '../content/catalog';
 import { guidePose, hintCap } from './hints';
@@ -33,8 +34,18 @@ function learnLayer(state: SaveData, layer: MuralLayer): SaveData {
 function readyToLeave(state = ashore()): SaveData {
   let next = learnLayer(learnLayer(learnLayer(state, 'concrete'), 'action'), 'relation');
   next = learn(learn(next, 'dba.word.hunger'), 'dba.word.promise');
+  next = learn(next, 'dba.word.share');
+  next = reduce(reduce(next, { type: 'goto-scene', scene: 'dba.scene.camp' }), { type: 'sleep-at-camp' });
+  next = reduce(next, { type: 'goto-scene', scene: 'dba.scene.yard' });
+  for (const move of ['inspect', 'take', 'move-to-companion', 'move-to-companion', 'offer'] as const) {
+    next = reduce(next, { type: 'puzzle-act', puzzle: 'food', move });
+  }
+  next = returnFromBridge(reduce(next, { type: 'goto-scene', scene: 'dba.scene.path' }));
   next = reduce(next, { type: 'goto-scene', scene: 'dba.scene.shore' });
-  return reduce(next, { type: 'use-word', wordId: 'dba.word.water' });
+  for (const move of ['take', 'fill', 'drink'] as const) {
+    next = reduce(next, { type: 'puzzle-act', puzzle: 'water', move });
+  }
+  return next;
 }
 
 describe('island 1 reachability', () => {

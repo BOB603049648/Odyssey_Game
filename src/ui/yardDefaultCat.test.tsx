@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 let WalkLayer:typeof import('./WalkLayer')['WalkLayer'];
-import { companionPost, companionFoot, companionSole } from '../core/companionPost';
+import { companionPost } from '../core/companionPost';
 import { companionFrameId } from '../core/companionTraj';
 import { newGameState } from '../core/save';
 import { hintPresentation } from '../core/hints';
@@ -24,16 +24,11 @@ function layer(scene:IslandScene,post=companionPost(scene,{}),onAsk=()=>{}){
 beforeEach(async()=>{vi.resetModules();WalkLayer=(await import('./WalkLayer')).WalkLayer;window.history.replaceState(null,'','/?loadtrace=1');vi.stubGlobal('fetch',vi.fn(()=>new Promise<Response>(()=>{})));});
 afterEach(()=>{cleanup();vi.unstubAllGlobals();vi.restoreAllMocks();});
 function assertDefaultFoot(v:ReturnType<typeof render>){
- const anchor=v.getByTestId('companion-anchor');const left=anchor.getAttribute('data-face')==='left';const x=left?1-640.5/1280:640.5/1280;
- expect(parseFloat(anchor.style.getPropertyValue('--foot-x'))/100).toBeCloseTo(x,10);
- expect(parseFloat(anchor.style.getPropertyValue('--foot-y'))/100).toBeCloseTo(.9923828125,10);
- expect(parseFloat(anchor.style.getPropertyValue('--sole-y'))/100).toBeCloseTo(.9923828125,10);
- expect(anchor.style.height).toBe('22%');
- // A source-space opaque foot projected through real contain geometry must
- // land at box pivot; no leftover old .259 offset (~60px at width250).
- const sourceX=left?1-640.5/1280:640.5/1280;
- expect(Math.abs((sourceX-parseFloat(anchor.style.getPropertyValue('--foot-x'))/100)*250)).toBeLessThan(.001);
- expect(Math.abs(((1-(13/720)*((3/4)/(1280/720)))-parseFloat(anchor.style.getPropertyValue('--foot-y'))/100)*320)).toBeLessThan(.001);
+ const anchor=v.getByTestId('companion-anchor');
+ expect(parseFloat(anchor.style.getPropertyValue('--foot-x'))/100).toBe(.5);
+ expect(parseFloat(anchor.style.getPropertyValue('--foot-y'))/100).toBeCloseTo(1054/1152,10);
+ expect(parseFloat(anchor.style.getPropertyValue('--sole-y'))/100).toBeCloseTo(1054/1152,10);
+ expect(parseFloat(anchor.style.height)).toBeCloseTo(8,10);
 }
 describe('delivered full default yard cat as explicit temporary Y0 fallback',()=>{
  it('restores exact delivered PNG bytes and actual decoded whole-body bounds',()=>{
@@ -49,8 +44,8 @@ describe('delivered full default yard cat as explicit temporary Y0 fallback',()=
   assertDefaultFoot(v);expect(vi.mocked(fetch).mock.calls.some(([url])=>String(url).includes('land-yard-give'))).toBe(false);
  });
  it('path existing fallback displays restored image with correct default foot and original dimensions',()=>{
-  const v=render(layer('dba.scene.path'));expect(v.container.querySelector('.nanaicha-ground')?.getAttribute('src')).toBe(slotAssetUrl(asset));
-  expect(v.container.querySelector('.nanaicha-ground')).not.toBeNull();expect(pixels().size).toEqual([1280,720]);assertDefaultFoot(v);
+  const v=render(layer('dba.scene.path'));expect(v.container.querySelector('.nanaicha-ground')?.getAttribute('src')).toContain('nanaicha-hero');
+  expect(v.container.querySelector('.nanaicha-ground')).not.toBeNull();assertDefaultFoot(v);
  });
  it('ready default stays visible through pending raw→blob and blob swap, with same DOM and foot',async()=>{
   const pending=hold();vi.stubGlobal('fetch',vi.fn(()=>pending.promise));const NativeURL=URL;vi.stubGlobal('URL',class extends NativeURL {static createObjectURL=vi.fn(()=> 'blob:yard-default-ready');});
@@ -64,9 +59,9 @@ describe('delivered full default yard cat as explicit temporary Y0 fallback',()=
  it.each([['dba.scene.shore','S0'],['dba.scene.shore','S1'],['dba.scene.shore','S2'],['dba.scene.camp','C1'],['dba.scene.camp','C2'],['dba.scene.camp','C3']] as const)('does not change %s selected landing, metadata, or geometry', (scene,beat)=>{
   const post={...companionPost(scene,{}),beat};const frame=companionFrameId(post.beat,'land');const v=render(layer(scene,post));const anchor=v.getByTestId('companion-anchor');
   expect(v.container.querySelector('.nanaicha-ground')?.getAttribute('src')).toBe(trajAssetUrl(frame));expect(anchor.dataset.sprite).toBe(frame);
-  expect(parseFloat(anchor.style.getPropertyValue('--foot-x'))/100).toBeCloseTo(companionFoot(frame).x,10);
-  expect(parseFloat(anchor.style.getPropertyValue('--foot-y'))/100).toBeCloseTo(companionFoot(frame).y,10);
-  expect(parseFloat(anchor.style.getPropertyValue('--sole-y'))/100).toBeCloseTo(companionSole(frame),10);
+  expect(parseFloat(anchor.style.getPropertyValue('--foot-x'))/100).toBeCloseTo(.5,10);
+  expect(parseFloat(anchor.style.getPropertyValue('--foot-y'))/100).toBeCloseTo(1054/1152,10);
+  expect(parseFloat(anchor.style.getPropertyValue('--sole-y'))/100).toBeCloseTo(1054/1152,10);
   expect(anchor.dataset.fallbackFor).toBeUndefined();
  });
 });

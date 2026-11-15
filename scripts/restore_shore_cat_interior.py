@@ -8,14 +8,14 @@ transparency, pose, eyes, gourd, and foot anchors are left unchanged.
 """
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 
 from PIL import Image
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
-ROLLBACK = Path("/workspace/playtest/cat-face-restore-20261110/rollback-originals")
-EVIDENCE = Path("/workspace/playtest/cat-face-restore-20261110/restored-assets")
+ROLLBACK = ROOT / "docs/assets/nanaicha/shore-face-originals"
 # First-paint contract in loadGate.test.ts: shore traj webp < 300KB.
 # quality=95 + exact=True keeps alpha bit-identical and stays under that cap.
 SHIP_WEBP_QUALITY = 95
@@ -23,19 +23,19 @@ SHIP_WEBP_QUALITY = 95
 FRAMES = {
     "gourd": {
         "cur": ROOT / "src/assets/companion/nanaicha/traj/land-shore-gourd.webp",
-        "raw": Path("/workspace/odyssey-art/nanaicha/traj/raw/land-shore-gourd-softfix-raw.jpg"),
+        "raw": "land-shore-gourd-softfix-raw.jpg",
         "shift": (-6, 0),  # (dy, dx) applied to the raw with np.roll
         "tight": (612, 514, 734, 600),
     },
     "driftwood": {
         "cur": ROOT / "src/assets/companion/nanaicha/traj/land-shore-driftwood.webp",
-        "raw": Path("/workspace/odyssey-art/nanaicha/traj/raw/land-shore-driftwood-softfix-raw.jpg"),
+        "raw": "land-shore-driftwood-softfix-raw.jpg",
         "shift": (-2, -1),
         "tight": (485, 526, 599, 604),
     },
     "east-gap": {
         "cur": ROOT / "src/assets/companion/nanaicha/traj/land-shore-east-gap.webp",
-        "raw": Path("/workspace/odyssey-art/nanaicha/traj/raw/land-shore-east-gap-softfix-raw.jpg"),
+        "raw": "land-shore-east-gap-softfix-raw.jpg",
         "shift": (-7, 4),
         "tight": (569, 366, 680, 455),
     },
@@ -83,14 +83,21 @@ def foot_y(arr: np.ndarray) -> int:
 
 
 def main() -> None:
-    evidence = EVIDENCE
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--raw-dir", type=Path, required=True,
+                        help="Directory of original softfix-raw JPEGs (not included in this repository)")
+    parser.add_argument("--evidence-dir", type=Path, required=True,
+                        help="Output directory for lossless restoration evidence")
+    parser.add_argument("--originals-dir", type=Path, default=ROLLBACK)
+    args = parser.parse_args()
+    evidence = args.evidence_dir
     evidence.mkdir(parents=True, exist_ok=True)
     for name, spec in FRAMES.items():
-        source = ROLLBACK / spec["cur"].name
+        source = args.originals_dir / spec["cur"].name
         if not source.exists():
             raise FileNotFoundError(f"rollback original missing: {source}")
         cur = np.array(Image.open(source).convert("RGBA"))
-        raw = np.array(Image.open(spec["raw"]).convert("RGBA"))
+        raw = np.array(Image.open(args.raw_dir / spec["raw"]).convert("RGBA"))
         dy, dx = spec["shift"]
         out, holes = restore(cur, raw, dy, dx)
         if foot_y(out) != foot_y(cur):

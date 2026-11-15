@@ -1,0 +1,42 @@
+[
+  {
+    "localName": "cat-food.wav",
+    "downloadUrl": "https://opengameart.org/sites/default/files/cat_mewfood.wav",
+    "sourceUrl": "https://opengameart.org/content/cat-purr-meow",
+    "author": "Kerzoven",
+    "license": "CC0-1.0",
+    "sha256": "3550f080882b52e236c8810a353756b2e0395fb7dadf0aeface0a06893cd181f"
+  },
+  {
+    "localName": "purr.wav",
+    "downloadUrl": "https://opengameart.org/sites/default/files/cat_purrsleepy_loop.wav",
+    "sourceUrl": "https://opengameart.org/content/cat-purr-meow",
+    "author": "Kerzoven",
+    "license": "CC0-1.0",
+    "sha256": "7f06368e25e6a7aec9b106c3e2915f236b3fa10b41781733ecc8a1866fc749b9"
+  },
+  {
+    "localName": "waves.flac",
+    "downloadUrl": "https://opengameart.org/sites/default/files/wave_01_cc0-18363__jasinski__alkaibeach.flac",
+    "sourceUrl": "https://opengameart.org/content/beach-ocean-waves",
+    "author": "jasinski / qubodup",
+    "license": "CC0-1.0",
+    "sha256": "fcfca178eca2eac536e8c2a4ed5cf8096e44c921acd587047b3d9f1d7845435c"
+  },
+  {
+    "localName": "rain.ogg",
+    "downloadUrl": "https://opengameart.org/sites/default/files/Dark_Rainy_Night%28ambience%29.ogg",
+    "sourceUrl": "https://opengameart.org/content/rain-and-thunders",
+    "author": "kindland",
+    "license": "CC0-1.0",
+    "sha256": "115c233f9f8bc793f12723030aaae6cfda923e565c32a8e54bb274b2a8199ee1"
+  },
+  {
+    "localName": "wind.wav",
+    "downloadUrl": "https://opengameart.org/sites/default/files/short%20wind%20sound.wav",
+    "sourceUrl": "https://opengameart.org/content/short-wind-sound",
+    "author": "remaxim",
+    "license": "CC0-1.0",
+    "sha256": "4435f5ad1baf171f21f876f778d0a8a7447becea0c4955bb2566e0c63ab20f41"
+  }
+]

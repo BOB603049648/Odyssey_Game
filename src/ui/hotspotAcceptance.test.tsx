@@ -1,8 +1,12 @@
+vi.mock('./firstScreenReady',()=>({useFirstScreenReady:()=>({status:'ready',done:1,total:1,retry:()=>{}})}));
 import { cleanup, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SCENE_ASSEMBLIES } from '../content/catalog';
 import { BANDS, GATES, SPAWNS, SPOTS } from '../core/stage';
 import { PlateStack, drawsInFront } from './Plate';
+import { newGameState } from '../core/save';
+import { visibleSpots } from './spotViews';
+import type { WaterStage } from '../core/puzzles';
 
 /**
  * 编导写死的场景验收句：
@@ -26,16 +30,24 @@ function prop(id: string, scene: string) {
   return kit(scene).slots.find((slot) => slot.id === id);
 }
 
+function shoreSpots(stage: WaterStage = 'empty') {
+  const save = newGameState(); save.flags['dba.puzzle.water'] = stage;
+  if (stage === 'done') save.beats['dba.beat.water'] = true;
+  return visibleSpots('dba.scene.shore', save, { level: 0, anchor: 'mural-entrance', wordId: null }).map(spot => spot.id);
+}
+
 describe('hotspot acceptance', () => {
   it('anchors every shore, camp, and yard spot on its own prop', () => {
     const shore = [
-      ['shore-driftwood', 'art.shore.prop.driftwood', 0.33, 0.72, 0.05],
-      ['shore-stone', 'art.shore.prop.break-shard', 0.18, 0.7, 0.05],
-      ['island-gourd', 'art.shore.prop.gourd', 0.58, 0.66, 0.07],
-      ['island-mural', 'art.shore.prop.mural-wall', 0.3, 0.56, 0.09],
-      ['shore-depart', 'art.shore.prop.east-gap', 0.74, 0.68, 0.05],
+      ['shore-driftwood', 'art.shore.prop.driftwood', 0.37, 0.75, 0.05],
+      ['shore-stone', 'art.shore.prop.break-shard', 0.18, 0.73, 0.045],
+      ['island-gourd', 'art.shore.prop.gourd', 0.60, 0.70, 0.055],
+      ['island-mural', 'art.shore.prop.mural-wall', 0.36, 0.62, 0.075],
+      ['shore-depart', 'art.shore.prop.east-gap', 0.78, 0.73, 0.05],
+      ['water-spring', 'puzzle.shore.spring', 0.60, 0.70, 0.055],
+      ['water-sea', 'puzzle.shore.sea', 0.49, 0.62, 0.045],
     ] as const;
-    expect(SPOTS['dba.scene.shore']).toHaveLength(5);
+    expect(SPOTS['dba.scene.shore']).toHaveLength(7);
     for (const [spotId, artId, x, y, r] of shore) {
       const spot = SPOTS['dba.scene.shore'].find((item) => item.id === spotId);
       expect(spot).toMatchObject({ x, y, r });
@@ -51,9 +63,10 @@ describe('hotspot acceptance', () => {
     expect(wood && gourd && wood.x! < gourd.x!).toBe(true);
     expect(gap?.slot).toBe('props');
     expect(kit('dba.scene.shore').slots.find((slot) => slot.slot === 'sky')?.id).not.toBe('art.shore.prop.east-gap');
+    for (const id of ['puzzle.shore.spring', 'puzzle.shore.sea']) expect(prop(id, 'dba.scene.shore')).toMatchObject({ kind: 'empty', asset: null });
     const gate = prop('art.shore.building', 'dba.scene.shore');
-    expect(gate).toMatchObject({ x: 0.16, y: 0.42, w: 0.48, h: 0.36 });
-    expect((gate?.y ?? 0) + (gate?.h ?? 0) / 2).toBeCloseTo(0.6);
+    expect(gate).toMatchObject({ x: 0.17, y: 0.35, w: 0.33, h: 0.26 });
+    expect((gate?.y ?? 0) + (gate?.h ?? 0) / 2).toBeCloseTo(0.48);
 
     expect(SPOTS['dba.scene.camp']).toHaveLength(8);
     expect(prop('art.camp.prop.fire', 'dba.scene.camp')?.spot).toBe('camp-sleep');
@@ -91,7 +104,7 @@ describe('hotspot acceptance', () => {
 
   it('lights only the prop you have walked up to', () => {
     const { container } = render(
-      <PlateStack plate="dba.scene.shore" previous={null} near={['shore-driftwood']} activeSpots={null} cam={{ x: 40, y: 0 }} />,
+      <PlateStack plate="dba.scene.shore" previous={null} near={['shore-driftwood']} activeSpots={shoreSpots()} cam={{ x: 40, y: 0 }} />,
     );
     expect(container.querySelector('.plate-photo')).toBeNull();
     expect(container.querySelector('[data-assembly="slots"]')?.getAttribute('data-legacy-plate')).toBe('shore.jpg');
@@ -138,6 +151,19 @@ describe('hotspot acceptance', () => {
     expect(props.length).toBe(5);
   });
 
+  it.each(['empty', 'carried', 'filled', 'done'] as const)('keeps cup and source anchors exclusive while water is %s', stage => {
+    const active = shoreSpots(stage);
+    const view = render(<PlateStack plate="dba.scene.shore" previous={null} activeSpots={active} />);
+    expect([...view.container.querySelectorAll('[data-interactable="yes"]')].map(node => node.getAttribute('data-spot')).sort()).toEqual([...active].sort());
+    expect(active).toHaveLength(stage === 'carried' ? 6 : 5);
+    expect(screen.queryByTestId('prop-art.shore.prop.gourd') !== null).toBe(stage !== 'carried');
+    for (const id of ['puzzle.shore.spring', 'puzzle.shore.sea']) {
+      const node = screen.queryByTestId(`prop-${id}`);
+      expect(node !== null).toBe(stage === 'carried');
+      if (node) { expect(node.querySelector('img')).toBeNull(); expect(node.querySelector('.slot-block')).toBeNull(); }
+    }
+  });
+
   it('lights the prop that just answered and leaves the others dark', () => {
     render(<PlateStack plate="dba.scene.shore" previous={null} beat={{ spot: 'shore-driftwood', kind: 'ok' }} />);
     expect(screen.getByTestId('prop-art.shore.prop.driftwood').getAttribute('data-result')).toBe('ok');
@@ -149,11 +175,11 @@ describe('hotspot acceptance', () => {
     const camp = render(<PlateStack plate="dba.scene.camp" previous={null} />);
     expect(screen.getByTestId('prop-art.camp.prop.sleep-mat').getAttribute('data-spot')).toBe('camp-sleep');
     expect(screen.getByTestId('prop-art.camp.prop.fire').getAttribute('data-spot')).toBe('camp-sleep');
-    expect(screen.getByTestId('prop-art.camp.prop.north-curtain').getAttribute('data-kind')).toBe('north-curtain');
+    expect(screen.getByTestId('prop-art.camp.prop.north-curtain').getAttribute('data-kind')).toBe('empty');
     expect(screen.getByTestId('slot-building').getAttribute('data-coplanar')).toBe('yes');
     expect(screen.getByTestId('slot-building').getAttribute('data-anchor')).toBe('foot');
     expect(screen.getByTestId('prop-art.camp.prop.sleep-mat').getAttribute('data-placeholder')).toBe('art');
-    expect(screen.getByTestId('prop-art.camp.prop.north-curtain').querySelector('img')).toBeTruthy();
+    expect(screen.getByTestId('prop-art.camp.prop.north-curtain').querySelector('img')).toBeNull();
     expect(screen.getByTestId('slot-far').querySelector('img')).toBeTruthy();
     expect(camp.container.querySelector('.plate-photo')).toBeNull();
     expect(camp.container.textContent).not.toContain('?');
@@ -212,38 +238,23 @@ describe('hotspot acceptance', () => {
       'slot-far',
       'slot-ground',
       'slot-building',
-      'slot-fg',
     ]) {
       expect(screen.getByTestId(id).getAttribute('data-placeholder')).toBe('art');
       expect(screen.getByTestId(id).querySelector('img')).toBeTruthy();
     }
+    expect(screen.getByTestId('slot-fg').querySelector('img')).toBeNull();
     expect(view.container.querySelector('.plate-photo')).toBeNull();
     const night = GATES.find((gate) => gate.from === 'dba.scene.camp' && gate.to === 'dba.scene.night');
     expect(night).toMatchObject({ x: 0.5, y: 0.8, r: 0.04, edge: 'north' });
   });
 
-  it('puts a curtain in front only when the traveler stands north of its hem', () => {
-    const campCurtain = prop('art.camp.prop.north-curtain', 'dba.scene.camp');
-    const nightCurtain = kit('dba.scene.night').slots.find((slot) => slot.kind === 'curtain');
-    expect(campCurtain && nightCurtain).toBeTruthy();
-    expect(drawsInFront(campCurtain!, 0.8)).toBe(false);
-    expect(drawsInFront(campCurtain!, 0.7)).toBe(true);
-    expect(drawsInFront(nightCurtain!, 0.8)).toBe(false);
-    expect(drawsInFront(nightCurtain!, 0.66)).toBe(true);
-
-    const south = render(<PlateStack plate="dba.scene.camp" previous={null} pass="near" feetY={0.8} />);
-    expect(south.container.querySelector('[data-kind="north-curtain"]')).toBeNull();
-    expect(south.container.querySelector('[data-kind="act-you"]')).toBeTruthy();
-    south.unmount();
-
-    const north = render(<PlateStack plate="dba.scene.camp" previous={null} pass="back" feetY={0.7} />);
-    expect(north.container.querySelector('[data-kind="north-curtain"]')).toBeNull();
-    north.unmount();
-    const covered = render(<PlateStack plate="dba.scene.night" previous={null} pass="fg" feetY={0.8} />);
-    expect(covered.container.querySelector('[data-kind="curtain"]')).toBeNull();
-    expect(covered.container.querySelector('[data-slot="fg"]')).toBeNull();
-    covered.unmount();
-    const behindCloth = render(<PlateStack plate="dba.scene.night" previous={null} pass="near" feetY={0.66} />);
-    expect(behindCloth.container.querySelector('[data-kind="curtain"]')).toBeTruthy();
+  it('keeps the doorway in the building art and omits duplicate curtain sprites', () => {
+    const camp = SCENE_ASSEMBLIES.find(scene => scene.id === 'dba.scene.camp')!;
+    const curtain = camp.slots.find(slot => slot.id === 'art.camp.prop.north-curtain')!;
+    expect(curtain.depthMode).toBe('wall-art');
+    expect(curtain.asset).toBeNull();
+    for (const y of [curtain.y!-.01,curtain.y!,curtain.y!+.01]) expect(drawsInFront(curtain,y)).toBe(false);
+    const night = SCENE_ASSEMBLIES.find(scene => scene.id === 'dba.scene.night')!;
+    expect(night.slots.find(slot => slot.slot === 'fg')?.asset).toBeNull();
   });
 });

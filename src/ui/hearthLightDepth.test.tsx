@@ -23,16 +23,16 @@ async function mount(variant:'candidate'|'legacy'|'baseline'|'camp',hy=.64){
 beforeEach(()=>{vi.stubEnv('VITE_VISUAL_SAMPLE','1');vi.stubGlobal('fetch',vi.fn(()=>new Promise(()=>{})));});
 afterEach(()=>{cleanup();vi.restoreAllMocks();vi.unstubAllGlobals();vi.unstubAllEnvs();history.replaceState({},'','/');});
 describe('candidate hearth pool retains legacy prop light ownership',()=>{
- for(const mode of ['legacy','candidate'] as const)for(const hy of [.64,.68,.72])it(`${mode} stone/cue .68 vs human ${hy}: near shields, equal/back receives`,async()=>{
+ for(const mode of ['legacy','candidate'] as const)for(const hy of [.69,.73,.77])it(`${mode} stone/cue .73 vs human ${hy}: near shields, equal/back receives`,async()=>{
   await mount(mode,hy);const stone=screen.getByTestId('prop-art.shore.prop.east-gap'),cue=screen.getByTestId('cue-art.shore.prop.east-gap');const emitter=document.querySelector<HTMLElement>('.depth-hearth-emitter')??screen.getByTestId('exit-camp');
-  expect(compare(paintKey(stone),paintKey(emitter))>0).toBe(.68>hy);expect(compare(paintKey(cue),paintKey(emitter))>0).toBe(.68>hy);
+  expect(compare(paintKey(stone),paintKey(emitter))>0).toBe(.73>hy);expect(compare(paintKey(cue),paintKey(emitter))>0).toBe(.73>hy);
  });
  it('moves only the decorative pool into existing full-world human unit; keeps seven real siblings and its gate coordinates',async()=>{
   await mount('candidate');const emitter=document.querySelector<HTMLElement>('.depth-hearth-emitter');expect(emitter).not.toBeNull();const button=screen.getByTestId('exit-camp');const humanUnit=screen.getByTestId('traveler').closest('.depth-unit')!;
   expect(emitter!.parentElement).toBe(humanUnit);expect(screen.getByTestId('sole-soft').parentElement).toBe(humanUnit);expect(humanUnit.parentElement!.children).toHaveLength(7);expect(emitter!.style.left).toBe(button.style.left);expect(emitter!.style.top).toBe(button.style.top);expect(emitter!.classList.contains('near')).toBe(button.classList.contains('near'));expect(emitter!.getAttribute('aria-hidden')).toBe('true');expect(emitter!.tagName).toBe('SPAN');expect(emitter!.querySelector('button')).toBeNull();expect(button.parentElement).toBe(document.querySelector('.world-layer'));expect(button.getAttribute('type')).toBe('button');expect(z('.walk-viewport[data-ground-depth="world"] .depth-hearth-emitter')).toBeGreaterThan(z('.walk-viewport[data-ground-depth="world"] .depth-unit > .sole-soft'));
  });
  it.each(['legacy','baseline','camp'] as const)('%s has no extra pool and keeps legacy root boundary',async mode=>{
-  await mount(mode);expect(document.querySelector('.depth-hearth-emitter')).toBeNull();expect(document.querySelector('.ground-depth-root')).toBeNull();if(mode!=='camp')expect(screen.getByTestId('exit-camp').dataset.hearth).toBe('yes');
+  await mount(mode);expect(!!document.querySelector('.depth-hearth-emitter')).toBe(mode==='baseline');expect(!!document.querySelector('.ground-depth-root')).toBe(mode!=='legacy');if(mode!=='camp')expect(screen.getByTestId('exit-camp').dataset.hearth).toBe('yes');
  });
  it('suppresses only the D1 direct button pseudo, never whole exit; existing gradient/blur/near/UI CSS stays byte-identical',()=>{
   expect(rule('.walk-viewport[data-ground-depth="world"] .world-layer > .path-exit[data-hearth="yes"]::before')).toMatch(/content:\s*none/);expect(rule('.walk-viewport[data-ground-depth="world"] .depth-hearth-emitter')).toMatch(/pointer-events:\s*none/);

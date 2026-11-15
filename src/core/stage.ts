@@ -1,5 +1,5 @@
 import type { IslandScene } from './island';
-import { inRadius, type Band, type Point } from './walk';
+import { groundDistance, inRadius, WORLD_ASPECT, type Band, type Point } from './walk';
 
 export type Spot = { id: string; x: number; y: number; r: number };
 
@@ -12,12 +12,12 @@ export type Gate = {
   y: number;
   r: number;
   arrival: Point;
-  /** The whole band edge, so a traveler on any part of the path still crosses. */
+  /** Outward direction through a finite doorway, centered on x/y. */
   edge?: GateEdge;
 };
 
-/** North edge is the tide line. Feet stay on the sand, south of the cliff. */
-const shoreBand: Band = { minX: 0.05, maxX: 0.96, minY: 0.48, maxY: 0.84 };
+/** Painted shore: water and wall are north of .62; feet stay on the foreground sand. */
+const shoreBand: Band = { minX: 0.05, maxX: 0.96, minY: 0.62, maxY: 0.88 };
 /**
  * Porch planks only. The wall/deck seam sits near y 0.78; y 0.68 is the
  * door's right wall, so a foot there floats off the boards.
@@ -32,13 +32,13 @@ export const BANDS: Record<IslandScene, Band> = {
   'dba.scene.shore': shoreBand,
   'dba.scene.camp': campBand,
   'dba.scene.yard': yardBand,
-  'dba.scene.hall': pathBand,
+  'dba.scene.hall': { ...pathBand, minY: 0.56 },
   'dba.scene.path': pathBand,
   'dba.scene.night': nightBand,
 };
 
 export const SPAWNS: Record<IslandScene, Point> = {
-  'dba.scene.shore': { x: 0.42, y: 0.62 },
+  'dba.scene.shore': { x: 0.44, y: 0.72 },
   'dba.scene.camp': { x: 0.46, y: 0.84 },
   /** In front of the steps. y 0.80 is the hall wall. */
   'dba.scene.yard': { x: 0.42, y: 0.92 },
@@ -48,25 +48,27 @@ export const SPAWNS: Record<IslandScene, Point> = {
 };
 
 export const GATES: readonly Gate[] = [
-  { from: 'dba.scene.shore', to: 'dba.scene.camp', x: 0.9, y: 0.63, r: 0.04, edge: 'east', arrival: { x: 0.34, y: 0.84 } },
+  { from: 'dba.scene.shore', to: 'dba.scene.camp', x: 0.9, y: 0.74, r: 0.04, edge: 'east', arrival: { x: 0.34, y: 0.84 } },
   { from: 'dba.scene.shore', to: 'dba.scene.hall', x: 0.11, y: 0.7, r: 0.04, edge: 'west', arrival: { x: 0.48, y: 0.6 } },
   { from: 'dba.scene.camp', to: 'dba.scene.shore', x: 0.1, y: 0.84, r: 0.04, edge: 'west', arrival: { x: 0.7, y: 0.62 } },
   { from: 'dba.scene.camp', to: 'dba.scene.yard', x: 0.9, y: 0.84, r: 0.04, edge: 'east', arrival: { x: 0.28, y: 0.92 } },
-  { from: 'dba.scene.camp', to: 'dba.scene.night', x: 0.5, y: 0.8, r: 0.04, edge: 'north', arrival: { x: 0.55, y: 0.74 } },
+  { from: 'dba.scene.camp', to: 'dba.scene.night', x: 0.5, y: 0.8, r: 0.04, edge: 'north', arrival: { x: 0.55, y: 0.75 } },
   { from: 'dba.scene.yard', to: 'dba.scene.camp', x: 0.11, y: 0.8, r: 0.04, edge: 'west', arrival: { x: 0.72, y: 0.84 } },
-  { from: 'dba.scene.yard', to: 'dba.scene.path', x: 0.9, y: 0.78, r: 0.04, edge: 'east', arrival: { x: 0.3, y: 0.64 } },
+  { from: 'dba.scene.yard', to: 'dba.scene.path', x: 0.9, y: 0.78, r: 0.04, edge: 'east', arrival: { x: 0.3, y: 0.485 } },
   { from: 'dba.scene.hall', to: 'dba.scene.shore', x: 0.5, y: 0.8, r: 0.04, edge: 'south', arrival: { x: 0.28, y: 0.62 } },
-  { from: 'dba.scene.path', to: 'dba.scene.yard', x: 0.11, y: 0.64, r: 0.04, edge: 'west', arrival: { x: 0.72, y: 0.92 } },
+  { from: 'dba.scene.path', to: 'dba.scene.yard', x: 0.11, y: 0.43, r: 0.04, edge: 'west', arrival: { x: 0.72, y: 0.92 } },
   { from: 'dba.scene.night', to: 'dba.scene.camp', x: 0.5, y: 0.8, r: 0.04, edge: 'south', arrival: { x: 0.62, y: 0.84 } },
 ];
 
 export const SPOTS: Record<IslandScene, readonly Spot[]> = {
   'dba.scene.shore': [
-    { id: 'island-mural', x: 0.3, y: 0.56, r: 0.09 },
-    { id: 'shore-stone', x: 0.18, y: 0.7, r: 0.05 },
-    { id: 'shore-driftwood', x: 0.33, y: 0.72, r: 0.05 },
-    { id: 'island-gourd', x: 0.58, y: 0.66, r: 0.07 },
-    { id: 'shore-depart', x: 0.74, y: 0.68, r: 0.05 },
+    { id: 'island-mural', x: 0.36, y: 0.62, r: 0.075 },
+    { id: 'shore-stone', x: 0.18, y: 0.73, r: 0.045 },
+    { id: 'shore-driftwood', x: 0.37, y: 0.75, r: 0.05 },
+    { id: 'island-gourd', x: 0.60, y: 0.70, r: 0.055 },
+    { id: 'water-spring', x: 0.60, y: 0.70, r: 0.055 },
+    { id: 'water-sea', x: 0.49, y: 0.62, r: 0.045 },
+    { id: 'shore-depart', x: 0.78, y: 0.73, r: 0.05 },
   ],
   'dba.scene.camp': [
     { id: 'camp-sleep', x: 0.42, y: 0.82, r: 0.016 },
@@ -87,18 +89,18 @@ export const SPOTS: Record<IslandScene, readonly Spot[]> = {
     { id: 'act:dba.word.size:b', x: 0.36, y: 0.9, r: 0.034 },
   ],
   'dba.scene.hall': [
-    { id: 'hall-mural', x: 0.47, y: 0.5, r: 0.075 },
-    { id: 'hall-stamps', x: 0.655, y: 0.505, r: 0.055 },
-    { id: 'hall-tattoo', x: 0.38, y: 0.44, r: 0.07 },
+    { id: 'hall-mural', x: 0.49, y: 0.57, r: 0.075 },
+    { id: 'hall-stamps', x: 0.67, y: 0.57, r: 0.055 },
+    { id: 'hall-tattoo', x: 0.392, y: 0.56, r: 0.07 },
   ],
   'dba.scene.path': [
-    { id: 'path-stop', x: 0.3, y: 0.66, r: 0.06 },
-    { id: 'path-step', x: 0.66, y: 0.66, r: 0.06 },
+    { id: 'path-stop', x: 0.3, y: 0.485, r: 0.06 },
+    { id: 'path-step', x: 0.66, y: 0.61, r: 0.06 },
   ],
   'dba.scene.night': [
-    { id: 'night-read', x: 0.36, y: 0.68, r: 0.05 },
-    { id: 'night-ember', x: 0.58, y: 0.74, r: 0.036 },
-    { id: 'night-memory', x: 0.7, y: 0.7, r: 0.046 },
+    { id: 'night-read', x: 0.36, y: 0.75, r: 0.04 },
+    { id: 'night-ember', x: 0.615, y: 0.75, r: 0.036 },
+    { id: 'night-memory', x: 0.78, y: 0.75, r: 0.046 },
   ],
 };
 
@@ -117,22 +119,49 @@ export const YARD_FACADE = { minX: 0.4, maxX: 0.66, groundY: 0.92 } as const;
 export const YARD_RIGHT_STEP = { x: 0.62, y: 0.94 } as const;
 
 /** West mouth (camp arrival) and east mouth (path arrival). Fish racks at x 0.16 and 0.36 stay outside. */
-const YARD_APRONS = [
+export const YARD_APRONS = [
   { minX: 0.22, maxX: 0.34 },
   { minX: 0.68, maxX: 0.82 },
 ] as const;
 
 /**
- * East-gap marker stone. The plate art stays. Its opaque body runs about
- * y 0.42–0.67, so a foot at 0.57 is still on the crown. Feet inside the
- * footprint drop to the sand at the south lip.
+ * The painted eastern waystone occupies x .71–.85 above the sand lip at .72.
+ * Saved positions are planted in front; live keyboard/click routes use the
+ * same footprint to slide or walk around it without teleporting.
  */
-export const SHORE_MARKER = { minX: 0.66, maxX: 0.82, sandY: 0.68 } as const;
+export const SHORE_MARKER = { minX: 0.71, maxX: 0.85, sandY: 0.72 } as const;
+/** Ground occupied by the painted log pile and spring basin. The log can be
+ * passed on either side; the basin joins the rocky northern bank. */
+export const SHORE_PROP_FOOTPRINTS = [
+  { id: 'shore-driftwood', minX: 0.27, maxX: 0.43, minY: 0.70, maxY: 0.75 },
+  { id: 'island-gourd', minX: 0.55, maxX: 0.67, minY: 0, maxY: 0.70 },
+] as const;
+export const BRIDGE_KNOTS = [[.11,.43],[.24,.46],[.36,.50],[.52,.55],[.66,.61],[.77,.69]] as const;
+/** Reading table, hearth and cloak rock stand above their southern ground line. */
+export const NIGHT_FOOTPRINTS = [
+  { minX: .14, maxX: .42, groundY: .75 },
+  { minX: .55, maxX: .88, groundY: .75 },
+] as const;
 
 export function plantOnGround(scene: IslandScene, pos: Point): Point {
   const band = BANDS[scene];
-  const x = Math.min(band.maxX, Math.max(band.minX, pos.x));
+  let x = Math.min(band.maxX, Math.max(band.minX, pos.x));
   let y = Math.min(band.maxY, Math.max(band.minY, pos.y));
+  // The night reading table, hearth and cloak rock are solid, painted objects.
+  // Approach from their southern feet, never walk through the table top.
+  if (scene === 'dba.scene.night') for (const footprint of NIGHT_FOOTPRINTS) {
+    if (x >= footprint.minX && x <= footprint.maxX) y = Math.max(footprint.groundY, y);
+  }
+  if (scene === 'dba.scene.path') {
+    x = Math.max(.11, Math.min(.77, x));
+    // Measured plank centerline in the 1280×720 bridge plate. The narrow
+    // walkable ribbon prevents movement into the cliff or the empty ravine.
+    const knots = BRIDGE_KNOTS;
+    const end = knots.findIndex(([at]) => at >= x);
+    const a = knots[Math.max(0,end-1)], b = knots[Math.max(0,end)];
+    const center = a[1] + (b[1]-a[1]) * (b[0] === a[0] ? 0 : (x-a[0])/(b[0]-a[0]));
+    y = Math.max(center-.012, Math.min(center+.012,y));
+  }
   const onFacade = x > YARD_FACADE.minX && x < YARD_FACADE.maxX;
   const onApron = YARD_APRONS.some((span) => x > span.minX && x < span.maxX);
   if (scene === 'dba.scene.yard' && (onFacade || onApron) && y < YARD_FACADE.groundY) {
@@ -146,12 +175,25 @@ export function plantOnGround(scene: IslandScene, pos: Point): Point {
   ) {
     y = SHORE_MARKER.sandY;
   }
+  if (scene === 'dba.scene.shore') for (const box of SHORE_PROP_FOOTPRINTS) {
+    if (x <= box.minX || x >= box.maxX || y <= box.minY || y >= box.maxY) continue;
+    if (box.minY < band.minY) { y = box.maxY; continue; }
+    const edges = [{ x, y: box.minY }, { x, y: box.maxY }, { x: box.minX, y }, { x: box.maxX, y }];
+    edges.sort((a, b) => Math.hypot(a.x - x, (a.y - y) * 9 / 16) - Math.hypot(b.x - x, (b.y - y) * 9 / 16));
+    ({ x, y } = edges[0]);
+  }
   return { x, y };
 }
 
-/** Hotspot reach. The depart stone cannot be stood on, so the sand lip in front of it still counts. */
+/** Raised props can be reached from the ground directly in front of them. */
 export function standsAt(scene: IslandScene, spot: Spot, pos: Point): boolean {
   if (inRadius(pos, spot, spot.r)) return true;
+  // The amount boards sit on the facade, 0.04 above the walkable step.
+  // Keep their art anchors and the facade collision; reach from the step.
+  if (scene === 'dba.scene.yard' &&
+      (spot.id === 'act:dba.word.amount:more' || spot.id === 'act:dba.word.amount:less')) {
+    return inRadius(pos, plantOnGround(scene, spot), spot.r);
+  }
   if (scene !== 'dba.scene.shore' || spot.id !== 'shore-depart') return false;
   const sand = plantOnGround(scene, spot);
   return Math.hypot(pos.x - sand.x, pos.y - sand.y) <= 0.045;
@@ -161,12 +203,62 @@ export function gatesFrom(scene: IslandScene): readonly Gate[] {
   return GATES.filter((gate) => gate.from === scene);
 }
 
+/** Radius and depth are stage-height distances, including horizontal exits. */
+export function gateRegion(gate: Gate): Band {
+  const halfX = gate.r / WORLD_ASPECT;
+  return {
+    minX: gate.edge === 'east' ? gate.x : gate.x - halfX,
+    maxX: gate.edge === 'west' ? gate.x : gate.x + halfX,
+    minY: gate.edge === 'south' ? gate.y : gate.y - gate.r,
+    maxY: gate.edge === 'north' ? gate.y : gate.y + gate.r,
+  };
+}
+
+/** Reach the inside of the doorway before walking outward across its line. */
+export function gateApproach(gate: Gate): Point {
+  const distance = .06;
+  return plantOnGround(gate.from, {
+    x: gate.x + (gate.edge === 'east' ? -distance / WORLD_ASPECT : gate.edge === 'west' ? distance / WORLD_ASPECT : 0),
+    y: gate.y + (gate.edge === 'south' ? -distance : gate.edge === 'north' ? distance : 0),
+  });
+}
+
 export function crossed(gate: Gate, pos: Point): boolean {
-  if (gate.edge === 'east') return pos.x >= gate.x;
-  if (gate.edge === 'west') return pos.x <= gate.x;
-  if (gate.edge === 'north') return pos.y <= gate.y;
-  if (gate.edge === 'south') return pos.y >= gate.y;
-  return Math.hypot(gate.x - pos.x, gate.y - pos.y) <= gate.r;
+  // Integrating a final step may yield 0.8999999999999999 for a 0.9 exit.
+  // Tolerate arithmetic rounding, without widening the playable exit region.
+  const epsilon = 1e-9;
+  if (!Number.isFinite(pos.x) || !Number.isFinite(pos.y)) return false;
+  if (!gate.edge) return groundDistance(gate, pos) <= gate.r;
+  const region = gateRegion(gate);
+  return pos.x >= region.minX - epsilon && pos.x <= region.maxX + epsilon
+    && pos.y >= region.minY - epsilon && pos.y <= region.maxY + epsilon;
+}
+
+function outwardDistance(gate: Gate, pos: Point): number {
+  if (gate.edge === 'east') return (pos.x - gate.x) * WORLD_ASPECT;
+  if (gate.edge === 'west') return (gate.x - pos.x) * WORLD_ASPECT;
+  if (gate.edge === 'south') return pos.y - gate.y;
+  return gate.y - pos.y;
+}
+
+/** A parallel brush past the mouth, or a step farther along the wall, is not an exit. */
+export function isMovingThroughGate(gate: Gate, from: Point, to: Point): boolean {
+  if (![from.x, from.y, to.x, to.y].every(Number.isFinite)) return false;
+  if (!gate.edge) return !crossed(gate, from) && crossed(gate, to);
+  const before = outwardDistance(gate, from), after = outwardDistance(gate, to);
+  const epsilon = 1e-9;
+  // Test the swept line, not only the destination: a long frame can move past
+  // the finite preview rectangle while still walking through the actual mouth.
+  if (after - before <= epsilon || before > epsilon || after < -epsilon) return false;
+  const t = Math.max(0, Math.min(1, -before / (after - before)));
+  const crossing = { x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t };
+  const across = gate.edge === 'east' || gate.edge === 'west'
+    ? Math.abs(crossing.y - gate.y) : Math.abs(crossing.x - gate.x) * WORLD_ASPECT;
+  return across <= gate.r + epsilon;
+}
+
+export function gateCrossing(scene: IslandScene, from: Point, to: Point): Gate | null {
+  return gatesFrom(scene).find(gate => isMovingThroughGate(gate, from, to)) ?? null;
 }
 
 export function gateAt(scene: IslandScene, pos: Point): Gate | null {

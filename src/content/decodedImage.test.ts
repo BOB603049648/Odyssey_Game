@@ -7,6 +7,16 @@ afterEach(() => {
 });
 
 describe('image load and decode', () => {
+  it('applies critical-image priority and releases a stalled transfer at its shorter deadline', async () => {
+    vi.useFakeTimers();
+    const picture = { src: '', fetchPriority: '', onload: null, onerror: null, removeAttribute: vi.fn() };
+    vi.stubGlobal('Image', class { constructor() { return picture; } });
+    const pending = expect(decodeImage('/preview.webp', { priority: 'high', timeout: 8000 })).rejects.toThrow(/timed out/);
+    expect(picture.fetchPriority).toBe('high');
+    await vi.advanceTimersByTimeAsync(8000);
+    await pending;
+    expect(picture.removeAttribute).toHaveBeenCalledWith('src');
+  });
   it('resolves after the bitmap has loaded and decoded', async () => {
     vi.stubGlobal(
       'Image',

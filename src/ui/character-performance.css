@@ -1,0 +1,10 @@
+/* Authored idle frames carry the breath. Scaling the entire body would also
+   enlarge the head and was easy to mistake for the old atlas-size defect. */
+.walk-viewport .traveler[data-pose="idle"] .traveler-bob { animation: none; }
+.traveler[data-animation-paused="yes"] *,
+.walk-viewport[data-performance-paused="yes"] .companion-anchor * { animation-play-state: paused !important; }
+.nanaicha-figure:has([data-performance]) { aspect-ratio: 3 / 4; }
+@media (prefers-reduced-motion: reduce) {
+  .traveler-frame-wrap.out { animation: none; opacity: 0; }
+  .companion-sway { animation: none !important; }
+}

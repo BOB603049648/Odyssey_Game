@@ -1,0 +1,49 @@
+.lesson-journey {
+  position: relative; z-index: 3; width: min(100%, 1040px); box-sizing: border-box;
+  margin: 0 auto 20px; padding: 14px 18px; display: flex; align-items: center; gap: 22px;
+  border-left: 2px solid #bda46e88; background: #132324b8; color: #e2dbc6;
+}
+.lesson-journey > div { flex: 1; min-width: 0; }
+.lesson-journey p { margin: 0; line-height: 1.7; font-size: 12px; }
+.lesson-journey .lesson-label { font-size: 10px; letter-spacing: .13em; color: #d9c18a; margin-bottom: 5px; }
+.lesson-journey .lesson-note { color: #a9b3a9; margin-top: 4px; }
+.lesson-journey > .btn { flex-shrink: 0; min-height: 44px; }
+.lesson-focus {
+  display: flex; align-items: center; gap: 12px; padding: 9px 13px; min-height: 48px; flex-shrink: 0;
+  color: #eddfbd; border: 1px solid #baa57466; border-radius: 3px; background: #dec68b0b; cursor: pointer;
+}
+.lesson-focus .glyph { width: 38px; height: 38px; }
+.lesson-focus span { font-size: 12px; text-align: left; }
+.lesson-focus small { display: block; margin-top: 4px; color: #a9b3a9; font-size: 10px; }
+.lesson-focus:hover { background: #dec68b19; }
+.lesson-focus:focus-visible, .lexicon-symbols .lex-card:focus-visible { outline: 2px solid #e2c77c; outline-offset: 3px; }
+.field-lexicon { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, .85fr); align-items: start; gap: 18px 22px; margin-top: 12px; }
+.sheet[data-overlay="lexicon"] { scroll-padding-top: 74px; }
+.sheet[data-overlay="lexicon"] > .btn { position: sticky; top: 0; z-index: 2; flex-shrink: 0; background: #152127; }
+.lexicon-help { grid-column: 1 / -1; margin: 0; color: #c9c4b8; font-size: 13px; line-height: 1.7; }
+.lexicon-memory { grid-column: 2; grid-row: 2; min-width: 0; background: #111e20; border: 1px solid #a9956944; }
+.lexicon-memory-heading { display: flex; align-items: center; gap: 12px; padding: 12px; }
+.lexicon-memory-heading > .glyph { flex: 0 0 38px; width: 38px; height: 38px; }
+.lexicon-memory-heading strong { font-size: 13px; font-weight: 500; color: #eddfbd; }
+.lexicon-memory-heading p { margin: 5px 0 0; color: #a9b3a9; font-size: 11px; line-height: 1.6; }
+.lexicon-memory .concept-story { min-height: 0; }
+.lexicon-symbols { grid-column: 1; grid-row: 2; display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 8px; margin: 0; }
+.lexicon-symbols .lex-card { min-height: 72px; width: 100%; cursor: pointer; border-radius: 3px; }
+.lexicon-symbols .lex-card[aria-pressed="true"] { border-color: #e2c77c; background: #dec68b20; }
+.lexicon-symbols .glyph { width: 38px; height: 38px; }
+.lexicon-status { position: absolute; right: 5px; top: 4px; font-size: 9px; color: #cab47f; }
+@media (max-width: 700px) {
+  .lesson-journey { gap: 12px; padding: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .lesson-journey > div { flex-basis: 100%; }
+  .lesson-focus { width: 100%; justify-content: center; }
+  .field-lexicon { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .lexicon-memory { grid-column: 1; grid-row: 2; }
+  .lexicon-memory > .concept-scene { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
+  .lexicon-memory .concept-story { font-size: 12px; padding: 10px; }
+  .lexicon-symbols { grid-row: 3; }
+}
+@media (max-height: 500px) {
+  .island .sheet[data-overlay="lexicon"] { max-height: calc(100dvh - 56px - var(--safe-top) - var(--safe-bottom)); }
+  .lexicon-memory > .concept-scene { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
+  .lexicon-memory .concept-story { padding: 10px; font-size: 12px; }
+}

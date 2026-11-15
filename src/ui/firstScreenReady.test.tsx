@@ -27,6 +27,54 @@ beforeEach(() => {
 afterEach(() => cleanup());
 
 describe('first-screen readiness', () => {
+  it('does not block shore or night on the camp-only rest sheet, but waits for it before camp interaction', async () => {
+    const rest = deferred<string>();
+    art.load.mockImplementation((id: string) => id === 'settle-down-01.png' ? rest.promise : Promise.resolve('ok'));
+    const { result, rerender } = renderHook(({ scene }) => useFirstScreenReady(scene, 'land-companion', true), {
+      initialProps: { scene: 'dba.scene.shore' },
+    });
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+    expect(art.load).toHaveBeenCalledWith('action-reach-01.png');
+    expect(art.load).not.toHaveBeenCalledWith('settle-down-01.png');
+    rerender({ scene: 'dba.scene.night' });
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+    expect(art.load).not.toHaveBeenCalledWith('settle-down-01.png');
+    rerender({ scene: 'dba.scene.camp' });
+    await waitFor(() => expect(art.load).toHaveBeenCalledWith('settle-down-01.png'));
+    expect(result.current.status).toBe('loading');
+    await act(async () => rest.resolve('rest-ready'));
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+  });
+  it('requires the painted shore, exposes its failure, and recovers through retry', async () => {
+    art.load.mockImplementation((id: string) => id === 'art.shore.landscape' ? Promise.resolve(null) : Promise.resolve('ok'));
+    const { result } = renderHook(() => useFirstScreenReady('dba.scene.shore', 'land-companion', true));
+    await waitFor(() => expect(result.current.status).toBe('failed'));
+    expect(art.load).not.toHaveBeenCalledWith('art.shore.ground');
+    art.load.mockResolvedValue('recovered');
+    await act(async () => result.current.retry());
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+  });
+  it.each(['shore','camp','yard','hall','path','night'])('waits for both actors on a cold %s resume', async name => {
+    const human = deferred<string>();
+    const guide = deferred<string>();
+    art.load.mockImplementation((id: string) => id === 'idle-front-01.png' ? human.promise : id === 'land-companion' ? guide.promise : Promise.resolve('ok'));
+    const { result } = renderHook(() => useFirstScreenReady(`dba.scene.${name}`));
+    await act(async () => { await Promise.resolve(); });
+    expect(result.current.status).toBe('loading');
+    await act(async () => human.resolve('human'));
+    expect(result.current.status).toBe('loading');
+    await act(async () => guide.resolve('guide'));
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+  });
+
+  it('turns a rejected actor loader into a retryable failure', async () => {
+    art.load.mockImplementation((id: string) => id === 'land-companion' ? Promise.reject(new Error('offline')) : Promise.resolve('ok'));
+    const { result } = renderHook(() => useFirstScreenReady('dba.scene.camp'));
+    await waitFor(() => expect(result.current.status).toBe('failed'));
+    art.load.mockResolvedValue('recovered');
+    await act(async () => result.current.retry());
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+  });
   it('stays loading while a required first-screen image is delayed, then becomes ready', async () => {
     const ground = deferred<string>();
     art.load.mockImplementation((id: string) => (id === 'art.shore.ground' ? ground.promise : Promise.resolve('ok')));

@@ -6,7 +6,7 @@ export function loadNamedAsset(id: string): Promise<string | null> {
   if (id.endsWith('.png') || id.endsWith('.webp') || id.startsWith('idle-') || id.startsWith('walk-') || id.startsWith('reach-')) {
     return loadFrame(id).then((url) => url || null);
   }
-  if (id.startsWith('land-') || id.startsWith('leap-')) {
+  if (id.startsWith('land-') || id.startsWith('leap-') || id.startsWith('pose-')) {
     return loadTraj(id);
   }
   return loadSlotAsset(id);
@@ -17,6 +17,6 @@ export function resolveNamedAsset(id: string): string | null {
   if (id.endsWith('.png') || id.endsWith('.webp') || id.startsWith('idle-') || id.startsWith('walk-') || id.startsWith('reach-')) {
     return frameUrl(id) ?? null;
   }
-  if (id.startsWith('land-') || id.startsWith('leap-')) return trajUrl(id) ?? null;
+  if (id.startsWith('land-') || id.startsWith('leap-') || id.startsWith('pose-')) return trajUrl(id) ?? null;
   return resolveSlotAsset(id);
 }

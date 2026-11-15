@@ -1,7 +1,8 @@
 import type { CompanionPose, HintAnchor } from './hints';
 import type { IslandScene } from './island';
-import { BANDS, GATES, SPOTS, YARD_RIGHT_STEP } from './stage';
+import { BANDS, GATES, SPOTS, YARD_RIGHT_STEP, plantOnGround } from './stage';
 import { clampToBand, type Point } from './walk';
+import { BRIDGE } from './bridge';
 
 /** Locked landings: opaque foot sits 8px above the 1152 canvas bottom. */
 export const NANAICHA_FOOT = { x: 0.5, y: 1144 / 1152 } as const;
@@ -59,7 +60,7 @@ export const SHORE_CAT_HEIGHT = 0.168;
 
 export type GazeStep = 'water' | 'food' | 'sleep' | 'danger' | 'done';
 
-export type CatBeat = 'S0' | 'S1' | 'S2' | 'C1' | 'C2' | 'C3' | 'Y0' | 'Y1' | 'Y2' | 'P0' | 'N0' | 'H0';
+export type CatBeat = 'S0' | 'S1' | 'S2' | 'C1' | 'C2' | 'C3' | 'Y0' | 'Y1' | 'Y2' | 'P0' | 'P1' | 'N0' | 'H0';
 
 export type CatPost = {
   x: number;
@@ -95,7 +96,7 @@ function gateAt(from: IslandScene, to: IslandScene): Point | null {
 
 /** Feet share the hotspot's ground y. Offset is horizontal so she does not cover the prop or the gate. */
 function plant(scene: IslandScene, at: Point, side: -1 | 1): Point {
-  return clampToBand({ x: at.x + side * 0.05, y: at.y }, BANDS[scene]);
+  return plantOnGround(scene, { x: at.x + side * 0.05, y: at.y });
 }
 
 function insideGate(scene: IslandScene, to: IslandScene): Point {
@@ -165,12 +166,17 @@ export function companionPost(
   }
 
   if (scene === 'dba.scene.path') {
+    if (flags[BRIDGE.agreed] === true || beats['dba.beat.danger'] === true) {
+      const feet = insideGate(scene, 'dba.scene.yard');
+      return { ...feet, look: 'path-stop', pose: 'look-back', targetId: 'path-west', beat: 'P1', queue: 'danger' };
+    }
     const feet = plant(scene, spotAt(scene, 'path-stop'), 1);
     return { ...feet, look: 'path-stop', pose: 'wait', targetId: 'path-stop', beat: 'P0', queue: queue === 'done' ? 'done' : 'danger' };
   }
 
   if (scene === 'dba.scene.night') {
-    const feet = plant(scene, spotAt(scene, 'night-read'), 1);
+    const scroll = spotAt(scene, 'night-read');
+    const feet = plantOnGround(scene, { x: scroll.x + 0.09, y: scroll.y });
     return { ...feet, look: 'old-layer', pose: 'curl', targetId: 'night-read', beat: 'N0', queue: 'guard' };
   }
 

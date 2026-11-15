@@ -37,7 +37,7 @@ describe('world foot projection', () => {
   it('bleeds parallax plates past a camera parked on the edge', () => {
     const sky = parallaxBleed(0.22, WORLD_SCALE);
     const ground = parallaxBleed(1, WORLD_SCALE);
-    expect(sky).toBeGreaterThan(0.2);
+    expect(sky).toBeGreaterThan(((WORLD_SCALE-1)/WORLD_SCALE)*.78);
     expect(ground).toBeLessThan(sky);
     expect(sky).toBeLessThanOrEqual(0.48);
   });
