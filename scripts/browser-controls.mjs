@@ -28,8 +28,7 @@ async function travel(to) {
 try {
   await page.goto(url);
   await page.getByRole('button', { name: '新游戏', exact: true }).tap();
-  for (let i = 0; i < 3; i++) await page.getByRole('button', { name: '下一幕', exact: true }).tap();
-  await page.getByRole('button', { name: '走上潮线', exact: true }).tap();
+  await page.getByRole('button', { name: '跳过序章', exact: true }).tap();
   await ready();
 
   // Native activation must reach the focused HUD control rather than the game shortcut.

@@ -6,6 +6,7 @@ import { decodeAssetUrl } from '../content/decodedImage';
 import { loadGated } from '../content/loadGate';
 import { WALK_ATLAS, WALK_ATLAS_FILES, walkAtlasFrame } from '../content/travelerWalkAtlas';
 import { SETTLE_ATLAS, SETTLE_ATLAS_FILES, settleAtlasFrame } from '../content/characterPerformanceAtlas';
+import {PAINTED_ACTORS, PAINTED_IDLE_FILES, paintedIdleFrame} from '../content/paintedActors';
 
 const cache = new Map<string, string>();
 
@@ -15,6 +16,11 @@ export function frameUrl(file: string): string | undefined {
 
 export function forgetFrame(file: string): void {
   recordLoadTrace({ event: 'forget', key: file });
+  if(paintedIdleFrame(file)){
+    cache.delete('painted-idle-atlas');
+    for(const id of PAINTED_IDLE_FILES)cache.delete(id);
+    notifyAssetUpdates();return;
+  }
   if (settleAtlasFrame(file)) {
     cache.delete('settle-atlas.png');
     for (const id of SETTLE_ATLAS_FILES) cache.delete(id);
@@ -42,6 +48,14 @@ export function loadFrame(file: string): Promise<string> {
   if (hit) return Promise.resolve(hit);
   const url = travelerFrameUrl(file);
   if (!url) return Promise.resolve('');
+  if(paintedIdleFrame(file)){
+    return loadGated('traveler-painted-idle','idle',()=>decodeAssetUrl(PAINTED_ACTORS.idle),cache,
+      {defer:true,cacheKey:'painted-idle-atlas'}).then(next=>{
+        if(!next)return '';
+        for(const id of PAINTED_IDLE_FILES)cache.set(id,travelerFrameUrl(id)!);
+        return cache.get(file)!;
+      });
+  }
   if (settleAtlasFrame(file)) {
     return loadGated('traveler-settle-atlas', 'idle', () => decodeAssetUrl(SETTLE_ATLAS.url), cache,
       { defer: true, cacheKey: 'settle-atlas.png' }).then(next => {
@@ -72,7 +86,7 @@ export function loadFrames(files: readonly string[]): Promise<string[]> {
 }
 
 if (import.meta.env.MODE === 'test') {
-  const modules = import.meta.glob<string>(['../assets/traveler/*.{png,webp}', '!../assets/traveler/settle-atlas.png', '!../assets/traveler/stride-atlas.png'], {
+  const modules = import.meta.glob<string>(['../assets/traveler/*.{png,webp}', '!../assets/traveler/settle-atlas.png', '!../assets/traveler/stride-atlas.png', '!../assets/traveler/action-atlas.png'], {
     eager: true,
     import: 'default',
   });

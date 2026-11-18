@@ -1,4 +1,4 @@
-import hero from '../../assets/companion/nanaicha/nanaicha-hero.png';
+import hero from '../../assets/art/actors/cat.webp';
 import silhouette from '../../assets/companion/nanaicha/nanaicha-silhouette.png';
 import kittenHero from '../../assets/companion/nanaicha/kitten/nanaicha-kitten-hero.png';
 import kittenSilhouette from '../../assets/companion/nanaicha/kitten/nanaicha-kitten-silhouette.png';

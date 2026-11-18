@@ -1,3 +1,5 @@
+import {pendingScript,scriptActive,traceStep} from './islandScript';
+import {SCRIPT_TRACES} from '../content/islandScript';
 import { HINT_PLANS, LEXEMES } from '../content/catalog';
 import { isLayerUnlocked, requirementsMet } from './conditions';
 import { canDepart, reviewTarget } from './island';
@@ -5,6 +7,7 @@ import type { HintLevel, HintPlanContent, SaveData } from './schema';
 import { isLearnedState } from './words';
 import { puzzleState } from './puzzles';
 import { bridgeState } from './bridge';
+import {pendingReading} from './reading';
 
 export type HintAnchor =
   | 'mural-entrance'
@@ -86,6 +89,14 @@ export function hintSituation(state: SaveData): HintPlanContent['when'] | null {
 }
 
 export function activeHintPlan(state: SaveData): HintPlanContent | null {
+  const script=state.screen==='island'&&state.overlay==='none'?pendingScript(state):undefined;
+  if(script&&script.scene===state.currentScene){const trace=SCRIPT_TRACES.find(t=>t.group===script.id&&traceStep(state,t.id)<t.moments.length-1);if(trace)return {...HINT_PLANS[0],id:`script.${trace.id}`,anchor:'mural-entrance',target:`trace:${trace.id}`,walk:false,paw:false};return null;}
+  if(scriptActive(state)&&script)return null;
+  const folio=state.screen==='island'&&state.overlay==='none'?pendingReading(state):undefined;
+  if(folio&&folio.scene===state.currentScene&&bridgeState(state).stage!=='agreed'){
+    const anchor=folio.id==='hearth'?'sleep':folio.id==='table'?'food-inspect':folio.id==='bridge'?'path-stop':folio.id==='palimpsest'?'old-layer':'mural-entrance';
+    return{...HINT_PLANS[0],id:`reading.${folio.id}`,anchor,target:folio.spot,walk:true,paw:true};
+  }
   const when = hintSituation(state);
   if (!when) return null;
   const plan = HINT_PLANS.find((plan) => plan.when === when) ?? null;

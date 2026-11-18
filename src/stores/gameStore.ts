@@ -1,3 +1,4 @@
+import {adoptScript} from '../core/islandScript';
 import { create } from 'zustand';
 import type { Point } from '../core/walk';
 import type { Action } from '../core/reduce';
@@ -22,7 +23,7 @@ interface GameStore {
 }
 
 export const useGame = create<GameStore>((set, get) => ({
-  save: storage.load() ?? newGameState(),
+  save: adoptScript(storage.load() ?? newGameState()),
   saveFailed: false,
   saveGeneration: 0,
   place: null,
@@ -33,11 +34,12 @@ export const useGame = create<GameStore>((set, get) => ({
     set({ save: next, saveFailed: !saved, place: action.type === 'new-game' ? null : get().place });
   },
   restore: (save) => {
+    save=adoptScript(save);
     if (!storage.save(save)) return false;
     set({ save, saveFailed: false, place: null, saveGeneration: get().saveGeneration + 1 });
     return true;
   },
   resetForTests: () => {
-    set({ save: storage.load() ?? newGameState(), saveFailed: false, place: null, saveGeneration: get().saveGeneration + 1 });
+    set({ save: adoptScript(storage.load() ?? newGameState()), saveFailed: false, place: null, saveGeneration: get().saveGeneration + 1 });
   },
 }));

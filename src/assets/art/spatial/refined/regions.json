@@ -1,0 +1,58 @@
+{
+  "shore-atlas": {
+    "x": 0,
+    "y": 0,
+    "width": 1672,
+    "height": 941,
+    "atlasWidth": 1672,
+    "atlasHeight": 941
+  },
+  "hall-atlas": {
+    "x": 0,
+    "y": 0,
+    "width": 1671,
+    "height": 941,
+    "atlasWidth": 1671,
+    "atlasHeight": 941
+  },
+  "gate": {
+    "x": 109,
+    "y": 207,
+    "width": 383,
+    "height": 327,
+    "atlasWidth": 1672,
+    "atlasHeight": 941
+  },
+  "mural": {
+    "x": 395,
+    "y": 387,
+    "width": 406,
+    "height": 173,
+    "atlasWidth": 1672,
+    "atlasHeight": 941
+  },
+  "spring": {
+    "x": 887,
+    "y": 494,
+    "width": 247,
+    "height": 197,
+    "atlasWidth": 1671,
+    "atlasHeight": 941
+  },
+  "spring-empty": {
+    "x": 887,
+    "y": 492,
+    "width": 263,
+    "height": 199,
+    "atlasWidth": 1672,
+    "atlasHeight": 941
+  },
+  "waystone": {
+    "x": 1083,
+    "y": 399,
+    "width": 391,
+    "height": 289,
+    "atlasWidth": 1671,
+    "atlasHeight": 941
+  }
+}

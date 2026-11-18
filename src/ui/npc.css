@@ -1,0 +1,21 @@
+.npc-figure{position:absolute;pointer-events:none;isolation:isolate}
+.npc-portrait{display:block;width:100%;height:100%;background-size:200% 200%;background-repeat:no-repeat}
+.npc-contact{position:absolute;z-index:-1;top:var(--npc-foot);left:24%;width:52%;height:6%;transform:translateY(-40%);border-radius:50%;background:#1c252655;filter:blur(2px)}
+.world-root[data-three-ready="true"] .npc-figure{opacity:0!important}
+.world-layer .hotspot.npc-talk{min-width:44px;min-height:44px;width:6%;height:14%;transform:translate(-50%,-98%);border:0!important;background:none!important;box-shadow:none!important;opacity:1;color:#f1e0b7}
+.world-layer .hotspot.npc-talk::before{display:none}
+.npc-talk .npc-bubble{position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:25px;height:25px;padding:4px;border-radius:50%;background:#26362dcc;border:1px solid #d0bd8680;opacity:.65}
+.npc-talk .npc-label{position:absolute;top:calc(100% + 3px);left:50%;transform:translateX(-50%);width:max-content;max-width:150px;padding:3px 8px;background:#182824de;border-radius:3px;font-size:12px;opacity:0}
+.npc-talk:is(.near,:hover,:focus-visible) .npc-label,.npc-talk:is(.near,:hover,:focus-visible) .npc-bubble{opacity:1}
+.npc-talk:focus-visible{outline:2px solid #ecd7a3!important;outline-offset:4px}
+.game-dialog[data-testid="npc-dialogue"]{width:min(850px,94vw);border:1px solid #b59b6b;background:linear-gradient(130deg,#23332e,#152523);color:#ede4ce}
+.npc-conversation{display:grid;grid-template-columns:170px 1fr;gap:26px;align-items:start}
+.npc-speaker>.npc-portrait{height:225px;width:169px;filter:drop-shadow(0 5px 12px #0004)}
+.npc-speaker p{font-size:13px;color:#d2c5a4;margin:8px 0}.npc-speaker small{font-size:10px;line-height:1.6;color:#a4b0a0}
+.npc-words blockquote{margin:14px 0 18px;padding:0 0 0 17px;border-left:2px solid #b49c67;font-family:"Songti SC",serif;font-size:17px;line-height:1.95;min-height:115px}
+.npc-source,.npc-next{font-size:12px;line-height:1.7;color:#b6c1ad}.npc-next{border-top:1px solid #c6b88530;padding-top:10px}
+.npc-topics{display:grid;gap:8px}.npc-topics>.btn{min-height:44px;text-align:left;display:flex;justify-content:space-between;gap:10px;font-size:13px;color:#eadfc1;background:#304138;border:1px solid #c3ac7350}.npc-topics>.btn[aria-pressed="true"]{border-color:#e4ca90;background:#435043}.npc-topics small{white-space:nowrap;opacity:.7}
+.npc-dialogue-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;flex-wrap:wrap}.npc-dialogue-actions>.btn{min-height:44px}
+.npc-notes{margin-top:24px;border-top:1px solid #9f865d66;padding-top:12px;font-size:13px}.npc-notes>p{opacity:.7}.npc-notes details{padding:9px 0;border-bottom:1px solid #9f865d33}.npc-notes summary{cursor:pointer;min-height:28px}.npc-notes details p{line-height:1.85}
+@media(max-width:600px){.npc-conversation{grid-template-columns:1fr;gap:8px}.npc-speaker{display:none}.npc-words blockquote{font-size:16px;min-height:0}.npc-dialogue-actions>.btn{flex:1}.npc-topics>.btn{font-size:12px}}
+.world-layer .hotspot.npc-talk{padding:0;backdrop-filter:none!important}

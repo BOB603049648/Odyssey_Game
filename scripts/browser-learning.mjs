@@ -40,8 +40,7 @@ async function setup(mobile = false, seed) {
   if (seed) await activate(button('继续'));
   else {
     await activate(button('新游戏'));
-    for (let n = 0; n < 3; n++) await activate(button('下一幕'));
-    await activate(button('走上潮线')); await ready();
+    await activate(button('跳过序章')); await ready();
   }
   async function spot(id) {
     await ready(); const el = page.getByTestId(id);

@@ -154,8 +154,8 @@ describe('hotspot acceptance', () => {
   it.each(['empty', 'carried', 'filled', 'done'] as const)('keeps cup and source anchors exclusive while water is %s', stage => {
     const active = shoreSpots(stage);
     const view = render(<PlateStack plate="dba.scene.shore" previous={null} activeSpots={active} />);
-    expect([...view.container.querySelectorAll('[data-interactable="yes"]')].map(node => node.getAttribute('data-spot')).sort()).toEqual([...active].sort());
-    expect(active).toHaveLength(stage === 'carried' ? 6 : 5);
+    expect([...view.container.querySelectorAll('[data-interactable="yes"]')].map(node => node.getAttribute('data-spot')).sort()).toEqual(active.filter(id=>!id.startsWith('npc:')).sort());
+    expect(active.filter(id=>!id.startsWith('npc:'))).toHaveLength(stage === 'carried' ? 6 : 5);
     expect(screen.queryByTestId('prop-art.shore.prop.gourd') !== null).toBe(stage !== 'carried');
     for (const id of ['puzzle.shore.spring', 'puzzle.shore.sea']) {
       const node = screen.queryByTestId(`prop-${id}`);

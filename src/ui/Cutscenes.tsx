@@ -1,3 +1,5 @@
+import {scriptActive} from '../core/islandScript';
+import {SCRIPT_WORDS} from '../content/islandScript';
 import { GameDialog } from './GameDialog';
 import { isLearnedState } from '../core/words';
 import { RELEASE_VERSION } from '../release';
@@ -49,10 +51,10 @@ export function Cutscenes({
   if (completionPending(save)) {
     const dismiss = () => dispatch({ type: 'dismiss-completion' });
     return <GameDialog title="第一章 · 潮声之后" testId="chapter-complete" onClose={dismiss}>
-      <p className="eyebrow">东巴岛 · 旅程完成</p>
-      <p>你在陌生的文字里找到了水、食物与栖身处，也学会了在危险前停下。奈奈茶还在身旁，下一段海路已经留在图上。</p>
+      <p className="eyebrow">雾汀岛 · 旅程完成</p>
+      <p>你在陌生的文字里找到了水、食物与栖身处，也学会了在危险前停下。同行的猫还在身旁，下一段海路已经留在图上。</p>
       <div className="completion-stats"><span><strong>4 / 4</strong>生存经历</span>
-        <span><strong>{Object.values(save.words).filter(word => isLearnedState(word.state)).length} / 28</strong>认识的字</span>
+        <span><strong>{scriptActive(save)?SCRIPT_WORDS.filter(w=>isLearnedState(save.words[`dba.word.${w[0]}`]?.state)).length:Object.values(save.words).filter(word => isLearnedState(word.state)).length} / {scriptActive(save)?18:28}</strong>认识的字</span>
         <span><strong>{save.evidence.length}</strong>旅途线索</span></div>
       <p>v{RELEASE_VERSION} 的故事在这里告一段落。可以留在岛上补齐线索、复习文字，或稍后继续探索。进度会自动保存。</p>
       <div className="row"><button className="btn primary" onClick={dismiss}>留在岛上探索</button>

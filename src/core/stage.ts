@@ -49,7 +49,7 @@ export const SPAWNS: Record<IslandScene, Point> = {
 
 export const GATES: readonly Gate[] = [
   { from: 'dba.scene.shore', to: 'dba.scene.camp', x: 0.9, y: 0.74, r: 0.04, edge: 'east', arrival: { x: 0.34, y: 0.84 } },
-  { from: 'dba.scene.shore', to: 'dba.scene.hall', x: 0.11, y: 0.7, r: 0.04, edge: 'west', arrival: { x: 0.48, y: 0.6 } },
+  { from: 'dba.scene.shore', to: 'dba.scene.hall', x: 0.17, y: 0.62, r: 0.04, edge: 'north', arrival: { x: 0.48, y: 0.6 } },
   { from: 'dba.scene.camp', to: 'dba.scene.shore', x: 0.1, y: 0.84, r: 0.04, edge: 'west', arrival: { x: 0.7, y: 0.62 } },
   { from: 'dba.scene.camp', to: 'dba.scene.yard', x: 0.9, y: 0.84, r: 0.04, edge: 'east', arrival: { x: 0.28, y: 0.92 } },
   { from: 'dba.scene.camp', to: 'dba.scene.night', x: 0.5, y: 0.8, r: 0.04, edge: 'north', arrival: { x: 0.55, y: 0.75 } },
@@ -136,6 +136,12 @@ export const SHORE_PROP_FOOTPRINTS = [
   { id: 'shore-driftwood', minX: 0.27, maxX: 0.43, minY: 0.70, maxY: 0.75 },
   { id: 'island-gourd', minX: 0.55, maxX: 0.67, minY: 0, maxY: 0.70 },
 ] as const;
+/** The reading furniture has a finite footprint; leave a narrow northern
+ * aisle so a traveler can pass behind it rather than through its legs. */
+export const HALL_PROP_FOOTPRINTS = [
+  {id:'hall-mural',minX:.412,maxX:.575,minY:.565,maxY:.590},
+  {id:'hall-stamps',minX:.615,maxX:.723,minY:.565,maxY:.590},
+] as const;
 export const BRIDGE_KNOTS = [[.11,.43],[.24,.46],[.36,.50],[.52,.55],[.66,.61],[.77,.69]] as const;
 /** Reading table, hearth and cloak rock stand above their southern ground line. */
 export const NIGHT_FOOTPRINTS = [
@@ -175,7 +181,7 @@ export function plantOnGround(scene: IslandScene, pos: Point): Point {
   ) {
     y = SHORE_MARKER.sandY;
   }
-  if (scene === 'dba.scene.shore') for (const box of SHORE_PROP_FOOTPRINTS) {
+  for (const box of scene === 'dba.scene.shore'?SHORE_PROP_FOOTPRINTS:scene === 'dba.scene.hall'?HALL_PROP_FOOTPRINTS:[]) {
     if (x <= box.minX || x >= box.maxX || y <= box.minY || y >= box.maxY) continue;
     if (box.minY < band.minY) { y = box.maxY; continue; }
     const edges = [{ x, y: box.minY }, { x, y: box.maxY }, { x: box.minX, y }, { x: box.maxX, y }];
@@ -185,9 +191,20 @@ export function plantOnGround(scene: IslandScene, pos: Point): Point {
   return { x, y };
 }
 
+/** Inspect the reading surface from its front edge, even when its authored
+ * hotspot falls closer to the furniture's northern collision edge. */
+export function interactionStandPoint(scene:IslandScene,spot:Spot):Point{
+  // Stand beside a person, not on the same painted feet.
+  if(spot.id.startsWith('npc:'))return plantOnGround(scene,{x:spot.x-.04,y:spot.y});
+  const alias=spot.id==='trace:witness-lines'?'hall-mural':spot.id==='trace:witness-seal'?'hall-stamps':spot.id;
+  const furniture=scene==='dba.scene.hall'?HALL_PROP_FOOTPRINTS.find(item=>item.id===alias):undefined;
+  return furniture?{x:spot.x,y:furniture.maxY+.006}:plantOnGround(scene,spot);
+}
+
 /** Raised props can be reached from the ground directly in front of them. */
 export function standsAt(scene: IslandScene, spot: Spot, pos: Point): boolean {
   if (inRadius(pos, spot, spot.r)) return true;
+  if(spot.id.startsWith('trace:'))return inRadius(pos,interactionStandPoint(scene,spot),spot.r);
   // The amount boards sit on the facade, 0.04 above the walkable step.
   // Keep their art anchors and the facade collision; reach from the step.
   if (scene === 'dba.scene.yard' &&

@@ -1,4 +1,5 @@
-import atlasUrl from '../assets/traveler/action-atlas.png';
+import {PAINTED_ACTORS,paintedTravelerFrame} from './paintedActors';
+const atlasUrl=PAINTED_ACTORS.action;
 
 /** Authored shoulder/elbow/wrist and seated poses. Keep the full transparent
  * source; cells share a body scale and a measured ground-contact baseline. */
@@ -10,13 +11,7 @@ export const ACTION_FILES = {
 };
 export const ACTION_ATLAS_FILES = Object.values(ACTION_FILES).flat();
 export function actionAtlasFrame(file: string) {
-  const index = ACTION_ATLAS_FILES.indexOf(file);
-  if (index < 0) return null;
-  const row = Math.floor(index / 4), column = index % 4;
-  const width = 271.5, height = 362;
-  return { file, x: column * 362 + 181 - width / 2, y: row * 362,
-    width, height, sole: row === 2 ? 335 : 356,
-    atlasWidth: ACTION_ATLAS.width, atlasHeight: ACTION_ATLAS.height };
+  return ACTION_ATLAS_FILES.includes(file)?paintedTravelerFrame(file):null;
 }
 export function actionAtlasSource(src: string) {
   return src.startsWith(`${atlasUrl}#`) ? actionAtlasFrame(src.slice(atlasUrl.length + 1)) : null;

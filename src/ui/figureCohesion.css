@@ -1,0 +1,5 @@
+/* Fallback DOM and loading frames share the environmental exposure. The WebGL
+   figures additionally receive the painted local window/fire illumination. */
+.world-root .traveler-frames,
+.world-root .npc-portrait,
+.world-root .nanaicha-figure { filter: var(--figure-light, none); }

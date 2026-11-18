@@ -54,7 +54,7 @@ describe('shore ground vs sky layout', () => {
     expect(shoreGates).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ to: 'dba.scene.camp', x: 0.9, y: 0.74, r: 0.04 }),
-        expect.objectContaining({ to: 'dba.scene.hall', x: 0.11, y: 0.7, r: 0.04 }),
+        expect.objectContaining({ to: 'dba.scene.hall', x: 0.17, y: 0.62, r: 0.04, edge: 'north' }),
       ]),
     );
   });

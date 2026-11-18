@@ -1,3 +1,4 @@
+import {scriptActive} from './islandScript';
 import type { SaveData } from './schema';
 import { isLearnedState, transitionWord } from './words';
 
@@ -58,6 +59,7 @@ export function applyBridgeAction(save: SaveData, action: BridgeAction): SaveDat
   }
   if (!bridge.boards || !bridge.rope) return respond(save, 'no', 'spot.bridge.observeFirst');
   if (action.move === 'decipher') {
+    if(scriptActive(save))return save;
     const id = 'dba.word.wait', word = save.words[id];
     if (!word || known(save, id)) return save;
     if (!known(save, 'dba.word.danger')) return respond(save, 'no', 'spot.bridge.unknown');

@@ -1,0 +1,31 @@
+.world-layer .scenic-exit {
+  position:absolute; z-index:10; display:block; width:clamp(66px,6.3%,118px);
+  aspect-ratio:140/150; padding:0; border:0; background:none;
+  transform:translate(-50%,-90%); cursor:pointer; touch-action:none;
+  color:#d9c395; filter:saturate(.78); -webkit-tap-highlight-color:transparent;
+}
+.scenic-exit svg { display:block; width:100%; height:100%; overflow:visible; pointer-events:none; }
+.scenic-prop-shadow { fill:#282c23; opacity:.32; }
+.scenic-sign-writing { fill:#e4d2a5; font-family:"Songti SC",SimSun,serif; font-size:15px; letter-spacing:3px; paint-order:stroke; stroke:#463d2b; stroke-width:.45; }
+.world-layer .scenic-exit-door { width:clamp(90px,8.5%,165px); }
+.world-layer .scenic-exit-trail { width:clamp(100px,9%,174px); aspect-ratio:160/90; transform:translate(-50%,-50%); opacity:.65; }
+.scenic-exit small { position:absolute; inset:auto 0 -1em; font-size:12px; font-family:"Songti SC",SimSun,serif; letter-spacing:.2em; color:#ecdfb8; text-shadow:0 1px 3px #17231c; opacity:0; transition:opacity .2s; }
+.scenic-exit.near,.scenic-exit.selected,.scenic-exit:hover { filter:saturate(.94) brightness(1.12); }
+.scenic-exit-trail.near,.scenic-exit-trail.selected,.scenic-exit-trail:hover { opacity:1; }
+.scenic-exit.near small,.scenic-exit:focus-visible small { opacity:1; }
+.scenic-exit.selected .scenic-trail-mark { filter:drop-shadow(0 0 5px #efdca15c); }
+.scenic-door-light { opacity:.24; transition:opacity .3s; }
+.scenic-exit.near .scenic-door-light,.scenic-exit:hover .scenic-door-light { opacity:.7; }
+.scenic-exit:focus-visible { outline:1px dashed #e3cda0; outline-offset:5px; border-radius:4px; }
+.scenic-exit[data-night="yes"] { filter:saturate(.65) brightness(.85); }
+/* Navigation remains announced to assistive technology; scenery carries the
+ * visual direction. Blocked-ground feedback is still shown normally. */
+.navigation-notice[data-kind="exit"],.navigation-notice[data-kind="travel"] {
+  position:absolute!important; width:1px!important; height:1px!important; padding:0!important;
+  margin:-1px!important; overflow:hidden; clip-path:inset(50%); white-space:nowrap;
+}
+@media(prefers-reduced-motion:reduce){.scenic-exit * { transition:none; }}
+
+/* Paths are thresholds in the painting, with a quiet ground mark on approach. */
+.world-layer .scenic-exit-trail{width:clamp(52px,5%,86px);opacity:.18;color:#dcc89d}
+.world-layer .scenic-exit-trail:is(.near,.selected,:hover,:focus-visible){opacity:.8}

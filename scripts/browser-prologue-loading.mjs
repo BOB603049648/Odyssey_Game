@@ -23,15 +23,21 @@ try {
     await cdp.send('Network.emulateNetworkConditions', { offline: false, latency: 150, downloadThroughput: 125000, uploadThroughput: 62500 });
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
     const waits = [];
+    await page.evaluate(() => {
+      window.__cutStarted = performance.now();
+      window.__lastRequested = null;
+      window.__filmObserver = new MutationObserver(() => {
+        const value = document.querySelector('[data-testid="prologue"]')?.dataset.prologueStep;
+        if (value !== undefined && value !== window.__lastRequested) {
+          window.__lastRequested = value; window.__cutStarted = performance.now();
+        }
+      });
+      window.__filmObserver.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['data-prologue-step'], childList: true });
+    });
+    await page.getByRole('button', { name: '新游戏', exact: true }).click();
     for (let step = 0; step < 4; step++) {
-      const button = page.getByRole('button', { name: step === 0 ? '新游戏' : '下一幕', exact: true });
-      await button.evaluate(node => node.addEventListener('click', () => { window.__cutStarted = performance.now(); }, { once: true }));
-      await button.click();
       await ready(page, step);
-      // Count from the actual click, excluding Playwright's font/layout wait.
       waits.push(await page.evaluate(() => Math.round(performance.now() - window.__cutStarted)));
-      // Much quicker than each 9–10 second shot; stresses early manual cuts.
-      await page.waitForTimeout(1000);
     }
     const resources = await page.evaluate(() => performance.getEntriesByType('resource')
       .filter(item => /prologue|\.mp3/.test(item.name)).map(item => ({ url: item.name.split('/').pop(), start: item.startTime, duration: item.duration, bytes: item.transferSize })));
@@ -41,7 +47,7 @@ try {
     assert.deepEqual(errors, []);
     if (!baseline) {
       assert(waits[0] < 2500, `first shot took ${waits[0]} ms`);
-      assert(Math.max(...waits.slice(1)) < 1800, `manual cuts waited ${waits.slice(1)} ms`);
+      assert(Math.max(...waits.slice(1)) < 1800, `automatic cuts waited ${waits.slice(1)} ms`);
       assert(!resources.some(item => /^(select|answer-right|word-learn)-/.test(item.url)), 'island SFX must not compete with prologue images');
     }
     console.log(JSON.stringify({ viewport: { width, height }, waits }));
@@ -57,14 +63,14 @@ try {
       if (!route.request().url().includes('-preview-')) await detailGate;
       await route.continue();
     });
-    // Full-resolution failure/stalling must never freeze the shot clock or Next.
+    // Full-resolution failure/stalling must never freeze the shot clock or automatic progression.
     await page.goto(url);
     await page.getByRole('button', { name: '新游戏', exact: true }).click();
     await ready(page, 0);
     await page.waitForTimeout(1000);
     const shot = page.getByTestId('still-frame');
     assert((await shot.locator('img').getAttribute('src')).includes('-preview-'));
-    const progress = () => page.locator('[aria-current="step"] i').evaluate(node => Number(node.style.transform.match(/scaleX\(([^)]+)\)/)[1]));
+    const progress = () => page.getByTestId('prologue').evaluate(node => Number(node.dataset.elapsed));
     const before = await progress();
     await page.screenshot({ path: resolve(output, 'preview.png') });
     release();
@@ -82,11 +88,9 @@ try {
       const fallback = await fallbackContext.newPage();
       await fallback.route('**/prologue-*.webp', route => route.request().url().includes('-preview-') === failPreview ? route.abort('failed') : route.continue());
       await fallback.goto(url);
-      for (let step = 0; step < 4; step++) {
-        await fallback.getByRole('button', { name: step === 0 ? '新游戏' : '下一幕', exact: true }).click();
-        await ready(fallback, step);
-      }
-      assert.equal(await fallback.getByRole('button', { name: '走上潮线', exact: true }).isEnabled(), true);
+      await fallback.getByRole('button', { name: '新游戏', exact: true }).click();
+      for (let step = 0; step < 4; step++) await ready(fallback, step);
+      await fallback.locator('[data-testid="walk-stage"][data-display="ready"]').waitFor();
       await fallbackContext.close();
     }
   }

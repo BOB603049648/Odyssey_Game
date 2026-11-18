@@ -1,3 +1,7 @@
+import {sceneFigureFilter} from '../content/sceneScale';
+import './figureCohesion.css';
+import {SCRIPT_TRACES} from '../content/islandScript';
+import {IslandGlyph} from './IslandGlyph';
 import { useTravelerAudio } from '../audio/useTravelerAudio';
 import { useCharacterAction } from './characterActionTimeline';
 import { companionPerformanceKind, useCompanionPerformance } from './companionPerformance';
@@ -8,7 +12,7 @@ import { useCatRecordRecovery } from './useCatRecordRecovery';
 import { getShoreVisualProfile } from '../dev/shoreVisualProfile';
 import { catDisplaySnapshot, lookupCatDisplay, writeCatDisplayAttributes } from './catDisplay';
 import { travelerContactFile } from './hemPunch';
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import type { CatPost } from '../core/companionPost';
 import { companionFace, NANAICHA_HEIGHT, SHORE_CAT_HEIGHT } from '../core/companionPost';
 import { catMotionGeometry } from './catMotionGeometry';
@@ -16,7 +20,7 @@ import { companionFrameId, trajClip, type GuidePhase, type TrajClip } from '../c
 import type { CompanionPose, HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
 import type { HintLevel } from '../core/schema';
-import { BANDS, SPAWNS, SPOTS, closestSpot, gateApproach, gateCrossing, gatesFrom, nearestSpot, plantOnGround, standsAt, type Gate, type GateEdge } from '../core/stage';
+import { BANDS, SPAWNS, SPOTS, closestSpot, gateApproach, gateCrossing, gatesFrom, interactionStandPoint, nearestSpot, plantOnGround, standsAt, type Gate, type GateEdge } from '../core/stage';
 import { stepWorld } from '../core/worldLoop';
 import { groundRoute, groundStep, groundTargetPoint, selectGroundTarget } from '../core/navigation';
 import {
@@ -51,7 +55,7 @@ import { forgetTraj, loadTraj, trajUrl } from './trajArt';
 import { contactLift, contactOpacity, depthScale, worldToScreen } from '../core/world';
 import { catContactUrl, clippedBootUrl } from './soleClip';
 import { FirstScreenGate } from './FirstScreenGate';
-import { facingFromMove, TravelerView, travelerHeight, useTravelerPresentation, type TravelerFacing } from './Traveler';
+import { facingFromMove, TravelerView, travelerHeight, useTravelerPresentation, TRAVELER_HEIGHT, WALK_STRIDE, WALK_CYCLE_HZ, type TravelerFacing } from './Traveler';
 import { useFirstScreenReady } from './firstScreenReady';
 import { useAssetSrc } from './useAssetSrc';
 
@@ -59,8 +63,14 @@ import { WalkStick } from './WalkStick';
 import { StageControls } from './StageControls';
 import { WorldFeedback } from './WorldFeedback';
 import { GroundGuide, NavigationNotice } from './Wayfinding';
+import { ScenicExit } from './ScenicExit';
+import { pickSpatialGround, spatialBodyDistance, spatialVelocity } from '../render/spatialRegistry';
 import { useCrossfade } from './useCrossfade';
 import { useShoreCuePresentation } from './useShoreCuePresentation';
+import {npcForScene} from '../content/npcJourney';
+import {NpcFigure} from './NpcFigure';
+
+const ThreeWorld = lazy(() => import('../render/three/ThreeWorld').then(mod => ({ default: mod.ThreeWorld })));
 
 type Hint = { level: HintLevel; anchor: HintAnchor; wordId: string | null; pose: CompanionPose };
 export type NavigationStatus = { scene: IslandScene; message: string; kind: 'blocked' | 'exit' | 'travel' };
@@ -182,6 +192,7 @@ export function WalkLayer({
   onReady?: (scene: IslandScene, ready: boolean) => void;
 }) {
   const painted = !presentationFrozen;
+  const threeEnabled = painted && new URLSearchParams(window.location.search).get('renderer') === 'three';
   const { visible, reduced } = usePagePresentation();
   const firstScreen = useFirstScreenReady(scene, 'land-companion', painted);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -189,6 +200,7 @@ export function WalkLayer({
   const catSoleRef = useRef<HTMLImageElement>(null);
   const catDiagnosticRef = useRef<HTMLOutputElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
+  const worldRootRef = useRef<HTMLDivElement>(null);
   const pending = useRef<{ point: Point; facing: TravelerFacing } | null>(null);
   const sceneRef = useRef(scene);
   const spotsRef = useRef(spots);
@@ -421,11 +433,12 @@ export function WalkLayer({
     }
   }
 
-  function beginReach(point?: Point) {
+  function beginReach(point?: Point & {id?:string}) {
     stopWalking();
     setRejectedGround(null);
     setFacing(current => point && point.x < posRef.current.x - .005 ? 'left' : point && point.x > posRef.current.x + .005 ? 'right' : current === 'left' ? 'left' : 'right');
-    body.begin('reach');
+    if(point?.id?.startsWith('npc:'))body.cancel();
+    else body.begin('reach');
   }
 
   function interruptForMovement() {
@@ -450,7 +463,7 @@ export function WalkLayer({
   }
 
   function travelTo(gate: Gate) {
-    if (pausedRef.current || pending.current || gate.from !== sceneRef.current) return;
+    if (pausedRef.current || worldRootRef.current?.dataset.threeTransition==='loading' || pending.current || gate.from !== sceneRef.current) return;
     interruptForMovement();
     held.current.clear();
     stickRef.current = null;
@@ -471,10 +484,11 @@ export function WalkLayer({
   }
 
   function onGround(event: React.PointerEvent<HTMLDivElement>) {
-    if (pausedRef.current || event.button !== 0) return;
+    if (pausedRef.current || worldRootRef.current?.dataset.threeTransition==='loading' || event.button !== 0) return;
     const rect = worldRef.current?.getBoundingClientRect();
     if (!rect) return;
-    const point = pointerToWorld(event.clientX, event.clientY, rect);
+    const spatial=pickSpatialGround(viewportRef.current,event.clientX,event.clientY);
+    const point = spatial===undefined?pointerToWorld(event.clientX, event.clientY, rect):spatial;
     if (!point) return;
     const choice = selectGroundTarget(sceneRef.current, posRef.current, point);
     if (choice.kind === 'rejected') {
@@ -489,7 +503,8 @@ export function WalkLayer({
   function onGroundHover(event: React.PointerEvent<HTMLDivElement>) {
     if (event.pointerType !== 'mouse') return;
     const rect = worldRef.current?.getBoundingClientRect();
-    const point = rect && pointerToWorld(event.clientX, event.clientY, rect);
+    const spatial=pickSpatialGround(viewportRef.current,event.clientX,event.clientY);
+    const point = spatial===undefined?rect && pointerToWorld(event.clientX, event.clientY, rect):spatial;
     event.currentTarget.dataset.walkable = point && groundTargetPoint(sceneRef.current, point) ? 'yes' : 'no';
   }
 
@@ -500,7 +515,7 @@ export function WalkLayer({
         escapeRef.current();
         return;
       }
-      if (pausedRef.current) return;
+      if (pausedRef.current || worldRootRef.current?.dataset.threeTransition==='loading') return;
       const target = event.target instanceof Element ? event.target : null;
       if (target?.closest('input, textarea, select, [contenteditable="true"]')) return;
       if (isInteractKey(event)) {
@@ -568,7 +583,7 @@ export function WalkLayer({
     const tick = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
-      if (!pausedRef.current) {
+      if (!pausedRef.current && worldRootRef.current?.dataset.threeTransition!=='loading') {
         const lying = restingRef.current;
         if (lying) {
           velocityRef.current = { x: 0, y: 0 };
@@ -583,6 +598,7 @@ export function WalkLayer({
         const desired = postRef.current;
         const stepped = stepWorld({
           scene: sceneRef.current,
+          groundVelocity:(at,wish)=>spatialVelocity(viewportRef.current,at,wish,travelerHeight(sceneRef.current)),
           walker: { pos: from, velocity: lying ? { x: 0, y: 0 } : velocityRef.current, seek: lying ? null : targetRef.current },
           intent: { move: lying ? null : heldDirection(), seek: lying ? null : targetRef.current },
           band: BANDS[sceneRef.current],
@@ -600,6 +616,8 @@ export function WalkLayer({
         // discarded every frame. Clear only the old intent when rest starts.
         if (!lying) targetRef.current = stepped.walker.seek;
         const speed = groundDistance(stepped.walker.velocity, { x: 0, y: 0 });
+        const bodies=spatialBodyDistance(viewportRef.current,from,stepped.walker.pos,travelerHeight(sceneRef.current));
+        const power=bodies===undefined?speed/WALK_SPEED:bodies/(WALK_STRIDE/TRAVELER_HEIGHT)/Math.max(dt,1e-6)/WALK_CYCLE_HZ;
         if (stepped.walker.moving) {
           apply(
             stepped.walker.pos,
@@ -607,7 +625,7 @@ export function WalkLayer({
             stepped.walker.blocked,
             stepped.walker.velocity.x,
             stepped.walker.velocity.y,
-            Math.min(1, speed / WALK_SPEED),
+            Math.min(1, power),
           );
         } else if (movingRef.current) {
           movingRef.current = false;
@@ -646,90 +664,97 @@ export function WalkLayer({
         smoothRef.current = nextCam;
         setCam(nextCam);
       }
-      const sole = soleRef.current;
-      const vp = viewportRef.current;
-      const img = vp?.querySelector('.traveler-figure');
-      const catImg = vp?.querySelector('.nanaicha-ground');
-      const anchor = vp?.querySelector('[data-testid="companion-anchor"]');
-      const worldContact = vp?.dataset.groundDepth === 'world';
-      // Capture the same-frame containing origin before any contact writes. No second scale/support adjustment.
-      const contactOrigin = worldContact ? worldRef.current?.getBoundingClientRect() : vp?.getBoundingClientRect();
-      const humanRect = img instanceof HTMLImageElement ? img.getBoundingClientRect() : null;
-      const catRect = catImg instanceof HTMLImageElement ? catImg.getBoundingClientRect() : null;
-      if (sole && vp && img instanceof HTMLImageElement && humanRect && contactOrigin) {
-        const ir = humanRect;
-        const pose = vp.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose');
-        if (pose === 'lie' || img.dataset.atlas || ir.width < 2) {
-          sole.style.visibility = 'hidden';
-        } else {
-          sole.style.visibility = 'visible';
-          const src = img.currentSrc || img.src;
-          if (sole.dataset.base !== src) {
-            const clipped = clippedBootUrl(img);
-            if (clipped) {
-              sole.dataset.base = src;
-              sole.src = clipped;
-              sole.dataset.contact = travelerContactFile(src) ? 'contour' : 'legacy';
+      // Three owns visible contacts; measuring the hidden DOM sprites here
+      // would force layout every animation frame for no visible work.
+      if(worldRootRef.current?.dataset.threeReady!=='true') {
+        const sole = soleRef.current;
+        const vp = viewportRef.current;
+        const img = vp?.querySelector('.traveler-figure');
+        const catImg = vp?.querySelector('.nanaicha-ground');
+        const anchor = vp?.querySelector('[data-testid="companion-anchor"]');
+        const worldContact = vp?.dataset.groundDepth === 'world';
+        // Capture the same-frame containing origin before any contact writes. No second scale/support adjustment.
+        const contactOrigin = worldContact ? worldRef.current?.getBoundingClientRect() : vp?.getBoundingClientRect();
+        const humanRect = img instanceof HTMLImageElement ? img.getBoundingClientRect() : null;
+        const catRect = catImg instanceof HTMLImageElement ? catImg.getBoundingClientRect() : null;
+        if (sole && vp && img instanceof HTMLImageElement && humanRect && contactOrigin) {
+          const ir = humanRect;
+          const pose = vp.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose');
+          if (pose === 'lie' || img.dataset.atlas || ir.width < 2) {
+            sole.style.visibility = 'hidden';
+          } else {
+            sole.style.visibility = 'visible';
+            const src = img.currentSrc || img.src;
+            if (sole.dataset.base !== src) {
+              const clipped = clippedBootUrl(img);
+              if (clipped) {
+                sole.dataset.base = src;
+                sole.src = clipped;
+                sole.dataset.contact = travelerContactFile(src) ? 'contour' : 'legacy';
+              }
+            }
+            const box = worldContactBox(ir, contactOrigin, 14);
+            sole.style.left = `${box.left}px`;
+            sole.style.top = `${box.top}px`;
+            sole.style.width = `${box.width}px`;
+            sole.style.height = `${box.height}px`;
+            sole.style.setProperty('--fit', box.fit.toFixed(4));
+            if (worldContact && sole.dataset.base !== src) sole.style.visibility = 'hidden';
+            sole.style.transform = img.parentElement?.getAttribute('data-mirror') === 'yes' ? 'scaleX(-1)' : 'none';
+          }
+        }
+        const catSole = catSoleRef.current;
+        const actualContact = vp?.dataset.catContactSource === 'actual';
+        const displayedCat = actualContact && catImg instanceof HTMLImageElement ? lookupCatDisplay(catImg.currentSrc || catImg.src) : null;
+        const shoreCat =
+          vp?.getAttribute('data-scene') === 'dba.scene.shore' &&
+          (actualContact ? displayedCat !== null : (anchor?.getAttribute('data-sprite') ?? '').startsWith('land-shore'));
+        if (catSole && vp && shoreCat && catImg instanceof HTMLImageElement && anchor instanceof HTMLElement && catRect && contactOrigin) {
+          const cr = catRect;
+          const tip = actualContact ? displayedCat!.supportY : parseFloat(anchor.style.getPropertyValue('--sole-y')) / 100;
+          if (cr.width < 2 || !Number.isFinite(tip)) {
+            catSole.style.visibility = 'hidden';
+          } else {
+            const src = catImg.currentSrc || catImg.src;
+            const key = `${src}@${tip.toFixed(4)}`;
+            if (catSole.dataset.base !== key) {
+              const contact = catContactUrl(catImg, tip);
+              if (contact) {
+                catSole.dataset.base = key;
+                catSole.src = contact;
+              }
+            }
+            if (catSole.dataset.base === key) {
+              const box = worldContactBox(cr, contactOrigin, 16);
+              const fit = box.fit;
+              catSole.style.visibility = 'visible';
+              catSole.style.left = `${box.left}px`;
+              catSole.style.top = `${box.top}px`;
+              catSole.style.width = `${box.width}px`;
+              catSole.style.height = `${box.height}px`;
+              catSole.style.setProperty('--fit', fit.toFixed(4));
+              catSole.style.setProperty('--cat-a', `${((tip - 0.09) * fit * 100).toFixed(2)}%`);
+              catSole.style.setProperty('--cat-b', `${((tip - 0.05) * fit * 100).toFixed(2)}%`);
+              catSole.style.setProperty('--cat-c', `${Math.min(97, (tip + 0.11) * fit * 100).toFixed(2)}%`);
+              catSole.style.setProperty('--cat-d', `${Math.min(99.2, (tip + 0.15) * fit * 100).toFixed(2)}%`);
+              catSole.style.transform = anchor.getAttribute('data-face') === 'left' ? 'scaleX(-1)' : 'none';
+            } else if (actualContact) {
+              catSole.style.visibility = 'hidden'; // Never retain another image's contact after an unmatched swap.
             }
           }
-          const box = worldContactBox(ir, contactOrigin, 14);
-          sole.style.left = `${box.left}px`;
-          sole.style.top = `${box.top}px`;
-          sole.style.width = `${box.width}px`;
-          sole.style.height = `${box.height}px`;
-          sole.style.setProperty('--fit', box.fit.toFixed(4));
-          if (worldContact && sole.dataset.base !== src) sole.style.visibility = 'hidden';
-          sole.style.transform = img.parentElement?.getAttribute('data-mirror') === 'yes' ? 'scaleX(-1)' : 'none';
-        }
-      }
-      const catSole = catSoleRef.current;
-      const actualContact = vp?.dataset.catContactSource === 'actual';
-      const displayedCat = actualContact && catImg instanceof HTMLImageElement ? lookupCatDisplay(catImg.currentSrc || catImg.src) : null;
-      const shoreCat =
-        vp?.getAttribute('data-scene') === 'dba.scene.shore' &&
-        (actualContact ? displayedCat !== null : (anchor?.getAttribute('data-sprite') ?? '').startsWith('land-shore'));
-      if (catSole && vp && shoreCat && catImg instanceof HTMLImageElement && anchor instanceof HTMLElement && catRect && contactOrigin) {
-        const cr = catRect;
-        const tip = actualContact ? displayedCat!.supportY : parseFloat(anchor.style.getPropertyValue('--sole-y')) / 100;
-        if (cr.width < 2 || !Number.isFinite(tip)) {
+        } else if (catSole) {
           catSole.style.visibility = 'hidden';
-        } else {
-          const src = catImg.currentSrc || catImg.src;
-          const key = `${src}@${tip.toFixed(4)}`;
-          if (catSole.dataset.base !== key) {
-            const contact = catContactUrl(catImg, tip);
-            if (contact) {
-              catSole.dataset.base = key;
-              catSole.src = contact;
-            }
-          }
-          if (catSole.dataset.base === key) {
-            const box = worldContactBox(cr, contactOrigin, 16);
-            const fit = box.fit;
-            catSole.style.visibility = 'visible';
-            catSole.style.left = `${box.left}px`;
-            catSole.style.top = `${box.top}px`;
-            catSole.style.width = `${box.width}px`;
-            catSole.style.height = `${box.height}px`;
-            catSole.style.setProperty('--fit', fit.toFixed(4));
-            catSole.style.setProperty('--cat-a', `${((tip - 0.09) * fit * 100).toFixed(2)}%`);
-            catSole.style.setProperty('--cat-b', `${((tip - 0.05) * fit * 100).toFixed(2)}%`);
-            catSole.style.setProperty('--cat-c', `${Math.min(97, (tip + 0.11) * fit * 100).toFixed(2)}%`);
-            catSole.style.setProperty('--cat-d', `${Math.min(99.2, (tip + 0.15) * fit * 100).toFixed(2)}%`);
-            catSole.style.transform = anchor.getAttribute('data-face') === 'left' ? 'scaleX(-1)' : 'none';
-          } else if (actualContact) {
-            catSole.style.visibility = 'hidden'; // Never retain another image's contact after an unmatched swap.
-          }
         }
-      } else if (catSole) {
-        catSole.style.visibility = 'hidden';
-      }
-      const diagnostic = catDiagnosticRef.current;
-      const world = worldRef.current;
-      if (diagnostic && vp && world && catImg instanceof HTMLImageElement && anchor instanceof HTMLElement) {
-        writeCatDisplayAttributes(catImg, true);
-        const value = JSON.stringify(catDisplaySnapshot(catImg, anchor, world.getBoundingClientRect(), vp.getBoundingClientRect()));
-        if (diagnostic.textContent !== value) diagnostic.textContent = value;
+        const diagnostic = catDiagnosticRef.current;
+        const world = worldRef.current;
+        if (diagnostic && vp && world && catImg instanceof HTMLImageElement && anchor instanceof HTMLElement) {
+          writeCatDisplayAttributes(catImg, true);
+          const value = JSON.stringify(catDisplaySnapshot(catImg, anchor, world.getBoundingClientRect(), vp.getBoundingClientRect()));
+          if (diagnostic.textContent !== value) diagnostic.textContent = value;
+        }
+      } else {
+        if(soleRef.current)soleRef.current.style.visibility='hidden';
+        if(catSoleRef.current)catSoleRef.current.style.visibility='hidden';
       }
       frame = window.requestAnimationFrame(tick);
     };
@@ -829,7 +854,10 @@ export function WalkLayer({
   onTeachRef.current = onTeach;
   taughtRef.current = taught;
   approachRef.current = onApproachHint;
-  const spotIds = spots.map((spot) => spot.id);
+  const traceArt:Record<string,string>={'trace:spring-stone':'island-mural','trace:spring-cup':'shore-stone','trace:witness-lines':'hall-mural','trace:witness-seal':'hall-stamps','trace:night-ledger':'night-read','trace:night-token':'night-ember'};
+  const spotIds = spots.flatMap(spot=>traceArt[spot.id]?[spot.id,traceArt[spot.id]]:[spot.id]);
+  // Retain painted furniture after retiring its old picture-matching controls.
+  if(spots.some(s=>s.id.startsWith('trace:')))spotIds.push(...SPOTS[scene].filter(s=>s.id.startsWith('act:')).map(s=>s.id));
   const sleepFoot = SPOTS[scene].find((spot) => spot.id === 'camp-sleep');
   const feetY = resting && sleepFoot ? sleepFoot.y : pos.y;
   useShoreCuePresentation(viewportRef, scene === 'dba.scene.shore',
@@ -880,6 +908,10 @@ export function WalkLayer({
 
   // These owners are unconditional for WalkLayer's lifetime; only their stateless views reparent.
   const travelerPresentation=useTravelerPresentation({
+    walkCycles:(from,to,height)=>{
+      const bodies=spatialBodyDistance(viewportRef.current,from,to,height);
+      return bodies===undefined?undefined:bodies/(WALK_STRIDE/TRAVELER_HEIGHT);
+    },
     x:resting && sleepFoot?sleepFoot.x:pos.x,y:feetY,facing,moving,stride,
     pose:moving?'auto':body.pose !== 'auto' ? body.pose : resting?'lie':'auto',actionSeq:body.sequence,actionElapsed:body.kind ? body.elapsed : undefined,paused:performancePaused,depthZ:catInFront?4:6,
     presentationFrozen,contactCleanup:true,
@@ -963,6 +995,7 @@ export function WalkLayer({
             />
           </div>);
   const travelerNode = <TravelerView presentation={travelerPresentation}/>;
+  const villageNpc=npcForScene(scene);
   const depthItems:GroundDepthNode[] = sharedDepth ? depthScenes.flatMap(plate => {
     const leaving = plate !== plates.current;
     return groundDepthSlots(plate, painted)
@@ -971,6 +1004,7 @@ export function WalkLayer({
         phase:leaving ? 'leaving' as const : plates.previous ? 'entering' as const : 'stable' as const,
         node:<SlotPiece scene={plate as IslandScene} slot={slot} cam={shownCam} lit={!leaving && !!slot.spot && near.includes(slot.spot)} glanced={!leaving && !!slot.spot && glance.includes(slot.spot)} hidden={false} showWalkMask={false} beat={leaving?null:beat}/> }));
   }) : [];
+  if(sharedDepth&&villageNpc)depthItems.push({id:'village-npc',footY:villageNpc.y,kind:'prop',scene,node:<NpcFigure npc={villageNpc}/>});
   if (sharedDepth) depthItems.push(
     {id:'cat',footY:cat.y,kind:'cat',scene,node:<>{catNode}<img ref={catSoleRef} className="sole-soft cat-sole" data-testid="cat-sole" alt="" /></>},
     {id:'traveler',footY:feetY,kind:'traveler',scene,node:<>{travelerNode}<img ref={soleRef} className="sole-soft" data-testid="sole-soft" alt="" />
@@ -1003,7 +1037,16 @@ export function WalkLayer({
       data-drank={drank ? 'yes' : 'no'}
       style={{ ['--ambient' as string]: look.ambient, ['--shadow-tint' as string]: look.shadowTint }}
     >
-      <div className="world-root" data-testid="world-root" data-ambient={look.ambient}>
+      <div ref={worldRootRef} className="world-root" data-testid="world-root" data-ambient={look.ambient} style={{['--figure-light' as string]:sceneFigureFilter(scene)}}>
+        {threeEnabled ? <Suspense fallback={null}><ThreeWorld
+          scene={scene} view={view} world={{ w: worldW, h: worldH }} cam={shownCam}
+          paused={performancePaused} reduced={reduced} traveler={travelerPresentation} state={worldState}
+          route={remainingRoute} guide={navigationVisible&&(guidePinned||routesOpen)}
+          cat={{ src: companionPresentation.src, original: companionPresentation.originalUrl,
+            position: cat, foot: catFoot,
+            height: (scene === 'dba.scene.shore' ? SHORE_CAT_HEIGHT : NANAICHA_HEIGHT) * catGeometry.heightScale,
+            mirror: catFace === 'left', lift: contactLift(guide, clip) }}
+        /></Suspense> : null}
         {groundPlate ? <img className="ground-fill" src={groundPlate} alt="" draggable={false} onError={onGroundError} /> : null}
         <div className="world-cam" data-testid="world-camera" style={{ transform: `translate3d(${-shownCam.x}px, ${-shownCam.y}px, 0)`, zIndex: 1 }}>
         <div ref={worldRef} className="world-layer" style={{ width: worldW, height: worldH, ['--world-w' as string]: `${worldW}px` }}>
@@ -1029,6 +1072,8 @@ export function WalkLayer({
           {!presentationFrozen ? <WorldFeedback scene={scene} pos={pos} moving={moving} target={selectedTravel ? null : targetRef.current}
             response={beat} sequence={interactionSeq} /> : null}
           {exits.map((gate) => {
+            if(!presentationFrozen)return <ScenicExit key={gate.to} gate={gate} near={pathExitNear(pos,gate)}
+              selected={selectedTravel?.gate.to===gate.to} onTravel={travelTo}/>;
             const at = pathExitPoint(gate);
             return (
               <button
@@ -1061,6 +1106,7 @@ export function WalkLayer({
                 className={reach === 'near' ? `${spot.className} near` : reach === 'glance' ? `${spot.className} glance` : spot.className}
                 data-reach={reach}
                 data-testid={spot.testId}
+                data-ground-x={spot.x} data-ground-y={spot.y}
                 data-result={beat && beat.spot === spot.id ? beat.kind : undefined}
                 style={{ left: pct(spot.x), top: pct(spot.y), right: 'auto', bottom: 'auto',
                   ...(art?.w && art.h ? { width: `max(44px, ${pct(art.w)})`, height: `max(44px, ${pct(art.h)})`, transform: 'translate(-50%, -100%)' } : {}),
@@ -1069,7 +1115,7 @@ export function WalkLayer({
                 title={spot.ariaLabel}
                 onClick={(event) => {
                   event.stopPropagation();
-                  if (pausedRef.current) return;
+                  if (pausedRef.current || worldRootRef.current?.dataset.threeTransition==='loading') return;
                   if (!standsAt(sceneRef.current, spot, posRef.current)) {
                     onFar?.(spot.id);
                     window.clearTimeout(driftSeek.current);
@@ -1078,10 +1124,10 @@ export function WalkLayer({
                       stopWalking();
                       driftSeek.current = window.setTimeout(() => {
                         if (sceneRef.current !== 'dba.scene.shore' || pausedRef.current || pending.current) return;
-                        seek(spot);
+                        seek(interactionStandPoint(sceneRef.current,spot));
                       }, 720);
                     } else {
-                      seek(spot);
+                      seek(interactionStandPoint(sceneRef.current,spot));
                     }
                     return;
                   }
@@ -1089,11 +1135,12 @@ export function WalkLayer({
                   interactRef.current(spot.id);
                 }}
               >
-                {spot.glyph ? <Glyph id={spot.glyph} /> : spot.label}
+                {spot.id.startsWith('trace:')?SCRIPT_TRACES.find(t=>`trace:${t.id}`===spot.id)?.moments[0].words.slice(0,2).map((w,i)=><IslandGlyph key={i} word={w}/>):spot.id.startsWith('npc:')?<><svg className="npc-bubble" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v11H11l-5 4v-4H5z" fill="none" stroke="currentColor" strokeWidth="1.6"/><path d="M8 8h8M8 11h5" stroke="currentColor"/></svg><span className="npc-label">{spot.label}</span></>:spot.glyph ? <Glyph id={spot.glyph} /> : spot.label}
               </button>
             );
           })}
           {!sharedDepth ? catNode : null}
+          {!sharedDepth&&villageNpc?<NpcFigure npc={villageNpc}/>:null}
           {flash ? (
             <img
               key={`${scene}-${flash.seq}`}
@@ -1180,6 +1227,7 @@ export function WalkLayer({
         key={scene}
         disabled={paused || displayStatus !== 'ready'}
         onVector={(vector) => {
+          if(worldRootRef.current?.dataset.threeTransition==='loading'){stickRef.current=null;return;}
           if (vector) interruptForMovement();
           stickRef.current = vector;
           if (vector) targetRef.current = null;
@@ -1192,12 +1240,12 @@ export function WalkLayer({
       onOpenChange={open => { setRoutesOpen(open); if (open) stopWalking(); }}
       onTravel={travelTo}
       onInteract={spot => {
-        if (pausedRef.current || !standsAt(sceneRef.current, spot, posRef.current)) return;
+        if (pausedRef.current || worldRootRef.current?.dataset.threeTransition==='loading' || !standsAt(sceneRef.current, spot, posRef.current)) return;
         beginReach(spot);
         interactRef.current(spot.id);
       }} /> : null}
     {!onNavigationNotice ? <NavigationNotice message={navigationMessage} kind={navigationKind} /> : null}
-    {hearthGate && hearthAt ? (
+    {presentationFrozen && hearthGate && hearthAt ? (
       <span
         className="hearth-name"
         data-testid="hearth-name"

@@ -20,8 +20,7 @@ const position = () => traveler.evaluate(e => ({ x: Number(e.dataset.x), y: Numb
 try {
   await page.goto(url);
   await page.getByRole('button', { name: '新游戏', exact: true }).click();
-  for (let i = 0; i < 3; i++) await page.getByRole('button', { name: '下一幕', exact: true }).click();
-  await page.getByRole('button', { name: '走上潮线', exact: true }).click();
+  await page.getByRole('button', { name: '跳过序章', exact: true }).click();
   await page.locator('.scene-display').waitFor({ state: 'hidden' });
   // Begin on the clear sand lane. The authored spawn is now beside a solid
   // driftwood pile, so a four-direction animation probe must first walk clear.

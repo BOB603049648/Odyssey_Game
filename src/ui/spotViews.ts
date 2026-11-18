@@ -1,3 +1,5 @@
+import {SCRIPT_TRACES} from '../content/islandScript';
+import {scriptActive} from '../core/islandScript';
 import type { HintAnchor } from '../core/hints';
 import type { IslandScene } from '../core/island';
 import type { SaveData } from '../core/schema';
@@ -7,6 +9,9 @@ import { t, type MessageKey } from './i18n';
 import { hintMark } from './hintMark';
 import { puzzleState } from '../core/puzzles';
 import { bridgeState } from '../core/bridge';
+import {folioForScene} from '../content/readingJourney';
+import {hasRead} from '../core/reading';
+import {NPC_PEOPLE,npcForScene,npcSpotId} from '../content/npcJourney';
 
 const BETRAY = 'dba.word.betray';
 
@@ -79,7 +84,13 @@ export function visibleSpots(
   hint: { level: number; anchor: string; wordId: string | null },
 ): SpotView[] {
   const puzzles = puzzleState(save);
-  return SPOTS[scene]
+  const npc=npcForScene(scene);
+  const locals:SpotView[]=npc?[{id:npcSpotId(npc),x:npc.x,y:npc.y,r:npc.r,className:'hotspot npc-talk',testId:npcSpotId(npc),label:`与${NPC_PEOPLE[npc.id].name}交谈`,ariaLabel:`与${NPC_PEOPLE[npc.id].name}交谈`}]:[];
+  if(scriptActive(save)){
+    const physical=SPOTS[scene].filter(s=>!s.id.startsWith('act:')&&!['island-mural','shore-stone','hall-mural','hall-stamps','hall-tattoo','night-read','night-ember'].includes(s.id)).filter(s=>s.id==='island-gourd'?puzzles.water!=='carried':s.id==='water-spring'||s.id==='water-sea'?puzzles.water==='carried':s.id==='night-memory'?save.memories.length>0:true).map(s=>{const spec=VIEWS[s.id];return {...s,className:spec.className,testId:spec.testId,label:t(spec.label),ariaLabel:t(spec.aria??spec.label)};});
+    return [...physical,...SCRIPT_TRACES.filter(t=>t.scene===scene&&!t.npc).map(t=>({id:`trace:${t.id}`,x:t.x,y:t.y,r:.04,className:'hotspot script-trace',testId:`trace:${t.id}`,label:t.title,ariaLabel:`观察${t.title}`})),...locals];
+  }
+  return [...SPOTS[scene]
     .filter((spot) => {
       if (spot.id === 'island-gourd') return puzzles.water !== 'carried';
       if (spot.id === 'water-spring' || spot.id === 'water-sea') return puzzles.water === 'carried';
@@ -90,7 +101,10 @@ export function visibleSpots(
     .map((spot) => {
       const spec = VIEWS[spot.id];
       if (!spec) throw new Error(`Missing spot view ${spot.id}`);
-      const dynamic = spot.id === 'island-gourd' ? puzzles.water === 'empty' ? '拿起空瓢' : puzzles.water === 'filled' ? '喝下清泉' : '清泉与水瓢'
+      const folio=folioForScene(scene);
+      const dynamic = spot.id===folio.spot&&!hasRead(save,folio.id)?`核读残页 · ${folio.title}`
+        : spot.id==='island-mural'||spot.id==='hall-mural'?'重读路约'
+        : spot.id === 'island-gourd' ? puzzles.water === 'empty' ? '拿起空瓢' : puzzles.water === 'filled' ? '喝下清泉' : '清泉与水瓢'
         : spot.id === 'yard-grab' ? puzzles.food.stage === 'unseen' ? '查看篮中的食物' : puzzles.food.stage === 'inspected' ? '取出四份食物' : puzzles.food.stage === 'done' ? '已经分好的晚餐' : '分一份晚餐'
         : spot.id.startsWith('act:dba.word.amount:') && (puzzles.food.stage === 'taken' || puzzles.food.stage === 'allocating') ? '分一份晚餐'
         : spot.id === 'path-stop' ? bridgeState(save).stage === 'done' ? '重看旧桥' : '观察桥边的痕迹'
@@ -103,7 +117,7 @@ export function visibleSpots(
         ariaLabel: dynamic ?? (spec.aria ? t(spec.aria) : spot.id === 'water-spring' ? t(spec.label) : undefined),
         glyph: spec.glyph,
       };
-    });
+    }),...locals];
 }
 
 export function hintSpotId(scene: IslandScene, anchor: HintAnchor): string | null {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { PROLOGUE_ART, prologueArtId, forgetPrologueImage, loadProloguePreview, loadPrologueDetail, resolvePrologueImage } from '../content/prologueAssets';
 
 export { PROLOGUE_ART };
@@ -72,11 +72,9 @@ export function usePrologueFrame(step: number, portrait = false) {
     return () => { live = false; clearTimeout(timer); window.removeEventListener('online', online); };
   }, [step, id, portrait, request]);
 
-  useEffect(() => {
-    if (!frames.previous) return;
-    const timer = setTimeout(() => setFrames(old => ({ ...old, previous: null })), 700);
-    return () => clearTimeout(timer);
-  }, [frames.current, frames.previous]);
+  // The film clock owns the dissolve. A wall timer would remove its background
+  // while paused, briefly exposing black beneath the translucent incoming shot.
+  const finishDissolve = useCallback(() => setFrames(old => old.previous ? { ...old, previous: null } : old), []);
 
   function imageFailed(failedId: string, src: string) {
     forgetPrologueImage(failedId, src);
@@ -96,7 +94,7 @@ export function usePrologueFrame(step: number, portrait = false) {
   }
   const ready = status === 'ready' && frames.current?.id === id;
   return {
-    ...frames, ready, status: ready ? 'ready' : status === 'error' ? 'error' : 'loading',
+    ...frames, ready, finishDissolve, status: ready ? 'ready' : status === 'error' ? 'error' : 'loading',
     retry: () => setRequest(old => ({ revision: old.revision + 1, delay: 0, id })), imageFailed,
   };
 }

@@ -6,6 +6,7 @@ import { ConceptScene } from './ConceptScene';
 import { Glyph } from './glyphs';
 import { t } from './i18n';
 import './learningJourney.css';
+import {ReadingArchive} from './ReadingDesk';
 
 /** The notebook remembers the scene that gave a glyph meaning, without
  * exposing unlearned words or enabling translation behind the player's back. */
@@ -17,7 +18,7 @@ export function FieldLexicon({ save }: { save: SaveData }) {
     if (selected) memory.current?.scrollIntoView?.({ block: 'start' });
   }, [selected]);
   const word = learned.find(item => item.id === selected) ?? learned[0];
-  if (!word) return <p>{t('lexicon.empty')}</p>;
+  if (!word) return <><p>{t('lexicon.empty')}</p><ReadingArchive save={save}/></>;
   const mastered = save.words[word.id]?.state === 'mastered';
   return <section className="field-lexicon" data-testid="field-lexicon" aria-label="记下的刻痕">
     <p className="lexicon-help">选一枚刻符，回想它在画面里的意思。已记下 {learned.length} 枚。</p>
@@ -40,5 +41,6 @@ export function FieldLexicon({ save }: { save: SaveData }) {
         </span>
       </button>)}
     </div>
+    <ReadingArchive save={save}/>
   </section>;
 }

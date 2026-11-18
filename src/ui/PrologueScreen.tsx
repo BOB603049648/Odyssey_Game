@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { usePrologueSound } from '../audio/useSoundscape';
 import { AudioToggle } from './AudioControls';
 import { PrologueMotion } from './PrologueMotion';
-import { PROLOGUE_DURATIONS, useCinematicClock, usePagePresentation } from './useCinematicClock';
+import { useCinematicClock, usePagePresentation } from './useCinematicClock';
+import { PROLOGUE_DISSOLVE, PROLOGUE_DURATIONS, prologueCaption } from './prologueTimeline';
 import { firstScreenAssetIds } from '../content/firstScreen';
 import { loadNamedAsset } from '../content/imageLoad';
 import { initialProloguePortrait } from '../content/prologueAssets';
@@ -11,16 +12,16 @@ import { PROLOGUE_ART, usePrologueFrame } from './usePrologueFrame';
 import './prologue.css';
 
 const LINES: MessageKey[] = ['prologue.0', 'prologue.1', 'prologue.2', 'prologue.3'];
-const TITLES: MessageKey[] = ['prologue.title.storm', 'prologue.title.dark', 'prologue.title.break', 'prologue.title.tide'];
 const ALTS: MessageKey[] = ['prologue.alt.storm', 'prologue.alt.dark', 'prologue.alt.break', 'prologue.alt.tide'];
+const clamp = (value: number) => Math.max(0, Math.min(1, value));
 
-export function PrologueScreen({ step, onAdvance, onBack, onSkip }: {
-  step: number; onAdvance: () => void; onBack?: () => void; onSkip?: () => void;
+export function PrologueScreen({ step, onAdvance, onReplay, onSkip, skipLabel = 'prologue.skip' }: {
+  step: number; onAdvance: () => void; onReplay?: () => void; onSkip?: () => void; skipLabel?: MessageKey;
 }) {
   const requested = Math.min(3, Math.max(0, step));
   const stage = useRef<HTMLDivElement>(null);
-  // Choose the composition that occupies more of the actual picture area.
-  // Both are complete paintings; rotation never crops the rescue or the scroll.
+  // Each orientation has a complete painting. Do not crop away the rescue
+  // to force a wide shot into a phone; use the authored tall composition.
   const [portrait, setPortrait] = useState(initialProloguePortrait);
   useEffect(() => {
     if (!stage.current || typeof ResizeObserver === 'undefined') return;
@@ -33,25 +34,27 @@ export function PrologueScreen({ step, onAdvance, onBack, onSkip }: {
   const frame = usePrologueFrame(requested, portrait);
   const shown = frame.current?.step ?? requested;
   const [paused, setPaused] = useState(false);
-  const [automatic, setAutomatic] = useState(false);
   const [take, setTake] = useState(0);
   const { visible, reduced } = usePagePresentation();
   const playing = !paused && visible && frame.ready;
   const clock = useCinematicClock(shown, take, playing);
-  const sound = usePrologueSound(shown, take, playing, clock.time);
-  // Ignore duplicate activation before React commits the new story step.
+  // Hold the old ambience with the old painting during decoding; don't insert
+  // an audible stop/start between two ready shots.
+  const sound = usePrologueSound(shown, take, !paused && visible && !!frame.current, clock.time);
+  const caption = prologueCaption(shown, clock.elapsed);
   const activated = useRef<number | null>(null);
-  useEffect(() => { activated.current = null; }, [requested]);
-  const advance = () => {
-    if (!frame.ready || activated.current === requested) return;
+  useEffect(() => { activated.current = null; }, [requested, take]);
+  useEffect(() => {
+    if (!playing || clock.elapsed < PROLOGUE_DURATIONS[shown] || activated.current === requested) return;
     activated.current = requested;
     onAdvance();
-  };
+  }, [playing, clock.elapsed, shown, requested, onAdvance]);
   useEffect(() => {
-    if (automatic && playing && clock.time.current >= PROLOGUE_DURATIONS[shown]) advance();
-  });
+    if (frame.previous && (reduced || clock.elapsed >= PROLOGUE_DISSOLVE)) frame.finishDissolve();
+  }, [frame.previous, frame.finishDissolve, reduced, clock.elapsed]);
   useEffect(() => {
-    if (requested !== 3 || !frame.ready) return;
+    // Prepare landing while the memory plays, not after the last shot ends.
+    if (requested < 2 || !frame.ready) return;
     for (const id of firstScreenAssetIds('dba.scene.shore', 'land-companion', true)) {
       void loadNamedAsset(id).catch(() => null);
     }
@@ -61,77 +64,60 @@ export function PrologueScreen({ step, onAdvance, onBack, onSkip }: {
       if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
       const target = event.target instanceof HTMLElement ? event.target : null;
       if (target?.closest('input, textarea, select, [contenteditable="true"]')) return;
-      if (event.repeat && ['ArrowLeft', 'ArrowRight', 'Enter', ' '].includes(event.key)) {
-        event.preventDefault(); return;
-      }
-      if (event.key === 'ArrowLeft' && requested > 0 && onBack) {
-        event.preventDefault(); onBack();
-      } else if (event.key === 'ArrowRight' ||
-        (['Enter', ' '].includes(event.key) && !target?.closest('button, a, [role="button"]'))) {
-        event.preventDefault(); advance();
+      if (event.repeat && ['Enter', ' '].includes(event.key)) { event.preventDefault(); return; }
+      if (event.key === ' ' && !target?.closest('button, a, [role="button"]')) {
+        event.preventDefault(); setPaused(value => !value);
       }
     }
     window.addEventListener('keydown', keydown);
     return () => window.removeEventListener('keydown', keydown);
-  });
+  }, []);
+  const replay = () => { setTake(value => value + 1); setPaused(false); onReplay?.(); };
+  const opacity = reduced ? 1 : clamp(clock.elapsed / PROLOGUE_DISSOLVE);
+  const ending = shown === 3 ? clamp((clock.elapsed - PROLOGUE_DURATIONS[3] + .7) / .7) : 0;
 
   return (
     <section className="prologue cinematic-prologue" data-testid="prologue"
       data-prologue-step={requested} data-displayed-step={frame.current?.step ?? 'none'}
-      data-playing={playing} data-auto={automatic} data-audio={sound.status}
+      data-elapsed={clock.elapsed.toFixed(2)}
+      data-playing={playing} data-paused={paused} data-auto="true" data-audio={sound.status}
       data-still={PROLOGUE_ART[requested]} data-frame-status={frame.status} data-mood={shown}
       aria-label={t('scene.prologue')}>
-      <header className="prologue-header">
-        <span className="prologue-chapter">{t('prologue.chapter')}</span>
-        {onSkip && <button type="button" className="prologue-text-button" onClick={onSkip}>{t('prologue.skip')}</button>}
-        <div className="prologue-transport" aria-label={t('prologue.playback')}>
-          <button type="button" className="prologue-text-button" aria-pressed={paused} onClick={() => setPaused(value => !value)}>
-            {t(paused ? 'prologue.play' : 'prologue.pause')}
-          </button>
-          <button type="button" className="prologue-text-button" aria-pressed={automatic} onClick={() => setAutomatic(value => !value)}>{t('prologue.auto')}</button>
-          <button type="button" className="prologue-text-button" onClick={() => { setTake(value => value + 1); setPaused(false); }}>{t('prologue.replay')}</button>
-          <AudioToggle compact />
-        </div>
-        {sound.status === 'failed' && <div className="prologue-audio-note" role="status">{t('audio.failed')} <button type="button" onClick={sound.retry}>{t('audio.retry')}</button></div>}
-      </header>
       <div className="prologue-stage" ref={stage} aria-busy={!frame.ready}>
-        {frame.current && <div className="prologue-ambience" aria-hidden="true"
-          style={{ backgroundImage: `url("${frame.current.src}")` }} />}
-        {frame.previous && <div className="prologue-shot prologue-shot-out" key={`old-${frame.previous.id}`} aria-hidden="true">
-          <img src={frame.previous.src} alt="" draggable={false} onError={() => frame.imageFailed(frame.previous!.id, frame.previous!.src)} />
-        </div>}
-        {frame.current && <div className="prologue-shot prologue-shot-in" key={frame.current.id}
-          data-testid="still-frame" data-art-id={PROLOGUE_ART[frame.current.step]} data-composition={frame.current.id.endsWith('.portrait') ? 'portrait' : 'landscape'}>
-          <PrologueMotion src={frame.current.src} step={shown} portrait={frame.current.id.endsWith('.portrait')}
-            active={playing} reduced={reduced} time={clock.time} alt={t(ALTS[shown])}
-            onError={() => frame.imageFailed(frame.current!.id, frame.current!.src)} />
-        </div>}
+        {[frame.previous, frame.current].map(shot => shot && <div key={shot.id}
+          className={`prologue-shot ${shot === frame.current ? 'prologue-shot-in' : 'prologue-shot-out'}`}
+          aria-hidden={shot !== frame.current || undefined}
+          style={{ opacity: shot === frame.current ? opacity : 1 }}
+          data-testid={shot === frame.current ? 'still-frame' : undefined}
+          data-art-id={PROLOGUE_ART[shot.step]} data-composition={shot.id.endsWith('.portrait') ? 'portrait' : 'landscape'}>
+          <PrologueMotion src={shot.src} step={shot.step} portrait={shot.id.endsWith('.portrait')}
+            active={shot === frame.current && playing} reduced={reduced} time={clock.time} alt={shot === frame.current ? t(ALTS[shown]) : ''}
+            onError={() => frame.imageFailed(shot.id, shot.src)} />
+        </div>)}
         <span className="prologue-atmosphere" aria-hidden="true" />
+        <span className="prologue-curtain" aria-hidden="true" style={{ opacity: ending }} />
         {!frame.ready && <div className="prologue-load" role="status">
           <p>{t(frame.status === 'error' ? 'prologue.load.error' : 'prologue.load.pending')}</p>
           {frame.status === 'error' && <button type="button" className="btn" onClick={frame.retry}>{t('prologue.retry')}</button>}
         </div>}
       </div>
-      <footer className="prologue-footer">
-        <div className="prologue-narration" aria-live="polite" aria-atomic="true" key={shown} data-caption={LINES[shown]}>
-          <p className="prologue-act"><span aria-hidden="true">0{shown + 1}</span> {t(TITLES[shown])}</p>
-          <p className="prologue-line">{t(LINES[shown])}</p>
-          {shown === 3 && <p className="prologue-arrival">{t('prologue.arrival')}</p>}
+      <header className="prologue-header">
+        <span className="prologue-chapter" aria-hidden="true" style={{ opacity: shown === 0 ? clamp((4.5 - clock.elapsed) / 1.2) : 0 }}>{t('prologue.chapter')}</span>
+        <div className="prologue-transport" role="group" aria-label={t('prologue.playback')}>
+          <button type="button" className="prologue-text-button" aria-pressed={paused} onClick={() => setPaused(value => !value)}>
+            <svg viewBox="0 0 20 20" aria-hidden="true">{paused ? <path d="m7 4 9 6-9 6Z" /> : <path d="M6 4v12M14 4v12" />}</svg>
+            {t(paused ? 'prologue.play' : 'prologue.pause')}
+          </button>
+          {onReplay && <button type="button" className="prologue-text-button" onClick={replay}>{t('prologue.replay')}</button>}
+          <AudioToggle compact />
+          {onSkip && <button type="button" className="prologue-text-button prologue-skip" onClick={onSkip}>{t(skipLabel)}</button>}
         </div>
-        <nav className="prologue-controls" aria-label={t('prologue.controls')}>
-          <button type="button" className="prologue-text-button prologue-back" disabled={requested === 0 || !onBack} onClick={onBack}>
-            <span aria-hidden="true">← </span>{t('prologue.back')}
-          </button>
-          <ol className="prologue-progress" aria-label={`${t('prologue.progress')} ${shown + 1} / 4`}>
-            {PROLOGUE_ART.map((id, index) => <li key={id} aria-current={index === shown ? 'step' : undefined}
-              data-past={index < shown}><i aria-hidden="true" style={{ transform: `scaleX(${index === shown ? Math.min(1, clock.elapsed / PROLOGUE_DURATIONS[shown]) : 0})` }} /><span className="sr-only">{t(TITLES[index])}</span></li>)}
-          </ol>
-          <button type="button" className="prologue-next" disabled={!frame.ready} onClick={advance}>
-            {t(requested >= 3 ? 'menu.ashore' : 'menu.next')}<span aria-hidden="true"> →</span>
-          </button>
-        </nav>
-        <p className="prologue-keys" aria-hidden="true">{t('prologue.keys')}</p>
-      </footer>
+        {sound.status === 'failed' && <div className="prologue-audio-note" role="status">{t('audio.failed')} <button type="button" onClick={sound.retry}>{t('audio.retry')}</button></div>}
+      </header>
+      <div className="prologue-narration" data-caption={LINES[shown]} aria-live="polite" aria-atomic="true">
+        {caption && <p className="prologue-line" key={`${shown}:${caption.index}`} style={{ opacity: reduced ? 1 : caption.opacity }}>{t(LINES[shown]).split('\n')[caption.index]}</p>}
+      </div>
+      {paused && <p className="prologue-paused">{t('prologue.paused')}</p>}
     </section>
   );
 }

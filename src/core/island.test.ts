@@ -1,7 +1,7 @@
 import { returnFromBridge } from './__fixtures__/bridgeJourney';
 import { describe, expect, it } from 'vitest';
 import { LEXEMES } from '../content/catalog';
-import { reduce } from './reduce';
+import { reduce } from './__fixtures__/legacyReduce';
 import { newGameState } from './save';
 import type { MuralLayer, SaveData } from './schema';
 import { GATES } from './stage';
@@ -162,8 +162,9 @@ describe('island 1 scenes', () => {
     expect(state.beats['dba.beat.danger']).toBe(true);
   });
 
-  it('collects the tattoo and the numbered stone, then departs east', () => {
+  it('preserves the legacy tattoo and numbered-stone route before linked readings existed', () => {
     let state = learnLayer(learnLayer(learnLayer(ashore(), 'concrete'), 'action'), 'relation');
+    delete state.flags['dba.reading.active'];
     expect(reduce(state, { type: 'collect-tattoo' }).evidence).not.toContain('dba.ev.b');
     state = reduce(state, { type: 'open-mural' });
     state = reduce(state, { type: 'select-layer', layer: 'abstract' });

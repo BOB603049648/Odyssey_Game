@@ -53,11 +53,11 @@ const errors = [];
 page.on('pageerror', error => errors.push(error.message));
 const ready = async step => {
   await page.locator(`[data-frame-status="ready"][data-displayed-step="${step}"]`).waitFor();
-  await page.locator('.prologue-weather').waitFor();
+  await page.locator('[data-testid="still-frame"] .prologue-weather').waitFor();
 };
 const audible = () => page.waitForFunction(() => window.__sound.level() > .001);
 const silent = () => page.waitForFunction(() => window.__sound.level() < .0001 && window.__sound.voices.filter(v => v.live).length === 0);
-const pixels = () => page.locator('.prologue-weather').evaluate(canvas => canvas.toDataURL());
+const pixels = () => page.locator('[data-testid="still-frame"] .prologue-weather').evaluate(canvas => canvas.toDataURL());
 try {
   let failAudio = false;
   await page.route('**/*.mp3', route => failAudio ? route.abort('failed') : route.continue());
@@ -87,14 +87,14 @@ try {
   await page.locator('[data-motion="reduced"]').waitFor();
   const still = await pixels(); await page.waitForTimeout(400); assert.equal(await pixels(), still);
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.getByRole('button', { name: '下一幕', exact: true }).click(); await ready(1);
+  await ready(1);
   await page.waitForTimeout(1800);
   const catCount = () => page.evaluate(() => window.__sound.voices.filter(v => !v.loop && v.duration > 1 && v.duration < 1.3).length);
   assert.equal(await catCount(), 1, 'one recorded cat cue on reveal');
   await page.getByRole('button', { name: '暂停', exact: true }).click(); await silent();
   await page.getByRole('button', { name: '播放', exact: true }).click(); await page.waitForTimeout(1200);
   assert.equal(await catCount(), 1, 'pause/resume must not repeat the cat');
-  await page.getByRole('button', { name: '重播本幕', exact: true }).click(); await page.waitForTimeout(1500);
+  await page.getByRole('button', { name: '从头重看', exact: true }).click(); await ready(0); await ready(1); await page.waitForTimeout(1500);
   assert.equal(await catCount(), 2);
   await page.getByRole('button', { name: '跳过序章', exact: true }).click();
   await page.locator('[data-testid="walk-stage"][data-display="ready"]').waitFor(); await page.waitForTimeout(600); await audible();
@@ -112,7 +112,7 @@ try {
   await failure.route('**/*.mp3', route => blocked ? route.abort('failed') : route.continue());
   await failure.goto(url); await failure.getByRole('button', { name: '新游戏', exact: true }).click();
   await failure.locator('[data-audio="failed"][data-frame-status="ready"]').waitFor();
-  assert.equal(await failure.getByRole('button', { name: '下一幕', exact: true }).isEnabled(), true);
+  assert.equal(await failure.getByTestId('prologue').getAttribute('data-playing'), 'true');
   blocked = false;
   await failure.getByRole('button', { name: '重试声音', exact: true }).click();
   await failure.waitForFunction(() => window.__sound.level() > .001);
@@ -132,8 +132,7 @@ try {
     window.__recorder.ondataavailable = event => { if (event.data.size) window.__chunks.push(event.data); };
     window.__recorder.start();
   });
-  await demo.getByRole('button', { name: '重播本幕', exact: true }).click();
-  await demo.getByRole('button', { name: '连播', exact: true }).click();
+  await demo.getByRole('button', { name: '从头重看', exact: true }).click();
   for (let step = 0; step < 4; step++) {
     await demo.locator(`[data-displayed-step="${step}"][data-frame-status="ready"]`).waitFor({ timeout: 14000 });
     await demo.waitForTimeout(1600);
@@ -155,7 +154,7 @@ try {
   const trim = Math.max(0,duration(videoFile)-duration(audioFile));
   execFileSync('ffmpeg',['-v','error','-y','-ss',String(trim),'-i',videoFile,'-i',audioFile,'-c:v','libx264','-preset','fast','-crf','23','-pix_fmt','yuv420p','-c:a','aac','-b:a','128k','-shortest','-movflags','+faststart',resolve(output,'prologue-performance.mp4')]);
   assert.deepEqual(errors, []);
-  console.log(JSON.stringify({result:'PASS',checks:['real decoded audio and nonzero output','animated water/weather','pause freezes picture and sound','mute persists reload','hidden-tab suspend/resume','reduced motion','one cat cue per take','late/failed audio recovery','no ghost loops after skip/title','complete real-time automatic sequence','38-second captured performance with actual game audio'],errors}));
+  console.log(JSON.stringify({result:'PASS',checks:['real decoded audio and nonzero output','animated water/weather','pause freezes picture and sound','mute persists reload','hidden-tab suspend/resume','reduced motion','one cat cue per take','late/failed audio recovery','no ghost loops after skip/title','complete real-time automatic sequence','31-second captured performance with actual game audio'],errors}));
 } catch (error) {
   if (!page.isClosed()) await page.screenshot({path:resolve(output,'failure.png')});
   console.error(error); process.exitCode = 1;

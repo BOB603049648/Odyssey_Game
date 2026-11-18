@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { reduce } from '../core/reduce';
+import { reduce } from '../core/__fixtures__/legacyReduce';
 import { newGameState } from '../core/save';
 import { gameCues } from './gameCues';
 const shore = () => reduce(reduce(newGameState(), { type:'new-game' }), { type:'skip-prologue' });

@@ -1,7 +1,7 @@
 import { act, cleanup, fireEvent, render, renderHook } from '@testing-library/react';
 import { useCallback, useState } from 'react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import { reduce, type Action } from '../core/reduce';
+import { reduce, type Action } from '../core/__fixtures__/legacyReduce';
 import { newGameState } from '../core/save';
 import { IDLE_HINT_MS, useIdleHint } from './useIdleHint';
 

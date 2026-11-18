@@ -57,7 +57,7 @@ async function completeRoute() {
   for (let i = 0; i < 160; i++) {
     await frame();
     if (anchor().dataset.guide === 'move') {
-      moves++; expect(picture().getAttribute('src')).toMatch(/leap-0[12]/);
+      moves++; expect(picture().getAttribute('src')).toMatch(/cat-leap/);
       expect(picture().dataset.frame).toMatch(/leap-0[12]/);
     }
     if (moves && anchor().dataset.guide === 'hold') return moves;
@@ -131,13 +131,16 @@ describe('I1 actual displayed record error through production loading chain', ()
     expect(traj.trajUrl('pose-observe-01')).toBe(urls.trajAssetUrl('pose-observe-01'));
     expect(picture().getAttribute('src')).toBe(COMPANION_ATLAS.url);
   });
-  it('uses real leaps during travel and ignores a late leap blob after returning to an atlas pose', async () => {
+  it('uses a shared leap sheet and ignores its stale native error after returning to an expression sheet', async () => {
     const { COMPANION_ATLAS } = await import('../content/characterPerformanceAtlas'); modes.delete(COMPANION_ATLAS.url);
     const view = render(layer('S0')); await flush(); const old = picture();
     view.rerender(layer('S1')); await flush(); expect(anchor().dataset.guide).toBe('gaze');
     expect(picture()).toBe(old); expect(picture().getAttribute('src')).toBe(COMPANION_ATLAS.url);
+    for(let i=0;i<80&&anchor().dataset.guide!=='move';i++)await frame();
+    const leapImage=picture();expect(leapImage.dataset.performance).toMatch(/leap-0[12]/);
     await completeRoute(); expect(picture().getAttribute('src')).toBe(COMPANION_ATLAS.url);
-    const current = picture(); await blobReady(urls.trajAssetUrl('leap-01')!);
+    const current = picture();fireEvent.error(leapImage);await flush();
+    expect(fetchCount(urls.trajAssetUrl('leap-01')!.split('#')[0])).toBe(0);
     expect(picture()).toBe(current); expect(picture().getAttribute('src')).toBe(COMPANION_ATLAS.url);
   });
   it('invalidates held S0 only, retries its decoder once after5s, and preserves ready S1 prewarm', async () => {
@@ -156,14 +159,14 @@ describe('I1 actual displayed record error through production loading chain', ()
     expect(fetchCount(departure)).toBe(2); view.rerender(layer('S1')); await completeRoute(); expect(picture().getAttribute('src')).toBe(target);
   });
   it('recovers arrival-held leap itself after decode rejection and online wake without clearing cold target', async () => {
-    const view = await mountS0(), target = urls.trajAssetUrl('land-shore-gourd')!, leap = urls.trajAssetUrl('leap-02')!;
+    const view = await mountS0(), target = urls.trajAssetUrl('land-shore-gourd')!, leap = urls.trajAssetUrl('leap-02')!, bitmap=leap.split('#')[0];
     modes.set(target, 'pending'); view.rerender(layer('S1')); await flush(); await completeRoute(); const arrived = [anchor().style.left, anchor().style.top];
-    expect(picture().getAttribute('src')).toBe(leap); const targetAttempts = attempts.get(target)!;
+    expect(picture().getAttribute('src')).toBe(bitmap); const targetAttempts = attempts.get(target)!;
     fireEvent.error(picture()); await flush(); expect(traj.trajUrl('leap-02')).toBeUndefined();
-    await reject(leap); await tickRecovery(5000); expect(traj.trajUrl('leap-02')).toBeUndefined();
-    expect(attempts.get(target)).toBe(targetAttempts); expect(picture().dataset.frame).toBe('leap-02'); expect(picture().getAttribute('src')).toBe(leap);
-    modes.delete(leap); fireEvent.online(window); await tickRecovery(5000);
-    expect(traj.trajUrl('leap-02')).toBe(leap); expect([anchor().style.left, anchor().style.top]).toEqual(arrived); expect(fetchCount(leap)).toBe(2);
+    await reject(bitmap); await tickRecovery(5000); expect(traj.trajUrl('leap-02')).toBeUndefined();
+    expect(attempts.get(target)).toBe(targetAttempts); expect(picture().dataset.frame).toBe('leap-02'); expect(picture().getAttribute('src')).toBe(bitmap);
+    modes.delete(bitmap); fireEvent.online(window); await tickRecovery(5000);
+    expect(traj.trajUrl('leap-02')).toBe(leap); expect([anchor().style.left, anchor().style.top]).toEqual(arrived); expect(fetchCount(bitmap)).toBe(0);
     await ready(target); expect(picture().getAttribute('src')).toBe(target); expect(picture().dataset.frame).toBe('land-shore-gourd');
   });
   it('forgets a failed held blob and refreshes raw/blob only after its actual source has redecoded', async () => {

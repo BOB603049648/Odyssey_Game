@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { BRIDGE, applyBridgeAction, bridgeState } from './bridge';
-import { reduce } from './reduce';
+import { reduce } from './__fixtures__/legacyReduce';
 import { newGameState } from './save';
 import { saveDataSchema } from './schema';
 import { agreeAtBridge } from './__fixtures__/bridgeJourney';

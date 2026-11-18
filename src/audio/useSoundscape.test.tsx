@@ -45,3 +45,24 @@ describe('soundscape lifecycle', () => {
     expect(calls()).toBe(2);
   });
 });
+
+describe('continuous opening audio cuts', () => {
+  it('crossfades ambience at a cut but stops promptly for pause and replay', async () => {
+    const stops: ReturnType<typeof vi.fn>[] = [];
+    mock.play.mockImplementation(() => { const stop = vi.fn(); stops.push(stop); return Promise.resolve({ stop }); });
+    const time = { current: 0 };
+    const view = renderHook(({ step, take, running }) => usePrologueSound(step, take, running, time),
+      { initialProps: { step: 0, take: 0, running: true } });
+    await act(async () => {});
+    expect(mock.play.mock.calls[0][1].fadeIn).toBe(1.1);
+    view.rerender({ step: 1, take: 0, running: true });
+    await act(async () => {});
+    expect(stops[0]).toHaveBeenCalledWith(1.1);
+    view.rerender({ step: 1, take: 0, running: false });
+    expect(stops[1]).toHaveBeenCalledWith(.14);
+    view.rerender({ step: 1, take: 0, running: true });
+    await act(async () => {});
+    view.rerender({ step: 0, take: 1, running: true });
+    expect(stops[2]).toHaveBeenCalledWith(.14);
+  });
+});

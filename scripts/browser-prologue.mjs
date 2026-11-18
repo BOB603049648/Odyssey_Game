@@ -24,13 +24,13 @@ const ready = async (step) => {
   });
 };
 const capture = async (name) => {
-  await page.waitForTimeout(750); // Finish the deliberately short dissolve before comparison.
+  await page.waitForTimeout(1300); // Finish the deliberately short dissolve before comparison.
   await page.screenshot({ path: resolve(output, name) });
 };
 const layout = async () => {
   const result = await page.evaluate(() => {
     const pic = document.querySelector('[data-testid="still-frame"] img');
-    const controls = [...document.querySelectorAll('.prologue-header button, .prologue-controls button')];
+    const controls = [...document.querySelectorAll('.prologue-header button')];
     const text = document.querySelector('.prologue-narration').getBoundingClientRect();
     return {
       fit: getComputedStyle(pic).objectFit,
@@ -55,17 +55,14 @@ try {
   await ready(0);
   await layout();
   await capture('01-storm-desktop.png');
-  await page.getByRole('button', { name: '下一幕', exact: true }).click();
+  await page.locator('[data-prologue-step="1"][data-playing="false"]').waitFor({ timeout: 20_000 });
   assert.equal(await page.getByTestId('prologue').getAttribute('data-displayed-step'), '0');
-  assert.equal(await page.getByRole('button', { name: '下一幕' }).isDisabled(), true);
-  assert.match(await page.locator('[data-caption]').innerText(), /浪头吞没了船/);
+  assert.equal(await page.getByRole('button', { name: '下一幕' }).count(), 0);
   await capture('loading-keeps-previous.png');
   releaseDark();
   await ready(1);
   await capture('02-rescue-desktop.png');
-  // Native keyboard activation of the focused button must advance exactly once.
-  await page.getByRole('button', { name: '下一幕' }).focus();
-  await page.keyboard.press('Enter');
+  // The film reaches the blocked memory itself, without a navigation action.
   await page.locator('[data-frame-status="error"]').waitFor();
   assert.equal((await save()).prologueStep, 2);
   assert.equal(await page.getByTestId('prologue').getAttribute('data-displayed-step'), '1');
@@ -77,32 +74,24 @@ try {
   await page.reload();
   await page.getByRole('button', { name: '继续', exact: true }).click();
   await ready(2);
-  await page.keyboard.press('ArrowLeft');
-  await ready(1);
-  await page.keyboard.press('ArrowRight');
+  await page.getByRole('button', { name: '从头重看', exact: true }).click();
+  await ready(0);
   await ready(2);
+  await page.waitForTimeout(2000);
+  await page.getByRole('button', { name: '暂停', exact: true }).click();
   assert.equal((await save()).evidence.filter(id => id === 'dba.ev.a').length, 1);
-  await page.keyboard.press('ArrowRight');
-  await ready(3);
-  await layout();
-  await capture('04-arrival-desktop.png');
   for (const [width, height] of [[390, 844], [320, 568], [844, 390]]) {
     await page.setViewportSize({ width, height });
-    await ready(3);
-    const expectedComposition = width === 390 ? 'portrait' : 'landscape';
+    await ready(2);
+    const expectedComposition = width / height < 1.09 ? 'portrait' : 'landscape';
     await page.locator(`[data-testid="still-frame"][data-composition="${expectedComposition}"]`).waitFor();
     await layout();
-    await capture(`arrival-${width}x${height}.png`);
-    await page.keyboard.press('ArrowLeft');
-    await ready(2);
-    await layout(); // Longest caption at each aspect ratio.
     await capture(`memory-${width}x${height}.png`);
-    await page.keyboard.press('ArrowRight');
-    await ready(3);
   }
   await page.emulateMedia({ reducedMotion: 'reduce' });
   assert.equal(await page.locator('.prologue-shot-in').evaluate(el => getComputedStyle(el).animationName), 'none');
-  await page.getByRole('button', { name: '走上潮线', exact: true }).click();
+  await page.getByRole('button', { name: '播放', exact: true }).click();
+  await ready(3);
   await page.locator('[data-testid="walk-stage"][data-display="ready"]').waitFor();
   assert.match(await page.getByTestId('current-goal').innerText(), /带上一只空瓢/);
   assert.equal((await save()).flags['pro.flag.met-companion'], true);
@@ -127,10 +116,9 @@ try {
     assert.equal(await page.locator('[data-testid="still-frame"] img').evaluate(img => img.naturalHeight > img.naturalWidth), true);
     await layout();
     await capture(`portrait-${step}.png`);
-    if (step < 3) await page.getByRole('button', { name: '下一幕', exact: true }).click();
   }
   assert.deepEqual(errors, []);
-  console.log(JSON.stringify({ result: 'PASS', checks: ['four complete painted shots', 'slow transfer retains previous shot', 'failure and retry', 'keyboard without double advance', 'resume mid-prologue', 'rewatch without duplicate evidence', '390/320 portrait and 844 landscape', 'four dedicated portrait paintings', 'reduced motion', 'shore handoff', 'skip preserves story and gameplay gates'], errors }));
+  console.log(JSON.stringify({ result: 'PASS', checks: ['continuous animated opening', 'slow transfer retains previous shot', 'failure and retry', 'automatic cuts and keyboard pause', 'resume mid-prologue', 'rewatch without duplicate evidence', '390/320 portrait and 844 landscape', 'four dedicated portrait paintings', 'reduced motion', 'shore handoff', 'skip preserves story and gameplay gates'], errors }));
 } catch (error) {
   await page.screenshot({ path: resolve(output, 'failure.png') });
   console.error(error); process.exitCode = 1;

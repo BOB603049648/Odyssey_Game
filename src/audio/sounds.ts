@@ -54,7 +54,7 @@ export function loadSound(id: SoundId): Promise<AudioBuffer | null> {
 
 /** Late decoding cannot revive a departed/paused scene. Every voice has an owner. */
 export async function playSound(id: SoundId, options: {
-  loop?: boolean; level?: number; offset?: () => number; valid?: () => boolean; pan?: number; rate?: number; channel?: AudioChannel;
+  loop?: boolean; level?: number; offset?: () => number; valid?: () => boolean; pan?: number; rate?: number; channel?: AudioChannel; fadeIn?: number;
 } = {}): Promise<SoundVoice | null> {
   const buffer = await loadSound(id);
   const graph = audibleGraph();
@@ -73,7 +73,7 @@ export async function playSound(id: SoundId, options: {
     else gain.connect(bus ?? master);
     const now = context.currentTime;
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(options.level ?? 1, now + (options.loop ? .45 : .015));
+    gain.gain.linearRampToValueAtTime(options.level ?? 1, now + (options.fadeIn ?? (options.loop ? .45 : .015)));
     let finish!: () => void;
     const finished = new Promise<void>(resolve => { finish = resolve; });
     source.onended = () => { source.disconnect(); gain.disconnect(); panner?.disconnect(); finish(); };

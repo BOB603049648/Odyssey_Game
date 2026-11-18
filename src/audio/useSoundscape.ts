@@ -8,12 +8,14 @@ export function useAudio(active = true) {
   return audio;
 }
 const SCAPES: SoundId[] = ['storm', 'rescue', 'memory', 'shore'];
-export function useSoundscape(id: SoundId | null, running: boolean, time?: MutableRefObject<number>, resetKey = 0, loop = true) {
+export function useSoundscape(id: SoundId | null, running: boolean, time?: MutableRefObject<number>, resetKey = 0, loop = true, dissolve = 0) {
   const audio = useAudio();
   const enabled = audio.status === 'ready' && !audio.muted && audio.volume > 0 && (audio[id ? soundChannel(id) : 'ambience'] ?? 1) > 0;
   const [status, setStatus] = useState<'silent' | 'loading' | 'playing' | 'failed'>('silent');
   const [revision, setRevision] = useState(0);
   const retry = useCallback(() => setRevision(value => value + 1), []);
+  const latest = useRef({ id, running, enabled, resetKey });
+  latest.current = { id, running, enabled, resetKey };
   useEffect(() => {
     if (!id || !running || !enabled) { setStatus('silent'); return; }
     let live = true;
@@ -22,7 +24,7 @@ export function useSoundscape(id: SoundId | null, running: boolean, time?: Mutab
     let attempts = 0;
     async function start() {
       setStatus('loading');
-      voice = await playSound(id!, { loop, offset: () => time?.current ?? 0, valid: () => live });
+      voice = await playSound(id!, { loop, offset: () => time?.current ?? 0, valid: () => live, fadeIn: dissolve || undefined });
       if (!live) { voice?.stop(0); return; }
       if (voice) {
         setStatus('playing');
@@ -35,13 +37,19 @@ export function useSoundscape(id: SoundId | null, running: boolean, time?: Mutab
       }
     }
     void start();
-    return () => { live = false; clearTimeout(timer); voice?.stop(); };
-  }, [id, running, enabled, time, revision, resetKey, loop]);
+    return () => {
+      live = false; clearTimeout(timer);
+      const next = latest.current;
+      // Only scene cuts overlap. Pause, mute, replay and unmount stop promptly.
+      const cutting = next.id !== id && next.running && next.enabled && next.resetKey === resetKey;
+      voice?.stop(cutting && dissolve ? dissolve : .14);
+    };
+  }, [id, running, enabled, time, revision, resetKey, loop, dissolve]);
   return { status, retry };
 }
 
 export function usePrologueSound(step: number, take: number, running: boolean, time: MutableRefObject<number>) {
-  const soundscape = useSoundscape(SCAPES[step], running, time, take);
+  const soundscape = useSoundscape(SCAPES[step], running, time, take, true, 1.1);
   const audio = useAudio();
   const consumed = useRef('');
   useEffect(() => { consumed.current = ''; }, [step, take]);

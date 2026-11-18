@@ -57,9 +57,11 @@ export function MuralScreen({
       <header className="bar">
         <div>
           <p className="eyebrow">{t('scene.mural')}</p>
-          <h1 className="mural-title">石壁上的生活</h1>
+          <h1 className="mural-title">虚构刻符练习</h1>
+          <p className="reading-provenance">游戏叙事记号 · 真实文字与主线释读见残卷手记</p>
         </div>
         <div className="row">
+          <button type="button" className="btn" onClick={()=>{dispatch({type:'close-screen'});dispatch({type:'open-reading'});}}>回到残卷手记</button>
           {isLearnedState(save.words[BETRAY]?.state) ? (
             <button type="button" className="btn" data-testid="mural-tattoo" onClick={() => dispatch({ type: 'collect-tattoo' })}>
               {t('mural.tattoo')}

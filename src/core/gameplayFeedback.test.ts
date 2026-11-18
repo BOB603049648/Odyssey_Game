@@ -1,6 +1,8 @@
+import {READING_FOLIOS} from '../content/readingJourney';
+import {readingKey} from './reading';
 import { describe, expect, it } from 'vitest';
 import { hintPresentation } from './hints';
-import { reduce } from './reduce';
+import { reduce } from './__fixtures__/legacyReduce';
 import { newGameState } from './save';
 import { canDepart, departureBlocker, SURVIVAL_BEATS } from './island';
 
@@ -11,7 +13,7 @@ function ashore() {
 }
 
 describe('player action feedback', () => {
-  it('requires real survival actions even with every word learned, while evidence stays optional', () => {
+  it('requires survival actions and linked readings even with every word learned, while side evidence stays optional', () => {
     const state = ashore();
     for (const word of Object.values(state.words)) word.state = 'learned';
     state.beats['dba.beat.water'] = true;
@@ -19,6 +21,8 @@ describe('player action feedback', () => {
     expect(reduce(state, { type: 'depart' }).feedback.line).toBe('spot.depart.food');
     for (const beat of SURVIVAL_BEATS) state.beats[`dba.beat.${beat}`] = true;
     state.evidence = [];
+    expect(departureBlocker(state)).toBe('reading');
+    for(const folio of READING_FOLIOS)state.flags[readingKey(folio.id)]=true;
     expect(canDepart(state)).toBe(true);
     for (const beat of SURVIVAL_BEATS) {
       expect(departureBlocker({ ...state, beats: { ...state.beats, [`dba.beat.${beat}`]: false } })).toBe(beat);

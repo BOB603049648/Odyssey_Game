@@ -5,7 +5,8 @@ import prologueStorm from '../assets/art/painted/prologue-storm.webp';
 import prologueDark from '../assets/art/painted/prologue-dark.webp';
 import prologueBreak from '../assets/art/painted/prologue-break.webp';
 import prologueTide from '../assets/art/painted/prologue-tide.webp';
-import companionStanding from '../assets/companion/nanaicha/nanaicha-hero.png';
+import {PAINTED_ACTORS,PAINTED_IDLE_FILES} from './paintedActors';
+const companionStanding=PAINTED_ACTORS.cat;
 import { ACTION_ATLAS, ACTION_ATLAS_FILES } from './travelerActionAtlas';
 import { WALK_ATLAS, WALK_ATLAS_FILES } from './travelerWalkAtlas';
 import { COMPANION_ATLAS, COMPANION_PERFORMANCE_IDS, SETTLE_ATLAS, SETTLE_ATLAS_FILES } from './characterPerformanceAtlas';
@@ -25,7 +26,7 @@ const repairedGroundModules = import.meta.glob<string>('../assets/art/slots/art.
   eager: true,
   import: 'default',
 });
-const travelerModules = import.meta.glob<string>(['../assets/traveler/*.{png,webp}', '!../assets/traveler/settle-atlas.png', '!../assets/traveler/stride-atlas.png'], {
+const travelerModules = import.meta.glob<string>(['../assets/traveler/*.{png,webp}', '!../assets/traveler/settle-atlas.png', '!../assets/traveler/stride-atlas.png', '!../assets/traveler/action-atlas.png'], {
   eager: true,
   import: 'default',
 });
@@ -79,10 +80,15 @@ for (const [path, url] of Object.entries(prologuePortraits)) {
   if (scene) slots.set(`art.pro.${scene}.portrait`, url);
 }
 const travelers = preferUrl(travelerModules);
+for (const file of PAINTED_IDLE_FILES) {
+  const url=`${PAINTED_ACTORS.idle}#${file}`;
+  for(const alias of [file,stemOf(file),file.replace('.png','.webp')])travelers.set(alias,url);
+}
 for (const file of WALK_ATLAS_FILES) travelers.set(file, `${WALK_ATLAS.url}#${file}`);
 for (const file of ACTION_ATLAS_FILES) travelers.set(file, `${ACTION_ATLAS.url}#${file}`);
 for (const file of SETTLE_ATLAS_FILES) travelers.set(file, `${SETTLE_ATLAS.url}#${file}`);
 const trajs = preferUrl(trajModules);
+for(const file of ['leap-01','leap-02'])trajs.set(file,`${PAINTED_ACTORS['cat-leap']}#${file}`);
 // One complete, registered standing silhouette. The historical landings contain
 // missing bodies, embedded scenery and incompatible padding; do not ship them as
 // animation fallbacks. Leap frames retain their independently reviewed artwork.

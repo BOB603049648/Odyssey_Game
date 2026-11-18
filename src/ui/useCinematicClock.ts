@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-export const PROLOGUE_DURATIONS = [9, 10, 9, 10] as const;
+export { PROLOGUE_DURATIONS } from './prologueTimeline';
 export function usePagePresentation() {
   const [visible, setVisible] = useState(() => !document.hidden);
   const [reduced, setReduced] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false);
@@ -18,8 +18,9 @@ export function usePagePresentation() {
 /** Only active time counts. Pauses, hidden tabs and undecoded shots add no time. */
 export function useCinematicClock(step: number, take: number, active: boolean) {
   const time = useRef(0);
-  const [elapsed, setElapsed] = useState(0);
-  useEffect(() => { time.current = 0; setElapsed(0); }, [step, take]);
+  const key = `${step}:${take}`;
+  const [sample, setSample] = useState({ key, elapsed: 0 });
+  useEffect(() => { time.current = 0; setSample({ key, elapsed: 0 }); }, [key]);
   useEffect(() => {
     if (!active) return;
     let frame = 0;
@@ -28,11 +29,11 @@ export function useCinematicClock(step: number, take: number, active: boolean) {
     function tick(now: number) {
       time.current += Math.min(.1, Math.max(0, (now - previous) / 1000));
       previous = now;
-      if (now - published >= 80) { setElapsed(time.current); published = now; }
+      if (now - published >= 40) { setSample({ key, elapsed: time.current }); published = now; }
       frame = requestAnimationFrame(tick);
     }
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [step, take, active]);
-  return { time, elapsed };
+  }, [key, active]);
+  return { time, elapsed: sample.key === key ? sample.elapsed : 0 };
 }

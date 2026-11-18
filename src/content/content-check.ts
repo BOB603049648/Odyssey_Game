@@ -253,7 +253,8 @@ function checkScaleContract(byId: Map<string, (typeof SCENE_ASSEMBLIES)[number]>
     return errors;
   }
   const travelerSrc = readFileSync('src/ui/Traveler.tsx', 'utf8');
-  const height = travelerSrc.match(/export const TRAVELER_HEIGHT = ([0-9.]+)/);
+  const motionSrc = readFileSync('src/core/travelerMotion.ts', 'utf8');
+  const height = motionSrc.match(/export const TRAVELER_HEIGHT = ([0-9.]+)/);
   if (!height || Number(height[1]) !== scale.traveler_world_h) {
     errors.push(`traveler world height is not ${scale.traveler_world_h}`);
   }

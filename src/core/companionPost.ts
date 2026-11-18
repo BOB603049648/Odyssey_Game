@@ -48,7 +48,8 @@ export function companionFace(frameId: string, postX: number, catX: number): 'le
   if (frameId === 'land-yard-give') return 'right';
   return postX >= catX ? 'right' : 'left';
 }
-/** Canvas height as a fraction of the world layer. Subject reads a little taller than the traveler. */
+/** Legacy nominal boxes. catMotionGeometry derives visible size from the shared
+ * scene/person scale and the actual shown sprite; these are not animal stature. */
 export const NANAICHA_HEIGHT = 0.22;
 /**
  * Shore landings leave empty headroom, so the same 0.22 box painted a cat
@@ -116,7 +117,10 @@ export function companionPost(
   if (scene === 'dba.scene.shore') {
     const welcomed = flags['dba.flag.driftwood'] === true || options?.skipWelcome === true;
     if (!welcomed && beats['dba.beat.depart'] !== true) {
-      const feet = plant(scene, spotAt(scene, 'shore-driftwood'), 1);
+      const nearWood=plant(scene, spotAt(scene, 'shore-driftwood'), 1);
+      // A realistically sized cat must stand in front of this tall driftwood,
+      // otherwise its complete silhouette is hidden during the first greeting.
+      const feet=plantOnGround(scene,{...nearWood,y:nearWood.y+.04});
       return { ...feet, look: 'driftwood', pose: 'sit-near', targetId: 'shore-driftwood', beat: 'S0', queue: 'rest' };
     }
     if (queue === 'water') {

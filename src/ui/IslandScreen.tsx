@@ -1,4 +1,8 @@
+import {ScriptJournal,ScriptObservation} from './ScriptJournal';
+import {scriptActive} from '../core/islandScript';
+import {SCRIPT_TRACES} from '../content/islandScript';
 import { SaveTools } from './SaveTools';
+import { GameDialog } from './GameDialog';
 import { completionPending } from './Cutscenes';
 import { AudioSettings } from './AudioControls';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -33,6 +37,10 @@ import { FoodTable } from './FoodTable';
 import { FieldLexicon } from './FieldLexicon';
 import { BRIDGE, bridgeState } from '../core/bridge';
 import { BridgePuzzle } from './BridgePuzzle';
+import {ReadingDesk,ReadingArchive} from './ReadingDesk';
+import {folioForScene} from '../content/readingJourney';
+import {hasRead} from '../core/reading';
+import {NpcDialogue,NpcNotes} from './NpcDialogue';
 import './adventure.css';
 
 export { hintMark } from './hintMark';
@@ -90,6 +98,13 @@ export function IslandScreen({
     ? SPOTS[flashScene].find((spot) => spot.id === (flashKind === 'driftwood' ? 'shore-driftwood' : flashKind === 'sleep' ? 'camp-sleep' : 'yard-give'))
     : null;
   const onInteract = (id: string) => {
+    if(id.startsWith('trace:')){dispatch({type:'observe-script',id:id.slice(6)});return;}
+    if(scriptActive(save)&&id.startsWith('npc:')){const trace=SCRIPT_TRACES.find(t=>t.scene===scene&&t.npc);if(trace)dispatch({type:'observe-script',id:trace.id});return;}
+    if(id.startsWith('npc:')){dispatch({type:'talk-npc',id});return;}
+    const folio=folioForScene(scene);
+    if(!scriptActive(save)&&((id===folio.spot&&!hasRead(save,folio.id))||id==='island-mural'||id==='hall-mural')){
+      dispatch({type:'open-reading'});return;
+    }
     if (id === 'path-stop' || id === 'path-step') {
       dispatch({ type: 'forest-choice', choice: id === 'path-step' ? 'step' : 'stop' });
       setBridgeOpen(true); return;
@@ -110,7 +125,7 @@ export function IslandScreen({
   };
 
   return (
-    <section className={`island adventure-island${shake ? ' shake' : ''}`} style={{ ['--ambient' as string]: look.ambient }}>
+    <section className={`island adventure-island${scriptActive(save)?' language-world':''}${shake ? ' shake' : ''}`} style={{ ['--ambient' as string]: look.ambient }}>
       <EnterVeil />
       <AdventureHud save={save} dispatch={dispatch} onTitle={onTitle} learned={learned.length} />
       <div
@@ -178,7 +193,11 @@ export function IslandScreen({
         {save.memories.includes('dba.mem.rain-night') ? <MemoryRain /> : null}
       </div>
       {save.overlay === 'chart' ? <ChartSealed onClose={() => dispatch({ type: 'close-overlay' })} /> : null}
+      {save.overlay==='script'?<ScriptObservation key={String(save.flags['dba.script.current'])} save={save} dispatch={dispatch}/>:null}
+      {save.overlay==='journal'?<ScriptJournal save={save} dispatch={dispatch}/>:null}
       <OverlaySheet save={save} dispatch={dispatch} learned={learned} hint={hint} />
+      {save.overlay==='reading'?<ReadingDesk key={`${scene}:${save.createdAt}`} save={save} dispatch={dispatch}/>:null}
+      {save.overlay==='dialogue'?<NpcDialogue key={`${scene}:${save.createdAt}`} save={save} dispatch={dispatch}/>:null}
       {foodTableVisible ? <FoodTable food={puzzles.food} dispatch={dispatch} onClose={() => setFoodTableOpen(false)} /> : null}
       {bridgeVisible ? <BridgePuzzle save={save} dispatch={dispatch} onClose={() => setBridgeOpen(false)} /> : null}
       <JourneyMoment save={save} />
@@ -249,6 +268,10 @@ export function OverlaySheet({
     save.overlay !== 'none' &&
     save.overlay !== 'depart' &&
     save.overlay !== 'memory' &&
+    save.overlay !== 'reading' &&
+    save.overlay !== 'dialogue' &&
+    save.overlay !== 'script' &&
+    save.overlay !== 'journal' &&
     save.overlay !== 'chart';
   const presence = useFadePresence(open);
   const held = useRef(save.overlay);
@@ -256,10 +279,7 @@ export function OverlaySheet({
   const overlay = held.current;
   if (!presence.mounted || overlay === 'none' || overlay === 'depart' || overlay === 'memory') return null;
   return (
-    <div className={`sheet ${presence.phase}`} data-overlay={overlay} role="dialog" aria-label={sheetLabel(overlay)}>
-      <button type="button" className="btn" onClick={() => dispatch({ type: 'close-overlay' })}>
-        {t('menu.close')}
-      </button>
+    <GameDialog className={`sheet ${presence.phase}`} overlay={overlay} title={sheetLabel(overlay)} onClose={() => dispatch({ type: 'close-overlay' })}>
       {overlay === 'settings' ? (
         <><AudioSettings /><GlossSwitch
           checked={save.settings.showGloss}
@@ -267,7 +287,7 @@ export function OverlaySheet({
         /><div className="control-guide"><h3>如何游玩</h3>
           <p>点击地面移动，或使用 WASD / 方向键；手机使用左下摇杆。</p>
           <p>走近物品后，再点一次或按 E 互动；右下角也会显示可用操作。</p>
-          <p>观察壁画、辨认图意，把学会的字用在饮水、觅食、休息和避险中。</p>
+          <p>沿六处场景观察器物与人物的动作，在旅人手记填写自己的词义猜测。看完一组见闻后核验，再用理解完成饮水、分食、休息与避险。</p>
           <p>卡住时点奈奈茶寻求提示。此刻的旅程会指引下一步。</p>
         </div><SaveTools save={save} /></>
       ) : null}
@@ -293,7 +313,8 @@ export function OverlaySheet({
           </div>
         </div>
       ) : null}
-    </div>
+      <footer className="sheet-footer"><span>记下的线索，会随旅程保存。</span><button type="button" className="btn" onClick={() => dispatch({ type: 'close-overlay' })}>{t('menu.close')}</button></footer>
+    </GameDialog>
   );
 }
 
@@ -314,6 +335,8 @@ function CaseFile({ save, onMemory }: { save: SaveData; onMemory: () => void }) 
   return (
     <div className="casefile">
       <JourneyChecklist save={save} />
+      <ReadingArchive save={save}/>
+      <NpcNotes save={save}/>
       {held.length === 0 && !remembered ? <p>{t('casefile.empty')}</p> : null}
       {slots.map((item) => {
         const has = save.evidence.includes(item.id);

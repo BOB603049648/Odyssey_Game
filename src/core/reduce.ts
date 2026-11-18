@@ -1,3 +1,4 @@
+import {applyScript, SCRIPT_ACTIVE, type ScriptAction, scriptActive} from './islandScript';
 import { LEXEMES } from '../content/catalog';
 import { isLayerUnlocked, requirementsMet } from './conditions';
 import { debugEvidence, debugForceEnding, debugHotspots, debugLearnNext, debugScene, debugWalkable } from './debug';
@@ -26,14 +27,20 @@ import type { EndingContent, HintLevel, MuralLayer, SaveData, WordProgress } fro
 import { isLearnedState, transitionWord } from './words';
 import { applyPuzzleAction, useGourd, useWaterWord, type PuzzleAction } from './puzzles';
 import { applyBridgeAction, type BridgeAction } from './bridge';
+import {applyReading,READING_ACTIVE,type ReadingAction} from './reading';
+import {applyDialogue,type DialogueAction} from './dialogue';
 
 export type Action =
+  | ScriptAction
   | PuzzleAction
   | BridgeAction
+  | ReadingAction
+  | DialogueAction
   | { type: 'new-game' }
   | { type: 'dismiss-completion' }
   | { type: 'advance-prologue' }
   | { type: 'previous-prologue' }
+  | { type: 'replay-prologue' }
   | { type: 'skip-prologue' }
   | { type: 'open-mural' }
   | { type: 'close-screen' }
@@ -44,7 +51,7 @@ export type Action =
   | { type: 'poke-gourd' }
   | { type: 'use-word'; wordId: string }
   | { type: 'set-show-gloss'; value: boolean }
-  | { type: 'open-overlay'; overlay: 'lexicon' | 'settings' | 'casefile' | 'chart' }
+  | { type: 'open-overlay'; overlay: 'lexicon' | 'settings' | 'casefile' | 'chart' | 'journal' }
   | { type: 'teach-approach' }
   | { type: 'close-overlay' }
   | { type: 'goto-scene'; scene: string }
@@ -84,6 +91,11 @@ export function reduce(state: SaveData, action: Action): SaveData {
 
 function applyAction(state: SaveData, action: Action): SaveData {
   switch (action.type) {
+    case 'observe-script':
+    case 'script-next':
+    case 'script-guess':
+    case 'script-verify':
+      return touch(applyScript(state,action));
     case 'dismiss-completion':
       return touch({ ...state, flags: { ...state.flags, 'v01.completion-seen': true } });
     case 'new-game':
@@ -92,6 +104,9 @@ function applyAction(state: SaveData, action: Action): SaveData {
       return touch({ ...state, settings: { showGloss: action.value } });
     case 'advance-prologue':
       return advancePrologue(state);
+    case 'replay-prologue':
+      if (state.screen !== 'prologue') return state;
+      return touch({ ...state, prologueStep: 0, currentScene: 'pro.scene.storm' });
     case 'previous-prologue':
       if (state.screen !== 'prologue' || state.prologueStep <= 0) return state;
       return touch({ ...state, prologueStep: state.prologueStep - 1,
@@ -104,13 +119,13 @@ function applyAction(state: SaveData, action: Action): SaveData {
       return next;
     }
     case 'open-mural':
-      return openMural(state);
+      return scriptActive(state) ? touch({...state,overlay:'journal'}) : openMural(state);
     case 'close-screen':
       return closeScreen(state);
     case 'close-overlay':
       return touch({ ...state, overlay: 'none' });
     case 'open-overlay':
-      return touch({ ...state, overlay: action.overlay });
+      return touch({ ...state, overlay: scriptActive(state) && ['casefile','lexicon'].includes(action.overlay) ? 'journal' : action.overlay });
     case 'select-layer':
       return selectLayer(state, action.layer);
     case 'select-cell':
@@ -127,6 +142,16 @@ function applyAction(state: SaveData, action: Action): SaveData {
       return touch(applyPuzzleAction(state, action));
     case 'bridge-act':
       return touch(applyBridgeAction(state, action));
+    case 'open-reading':
+      if(scriptActive(state))return touch({...state,overlay:'journal'});
+      return touch(applyReading(state,action));
+    case 'reading-submit':
+    case 'reading-hint':
+      return scriptActive(state)?state:touch(applyReading(state,action));
+    case 'talk-npc':
+    case 'npc-topic':
+    case 'npc-hint':
+      return touch(applyDialogue(state,action));
     case 'goto-scene':
       return touch(gotoScene(state, action.scene));
     case 'sit-driftwood':
@@ -140,7 +165,7 @@ function applyAction(state: SaveData, action: Action): SaveData {
     case 'collect-tattoo':
       return touch(collectTattoo(state));
     case 'read-old-layer':
-      if (state.currentScene === 'dba.scene.night' && !canReadOldLayer(state)) return openMural(state);
+      if (state.currentScene === 'dba.scene.night' && !canReadOldLayer(state)) return scriptActive(state) ? touch({...state,overlay:'journal'}) : openMural(state);
       return touch(readOldLayer(state));
     case 'depart':
       return touch(departEast(state));
@@ -187,6 +212,7 @@ function beginPrologue(showGloss: boolean): SaveData {
   return {
     ...fresh,
     settings: { showGloss },
+    flags:{...fresh.flags,[READING_ACTIVE]:false,[SCRIPT_ACTIVE]:true},
     screen: 'prologue',
     prologueStep: 0,
     currentScene: 'pro.scene.storm',

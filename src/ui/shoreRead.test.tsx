@@ -236,14 +236,15 @@ describe('shore readability', () => {
     expect(screen.getByTestId('prop-art.shore.prop.driftwood').getAttribute('data-cue')).toBe('glance');
     expect(screen.getByTestId('prop-art.shore.prop.east-gap').getAttribute('data-cue')).toBe('far');
     const camp = screen.getByTestId('exit-camp');
-    expect(camp.getAttribute('data-hearth')).toBe('yes');
+    expect(camp.getAttribute('data-kind')).toBe('trail');
     expect(camp.className).not.toContain('near');
     expect(screen.queryByTestId('hearth-name')).toBeNull();
     expect(camp.style.top).toBe(`${CAMP_HEARTH_Y * 100}%`);
     expect(camp.style.left).toBe('90%');
-    expect(camp.querySelector('span')?.textContent).toBeTruthy();
+    expect(camp.getAttribute('aria-label')).toBe('棚火');
+    expect(camp.textContent).toBe('');
     const hall = screen.getByTestId('exit-hall');
-    expect(hall.getAttribute('data-hearth')).toBe('no');
+    expect(hall.getAttribute('data-kind')).toBe('door');
     expect(hall.className).not.toContain('near');
     expect(screen.queryByText('?')).toBeNull();
 
@@ -293,12 +294,9 @@ describe('shore readability', () => {
     );
     const camp = screen.getByTestId('exit-camp');
     expect(camp.className).toContain('near');
-    expect(camp.querySelector('span')?.textContent).toBe('→ 棚火');
-    const name = screen.getByTestId('hearth-name');
-    expect(name.textContent).toBe('棚火');
-    expect(screen.getByTestId('world-root').contains(name)).toBe(false);
-    expect(screen.getByTestId('walk-stage').contains(name)).toBe(false);
-    expect(screen.getByTestId('grade-veil').compareDocumentPosition(name) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(camp.getAttribute('aria-label')).toBe('棚火');
+    expect(camp.textContent).toBe('');
+    expect(screen.queryByTestId('hearth-name')).toBeNull();
     expect(screen.getByTestId('walk-stage').getAttribute('data-scene')).toBe('dba.scene.shore');
   });
 

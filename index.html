@@ -6,9 +6,23 @@
     <meta name="theme-color" content="#102026" />
     <title>奥德赛</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="preload" as="image" href="/src/assets/art/keyart.webp" fetchpriority="high" />
+    <style>
+      html, body { background: #102026; }
+      .boot-loading { min-height: 90svh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #e1d6bc; font: 16px/1.7 system-ui, sans-serif; text-align: center; padding: 1rem; }
+      .boot-loading button { background: transparent; border: 1px solid #82765e; border-radius: 6px; color: inherit; padding: .6rem 1.2rem; cursor: pointer; }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><div class="boot-loading" role="status"><p>奥德赛 · 留与归</p><p id="boot-message">正在展开旅程…</p><button id="boot-retry" type="button" hidden>重新加载</button><noscript>请启用 JavaScript 后继续旅程。</noscript></div></div>
+    <script>
+      document.getElementById('boot-retry').onclick = function () { location.reload(); };
+      setTimeout(function () {
+        var message = document.getElementById('boot-message');
+        var retry = document.getElementById('boot-retry');
+        if (message && retry) { message.textContent = '加载时间较长，可以继续等待或重新加载。'; retry.hidden = false; }
+      }, 12000);
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

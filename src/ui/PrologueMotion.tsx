@@ -1,5 +1,6 @@
 import { PrologueLimbs } from './PrologueLimbs';
 import { useEffect, useRef, useState, type MutableRefObject } from 'react';
+import { prologueCamera } from './prologueTimeline';
 
 const fract = (n: number) => n - Math.floor(n);
 const seed = (n: number) => fract(Math.sin(n * 127.1 + 31.7) * 43758.5453);
@@ -12,6 +13,9 @@ export function PrologueMotion({ src, step, portrait, active, reduced, time, alt
   time: MutableRefObject<number>; alt: string; onError: () => void;
 }) {
   const [limbsReady, setLimbsReady] = useState(false);
+  // Keep this shot's last pose when it becomes the outgoing dissolve layer.
+  // The shared story clock resets for the incoming shot; the old pose must not.
+  const poseTime = useRef(0);
   const container = useRef<HTMLDivElement>(null);
   const camera = useRef<HTMLDivElement>(null);
   const picture = useRef<HTMLImageElement>(null);
@@ -47,10 +51,9 @@ export function PrologueMotion({ src, step, portrait, active, reduced, time, alt
       if (now - last < 1000 / 30) return;
       last = now;
       const t = time.current;
-      const scale = step < 2 ? .985 : .98 + .015 * (1 - Math.exp(-t / 5));
-      const dx = step < 2 ? Math.sin(t * .55) * w * .0025 : 0;
-      const dy = step < 2 ? Math.sin(t * 1.2) * h * (step === 0 ? .003 : .0015) : 0;
-      camera.current!.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+      poseTime.current = t;
+      const cameraPose = prologueCamera(step, t);
+      camera.current!.style.transform = `translate(${cameraPose.x * w}px, ${cameraPose.y * h}px) scale(${cameraPose.scale})`;
       ctx!.setTransform(ratio, 0, 0, ratio, 0, 0);
       ctx!.clearRect(0, 0, w, h);
       const img = picture.current;
@@ -136,7 +139,7 @@ export function PrologueMotion({ src, step, portrait, active, reduced, time, alt
     <div className="prologue-painting" style={size.width ? { width: size.width, height: size.height } : { width: '100%', height: '100%' }}>
       <div className="prologue-camera" ref={camera} data-limbs={limbsReady ? 'ready' : 'still'}>
         <img ref={picture} src={src} alt={alt} draggable={false} onError={onError} />
-        <PrologueLimbs src={src} step={step} portrait={portrait} reduced={reduced} time={time} width={size.width} height={size.height} onReady={setLimbsReady} />
+        <PrologueLimbs src={src} step={step} portrait={portrait} reduced={reduced} time={poseTime} width={size.width} height={size.height} onReady={setLimbsReady} />
         <canvas ref={canvas} className="prologue-weather" aria-hidden="true" />
       </div>
     </div>

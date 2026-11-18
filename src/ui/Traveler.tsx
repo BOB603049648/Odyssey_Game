@@ -3,7 +3,7 @@ import { supportForSource, supportTransform, type TravelerSupport } from './trav
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { TravelerPalette } from './TravelerPalette';
 import type { IslandScene } from '../core/island';
-import { WALK_SPEED, groundDistance, WORLD_ASPECT } from '../core/walk';
+import { groundDistance, WORLD_ASPECT, type Point } from '../core/walk';
 import { depthScale, worldToScreen } from '../core/world';
 import { punchHemUrl, wakeHemPunch } from './hemPunch';
 import { heldFrameIndex } from './travelerDisplay';
@@ -13,6 +13,10 @@ import { WALK_ATLAS, WALK_ATLAS_FILES, WALK_FRAME_COUNT, walkAtlasSource } from 
 import { SETTLE_FILES, settleAtlasSource } from '../content/characterPerformanceAtlas';
 import { REST_LOWER_MS, REST_RISE_MS } from './characterActionTimeline';
 import './character-performance.css';
+import {paintedTravelerSource} from '../content/paintedActors';
+import {sceneTravelerHeight} from '../content/sceneScale';
+import { WALK_CYCLE_HZ, WALK_STRIDE, TRAVELER_HEIGHT } from '../core/travelerMotion';
+export { WALK_CYCLE_HZ, WALK_STRIDE, TRAVELER_HEIGHT } from '../core/travelerMotion';
 
 export type TravelerFacing = 'front' | 'back' | 'left' | 'right';
 export type TravelerSheet = 'front' | 'side' | 'back';
@@ -54,6 +58,7 @@ function filesFor(pose: TravelerPose, sheet: TravelerSheet): readonly string[] {
   return pose === 'interact' ? [IDLE_FILES[sheet][0]] : IDLE_FILES[sheet];
 }
 function atlasSource(src: string) {
+  const painted=paintedTravelerSource(src);if(painted)return painted;
   const walk = walkAtlasSource(src);
   return walk ? { ...walk, atlasWidth: WALK_ATLAS.width, atlasHeight: WALK_ATLAS.height } : settleAtlasSource(src) ?? actionAtlasSource(src);
 }
@@ -63,31 +68,16 @@ function frameSrc(file: string): string {
 }
 
 /**
- * Full-speed walk cycles per second while covering WALK_SPEED.
- * Playback follows distance (`WALK_STRIDE`), so a slower stick does not skate.
- * At reference scale, 1.65 cycles/sec gives 13.2 distinct poses/sec. Perspective
- * and the nearer hall scale still adjust stride to the displayed body size.
- */
-export const WALK_CYCLE_HZ = 1.65;
-export const WALK_STRIDE = WALK_SPEED / WALK_CYCLE_HZ;
-/**
- * Figure box height as a fraction of the world layer.
- * At WORLD_SCALE 1.46 a 0.15 box filled ~22% of the viewport and read as too tall
- * against the plate. 0.136 is about 20% of the viewport: taller than the
- * shore cat's painted body, still under that 22% mark.
- */
-export const TRAVELER_HEIGHT = 0.136;
-/**
  * Hall (木经堂) reads from a much nearer camera than the shore: the timber
  * pillars span ~3.7 m in the plate, so the shore's 0.136 box painted the
  * traveler at about a metre, roughly a third of the architecture. 0.22 keeps
  * a 1.75 m body at the scroll-and-pillar scale the hall art was drawn to.
  */
-export const HALL_TRAVELER_HEIGHT = 0.22;
+export const HALL_TRAVELER_HEIGHT = sceneTravelerHeight('dba.scene.hall');
 
 /** Figure box height for the scene the traveler is standing in. */
 export function travelerHeight(scene: IslandScene): number {
-  return scene === 'dba.scene.hall' ? HALL_TRAVELER_HEIGHT : TRAVELER_HEIGHT;
+  return sceneTravelerHeight(scene);
 }
 /**
  * Opaque-bounds bottom center on the 864×1152 sheet.
@@ -198,7 +188,9 @@ function useTravelerMotion(
   actionSeq: number,
   paused: boolean,
   actionElapsed?: number,
+  walkCycles?: (from:Point,to:Point,height:number)=>number|undefined,
 ): Motion {
+  const walkCyclesRef=useRef(walkCycles);walkCyclesRef.current=walkCycles;
   const actionRef = useRef(actionSeq);
   const elapsedRef = useRef(actionElapsed); elapsedRef.current = actionElapsed;
   const pauseRef = useRef(paused);
@@ -239,7 +231,8 @@ function useTravelerMotion(
       last = now;
       if (pauseRef.current) { raf = window.requestAnimationFrame(tick); return; }
       const here = posRef.current;
-      const moved = groundDistance(here, lastPos);
+      const previous=lastPos;
+      const moved = groundDistance(here, previous);
       const dist = moved < 0.1 ? moved : 0; // scene entry is not a step
       lastPos = here;
       const physicallyWalking = dist > 1e-6 && strideRef.current > 0.001;
@@ -252,8 +245,11 @@ function useTravelerMotion(
       const requested: TravelerPose = overrideRef.current === 'auto' ? locomotion : overrideRef.current;
       const pose = poseForSheet(requested, sheetRef.current);
       if (pose === 'walk') {
-        if (dist > 1e-6) walkPhase = stepCycleByDistance(walkPhase, dist,
-          WALK_STRIDE * heightRef.current / TRAVELER_HEIGHT * depthScale(here.y));
+        if (dist > 1e-6) {
+          const spatialCycles=walkCyclesRef.current?.(previous,here,heightRef.current);
+          walkPhase=spatialCycles===undefined ? stepCycleByDistance(walkPhase,dist,
+            WALK_STRIDE*heightRef.current/TRAVELER_HEIGHT*depthScale(here.y)) : stepCycleByDistance(walkPhase,spatialCycles,1);
+        }
       } else if (pose === 'reach' || pose === 'drink' || pose === 'lie' || pose === 'rise') {
         if (prevPose !== pose || previousAction !== actionRef.current) activeActionTime = 0;
         else activeActionTime += delta;
@@ -370,7 +366,9 @@ function useFramePresentation(blend:FrameBlend|null,contactCleanup:boolean):Fram
   const shown=current || lastReady.current?.shown || '';
   const shownBlend=current ? blend : lastReady.current?.blend ?? blend;
   const cell = atlasSource(shown);
-  const support = cell ? { file: cell.file, x: cell.width / 2, y: cell.sole, width: cell.width, height: cell.height }
+  const support = cell ? { file: cell.file, x: cell.width / 2, y: cell.sole, width: cell.width, height: cell.height,
+    ...('bodyX' in cell?{bodyX:cell.bodyX}:{}),
+    ...('scale' in cell?{scaleX:cell.scale*(cell.width/cell.height)/.75,scaleY:cell.scale}:{}) }
     : contactCleanup && shownBlend.pose !== 'lie' ? supportForSource(shown) : null;
   return {blend:shownBlend,shown,support,onError};
 }
@@ -388,8 +386,8 @@ export function FramePictureView({picture,layer,onMount,paletteId}:{picture:Fram
       data-support-frame={support?.file}
       data-support-x={support?.x}
       data-support-y={support?.y}
-      data-palette={cell ? 'costume-match' : 'reference'}
-      style={{ ...(support ? { transform: supportTransform(support, blend.facing === 'left', TRAVELER_FOOT) } : {}), ...(cell ? { overflow: 'hidden', ...(paletteId ? { filter: `url("#${paletteId}${walkAtlasSource(shown) ? '-walk' : ''}")` } : {}) } : {}) }}
+      data-palette={paintedTravelerSource(shown)?'painted':cell ? 'costume-match' : 'reference'}
+      style={{ ...(support ? { transform: supportTransform(support, blend.facing === 'left', TRAVELER_FOOT), transformOrigin:`${TRAVELER_FOOT.x*100}% ${TRAVELER_FOOT.y*100}%` } : {}), ...(cell ? { overflow: 'hidden', ...(paletteId&&!paintedTravelerSource(shown) ? { filter: `url("#${paletteId}${walkAtlasSource(shown) ? '-walk' : ''}")` } : {}) } : {}) }}
     >
       {shown ? (
         <img
@@ -434,6 +432,8 @@ export type TravelerProps = {
   contactCleanup?: boolean;
   /** Figure box as a fraction of the world. Defaults to the shared TRAVELER_HEIGHT. */
   height?: number;
+  /** Optional spatial renderer metric, in complete gait cycles actually moved. */
+  walkCycles?: (from:Point,to:Point,height:number)=>number|undefined;
 };
 
 export function useTravelerPresentation({
@@ -450,10 +450,11 @@ export function useTravelerPresentation({
   presentationFrozen = false,
   contactCleanup = false,
   height = TRAVELER_HEIGHT,
+  walkCycles,
 }: TravelerProps) {
   const sheet = sheetOf(facing);
   const power = stride ?? (moving ? 1 : 0);
-  const motion = useTravelerMotion(power, pose, sheet, x, y, presentationFrozen, height, actionSeq, paused, actionElapsed);
+  const motion = useTravelerMotion(power, pose, sheet, x, y, presentationFrozen, height, actionSeq, paused, actionElapsed,walkCycles);
   const frames = clipFrames(motion.pose, sheet);
   const firstFile = filesFor(motion.pose, sheet)[0];
   const { src: firstSrc } = useAssetSrc(firstFile, FRAME_SRC_API);

@@ -1,5 +1,5 @@
 import type { IslandScene } from './island';
-import { BANDS, BRIDGE_KNOTS, NIGHT_FOOTPRINTS, SHORE_MARKER, SHORE_PROP_FOOTPRINTS, YARD_APRONS, YARD_FACADE, plantOnGround } from './stage';
+import { BANDS, BRIDGE_KNOTS, HALL_PROP_FOOTPRINTS, NIGHT_FOOTPRINTS, SHORE_MARKER, SHORE_PROP_FOOTPRINTS, YARD_APRONS, YARD_FACADE, plantOnGround } from './stage';
 import { groundDistance, WORLD_ASPECT, type Point } from './walk';
 
 const MARGIN = 0.003;
@@ -122,14 +122,14 @@ export function groundRoute(scene: IslandScene, from: Point, requested: Point): 
   const nodes = [from, goal, ...blocks.flatMap(b => [
     { x: b.minX - MARGIN, y: b.groundY + MARGIN },
     { x: b.maxX + MARGIN, y: b.groundY + MARGIN },
-  ]), ...(scene === 'dba.scene.shore' ? SHORE_PROP_FOOTPRINTS.flatMap(b => [
+  ]), ...(scene === 'dba.scene.shore' ? SHORE_PROP_FOOTPRINTS:scene === 'dba.scene.hall'?HALL_PROP_FOOTPRINTS:[]).flatMap(b => [
     { x: b.minX - MARGIN, y: b.maxY + MARGIN },
     { x: b.maxX + MARGIN, y: b.maxY + MARGIN },
     ...(b.minY >= BANDS[scene].minY ? [
       { x: b.minX - MARGIN, y: b.minY - MARGIN },
       { x: b.maxX + MARGIN, y: b.minY - MARGIN },
     ] : []),
-  ]) : [])];
+  ])];
   const costs = nodes.map(() => Infinity), previous = nodes.map(() => -1), visited = new Set<number>();
   costs[0] = 0;
   for (let n = 0; n < nodes.length; n++) {

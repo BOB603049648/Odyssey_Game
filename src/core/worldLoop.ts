@@ -28,14 +28,17 @@ export type GuideSim = {
  * One simulation step: walk intent, then the guide.
  * A frame with no move and no seek leaves a settled foot where it is.
  */
-export function stepWorld(input: { walker: WalkerSim; intent: MoveIntent; band: Band; dt: number; guide: GuideSim; scene?: IslandScene }): {
+export function stepWorld(input: { walker: WalkerSim; intent: MoveIntent; band: Band; dt: number; guide: GuideSim; scene?: IslandScene;
+  groundVelocity?:(at:Point,wish:Point)=>Point;
+}): {
   walker: WalkerSim & { moving: boolean; blocked: boolean };
   guide: ReturnType<typeof nextGuide>;
 } {
   const requested = input.intent.move ? null : input.intent.seek ?? input.walker.seek;
   const seek = requested ? input.scene ? plantOnGround(input.scene, requested) : clampToBand(requested, input.band) : null;
   const waypoint = seek && input.scene ? groundRoute(input.scene, input.walker.pos, seek)[0] : seek;
-  const wish = desiredVelocity(input.intent.move, waypoint, input.walker.pos);
+  const requestedVelocity = desiredVelocity(input.intent.move, waypoint, input.walker.pos);
+  const wish = input.groundVelocity?.(input.walker.pos,requestedVelocity)??requestedVelocity;
   const step = coastStep(input.walker.pos, input.walker.velocity, wish, input.band, input.dt);
   const grounded = input.scene ? groundStep(input.scene, input.walker.pos, step.pos) : step.pos;
   const hitGround = groundDistance(grounded, step.pos) > 1e-7;

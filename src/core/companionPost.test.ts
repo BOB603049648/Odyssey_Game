@@ -57,7 +57,7 @@ describe('companion feet and gaze', () => {
     expect(wood.beat).toBe('S0');
     expect(wood.targetId).toBe('shore-driftwood');
     expect(wood.look).toBe('driftwood');
-    expect(wood.y).toBeCloseTo(log.y);
+    expect(wood.y).toBeCloseTo(log.y+.04);
     onGround(shore, wood.y);
 
     const thirsty = companionPost(shore, {}, { 'dba.flag.driftwood': true });

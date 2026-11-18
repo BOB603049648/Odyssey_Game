@@ -1,9 +1,11 @@
+import {scriptActive,scriptCount} from './islandScript';
 import { LEXEMES } from '../content/catalog';
 import type { SaveData } from './schema';
 import { isLearnedState, reviewForMastery } from './words';
 import { meaningChoices } from './conceptChoices';
 import { applyPuzzleAction } from './puzzles';
 import { completeBridgeReturn, inspectBridgeApproach } from './bridge';
+import {READING_ACTIVE,readingCount} from './reading';
 
 export const ISLAND_SCENES = [
   'dba.scene.shore',
@@ -179,12 +181,13 @@ export function shoreStone(state: SaveData): SaveData {
  * Preserve completion of older saves that finished before these checks existed.
  */
 export const SURVIVAL_BEATS = ['water', 'food', 'sleep', 'danger'] as const;
-export function departureBlocker(state: SaveData): typeof SURVIVAL_BEATS[number] | 'words' | null {
+export function departureBlocker(state: SaveData): typeof SURVIVAL_BEATS[number] | 'words' | 'reading' | null {
   if (state.beats['dba.beat.depart'] === true) return null;
   for (const beat of SURVIVAL_BEATS) {
     if (state.beats[`dba.beat.${beat}`] !== true) return beat;
   }
   if (!learned(state, HUNGER) || !learned(state, PROMISE) || !learned(state, DANGER)) return 'words';
+  if(scriptActive(state) ? scriptCount(state)<6 : state.flags[READING_ACTIVE]&&readingCount(state)<6)return 'reading';
   return null;
 }
 

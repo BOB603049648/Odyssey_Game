@@ -17,7 +17,7 @@ describe('one physical shore depth root',()=>{
  it('puts five real props and each complete actor+contact in sibling full-world units; gate remains scenic',async()=>{
   const {WalkLayer,props}=await setup();render(<WalkLayer {...props}/>);
   const root=document.querySelector('.ground-depth-root');expect(root).not.toBeNull();
-  const units=[...root!.children] as HTMLElement[];expect(units).toHaveLength(7);expect(new Set(units.map(n=>n.parentElement))).toEqual(new Set([root]));
+  const units=[...root!.children] as HTMLElement[];expect(units).toHaveLength(8);expect(new Set(units.map(n=>n.parentElement))).toEqual(new Set([root]));
   for(const id of ['driftwood','gourd','break-shard','mural-wall','east-gap']){
    const prop=screen.getByTestId('prop-art.shore.prop.'+id);expect(prop.closest('[data-depth-id]')?.parentElement).toBe(root);
    expect(screen.getAllByTestId('prop-art.shore.prop.'+id)).toHaveLength(1);expect(prop.closest('[data-shore-visual="candidate"]')).not.toBeNull();

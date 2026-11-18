@@ -1,14 +1,21 @@
 import { returnFromBridge } from './__fixtures__/bridgeJourney';
 import { describe, expect, it } from 'vitest';
 import { LEXEMES } from '../content/catalog';
-import { guidePose, hintCap } from './hints';
-import { reduce } from './reduce';
+import { guidePose, hintCap, hintTarget } from './hints';
+import { READING_ACTIVE } from './reading';
+import { reduce } from './__fixtures__/legacyReduce';
 import { newGameState } from './save';
 import type { MuralLayer, SaveData } from './schema';
 
 function ashore(): SaveData {
   let state = reduce(newGameState(), { type: 'new-game' });
   for (let step = 0; step < 4; step += 1) state = reduce(state, { type: 'advance-prologue' });
+  return state;
+}
+
+function legacyAshore(): SaveData {
+  const state = ashore();
+  delete state.flags[READING_ACTIVE];
   return state;
 }
 
@@ -31,7 +38,8 @@ function learnLayer(state: SaveData, layer: MuralLayer): SaveData {
   return LEXEMES.filter((item) => item.layer === layer).reduce((next, item) => learn(next, item.id), state);
 }
 
-function readyToLeave(state = ashore()): SaveData {
+// Saves created before linked readings retain their existing departure contract.
+function readyToLeave(state = legacyAshore()): SaveData {
   let next = learnLayer(learnLayer(learnLayer(state, 'concrete'), 'action'), 'relation');
   next = learn(learn(next, 'dba.word.hunger'), 'dba.word.promise');
   next = learn(next, 'dba.word.share');
@@ -116,7 +124,7 @@ describe('island 1 reachability', () => {
     expect(state.flags['dba.flag.bone-cell']).toBe(true);
   });
 
-  it('still leaves when the skippable evidence was never picked up', () => {
+  it('still leaves from a legacy save when the skippable evidence was never picked up', () => {
     const state = reduce(readyToLeave(), { type: 'depart' });
     expect(state.beats['dba.beat.depart']).toBe(true);
     expect(state.evidence).toEqual(['dba.ev.a']);
@@ -163,8 +171,19 @@ describe('island 1 reachability', () => {
 });
 
 describe('guide hints', () => {
-  it('leads to the driftwood before it will point at the mural, and a miss only turns her head', () => {
+  it('leads a new journey to the first reading without granting its solution', () => {
     const shore = ashore();
+    expect(hintTarget(shore)).toBe('island-mural');
+    expect(hintCap(shore)).toBe(3);
+    const capped = [1, 2, 3, 4].reduce((next) => reduce(next, { type: 'request-hint' }), shore);
+    expect(capped.companion.level).toBe(3);
+    expect(capped.companion.targetId).toBe('island-mural');
+    expect(capped.flags['dba.reading.spring']).toBeUndefined();
+    expect(capped.words['dba.word.water'].state).toBe('unseen');
+  });
+
+  it('keeps the legacy driftwood guidance, and a miss only turns her head', () => {
+    const shore = legacyAshore();
     expect(guidePose(shore)).toBe('lead');
     expect(hintCap(shore)).toBe(2);
     const capped = [1, 2, 3].reduce((next) => reduce(next, { type: 'request-hint' }), shore);

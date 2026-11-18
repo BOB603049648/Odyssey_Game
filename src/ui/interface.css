@@ -1,0 +1,336 @@
+/* Shared visual language. Scoped to the live game; world geometry and review
+   fixtures keep their own positioning. No remote fonts or texture downloads. */
+.odyssey-ui {
+  --ui-paper: #eee4ce;
+  --ui-soft: #c0c8bb;
+  --ui-muted: #98a99e;
+  --ui-brass: #c2a36d;
+  --ui-line: #bba06b40;
+  --ui-ink: #142120;
+  --ui-panel: #192827;
+  --ui-serif: "Iowan Old Style", "Songti SC", "STSong", "Noto Serif CJK SC", serif;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--ui-paper);
+}
+.odyssey-ui .ui-icon { display: inline-block; width: 20px; height: 20px; flex: 0 0 auto; vertical-align: middle; }
+.odyssey-ui :is(button, summary, a, input):focus-visible { outline: 2px solid #e2c28c; outline-offset: 4px; }
+.odyssey-ui .btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+  min-height: 46px; padding: 11px 20px; border: 1px solid var(--ui-line); border-radius: 3px;
+  background: #e5d2a408; color: var(--ui-paper); font-size: 13px; line-height: 1.5; letter-spacing: .06em;
+  box-shadow: inset 0 1px #f7e7c30a; backdrop-filter: none; transition: color 160ms, background-color 160ms, border-color 160ms, box-shadow 160ms;
+}
+.odyssey-ui .btn.primary { color: #242d25; border-color: #d0b17b; background: linear-gradient(110deg,#d7bc87,#baa06e); text-shadow: none; box-shadow: inset 0 1px #fff2d67a,0 4px 14px #0002; }
+.odyssey-ui .btn:disabled { opacity: .42; box-shadow: none; }
+.odyssey-ui .btn:not(:disabled):active { background-color: #bfa47324; box-shadow: inset 0 2px 7px #0003; }
+.odyssey-ui .btn.primary:not(:disabled):active { background: #b49a68; }
+.odyssey-ui :is(button, summary, input, label) { -webkit-tap-highlight-color: transparent; }
+
+/* A quiet, asymmetric title with a clear continuation point. */
+.odyssey-ui .title-screen { display: flex; align-items: flex-start; justify-content: center; height: 100dvh; min-height: 0; padding: 92px max(7vw,24px) 84px; overflow: auto; text-align: left; }
+.odyssey-ui .title-screen::before { background: linear-gradient(90deg,#071515ed 0%,#0d1a1cd9 26%,#0b191c75 56%,#0715150d 82%),linear-gradient(0deg,#081515bd,transparent 30%,transparent 75%,#08151560); }
+.odyssey-ui .title-screen .title-block { position: relative; z-index: 2; display: block; width: min(480px,100%); max-height: none; margin: auto 0; padding: 24px 0; overflow: visible; text-align: left; }
+.odyssey-ui .title-masthead { position: absolute; z-index: 2; top: max(30px,var(--safe-top)); left: max(7vw,24px); display: flex; align-items: center; gap: 13px; font-size: 11px; letter-spacing: .24em; color: #d8c8a7; }
+.odyssey-ui .title-masthead .ui-icon { width: 27px; height: 27px; color: var(--ui-brass); }
+.odyssey-ui .title-chapter { display: flex; align-items: center; gap: 13px; margin: 0 0 28px; color: #d7bc87; font-size: 12px; letter-spacing: .2em; }
+.odyssey-ui .title-chapter > span { height: 1px; width: 30px; background: #c2a36d70; }
+.odyssey-ui .title-block h1 { margin: 0; font-family: var(--ui-serif); font-size: clamp(46px,6.3vw,86px); line-height: 1.3; font-weight: 400; letter-spacing: .16em; color: #f1e6cc; text-shadow: 0 3px 28px #00141555; }
+.odyssey-ui .title-block .latin-title { justify-content: flex-start; margin: 8px 0 26px; color: #c1ae89; font-size: 13px; letter-spacing: .42em; }
+.odyssey-ui .title-block .latin-title > span { display: none; }
+.odyssey-ui .title-block .tagline { margin: 0 0 30px; font-size: 15px; line-height: 1.9; letter-spacing: .12em; color: #d1d3bf; }
+.odyssey-ui .title-resume-note { display: flex; align-items: center; gap: 9px; margin: 0 0 15px; min-height: 22px; font-size: 11px; line-height: 1.8; color: #b8c5b5; }
+.odyssey-ui .title-resume-note > span:last-child:not(.save-beacon) { margin-left: auto; color: #99ab9e; }
+.odyssey-ui .save-beacon { width: 5px; height: 5px; border-radius: 50%; background: #b2c9a4; box-shadow: 0 0 0 4px #a5bb9410; }
+.odyssey-ui .title-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.odyssey-ui .title-actions .btn { justify-content: space-between; min-height: 58px; padding-inline: 21px; font-size: 15px; }
+.odyssey-ui .title-actions .btn.primary { order: -1; }
+.odyssey-ui .title-preferences { display: flex; align-items: center; flex-wrap: wrap; gap: 0 17px; margin-top: 20px; padding-top: 13px; border-top: 1px solid var(--ui-line); }
+.odyssey-ui .title-preferences :is(button,.prologue-text-button) { display: inline-flex; gap: 7px; align-items: center; min-height: 44px; padding: 6px 0; color: #bfc7b6; font-size: 11px; letter-spacing: .03em; }
+.odyssey-ui .title-preferences .ui-icon { width: 16px; height: 16px; }
+.odyssey-ui .title-block .setting { margin: 10px 0 0; padding: 0; border: 0; background: none; text-align: left; }
+.odyssey-ui .title-block .setting button { width: auto; min-height: 44px; padding: 0; gap: 18px; font-size: 11px; color: #bcc6b6; }
+.odyssey-ui .title-block .setting p { margin: 0; font-size: 10px; line-height: 1.7; color: #94a69c; }
+.odyssey-ui .title-colophon { position: absolute; z-index: 2; inset: auto max(5vw,24px) max(24px,var(--safe-bottom)); display: flex; justify-content: space-between; gap: 18px; color: #acb7a7; font-size: 10px; letter-spacing: .13em; }
+.odyssey-ui .title-colophon i { display: inline-block; width: 22px; height: 1px; background: #c5b3876b; vertical-align: middle; margin: 0 12px; }
+
+/* The game remains visible around compact, foldable navigation. */
+.odyssey-ui .chapter-heading { top: calc(25px + var(--safe-top)); left: calc(30px + var(--safe-left)); gap: 12px; }
+.odyssey-ui .chapter-number { width: 32px; height: 40px; font-family: var(--ui-serif); font-size: 23px; border-color: #d8c49a70; }
+.odyssey-ui .chapter-heading h1 { font-family: var(--ui-serif); font-size: 25px; font-weight: 400; }
+.odyssey-ui .chapter-heading p { font-size: 10px; letter-spacing: .17em; }
+.odyssey-ui .adventure-menu { top: calc(25px + var(--safe-top)); right: calc(28px + var(--safe-right)); gap: 3px; padding: 3px; border: 1px solid #c6b28a40; border-radius: 4px; background: #132322d9; box-shadow: 0 3px 16px #00171d28; }
+.odyssey-ui .adventure-menu button { display: flex; align-items: center; gap: 7px; min-width: 44px; min-height: 44px; padding: 7px 12px; color: #e5ddc9; font-size: 11px; letter-spacing: .06em; border-radius: 2px; }
+.odyssey-ui .adventure-menu .ui-icon { width: 17px; height: 17px; color: #ceb78a; }
+.odyssey-ui .adventure-menu .menu-label { display: inline; margin: 0; font-size: inherit; color: inherit; }
+.odyssey-ui .adventure-menu .menu-count { margin: 0; font-size: 9px; color: #b3c1b2; }
+.odyssey-ui .expedition-intent { top: calc(103px + var(--safe-top)); left: calc(30px + var(--safe-left)); width: min(292px,28vw); padding: 10px 16px 12px; border: 1px solid #b7a07730; border-left: 2px solid #c5aa72b3; border-radius: 0 3px 3px 0; background: linear-gradient(110deg,#142321ec,#142321c9); box-shadow: 0 7px 22px #0920211f; }
+.odyssey-ui .intent-topline { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -5px -7px 2px 0; }
+.odyssey-ui .intent-topline .intent-label { display: flex; gap: 8px; align-items: center; margin: 0; color: #cbb88e; font-size: 10px; letter-spacing: .15em; }
+.odyssey-ui .intent-label .ui-icon { width: 15px; height: 15px; }
+.odyssey-ui .intent-fold { display: grid; place-items: center; width: 44px; height: 44px; pointer-events: auto; color: #c6b798; }
+.odyssey-ui .intent-fold .ui-icon { width: 15px; height: 15px; transition: transform 180ms; }
+.odyssey-ui [data-folded="true"] .intent-fold .ui-icon { transform: rotate(180deg); }
+.odyssey-ui .expedition-intent h2 { margin: 0 0 8px; color: #f0e5cc; font-family: var(--ui-serif); font-size: 19px; font-weight: 400; letter-spacing: .08em; }
+.odyssey-ui .expedition-intent .intent-detail { margin: 0 0 9px; color: #c3cabb; font-size: 12px; line-height: 1.85; }
+.odyssey-ui .expedition-intent .intent-detail[hidden] { display: none; }
+.odyssey-ui .reading-entry { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; padding: 8px 0; margin-top: 4px; border-top: 1px solid var(--ui-line); color: #e5cea0; font-size: 11px; }
+.odyssey-ui .reading-entry > .ui-icon { width: 16px; height: 16px; }
+.odyssey-ui .reading-entry > .ui-icon:last-child { width: 13px; margin-left: auto; }
+.odyssey-ui .reading-entry small { margin-left: auto; font-size: 10px; color: #a9baa9; white-space: nowrap; }
+.odyssey-ui .journey-status { min-height: 32px; font-size: 10px; }
+.odyssey-ui .adventure-hud[data-muted="yes"] .intent-fold { pointer-events: none; }
+.odyssey-ui .stage-action { border-radius: 3px; border-color: #cdb48088; background: #172723ed; color: #f2e4c7; box-shadow: 0 5px 19px #06151b44; }
+.odyssey-ui :is(.route-toggle,.three-look-toggle) { border-radius: 3px; background: #152725e8; color: #e6d5ae; border-color: #b69d6566; }
+.odyssey-ui .route-panel { border: 1px solid var(--ui-line); background: #152725f5; border-radius: 3px; }
+
+/* One modal shell for conversations, records, settings and confirmations. */
+.odyssey-ui dialog.game-dialog {
+  --panel-pad: clamp(20px,3vw,32px);
+  position: fixed; inset: 0; z-index: auto; margin: auto; transform: none; height: fit-content; min-height: 0;
+  width: min(570px,calc(100vw - 28px)); max-width: calc(100vw - 24px - var(--safe-left) - var(--safe-right));
+  max-height: calc(100dvh - 32px - var(--safe-top) - var(--safe-bottom)); overflow: auto; overscroll-behavior: contain;
+  padding: 0 var(--panel-pad) var(--panel-pad); border: 1px solid #a8905c85; border-radius: 5px;
+  background: linear-gradient(135deg,#23332d12,transparent 65%),var(--ui-ink); color: var(--ui-paper);
+  box-shadow: 0 28px 90px #0009,0 0 0 5px #07141238,inset 0 0 0 4px #dec18b06;
+  font-size: 14px; line-height: 1.85; scrollbar-width: thin; scrollbar-color: #7a785d #142120;
+  scroll-padding-block: 100px 24px; animation: ui-panel-enter 220ms ease-out both;
+}
+.odyssey-ui dialog.game-dialog::backdrop { background: #061310a8; backdrop-filter: blur(4px); animation: ui-backdrop-enter 180ms ease-out both; }
+.odyssey-ui dialog.game-dialog:not([open]) { display: none; }
+.odyssey-ui .game-dialog .dialog-heading { position: sticky; top: 0; z-index: 5; display: grid; grid-template-columns: 34px minmax(0,1fr) 44px; align-items: center; gap: 13px; margin: 0 calc(-1 * var(--panel-pad)) 24px; padding: 17px var(--panel-pad); border-bottom: 1px solid var(--ui-line); background: #182725fa; box-shadow: 0 4px 16px #0717131a; }
+.odyssey-ui .dialog-emblem { display: grid; place-items: center; width: 34px; height: 42px; border-block: 1px solid #a58c5b80; color: #d6ba84; }
+.odyssey-ui .dialog-kicker { margin: 0 0 3px; font-size: 9px; color: #a3b0a1; letter-spacing: .2em; }
+.odyssey-ui .game-dialog .dialog-heading h2 { margin: 0; font-family: var(--ui-serif); font-size: 23px; font-weight: 400; letter-spacing: .09em; line-height: 1.4; outline: none; }
+.odyssey-ui .dialog-close { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--ui-line); border-radius: 50%; color: #d0c09d; background: #d7bf8e04; }
+.odyssey-ui .dialog-close .ui-icon { width: 18px; height: 18px; }
+.odyssey-ui .game-dialog.sheet { display: block; gap: normal; backdrop-filter: none; width: min(890px,calc(100vw - 28px)); }
+.odyssey-ui .game-dialog.sheet[data-overlay="settings"] { width: min(660px,calc(100vw - 28px)); }
+.odyssey-ui .game-dialog.sheet.out { animation: ui-panel-leave 320ms ease-in both; pointer-events: none; }
+.odyssey-ui .sheet-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--ui-line); }
+.odyssey-ui .sheet-footer > span { color: #a3b09f; font-size: 11px; }
+.odyssey-ui .game-dialog :is(h3,h4) { font-family: var(--ui-serif); font-weight: 400; }
+
+/* Reading room: a warm original page, restrained notes and explicit selections. */
+.odyssey-ui dialog.game-dialog[data-testid="reading-desk"] { width: min(1160px,calc(100vw - 28px)); }
+.odyssey-ui .reading-header { align-items: center; gap: 20px; }
+.odyssey-ui .reading-header p { color: #c1c8b9; font-size: 12px; }
+.odyssey-ui .folio-progress { display: flex; align-items: center; gap: 12px; margin-top: 10px; color: #b8b798; font-size: 10px; }
+.odyssey-ui .folio-progress progress { appearance: none; width: 100px; height: 3px; border: 0; background: #b6a78022; color: #c5ae7b; }
+.odyssey-ui .folio-progress progress::-webkit-progress-bar { background: #b6a78022; }
+.odyssey-ui .folio-progress progress::-webkit-progress-value { background: #c5ae7b; }
+.odyssey-ui .folio-progress progress::-moz-progress-bar { background: #c5ae7b; }
+.odyssey-ui .folio-tabs { gap: 0; margin: 24px 0 30px; padding: 0; border: 1px solid var(--ui-line); border-radius: 3px; overflow: hidden; }
+.odyssey-ui .folio-tabs button { position: relative; padding: 13px 12px; min-height: 90px; border: 0; border-right: 1px solid var(--ui-line); background: #bda57504; }
+.odyssey-ui .folio-tabs button:last-child { border-right: 0; }
+.odyssey-ui .folio-tabs button[aria-pressed="true"] { background: #c2a36d18; box-shadow: inset 0 -2px #cfb37d; }
+.odyssey-ui .folio-tabs strong { margin-block: 5px; font-family: var(--ui-serif); font-size: 15px; color: #e7d9b9; }
+.odyssey-ui .folio-tabs span { color: #a4b3a5; font-size: 10px; }
+.odyssey-ui .folio-tabs small { display: flex; align-items: center; gap: 4px; color: #a9b69f; font-size: 10px; }
+.odyssey-ui .folio-tabs .ui-icon { width: 12px; height: 12px; }
+.odyssey-ui .reading-page { grid-template-columns: minmax(0,.86fr) minmax(0,1.14fr); gap: clamp(25px,4vw,52px); }
+.odyssey-ui .reading-copy { top: 104px; }
+.odyssey-ui .reading-copy h3 { font-family: var(--ui-serif); font-size: 32px; font-weight: 400; letter-spacing: .12em; }
+.odyssey-ui .reading-copy > .eyebrow { color: #c0a978; font-size: 10px; }
+.odyssey-ui .manuscript-lines { position: relative; margin: 23px 0 18px; padding: 28px 24px; border: 1px solid #dbc9a5; border-left: 3px solid #925641; border-radius: 1px; color: #393e32; background: repeating-linear-gradient(0deg,transparent 0 31px,#6e654b0c 31px 32px),linear-gradient(110deg,#e8ddc2,#d5c6a2); box-shadow: 0 12px 25px #0003,inset 0 0 28px #83744712; font-family: var(--ui-serif); font-size: 18px; line-height: 2.2; }
+.odyssey-ui .manuscript-variant { margin: 20px 7px 26px; padding: 16px 20px; border-left-color: #687361; background: linear-gradient(115deg,#d8d4c2,#c1c1af); box-shadow: 0 7px 15px #0003; }
+.odyssey-ui .manuscript-variant figcaption { font-size: 10px; }
+.odyssey-ui .culture-note { color: #b5c0ad; font-size: 12px; line-height: 1.9; }
+.odyssey-ui .culture-note a { color: #c3cca9; }
+.odyssey-ui .reading-analysis legend { font-family: var(--ui-serif); font-size: 17px; line-height: 1.8; }
+.odyssey-ui .reading-step { display: block; margin-bottom: 7px; font-family: -apple-system,"PingFang SC",sans-serif; color: #baa57c; font-size: 10px; letter-spacing: .2em; }
+.odyssey-ui .reading-options label,.odyssey-ui .reading-evidence label { position: relative; gap: 10px; padding: 14px; min-height: 52px; border: 1px solid #b59b692c; border-radius: 3px; background: #d6c19704; font-size: 13px; line-height: 1.9; transition: border-color 150ms,background-color 150ms,box-shadow 150ms; }
+.odyssey-ui .reading-options label[data-selected="true"],.odyssey-ui .reading-evidence label[data-selected="true"] { border-color: #bfab75; background: #b9a16a17; box-shadow: inset 3px 0 #bda471; }
+.odyssey-ui .reading-options label:focus-within,.odyssey-ui .reading-evidence label:focus-within { outline: 1px solid #d7c18d; outline-offset: 2px; }
+.odyssey-ui .reading-evidence label:has(input:disabled) { opacity: .5; cursor: default; }
+.odyssey-ui :is(.reading-options,.reading-evidence) input { accent-color: #c7b17f; width: 15px; height: 15px; margin-top: 5px; }
+.odyssey-ui .reading-evidence strong { color: #e1d2ad; font-size: 13px; }
+.odyssey-ui .reading-evidence small { color: #bfc9b7; line-height: 1.85; }
+.odyssey-ui .reading-evidence em { display: inline-block; margin-top: 7px; color: #b9be9e; font-size: 10px; }
+.odyssey-ui .reading-proof-help { color: #aabaac; font-size: 12px; }
+.odyssey-ui .reading-submit-block { padding-top: 15px; border-top: 1px solid var(--ui-line); }
+.odyssey-ui .reading-selection-status { margin: 0 0 11px; font-size: 11px; color: #b3bfa9; }
+.odyssey-ui .reading-actions { gap: 9px; }
+.odyssey-ui .reading-actions .btn { padding: 11px 15px; font-size: 12px; }
+.odyssey-ui .reading-response { border-left-color: #b47b5b; background: #b47b5b12; color: #e6bea1; }
+.odyssey-ui .reading-hints { border-left-color: #8c9e7c; background: #a0b18c0c; color: #c6cdb8; }
+.odyssey-ui .reading-resolution { padding: 24px; border: 1px solid #a3b48d44; background: linear-gradient(135deg,#9bb08c10,transparent); }
+.odyssey-ui .reading-resolution > .eyebrow { color: #bfd1a8; font-size: 11px; }
+.odyssey-ui .reading-locked { padding: 28px; margin-block: 12px; background: #c1ab7b08; border-left: 2px solid #a38e6359; min-height: 210px; }
+.odyssey-ui .reading-locked h3 { font-family: var(--ui-serif); font-size: 26px; }
+.odyssey-ui .reading-footer { align-items: baseline; padding-top: 20px; }
+.odyssey-ui :is(.reading-footer,.reading-archive,.npc-notes) summary { min-height: 44px; padding: 10px 2px; color: #d9c7a1; }
+
+/* A conversation has a speaker, a readable voice and deliberate responses. */
+.odyssey-ui dialog.game-dialog[data-testid="npc-dialogue"] { width: min(900px,calc(100vw - 28px)); background: radial-gradient(ellipse at 10% 30%,#9ca47c13,transparent 50%),#152421; }
+.odyssey-ui .npc-conversation { grid-template-columns: 190px minmax(0,1fr); gap: 32px; }
+.odyssey-ui .npc-speaker { text-align: center; }
+.odyssey-ui .npc-speaker > .npc-portrait { width: 190px; height: 253px; border-bottom: 1px solid #bda2754d; filter: drop-shadow(0 10px 13px #0003); }
+.odyssey-ui .npc-speaker p { font-family: var(--ui-serif); font-size: 14px; line-height: 1.8; color: #cfc5a8; }
+.odyssey-ui .npc-speaker small { display: block; margin: 10px auto 0; max-width: 170px; font-size: 10px; line-height: 1.8; color: #97a79a; }
+.odyssey-ui .npc-words > .eyebrow { font-size: 10px; color: #ceb27e; }
+.odyssey-ui .npc-words blockquote { position: relative; margin: 18px 0; padding: 15px 0 16px 18px; min-height: 135px; border-left: 1px solid #b69c6459; color: #eee4cb; font-family: var(--ui-serif); font-size: 18px; line-height: 2; }
+.odyssey-ui .dialogue-line-copy { display: block; animation: ui-line-enter 160ms ease-out; }
+.odyssey-ui .npc-source { margin: 0 0 20px; font-size: 11px; line-height: 1.8; color: #a2b19e; }
+.odyssey-ui .npc-topics { gap: 8px; }
+.odyssey-ui .npc-topics > .btn { justify-content: space-between; min-height: 50px; padding: 13px 17px; border-color: #af996434; border-radius: 3px; background: #beaa7610; font-size: 13px; letter-spacing: .01em; }
+.odyssey-ui .npc-topics > .btn[aria-pressed="true"] { border-color: #bda576; background: #b29a6324; box-shadow: inset 3px 0 #bda576; }
+.odyssey-ui .npc-topics small { padding: 1px 6px; background: #9caf8b15; border-radius: 2px; color: #c6d1b4; font-size: 10px; opacity: 1; }
+.odyssey-ui .npc-dialogue-actions { border-top: 1px solid var(--ui-line); padding-top: 20px; margin-top: 25px; }
+
+/* Records, preferences and the physical puzzles share the same finish. */
+.odyssey-ui .casefile { gap: 18px; }
+.odyssey-ui .casefile > :not(figure) { grid-column: 1 / -1; }
+.odyssey-ui .casefile figure { margin: 0; padding: 21px; border: 1px solid var(--ui-line); background: #d4bd8c07; border-radius: 3px; }
+.odyssey-ui .casefile figure[data-held="no"] { opacity: .65; border-style: dashed; }
+.odyssey-ui .casefile figcaption { color: #e2d2af; font-size: 14px; line-height: 1.9; }
+.odyssey-ui .casefile figcaption p { color: #bec6b4; font-size: 12px; }
+.odyssey-ui .journey-checklist { padding: 0 0 18px; border-bottom: 1px solid var(--ui-line); }
+.odyssey-ui .journey-checklist h2 { font-family: var(--ui-serif); font-size: 22px; font-weight: 400; }
+.odyssey-ui .journey-checklist ol { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0; }
+.odyssey-ui .journey-checklist li { padding: 12px; border: 1px solid #a9936529; background: #c2ae7b05; list-style: none; color: #b5c2ae; }
+.odyssey-ui .journey-checklist li[data-complete="yes"] { border-color: #a4ba8659; color: #e0ddba; }
+.odyssey-ui .journey-checklist p { color: #b8c4b1; font-size: 12px; line-height: 1.8; }
+.odyssey-ui .reading-archive,.odyssey-ui .npc-notes { margin-top: 16px; padding-top: 18px; }
+.odyssey-ui .reading-archive h3,.odyssey-ui .npc-notes h3 { margin-top: 0; font-size: 20px; color: #ded0b1; }
+.odyssey-ui .lexicon-help { color: #bdc6b3; font-size: 13px; line-height: 1.8; }
+.odyssey-ui .lexicon-memory { max-width: 430px; margin: 20px auto; border: 1px solid var(--ui-line); border-radius: 3px; overflow: hidden; }
+.odyssey-ui .lexicon-memory-heading { padding: 15px; background: #d6c29509; }
+.odyssey-ui .lexicon-memory-heading strong { font-family: var(--ui-serif); font-size: 19px; font-weight: 400; }
+.odyssey-ui .lexicon-symbols { display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 9px; }
+.odyssey-ui .lexicon-symbols .lex-card { width: auto; min-height: 76px; border: 1px solid var(--ui-line); border-radius: 3px; background: #d2c19206; }
+.odyssey-ui .lexicon-symbols .lex-card[aria-pressed="true"] { border-color: #c2a66c; background: #baa16e17; }
+.odyssey-ui .audio-settings { display: grid; grid-template-columns: 1fr auto; gap: 17px; margin: 6px 0 24px; }
+.odyssey-ui .audio-settings > label { grid-column: 1 / -1; grid-row: 2; }
+.odyssey-ui .audio-settings label { display: grid; grid-template-columns: 5em minmax(0,1fr) 3.5em; align-items: center; gap: 14px; width: 100%; font-size: 12px; color: #d1d4bd; }
+.odyssey-ui .audio-settings input[type="range"] { width: 100%; min-width: 0; height: 44px; accent-color: #cab17a; cursor: pointer; }
+.odyssey-ui .audio-settings output { color: #bda87c; text-align: right; font-size: 11px; }
+.odyssey-ui .audio-settings :is(details,.audio-help) { grid-column: 1 / -1; margin: 0; }
+.odyssey-ui .audio-settings details { border-top: 1px solid var(--ui-line); padding-top: 8px; }
+.odyssey-ui .audio-settings summary { min-height: 44px; padding: 10px 0; cursor: pointer; color: #cdbb93; font-size: 12px; }
+.odyssey-ui .audio-settings :is(.audio-help,.audio-credits p) { color: #a6b6a5; font-size: 11px; line-height: 1.9; }
+.odyssey-ui .setting { margin: 20px 0; padding: 16px 18px; border: 1px solid var(--ui-line); background: #c1b17a06; }
+.odyssey-ui .setting button { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 44px; gap: 20px; font-size: 13px; }
+.odyssey-ui .setting p { color: #aebda8; font-size: 12px; line-height: 1.8; }
+.odyssey-ui .control-guide { padding: 18px 0; border-block: 1px solid var(--ui-line); }
+.odyssey-ui .control-guide h3,.odyssey-ui .save-tools h3 { margin: 0 0 13px; font-size: 21px; color: #e7d6b2; }
+.odyssey-ui .control-guide p,.odyssey-ui .save-tools p { font-size: 12px; color: #bdc7b4; line-height: 1.9; }
+.odyssey-ui .save-tools { padding-top: 18px; }
+.odyssey-ui .completion-stats { margin: 24px 0; padding-block: 20px; }
+.odyssey-ui .completion-stats strong { font-family: var(--ui-serif); color: #dbc18c; font-size: 31px; }
+.odyssey-ui :is(.food-table-dialog,.bridge-dialog) { border-radius: 5px; border-color: #b59a657d; background: var(--ui-ink); box-shadow: 0 24px 80px #0008; }
+.odyssey-ui :is(.food-table-dialog,.bridge-dialog) h2 { font-family: var(--ui-serif); }
+.odyssey-ui .bridge-header { background: #192a26fa; border-color: var(--ui-line); }
+.odyssey-ui .food-table-dialog > header { padding: 23px 26px 17px; }
+.odyssey-ui .bridge-clue { border-radius: 3px; background: #132724ed; }
+.odyssey-ui .mural-title { font-family: var(--ui-serif); font-weight: 400; }
+.odyssey-ui .mural-screen :is(.band,.cell,.object) { border-radius: 3px; }
+.odyssey-ui .prologue-header,.odyssey-ui .prologue-footer { color: var(--ui-paper); }
+.odyssey-ui .screen-loader { color: #e8ddc1; background: radial-gradient(ellipse at center,#24352e,#10201e 70%); }
+.odyssey-ui .loading-emblem { display: grid; place-items: center; width: 60px; height: 70px; margin-bottom: 13px; border-block: 1px solid #bca67566; color: #cfb57d; }
+.odyssey-ui .loading-emblem .ui-icon { width: 30px; height: 30px; }
+.odyssey-ui .loading-track { position: relative; width: 110px; height: 2px; margin-top: 18px; overflow: hidden; background: #bca67525; }
+.odyssey-ui .loading-track::after { content: ""; position: absolute; inset: 0; background: #c5ac76; animation: ui-loading 1.8s ease-in-out infinite; }
+
+@media (hover:hover) and (pointer:fine) {
+  .odyssey-ui .btn:not(:disabled):hover { border-color: #cab17b; background-color: #c9b47c18; color: #fff0cc; }
+  .odyssey-ui .btn.primary:not(:disabled):hover { background: #dfc590; color: #243024; box-shadow: 0 5px 20px #ceb57618,inset 0 1px #fff4d380; }
+  .odyssey-ui :is(.dialog-close,.intent-fold,.title-quiet-button,.adventure-menu button):hover { background-color: #c4ad7414; color: #f1d7a6; }
+  .odyssey-ui :is(.reading-options,.reading-evidence) label:not(:has(input:disabled)):hover { border-color: #b6a16b83; background-color: #cbb77d0c; }
+  .odyssey-ui .folio-tabs button:hover { background-color: #cbb77d15; }
+}
+@media (max-width:760px) {
+  .odyssey-ui .reading-page { grid-template-columns: 1fr; gap: 24px; }
+  .odyssey-ui .reading-copy { position: static; }
+  .odyssey-ui .folio-tabs { grid-template-columns: repeat(3,minmax(0,1fr)); margin-block: 20px; }
+  .odyssey-ui .folio-tabs button { min-height: 82px; border-bottom: 1px solid var(--ui-line); }
+  .odyssey-ui .folio-tabs button:nth-child(3n) { border-right: 0; }
+  .odyssey-ui .folio-tabs button:nth-child(n+4) { border-bottom: 0; }
+  .odyssey-ui .reading-options label,.odyssey-ui .reading-evidence label { font-size: 14px; }
+  .odyssey-ui .reading-footer { display: block; }
+  .odyssey-ui .reading-footer details { margin-top: 12px; }
+  .odyssey-ui .chapter-heading { top: calc(18px + var(--safe-top)); left: calc(18px + var(--safe-left)); gap: 9px; }
+  .odyssey-ui .chapter-heading h1 { font-size: 21px; }
+  .odyssey-ui .chapter-heading p { font-size: 9px; }
+  .odyssey-ui .adventure-menu { top: calc(17px + var(--safe-top)); right: calc(14px + var(--safe-right)); }
+  .odyssey-ui .adventure-menu button { gap: 5px; padding: 7px 10px; }
+  .odyssey-ui .adventure-menu .menu-count { display: none; }
+  .odyssey-ui .expedition-intent { top: calc(87px + var(--safe-top)); left: calc(18px + var(--safe-left)); width: min(264px,70vw); padding: 7px 13px 8px; }
+  .odyssey-ui .expedition-intent h2 { font-size: 17px; }
+  .odyssey-ui .expedition-intent .intent-detail { font-size: 11px; }
+}
+@media (max-width:600px) {
+  .odyssey-ui .title-screen { padding: 82px 26px 85px; }
+  .odyssey-ui .title-screen::before { background: linear-gradient(90deg,#091b1be6,#091b1b99),linear-gradient(0deg,#071614eb,transparent 65%); }
+  .odyssey-ui .title-screen .title-block { margin: auto; width: 100%; }
+  .odyssey-ui .title-masthead { left: 26px; font-size: 10px; }
+  .odyssey-ui .title-chapter { margin-bottom: 22px; }
+  .odyssey-ui .title-block h1 { font-size: clamp(42px,12vw,65px); }
+  .odyssey-ui .title-block .tagline { margin-bottom: 24px; font-size: 13px; }
+  .odyssey-ui .title-actions .btn { min-height: 54px; padding-inline: 17px; font-size: 14px; }
+  .odyssey-ui .title-preferences { gap: 0 13px; }
+  .odyssey-ui .title-colophon { inset-inline: 26px; bottom: max(22px,var(--safe-bottom)); font-size: 9px; }
+  .odyssey-ui .title-colophon > span:last-child { display: none; }
+  .odyssey-ui dialog.game-dialog { --panel-pad: 19px; max-height: calc(100dvh - 20px - var(--safe-top) - var(--safe-bottom)); }
+  .odyssey-ui .game-dialog .dialog-heading { gap: 10px; grid-template-columns: 27px minmax(0,1fr) 44px; padding-block: 13px; margin-bottom: 20px; }
+  .odyssey-ui .dialog-emblem { width: 27px; height: 37px; }
+  .odyssey-ui .game-dialog .dialog-heading h2 { font-size: 20px; }
+  .odyssey-ui .reading-header { flex-wrap: wrap; gap: 12px; }
+  .odyssey-ui .reading-header > .btn { min-height: 44px; padding: 8px 12px; font-size: 11px; }
+  .odyssey-ui .reading-copy h3 { font-size: 29px; }
+  .odyssey-ui .manuscript-lines { padding: 24px 18px; }
+  .odyssey-ui .reading-actions .btn { flex: 1 1 155px; }
+  .odyssey-ui .reading-resolution { padding: 20px; }
+  .odyssey-ui .npc-conversation { grid-template-columns: 1fr; gap: 18px; }
+  .odyssey-ui .npc-speaker { display: grid; grid-template-columns: 78px minmax(0,1fr); align-items: center; gap: 0 17px; text-align: left; padding-bottom: 15px; border-bottom: 1px solid var(--ui-line); }
+  .odyssey-ui .npc-speaker > .npc-portrait { grid-row: 1 / 3; width: 78px; height: 104px; border-bottom: 0; }
+  .odyssey-ui .npc-speaker p { margin: 0; font-size: 13px; }
+  .odyssey-ui .npc-speaker small { max-width: none; margin: 0; font-size: 10px; }
+  .odyssey-ui .npc-words blockquote { min-height: 0; font-size: 17px; margin: 12px 0 16px; }
+  .odyssey-ui .npc-topics > .btn { font-size: 13px; padding: 12px; }
+  .odyssey-ui .npc-dialogue-actions > .btn { flex: 1 1 150px; font-size: 12px; }
+  .odyssey-ui .lexicon-symbols { grid-template-columns: repeat(4,minmax(0,1fr)); }
+  .odyssey-ui .journey-checklist ol { grid-template-columns: 1fr; }
+  .odyssey-ui .casefile { grid-template-columns: 1fr; }
+  .odyssey-ui .casefile figure { padding: 17px; }
+  .odyssey-ui .audio-settings { gap: 12px; }
+  .odyssey-ui .audio-settings label { grid-template-columns: 4em minmax(0,1fr) 3em; gap: 8px; }
+}
+@media (max-width:480px) {
+  .odyssey-ui .adventure-menu .menu-label { display: none; }
+  .odyssey-ui .adventure-menu button { justify-content: center; padding: 9px; }
+  .odyssey-ui .adventure-menu .ui-icon { width: 18px; height: 18px; }
+  .odyssey-ui .chapter-heading { gap: 7px; }
+  .odyssey-ui .chapter-number { width: 22px; font-size: 21px; }
+  .odyssey-ui .chapter-heading p { max-width: 125px; font-size: 8px; letter-spacing: .08em; }
+  .odyssey-ui .chapter-heading h1 { font-size: 19px; }
+}
+@media (max-width:360px) {
+  .odyssey-ui .chapter-number { display: none; }
+  .odyssey-ui .adventure-menu { right: calc(8px + var(--safe-right)); }
+}
+@media (max-height:780px) {
+  .odyssey-ui .title-screen { display: block; padding-block: 73px 70px; }
+  .odyssey-ui .title-screen .title-block { margin: 0; }
+  .odyssey-ui .title-colophon { position: static; margin-top: 25px; }
+  .odyssey-ui .title-block h1 { font-size: 48px; }
+  .odyssey-ui .title-chapter { margin-bottom: 14px; }
+  .odyssey-ui .title-block .tagline { margin-bottom: 16px; }
+}
+@media (max-height:520px) and (min-width:600px) {
+  .odyssey-ui .expedition-intent { top: 76px; width: 240px; }
+  .odyssey-ui .expedition-intent .intent-detail:not([hidden]) { display: block; }
+  .odyssey-ui .expedition-intent .journey-status { display: none; }
+  .odyssey-ui .chapter-heading { top: 15px; }
+  .odyssey-ui .adventure-menu { top: 15px; }
+}
+@keyframes ui-panel-enter { from { opacity: 0; translate: 0 9px; } to { opacity: 1; translate: 0 0; } }
+@keyframes ui-panel-leave { from { opacity: 1; translate: 0 0; } to { opacity: 0; translate: 0 6px; } }
+@keyframes ui-backdrop-enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ui-line-enter { from { opacity: .4; translate: 0 2px; } to { opacity: 1; translate: 0 0; } }
+@keyframes ui-loading { from { translate: -100% 0; } to { translate: 100% 0; } }
+@media (prefers-reduced-motion:reduce) {
+  .odyssey-ui dialog.game-dialog,.odyssey-ui .game-dialog.sheet.out,.odyssey-ui dialog.game-dialog::backdrop,.odyssey-ui .dialogue-line-copy { animation: none; }
+  .odyssey-ui .game-dialog.sheet.out { opacity: 0; }
+  .odyssey-ui .loading-track::after { animation: none; opacity: .6; }
+  .odyssey-ui :is(.btn,.intent-fold .ui-icon,.reading-options label,.reading-evidence label) { transition: none; }
+}

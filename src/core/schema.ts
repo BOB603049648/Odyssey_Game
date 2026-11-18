@@ -123,7 +123,7 @@ export const saveDataSchema = z.object({
   currentScene: z.string(),
   screen: z.enum(['title', 'prologue', 'island', 'mural']),
   prologueStep: z.number().int().nonnegative(),
-  overlay: z.enum(['none', 'lexicon', 'settings', 'casefile', 'use-word', 'depart', 'memory', 'chart']),
+  overlay: z.enum(['none', 'lexicon', 'settings', 'casefile', 'use-word', 'depart', 'memory', 'chart', 'reading', 'dialogue', 'script', 'journal']),
   cutsceneStep: z.number().int().nonnegative().default(0),
   activeLayer: muralLayerSchema,
   muralMode: z.enum(['learn', 'review']),

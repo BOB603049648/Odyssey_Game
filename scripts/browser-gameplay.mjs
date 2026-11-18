@@ -54,8 +54,7 @@ async function learnBand() {
 try {
   await page.goto(url);
   await page.getByRole('button', { name: '新游戏', exact: true }).click();
-  for (let i = 0; i < 3; i++) await page.getByRole('button', { name: '下一幕', exact: true }).click();
-  await page.getByRole('button', { name: '走上潮线', exact: true }).click(); await ready();
+  await page.getByRole('button', { name: '跳过序章', exact: true }).click(); await ready();
   await spot('island-mural');
   for (let i = 0; i < 3; i++) await page.getByRole('button', { name: '看向导', exact: true }).click();
   await page.getByTestId('cell-dba.word.fire').click();

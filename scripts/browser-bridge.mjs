@@ -46,8 +46,7 @@ async function journey(mobile) {
   }
   async function resume() { await page.reload(); await activate(button('继续')); await ready(); }
   await page.goto(url); await activate(button('新游戏'));
-  for (let n = 0; n < 3; n++) await activate(button('下一幕'));
-  await activate(button('走上潮线')); await ready();
+  await activate(button('跳过序章')); await ready();
   // A focused fixture starts at the courtyard with prior survival complete.
   // The separate learning journey still verifies these beats from a new save.
   await page.evaluate(() => {

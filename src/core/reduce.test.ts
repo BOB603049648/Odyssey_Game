@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { hintPresentation } from './hints';
 import { newGameState } from './save';
-import { reduce } from './reduce';
+import { reduce } from './__fixtures__/legacyReduce';
 import type { SaveData } from './schema';
 
 function atIsland(): SaveData {

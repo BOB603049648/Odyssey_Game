@@ -1,0 +1,33 @@
+.three-world { position:absolute; inset:0; z-index:1; pointer-events:none; opacity:0; }
+.three-world[data-ready="true"] { opacity:1; }
+.three-world canvas { display:block; width:100%; height:100%; }
+.world-root[data-three-ready="true"] .painted-environment,
+.world-root[data-three-ready="true"] .ground-fill,
+.world-root[data-three-ready="true"] .traveler,
+.world-root[data-three-ready="true"] .companion-mirror,
+.world-root[data-three-ready="true"] .companion-anchor > .contact-shadow,
+.world-root[data-three-ready="true"] .world-state-patch,
+.world-root[data-three-ready="true"] .sole-soft { opacity:0 !important; }
+.walk-viewport:has(.world-root[data-three-ready="true"]) > .sole-layer { opacity:0; }
+/* Interaction buttons and keyboard focus remain native, above the GPU view. */
+.world-root[data-three-ready="true"] > .world-cam { z-index:2 !important; }
+.world-root[data-three-transition="loading"] > .world-cam { pointer-events:none; visibility:hidden; }
+.world-root[data-three-stage="spatial"] .ground-guide,
+.world-root[data-three-stage="spatial"] .world-feedback,
+.world-root[data-three-stage="spatial"] .world-state-layer,
+.world-root[data-three-stage="spatial"] .scenic-exit svg { opacity:0!important; }
+/* The GPU output owns grading in enhanced mode. Do not grade it a second time. */
+.world-root[data-three-ready="true"][data-three-look="cinematic"] .scene-ambient,
+.walk-viewport:has(.world-root[data-three-ready="true"][data-three-look="cinematic"]) > .world-post,
+.walk-viewport:has(.world-root[data-three-ready="true"][data-three-look="cinematic"]) > .grade-veil,
+.walk-viewport:has(.world-root[data-three-ready="true"][data-three-look="cinematic"]) > .scene-grade { opacity:0; }
+.three-look-toggle {
+  position:absolute; right:24px; top:88px; z-index:9;
+  display:flex; align-items:center; gap:18px; min-height:36px; padding:7px 12px;
+  border:1px solid #dec99755; border-radius:2px; background:#172526c9;
+  color:#eee1bf; font-family:inherit; font-size:12px; line-height:1.4; letter-spacing:.08em; cursor:pointer;
+}
+.three-look-toggle span { font-size:10px; color:#c8bfa7; }
+.three-look-toggle:hover { background:#263c3ee6; border-color:#e7cc85; }
+.three-look-toggle:focus-visible { outline:2px solid #f6db99; outline-offset:3px; }
+@media(max-width:600px) { .three-look-toggle { right:14px; top:auto; bottom:144px; min-height:44px; gap:10px; } }

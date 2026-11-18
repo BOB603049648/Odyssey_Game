@@ -58,7 +58,7 @@ async function completeRoute() {
   for (let i = 0; i < 160; i++) {
     await frame();
     if (anchor().dataset.guide === 'move') {
-      moves++; expect(picture().getAttribute('src')).toMatch(/leap-0[12]/);
+      moves++; expect(picture().getAttribute('src')).toMatch(/cat-leap/);
       expect(picture().dataset.frame).toMatch(/leap-0[12]/);
     }
     if (moves && anchor().dataset.guide === 'hold') return moves;
@@ -108,9 +108,9 @@ describe('production decoded landing record through real WalkLayer/Companion', (
   });
   it('never translates a landing during move and holds its final leap at arrival while target is cold', async () => {
     const view = await mountS0(); const target = urls.trajAssetUrl('land-shore-gourd')!; modes.set(target, 'pending'); view.rerender(layer('S1')); await flush();
-    expect(await completeRoute()).toBeGreaterThan(0); expect(picture().getAttribute('src')).toBe(urls.trajAssetUrl('leap-02'));
+    expect(await completeRoute()).toBeGreaterThan(0); expect(picture().getAttribute('src')).toBe(urls.trajAssetUrl('leap-02')!.split('#')[0]);
     expect(picture().dataset.frame).toBe('leap-02'); const at = [anchor().style.left, anchor().style.top];
-    await frames(20); expect([anchor().style.left, anchor().style.top]).toEqual(at); expect(picture().getAttribute('src')).toBe(urls.trajAssetUrl('leap-02'));
+    await frames(20); expect([anchor().style.left, anchor().style.top]).toEqual(at); expect(picture().getAttribute('src')).toBe(urls.trajAssetUrl('leap-02')!.split('#')[0]);
     await ready(target); expect(picture().getAttribute('src')).toBe(target); expect(picture().dataset.frame).toBe('land-shore-gourd'); expect([anchor().style.left, anchor().style.top]).toEqual(at);
   });
   it('does not replace paused gaze on late target readiness, then supports reverse retarget', async () => {

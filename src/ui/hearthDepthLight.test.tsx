@@ -40,7 +40,7 @@ describe('shore hearth pool keeps old prop-light ownership inside true D1 depth'
   await mount(.72);const button=screen.getByTestId('exit-camp');const pool=document.querySelector<HTMLElement>('.depth-hearth-emitter');expect(pool).not.toBeNull();
   expect(pool!.style.left).toBe(button.style.left);expect(pool!.style.top).toBe(button.style.top);expect(pool!.classList.contains('near')).toBe(button.classList.contains('near'));expect(pool!.getAttribute('aria-hidden')).toBe('true');expect(screen.queryByTestId('hearth-name')).toBeNull();expect(pool!.tagName).toBe('SPAN');expect(pool!.tabIndex).toBe(-1);
   expect(screen.getAllByTestId('exit-camp')).toHaveLength(1);expect(button.tagName).toBe('BUTTON');expect(button.parentElement!.classList.contains('world-layer')).toBe(true);expect(button.getAttribute('aria-label')).toBeTruthy();
-  const unit=pool!.closest('[data-depth-id]');expect(unit).toBe(screen.getByTestId('traveler').closest('[data-depth-id]'));expect(screen.getByTestId('sole-soft').parentElement).toBe(unit);expect(unit!.parentElement!.children).toHaveLength(7);
+  const unit=pool!.closest('[data-depth-id]');expect(unit).toBe(screen.getByTestId('traveler').closest('[data-depth-id]'));expect(screen.getByTestId('sole-soft').parentElement).toBe(unit);expect(unit!.parentElement!.children).toHaveLength(8);
   expect(z('.walk-viewport[data-ground-depth="world"] .depth-hearth-emitter')).toBeGreaterThan(z('.walk-viewport[data-ground-depth="world"] .depth-unit > .sole-soft'));
  });
  it('near naming remains separate: entering the existing gate radius enables near light and name together',async()=>{

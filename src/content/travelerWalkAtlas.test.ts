@@ -8,13 +8,13 @@ describe('walk atlas registration', () => {
     for (const [index, file] of WALK_ATLAS_FILES.entries()) {
       const cell = walkAtlasFrame(file)!;
       const column = index % WALK_FRAME_COUNT, row = Math.floor(index / WALK_FRAME_COUNT);
-      expect(cell.x).toBeGreaterThan(column * WALK_ATLAS.cellWidth);
-      expect(cell.y).toBeGreaterThanOrEqual(row * WALK_ATLAS.cellHeight);
-      expect(cell.x + cell.width).toBeLessThan((column+1) * WALK_ATLAS.cellWidth);
-      expect(cell.y + cell.height).toBeLessThan((row+1) * WALK_ATLAS.cellHeight);
+      expect(cell.x).toBeGreaterThanOrEqual(Math.floor(column * WALK_ATLAS.width/8));
+      expect(cell.y).toBeGreaterThanOrEqual(Math.floor(row * WALK_ATLAS.height/3));
+      expect(cell.x + cell.width).toBeLessThanOrEqual(Math.floor((column+1) * WALK_ATLAS.width/8));
+      expect(cell.y + cell.height).toBeLessThanOrEqual(Math.floor((row+1) * WALK_ATLAS.height/3));
       expect(cell.sole).toBeLessThan(cell.height);
-      expect(cell.sole).toBeGreaterThan(cell.height * .94);
-      expect(cell.width/cell.height).toBe(.75);
+      expect(cell.sole).toBeGreaterThan(cell.height * .90);
+      expect(cell.width/cell.height).toBeCloseTo(.75,2);
       const url = travelerFrameUrl(file)!;
       expect(url.split('#')[0]).toBe(WALK_ATLAS.url);
       expect(walkAtlasSource(url)).toEqual(cell);

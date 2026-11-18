@@ -4,6 +4,7 @@ import { recordLoadTrace } from '../content/loadTrace';
 import { decodeAssetUrl } from '../content/decodedImage';
 import { loadGated } from '../content/loadGate';
 import { COMPANION_ATLAS, COMPANION_PERFORMANCE_IDS, companionAtlasFrame } from '../content/characterPerformanceAtlas';
+import {PAINTED_ACTORS} from '../content/paintedActors';
 
 const cache = new Map<string, string>();
 
@@ -13,6 +14,9 @@ export function trajUrl(id: string): string | undefined {
 
 export function forgetTraj(id: string): void {
   recordLoadTrace({ event: 'forget', key: id });
+  if(id==='leap-01'||id==='leap-02'){
+    cache.delete('companion-leap-atlas');cache.delete('leap-01');cache.delete('leap-02');notifyAssetUpdates();return;
+  }
   if (companionAtlasFrame(id)) {
     cache.delete('companion-performance-atlas');
     for (const frame of COMPANION_PERFORMANCE_IDS) cache.delete(frame);
@@ -32,6 +36,12 @@ export function loadTraj(id: string): Promise<string | null> {
   if (hit) return Promise.resolve(hit);
   const url = trajAssetUrl(id);
   if (!url) return Promise.resolve(null);
+  if(id==='leap-01'||id==='leap-02')return loadGated('companion-leap-atlas','traj',()=>decodeAssetUrl(PAINTED_ACTORS['cat-leap']),cache,
+    {cacheKey:'companion-leap-atlas'}).then(next=>{
+      if(!next)return null;
+      for(const frame of ['leap-01','leap-02'])cache.set(frame,trajAssetUrl(frame)!);
+      return cache.get(id)!;
+    });
   // Optional expression art must not hold up required first-screen actor jobs.
   if (companionAtlasFrame(id)) return loadGated('companion-performance-atlas', 'idle', () => decodeAssetUrl(COMPANION_ATLAS.url), cache,
     { cacheKey: 'companion-performance-atlas' }).then(next => {

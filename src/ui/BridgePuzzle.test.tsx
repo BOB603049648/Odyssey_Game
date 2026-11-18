@@ -9,10 +9,10 @@ import { BridgePuzzle } from './BridgePuzzle';
 afterEach(cleanup);
 function initial() {
   const save = reduce(reduce(reduce(newGameState(), { type: 'new-game' }), { type: 'skip-prologue' }), { type: 'goto-scene', scene: 'dba.scene.path' });
-  for (const id of ['water', 'danger', 'sleep', 'give']) save.words[`dba.word.${id}`].state = 'learned';
+  for (const id of ['water', 'danger', 'sleep', 'give', 'wait']) save.words[`dba.word.${id}`].state = 'learned';
   return save;
 }
-it('lets observation, a local reading, a revised phrase and an explicit signal form distinct operations', () => {
+it('uses notebook words to compose a revised phrase and explicitly signal after observation', () => {
   function Play() {
     const [save, setSave] = useState(initial);
     return <><output data-testid="result">{bridgeState(save).stage}:{String(save.beats['dba.beat.danger'])}:{save.words['dba.word.wait'].state}</output>
@@ -24,12 +24,8 @@ it('lets observation, a local reading, a revised phrase and an explicit signal f
   expect(screen.queryByTestId('bridge-read-wait')).toBeNull();
   fireEvent.click(screen.getByTestId('bridge-inspect-rope'));
   expect(screen.queryByTestId('bridge-word-protect')).toBeNull();
-  fireEvent.click(screen.getByTestId('bridge-read-sleep'));
-  expect(screen.getByTestId('result').textContent).toBe('planning:undefined:guessed');
-  screen.getByTestId('bridge-read-wait').focus();
-  fireEvent.click(screen.getByTestId('bridge-read-wait'));
-  expect(screen.getByTestId('result').textContent).toBe('planning:undefined:learned');
-  expect(document.activeElement).toBe(screen.getByTestId('bridge-slot-reason'));
+  expect(screen.queryByTestId('bridge-read-sleep')).toBeNull();
+  expect(screen.getByTestId('bridge-word-wait')).toBeTruthy();
   fireEvent.click(screen.getByTestId('bridge-word-water'));
   fireEvent.click(screen.getByTestId('bridge-word-give'));
   fireEvent.click(screen.getByTestId('bridge-signal'));

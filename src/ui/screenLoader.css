@@ -1,0 +1,2 @@
+.screen-loader { min-height: 70svh; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem; color: #e1d6bc; background: #102026; text-align: center; padding: 2rem; }
+.screen-loader p { margin: 0; }

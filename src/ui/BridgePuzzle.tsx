@@ -1,3 +1,6 @@
+import {scriptActive} from '../core/islandScript';
+import {IslandGlyph} from './IslandGlyph';
+import type {ScriptWord} from '../content/islandScript';
 import { useEffect, useRef, useState } from 'react';
 import { BRIDGE_WORDS, bridgeState, type BridgeAction } from '../core/bridge';
 import type { SaveData } from '../core/schema';
@@ -5,6 +8,7 @@ import { isLearnedState } from '../core/words';
 import { LEXEMES } from '../content/catalog';
 import { ConceptScene } from './ConceptScene';
 import { Glyph } from './glyphs';
+import {READING_ACTIVE} from '../core/reading';
 import { t, type MessageKey } from './i18n';
 import closeup from '../assets/art/states/bridge-inspection.webp';
 import './puzzles.css';
@@ -13,7 +17,10 @@ import './bridge.css';
 export function BridgePuzzle({ save, dispatch, onClose }: {
   save: SaveData; dispatch: (action: BridgeAction) => void; onClose: () => void;
 }) {
+  const language=scriptActive(save);
+  const Sign=({id}:{id:string})=>language?<IslandGlyph word={id.split('.').at(-1) as ScriptWord}/>:<Glyph id={id}/>;
   const bridge = bridgeState(save);
+  const showMeaning=save.settings.showGloss||save.flags[READING_ACTIVE]===true;
   const panel = useRef<HTMLElement>(null);
   const controls = useRef<HTMLDivElement>(null);
   const [slot, setSlot] = useState<'reason' | 'intent'>('reason');
@@ -63,7 +70,7 @@ export function BridgePuzzle({ save, dispatch, onClose }: {
             <button type="button" className="bridge-clue bridge-rope" data-testid="bridge-inspect-rope" aria-pressed={bridge.rope}
               onClick={() => dispatch({ type: 'bridge-act', move: 'inspect', clue: 'rope' })}>绳结 <span aria-hidden="true">{bridge.rope ? '✓' : '＋'}</span></button>
             <button type="button" className="bridge-carving" aria-label="查看木牌上的刻痕" onClick={() => controls.current?.scrollIntoView?.({ block: 'nearest' })}>
-              <Glyph id="dba.word.wait" /></button>
+              <Sign id="dba.word.wait" /></button>
           </div>
           {failed ? <p className="bridge-image-error" role="status">近景暂未载入，仍可点「桥板」「绳结」观察。
             <button type="button" onClick={() => { setFailed(false); setAttempt(n => n + 1); }}>重新载入画面</button></p> : null}
@@ -77,11 +84,11 @@ export function BridgePuzzle({ save, dispatch, onClose }: {
           {finished ? <div className="bridge-result"><h3>{bridge.stage === 'done' ? '你们一起回到了稳固的地面' : '向导明白了你的决定'}</h3>
             <p>{bridge.stage === 'done' ? '旧桥依然破损。这一次，刻痕让你们避免了冒险。' : '它已转向来路。收起近景，沿左侧路口回到前坪，这段经历才算完成。'}</p></div>
             : !observed ? <div className="bridge-invitation"><h3>先看清，再决定</h3><p>点近景中的两处细节。刻痕需要有眼前的事实作依据。</p></div>
-            : !known('danger') ? <div className="bridge-invitation"><h3>这些痕迹意味着什么？</h3><p>你还没有认出表示险兆的刻痕。可以先从左侧路口离开，回石壁看看第三带；观察记录会留下。</p></div>
+            : !known('danger') ? <div className="bridge-invitation"><h3>这些痕迹意味着什么？</h3><p>先比较桥边两处刻字与巡路人的动作，再在手记里核验；观察记录会留下。</p></div>
             : <>
-              {!known('wait') ? <details className="bridge-reading" open={!known('protect')}>
+              {!language&&!known('wait') ? <details className="bridge-reading" open={!known('protect')}>
                 <summary>木牌旁，还有一枚不熟悉的刻痕</summary>
-                <div className="bridge-reading-question"><Glyph id="dba.word.wait" /><p>向导在路口坐住，望着你，没有入睡，也没有走远。哪幅情景和它此刻的意思相同？</p></div>
+                <div className="bridge-reading-question"><Sign id="dba.word.wait" /><p>向导在路口坐住，望着你，没有入睡，也没有走远。哪幅情景和它此刻的意思相同？</p></div>
                 <div className="bridge-reading-options">{['sleep', 'wait', 'walk'].map(id => <button key={id} type="button"
                   data-testid={`bridge-read-${id}`} aria-label={`观察情景 ${['sleep', 'wait', 'walk'].indexOf(id) + 1}`}
                   onClick={() => dispatch({ type: 'bridge-act', move: 'decipher', wordId: `dba.word.${id}` })}>
@@ -91,15 +98,16 @@ export function BridgePuzzle({ save, dispatch, onClose }: {
               <div className="bridge-phrase">{(['reason', 'intent'] as const).map(id => <button key={id} type="button"
                 className="bridge-slot" data-testid={`bridge-slot-${id}`} aria-pressed={slot === id}
                 aria-label={id === 'reason' ? '选择眼前的状况' : '选择接下来的打算'} onClick={() => setSlot(id)}>
-                <span>{id === 'reason' ? '眼前的状况' : '接下来的打算'}</span>{bridge[id] ? <Glyph id={bridge[id]} /> : <i aria-hidden="true">＋</i>}
+                <span>{id === 'reason' ? '眼前的状况' : '接下来的打算'}</span>{bridge[id] ? <Sign id={bridge[id]} /> : <i aria-hidden="true">＋</i>}
+                {showMeaning&&bridge[id]?<small>{LEXEMES.find(word=>word.id===bridge[id])?.gloss}</small>:null}
               </button>)}</div>
               <div className="bridge-word-bank" role="group" aria-label="可用的已学刻符">{bank.map((id, index) => <button key={id} type="button"
-                data-testid={`bridge-word-${id.split('.').at(-1)}`} aria-label={save.settings.showGloss ? LEXEMES.find(word => word.id === id)?.gloss : `已学刻符 ${index + 1}`}
+                data-testid={`bridge-word-${id.split('.').at(-1)}`} aria-label={showMeaning ? LEXEMES.find(word => word.id === id)?.gloss : `已学刻符 ${index + 1}`}
                 onClick={() => { dispatch({ type: 'bridge-act', move: 'select', slot, wordId: id }); setRecall(id); if (slot === 'reason') setSlot('intent'); }}>
-                <Glyph id={id} />{save.settings.showGloss ? <small>{LEXEMES.find(word => word.id === id)?.gloss}</small> : null}</button>)}</div>
+                <Sign id={id} />{showMeaning ? <small>{LEXEMES.find(word => word.id === id)?.gloss}</small> : null}</button>)}</div>
               <div className="bridge-compose-tools"><button type="button" className="btn" disabled={!bridge[slot]}
                 onClick={() => dispatch({ type: 'bridge-act', move: 'select', slot, wordId: null })}>清空这一格</button>
-                {recall ? <details className="bridge-recall"><summary>回想刚选的刻符</summary><ConceptScene key={recall} id={recall} /></details> : null}</div>
+                {recall&&!language ? <details className="bridge-recall"><summary>回想刚选的刻符</summary><ConceptScene key={recall} id={recall} /></details> : null}</div>
               <button type="button" className="btn primary bridge-signal" data-testid="bridge-signal" disabled={!bridge.reason || !bridge.intent}
                 onClick={() => dispatch({ type: 'bridge-act', move: 'signal' })}>向同行者示意</button>
             </>}

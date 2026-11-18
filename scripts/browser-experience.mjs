@@ -23,8 +23,7 @@ const pictureReady = async () => {
 try {
   await page.goto(url);
   await page.getByRole('button', { name: '新游戏', exact: true }).click();
-  for (let i = 0; i < 3; i++) await page.getByRole('button', { name: '下一幕', exact: true }).click();
-  await page.getByRole('button', { name: '走上潮线', exact: true }).click();
+  await page.getByRole('button', { name: '跳过序章', exact: true }).click();
   await page.locator('.scene-display').waitFor({ state: 'hidden' });
   await page.waitForTimeout(1100);
   assert.match(await page.getByTestId('current-goal').innerText(), /带上一只空瓢/);

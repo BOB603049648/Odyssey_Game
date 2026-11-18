@@ -58,7 +58,7 @@ try {
     // Real AudioContext suspension, rather than merely hiding the page.
     await page.evaluate(() => window.soundProbe.contexts[0].context.suspend());
     await page.locator('[data-audio-status="blocked"]').waitFor();
-    await gesture(page.getByRole('button', { name: '下一幕', exact: true })); await audible();
+    await gesture(page.locator('[data-audio-status="blocked"]')); await audible();
     await page.locator('.audio-recovery-note').waitFor({ state: 'hidden' });
     await page.evaluate(async () => {
       Object.defineProperty(document, 'hidden', { configurable: true, value: true });

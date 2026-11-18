@@ -9,13 +9,16 @@ import { useSoundscape } from './audio/useSoundscape';
 import { usePagePresentation } from './ui/useCinematicClock';
 import { useGame } from './stores/gameStore';
 import { completionPending, Cutscenes } from './ui/Cutscenes';
-import { IslandScreen } from './ui/IslandScreen';
-import { MuralScreen } from './ui/MuralScreen';
 import { PrologueScreen } from './ui/PrologueScreen';
 import { TitleScreen } from './ui/TitleScreen';
+import { ScreenLoader, ScreenLoadBoundary } from './ui/ScreenLoader';
+import './ui/interface.css';
 import { t } from './ui/i18n';
 
 const DevTools = import.meta.env.DEV ? lazy(() => import('./dev/DevTools').then((mod) => ({ default: mod.DevTools }))) : null;
+// The title/prologue are usable before downloading the island and reading UI.
+const IslandScreen = lazy(() => import('./ui/IslandScreen').then(mod => ({ default: mod.IslandScreen })));
+const MuralScreen = lazy(() => import('./ui/MuralScreen').then(mod => ({ default: mod.MuralScreen })));
 
 export function App() {
   useEffect(installAudioRecovery, []);
@@ -24,13 +27,15 @@ export function App() {
   const saveFailed = useGame((state) => state.saveFailed);
   const dispatch = useGame((state) => state.dispatch);
   const [atTitle, setAtTitle] = useState(true);
+  // Rewatch is local presentation state. It never dispatches into the save.
+  const [replayStep, setReplayStep] = useState<number | null>(null);
   const { visible } = usePagePresentation();
   const ambient: Record<string, SoundId> = {
     'dba.scene.shore': 'shore', 'dba.scene.camp': 'camp', 'dba.scene.yard': 'yard',
     'dba.scene.hall': 'hall', 'dba.scene.path': 'forest', 'dba.scene.night': 'night',
   };
   const soundscape = save.overlay === 'memory' ? 'memory' : ambient[save.currentScene] ?? null;
-  const music = atTitle ? 'theme-title' : completionPending(save) ? 'theme-resolve' : save.overlay === 'memory' ? 'theme-memory' : null;
+  const music = replayStep !== null ? null : atTitle ? 'theme-title' : completionPending(save) ? 'theme-resolve' : save.overlay === 'memory' ? 'theme-memory' : null;
   useSoundscape(music, visible, undefined, 0, atTitle);
   useGameAudio(save, !atTitle, visible, saveGeneration);
   useSceneDetails(!atTitle && save.screen === 'island' ? save.currentScene : null, visible && save.overlay === 'none' && !completionPending(save));
@@ -38,8 +43,14 @@ export function App() {
 
   return (
     <>
-      <main className="stage">
-        {atTitle ? (
+      <main className="stage odyssey-ui">
+        <ScreenLoadBoundary key={replayStep !== null ? 'rewatch' : atTitle ? 'title' : save.screen}>
+        <Suspense fallback={<ScreenLoader />}>
+        {replayStep !== null ? (
+          <PrologueScreen step={replayStep}
+            onAdvance={() => setReplayStep(value => value === null || value >= 3 ? null : value + 1)}
+            onReplay={() => setReplayStep(0)} onSkip={() => setReplayStep(null)} skipLabel="prologue.returnTitle" />
+        ) : atTitle ? (
           <TitleScreen
             canContinue={save.screen !== 'title'}
             showGloss={save.settings.showGloss}
@@ -52,13 +63,14 @@ export function App() {
               primeAudio();
               setAtTitle(false);
             }}
+            onReplay={() => { primeAudio(); setReplayStep(0); }}
             onToggleGloss={(value) => dispatch({ type: 'set-show-gloss', value })}
           />
         ) : save.screen === 'prologue' ? (
           <PrologueScreen
             step={save.prologueStep}
             onAdvance={() => dispatch({ type: 'advance-prologue' })}
-            onBack={() => dispatch({ type: 'previous-prologue' })}
+            onReplay={() => dispatch({ type: 'replay-prologue' })}
             onSkip={() => dispatch({ type: 'skip-prologue' })}
           />
         ) : save.screen === 'mural' ? (
@@ -66,6 +78,8 @@ export function App() {
         ) : (
           <IslandScreen save={save} dispatch={dispatch} onTitle={() => setAtTitle(true)} />
         )}
+        </Suspense>
+        </ScreenLoadBoundary>
         {atTitle ? null : <Cutscenes save={save} dispatch={dispatch} onTitle={() => setAtTitle(true)} />}
       </main>
       {!atTitle && save.screen !== 'prologue' && <AudioRecoveryNotice failed={sound.status === 'failed'} retry={sound.retry} />}

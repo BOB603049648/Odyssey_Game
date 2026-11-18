@@ -57,6 +57,34 @@ async function cross() {
   expect(position()).toEqual({ x: .34, y: .84 });
 }
 describe('production scene entry hands control back to the player', () => {
+  it('approaches an NPC, talks only within reach, and freezes movement during the conversation',async()=>{
+    const {visibleSpots}=await import('./spotViews');
+    const {newGameState}=await import('../core/save');
+    const hint={level:0 as const,anchor:'mural-entrance' as const,wordId:null,pose:'idle' as const};
+    const spot=visibleSpots('dba.scene.shore',newGameState(),hint).find(s=>s.id==='npc:spring')!;
+    const talked=vi.fn();
+    function Visit(){
+      const [paused,setPaused]=useState(false);
+      return <><WalkLayer scene="dba.scene.shore" drank={false} spots={[spot]} hint={hint} paused={paused} purr={false} knot="rest" remembered={{x:.84,y:.82}} taught
+        catPost={companionPost('dba.scene.shore',{}, {},{skipWelcome:true})} onRemember={()=>{}} onExit={()=>{}}
+        onInteract={id=>{talked(id);setPaused(true);}} onAsk={()=>{}} onEscape={()=>setPaused(false)}/>
+        {paused?<button onClick={()=>setPaused(false)}>结束交谈</button>:null}</>;
+    }
+    render(<Visit/>);await frames();fireEvent.click(screen.getByTestId('npc:spring'));
+    expect(talked).not.toHaveBeenCalled();
+    for(let i=0;i<90&&Math.abs(position().x-.46)>.003;i++)await frames(4);
+    expect(position().x).toBeCloseTo(.46,2);
+    fireEvent.click(screen.getByTestId('npc:spring'));expect(talked).toHaveBeenCalledExactlyOnceWith('npc:spring');
+    const before=position();fireEvent.keyDown(window,{key:'d',code:'KeyD'});await frames(12);expect(position()).toEqual(before);
+    fireEvent.keyUp(window,{key:'d',code:'KeyD'});fireEvent.click(screen.getByText('结束交谈'));await frames(6);expect(position()).toEqual(before);
+  },15000);
+  it('does not move or queue keys while Three retains a loading scene, then resumes after fallback',async()=>{
+    render(<Journey/>);await frames();
+    const root=screen.getByTestId('world-root');root.dataset.threeTransition='loading';
+    fireEvent.keyDown(window,{key:'d',code:'KeyD'});await frames(8);expect(position().x).toBe(.89);
+    delete root.dataset.threeTransition;await frames(8);expect(position().x).toBe(.89);
+    fireEvent.keyUp(window,{key:'d',code:'KeyD'});fireEvent.keyDown(window,{key:'d',code:'KeyD'});await cross();
+  });
   it('discards keyboard autorepeat across a gate, plants the camera immediately, and accepts a fresh press', async () => {
     render(<Journey />); await frames();
     fireEvent.keyDown(window, { key: 'd', code: 'KeyD' }); await cross();

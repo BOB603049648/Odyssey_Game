@@ -236,7 +236,7 @@ describe('traveler art', () => {
     const mark = view.container.querySelector('[data-testid="traveler"]');
     expect(mark?.getAttribute('data-pose')).toBe('interact');
     expect(mark?.getAttribute('data-clip-frames')).toBe('1');
-    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('src')).toMatch(/idle-front-01/);
+    expect(view.container.querySelector('[data-layer="current"]')?.getAttribute('data-atlas')).toBe('idle-front-01.png');
     view.rerender(<TravelerMark x={0.4} y={0.6} facing="front" moving={false} pose="reach" />);
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose')).toBe('reach');
     expect(view.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-clip-frames')).toBe('4');
@@ -283,7 +283,7 @@ describe('traveler art', () => {
     const near = render(layer([here], null));
     const pose = () => near.container.querySelector('[data-testid="traveler"]')?.getAttribute('data-pose');
     expect(pose()).toBe('idle');
-    expect(near.container.querySelector('.nanaicha-ground')?.getAttribute('src')).toMatch(/performance-atlas/);
+    expect(near.container.querySelector('.nanaicha-ground')?.getAttribute('src')).toMatch(/cat-performance/);
     expect(near.container.querySelector('[data-testid="companion-anchor"]')?.getAttribute('data-sprite')).toMatch(/pose-observe/);
     fireEvent.keyDown(window, { key: 'e' });
     expect(pose()).toBe('reach');

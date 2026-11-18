@@ -1,7 +1,7 @@
 import { cleanup, renderHook } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { newGameState } from '../core/save';
-import { reduce } from '../core/reduce';
+import { reduce } from '../core/__fixtures__/legacyReduce';
 import { useGameAudio } from './useGameAudio';
 import { loadSound } from './sounds';
 const mock=vi.hoisted(()=>({play:vi.fn(),stop:vi.fn(),dispose:vi.fn()}));
